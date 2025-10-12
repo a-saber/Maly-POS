@@ -1,0 +1,1 @@
+enum LanguageModel { arabic, english }
