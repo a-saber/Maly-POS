@@ -91,8 +91,7 @@ class _HomeViewState extends State<HomeView> {
                                 duration: Duration(seconds: 2),
                                 curve: Curves.fastLinearToSlowEaseIn,
                                 child: FadeInAnimation(
-                                  child: AppConstant.gridItems(
-                                      context: context)[index],
+                                  child: AppConstant.gridItems( context: context)[index],
                                 ),
                               ),
                             );

@@ -125,6 +125,7 @@ class AppRoutes {
   static const String editTaxes = '/editTaxes';
   static const String storequantity = '/storequantity';
   static const String storeMoveView = '/storeMoveView';
+  static const String printersView = '/printersView';
   static const String storeMoveDetailsView = '/storeMoveDetailsView';
   static const String expenseCategoriesView = '/expenseCategoriesView';
   static const String addexpenseCategoriesView = '/addexpenseCategoriesView';
@@ -537,6 +538,13 @@ class AppRoutes {
               salesModel: settings.arguments as SalesModel,
             ),
           );
+          // TODO: add printer view
+          // case printersView:
+          // return customGetPageRouteBuilder(
+          //   page: PrintersView(
+          //
+          //   ),
+          // );
         default:
           throw Exception("Route not found: ${settings.name}");
       }
