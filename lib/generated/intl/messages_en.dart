@@ -408,5 +408,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "youHaveNoData": MessageLookupByLibrary.simpleMessage(
       "You don\'t have data",
     ),
+    "printer": MessageLookupByLibrary.simpleMessage("Printer"),
+    "addPrinter": MessageLookupByLibrary.simpleMessage("Add Printer"),
+    "printerDetails": MessageLookupByLibrary.simpleMessage("Printer Details"),
+    "automatic": MessageLookupByLibrary.simpleMessage("Automatic"),
+    "printreceipt": MessageLookupByLibrary.simpleMessage("Print Receipt"),
+    "printCategories": MessageLookupByLibrary.simpleMessage("Print Categories"),
+    "copiesCount": MessageLookupByLibrary.simpleMessage("Copies Count"),
+    "chooseCategory": MessageLookupByLibrary.simpleMessage("Choose Category"),
+    "done": MessageLookupByLibrary.simpleMessage("Done"),
   };
 }

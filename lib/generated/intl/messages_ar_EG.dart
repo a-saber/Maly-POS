@@ -402,5 +402,14 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "wastage": MessageLookupByLibrary.simpleMessage("هالك"),
     "youHaveNoData": MessageLookupByLibrary.simpleMessage("لا توجد بيانات"),
+    "printer": MessageLookupByLibrary.simpleMessage("طابعة"),
+    "addPrinter": MessageLookupByLibrary.simpleMessage("إضافة طابعة"),
+    "printerDetails": MessageLookupByLibrary.simpleMessage("تفاصيل الطابعة"),
+    "automatic": MessageLookupByLibrary.simpleMessage("تلقائي"),
+    "printreceipt": MessageLookupByLibrary.simpleMessage("طباعة الإيصال"),
+    "printCategories": MessageLookupByLibrary.simpleMessage("طباعة الفئات"),
+    "copiesCount": MessageLookupByLibrary.simpleMessage("عدد النسخ"),
+    "chooseCategory": MessageLookupByLibrary.simpleMessage("اختر فئة"),
+    "done": MessageLookupByLibrary.simpleMessage("تم"),
   };
 }

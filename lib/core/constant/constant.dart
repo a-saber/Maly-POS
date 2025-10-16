@@ -145,8 +145,8 @@ class AppConstant {
       HomeViewItemModel(
         color: Color(0xffffa700),
         icon: Icons.print_outlined,
-        pageRoute: AppRoutes.storeMoveView,
-        title: S.of(context).storeMove, // TODO: change title to Printers
+        pageRoute: AppRoutes.printersView,
+        title: S.of(context).printer,
         // canAccess: user.role?.storeMove ?? false,
         canAccess: true,
       ),

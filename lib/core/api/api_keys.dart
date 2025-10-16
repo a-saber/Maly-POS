@@ -141,6 +141,7 @@ abstract class ApiKeys {
   static const String hall = 'hall';
   static const String zatcaQrcode = 'zatca_qrcode';
   static const String perPage = 'per_page';
+  static const String printer= 'printer';
 }
 
 abstract class ApiEndPoints {
@@ -245,5 +246,9 @@ abstract class ApiEndPoints {
   static Future<String> getShopSetting() async {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}settings";
+  }
+  static Future<String> getPrinters() async {
+    final baseUrl = await _getPosUrl();
+    return "${baseUrl}printers";
   }
 }

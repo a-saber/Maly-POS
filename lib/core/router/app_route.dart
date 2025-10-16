@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/auth/login/data/model/role_model.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
@@ -38,6 +39,9 @@ import 'package:pos_app/features/permissions/manager/get_permission/get_permissi
 import 'package:pos_app/features/permissions/view/add_permission_view.dart';
 import 'package:pos_app/features/permissions/view/edit_permission_view.dart';
 import 'package:pos_app/features/permissions/view/permissions_view.dart';
+import 'package:pos_app/features/printer/view/add_printer_view.dart';
+import 'package:pos_app/features/printer/view/printer_detailes.dart';
+import 'package:pos_app/features/printer/view/printerview.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
 import 'package:pos_app/features/products/view/add_product_view.dart';
@@ -137,6 +141,8 @@ class AppRoutes {
   static const String salesReturnDetailsView = '/salesReturnDetailsView';
   static const String shopSettingView = '/shopSettingView';
   static const String sellingPointCardView = '/sellingPointCardView';
+  static const String addPrinter = '/addPrinter';
+  static const String printerDetails = '/printerDetails';
 
   // Custom route with left-to-right + fade transition
   static PageRouteBuilder customGetPageRouteBuilder({
@@ -538,13 +544,28 @@ class AppRoutes {
               salesModel: settings.arguments as SalesModel,
             ),
           );
-          // TODO: add printer view
-          // case printersView:
-          // return customGetPageRouteBuilder(
-          //   page: PrintersView(
-          //
-          //   ),
-          // );
+        case printersView:
+          return customGetPageRouteBuilder(
+            page: const PrintersView(),
+          );
+        // TODO: add printer view
+        // case printersView:
+        // return customGetPageRouteBuilder(
+        //   page: PrintersView(
+        //
+        //   ),
+        // );
+        case addPrinter:
+          return customGetPageRouteBuilder(
+            page: const AddPrinterView(),
+          );
+        case printerDetails:
+          return customGetPageRouteBuilder(
+            page: PrinterDetailsView(
+              printer: settings.arguments as DiscoveredPrinter,
+            ),
+          );
+
         default:
           throw Exception("Route not found: ${settings.name}");
       }

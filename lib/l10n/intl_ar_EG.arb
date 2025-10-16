@@ -258,5 +258,14 @@
     "paidShouldBeMoreThanTotalPrice":"يجب ان يكون المدفوع اكبر من السعر الكلي",
     "orderType": "نوع الطلب",
     "selectTypeOfTakeOrder": "اختر نوع الطلب",
-    "resetDiscount": "اعادة تعيين الخصم"
+    "resetDiscount": "اعادة تعيين الخصم",
+    "printer":"طابعة",
+    "addPrinter":"اضافة طابعة",
+    "printerDetails":"تفاصيل الطابعة",
+    "automatic":"تلقائي",
+    "printReceipt":"طباعة الايصال",
+    "printCategories":"طباعة الفئات",
+    "chooseCategory":"اختار الفئة",
+    "copiesCount":"عدد النسخ",
+    "done":"تم",
 }

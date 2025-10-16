@@ -2019,6 +2019,79 @@ class S {
       args: [],
     );
   }
+  ///' printer '
+  String get printer {
+    return Intl.message(
+      ' printer ',
+       name: 'printer',
+        desc: '',
+         args: []
+         );
+  }
+  String get addPrinter {
+    return Intl.message(
+      'Add Printer',
+       name: 'addPrinter',
+        desc: '',
+         args: []
+         );
+  } 
+  String get printerDetails {
+    return Intl.message(
+      'Printer Details',
+       name: 'printerDetails',
+        desc: '',
+         args: []
+         );
+  }
+  String get automatic {
+    return Intl.message(
+      'Automatic',
+       name: 'automatic',
+        desc: '',
+         args: []
+         );
+  }
+  String get printreceipt {
+    return Intl.message(
+      'Print receipt',
+       name: 'printreceipt',
+        desc: '',
+         args: []
+         );
+  }
+  String get printCategories {
+    return Intl.message(
+      'Print Categories',
+       name: 'printCategories',
+        desc: '',
+         args: []
+         );
+  }
+  String get copiesCount {
+    return Intl.message(
+      'Copies Count',
+       name: 'copiesCount',
+        desc: '',
+         args: []
+         );
+  }
+  String get chooseCategory {
+    return Intl.message(
+      'Choose Category',
+       name: 'chooseCategory',
+        desc: '',
+         args: []
+         );
+  }
+  String get done {
+    return Intl.message(
+      'Done',
+       name: 'done',
+        desc: '',
+         args: []
+         );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

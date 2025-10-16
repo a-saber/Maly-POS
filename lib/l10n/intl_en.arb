@@ -258,5 +258,14 @@
   "paidShouldBeMoreThanTotalPrice": "Paid Should Be More Than Total Price",
   "orderType": "Order Type",
   "selectTypeOfTakeOrder": "Select Type Of Take Order",
-  "resetDiscount": "Reset Discount"
+  "resetDiscount": "Reset Discount",
+  "printer":"Printer",
+  "addPrinter":"Add Pinter",
+  "printerDetails":"Printer Details"
+  "automatic":"Automatic"
+  "printReceipt":"Print Receipt",
+  "printCategories":"Print Catec",
+  "chooseCategory":"Choose Category",
+  "copiesCount":"Copies Count",
+  "done":"Done"
 }
