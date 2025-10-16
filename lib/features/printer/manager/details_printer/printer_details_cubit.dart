@@ -2,7 +2,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_state.dart';
 
+import '../../../categories/data/model/category_model.dart';
 
+class CategoryRows
+{
+  CategoryModel? category;
+  int? copiesCount;
+
+  CategoryRows({this.category, this.copiesCount});
+}
 class PrinterDetailsCubit extends Cubit<PrinterDetailsState> {
   PrinterDetailsCubit() : super(PrinterDetailsInitial());
 
@@ -10,7 +18,7 @@ class PrinterDetailsCubit extends Cubit<PrinterDetailsState> {
       BlocProvider.of<PrinterDetailsCubit>(context);
 
   final List<String> categories = ['cat1', 'cat2', 'cat3', 'cat4'];
-  final List<Map<String, dynamic>> categoryRows = [];
+  final List<Map<String, dynamic>> categoryRows = []; // TODO: Make Model Instead of Map
 
   bool automatic = false;
   bool printReceipt = false;
