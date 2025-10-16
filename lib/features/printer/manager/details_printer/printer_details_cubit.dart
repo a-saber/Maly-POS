@@ -7,7 +7,7 @@ import '../../../categories/data/model/category_model.dart';
 class CategoryRows
 {
   CategoryModel? category;
-  int? copiesCount;
+  TextEditingController? copiesCount;
 
   CategoryRows({this.category, this.copiesCount});
 }
@@ -16,9 +16,9 @@ class PrinterDetailsCubit extends Cubit<PrinterDetailsState> {
 
   static PrinterDetailsCubit get(BuildContext context) =>
       BlocProvider.of<PrinterDetailsCubit>(context);
-
-  final List<String> categories = ['cat1', 'cat2', 'cat3', 'cat4'];
-  final List<Map<String, dynamic>> categoryRows = []; // TODO: Make Model Instead of Map
+  final List<CategoryModel> categories = [];
+  final List<CategoryRows> categoryRows = [];
+  CategoryModel? category;
 
   bool automatic = false;
   bool printReceipt = false;
@@ -29,6 +29,7 @@ class PrinterDetailsCubit extends Cubit<PrinterDetailsState> {
       addCategoryRow();
     }
   }
+
 
   void toggleAutomatic(bool value) {
     automatic = value;
@@ -46,36 +47,39 @@ class PrinterDetailsCubit extends Cubit<PrinterDetailsState> {
   }
 
   void addCategoryRow() {
-    categoryRows.add({
-      'category': null,
-      'copiesController': TextEditingController(text: '1'),
-    });
+  categoryRows.add(CategoryRows(
+    category: null,
+    copiesCount: TextEditingController(text: '1'),
+  ));
+  emit(PrinterDetailsUpdated());
+}
+
+void removeCategoryRow(int index) {
+  if (categoryRows.length > 1) {
+    categoryRows.removeAt(index);
     emit(PrinterDetailsUpdated());
   }
+}
 
-  void removeCategoryRow(int index) {
-    if (categoryRows.length > 1) {
-      categoryRows.removeAt(index);
-      emit(PrinterDetailsUpdated());
+ void onChangeCategory(CategoryModel? newCategory) {
+    if (category?.id != newCategory?.id) {
+      category = newCategory;
+      emit(AddChangeCategory());
     }
   }
 
-  void updateCategory(int index, String? value) {
-    categoryRows[index]['category'] = value;
+void incrementCopies(TextEditingController controller) {
+  final current = int.tryParse(controller.text) ?? 1;
+  controller.text = (current + 1).toString();
+  emit(PrinterDetailsUpdated());
+}
+
+void decrementCopies(TextEditingController controller) {
+  final current = int.tryParse(controller.text) ?? 1;
+  if (current > 1) {
+    controller.text = (current - 1).toString();
     emit(PrinterDetailsUpdated());
   }
+}
 
-  void incrementCopies(TextEditingController controller) {
-    final current = int.tryParse(controller.text) ?? 1;
-    controller.text = (current + 1).toString();
-    emit(PrinterDetailsUpdated());
-  }
-
-  void decrementCopies(TextEditingController controller) {
-    final current = int.tryParse(controller.text) ?? 1;
-    if (current > 1) {
-      controller.text = (current - 1).toString();
-      emit(PrinterDetailsUpdated());
-    }
-  }
 }
