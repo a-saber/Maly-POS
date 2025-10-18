@@ -141,7 +141,7 @@ abstract class ApiKeys {
   static const String hall = 'hall';
   static const String zatcaQrcode = 'zatca_qrcode';
   static const String perPage = 'per_page';
-  static const String printer= 'printer';
+  static const String printer= 'printers';
 }
 
 abstract class ApiEndPoints {

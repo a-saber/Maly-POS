@@ -1,13 +1,17 @@
-// printers_view.dart
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/constant/constant.dart';
+import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_floating_action_btn.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
+import 'package:pos_app/features/printer/data/model/printers_search_model.dart';
+import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_cubit.dart';
 import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_state.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
@@ -18,10 +22,10 @@ class PrintersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Provide Cubit above in widget tree (if not provided), otherwise get existing
     return BlocProvider(
-      create: (_) => ScanPrintersCubit(),
-      child: _PrintersViewBody(),
+
+      create: (_) => ScanPrintersCubit(MyServiceLocator.getSingleton<PrinterRepo>())..fetchPrintersFromApi(),
+      child: const _PrintersViewBody(),
     );
   }
 }
@@ -34,32 +38,29 @@ class _PrintersViewBody extends StatelessWidget {
     final cubit = ScanPrintersCubit.get(context);
 
     return Scaffold(
-      floatingActionButton: CustomFloatingActionBtn(onPressed: (
-
-      ) async {
-        Navigator.pushNamed(context, AppRoutes.addPrinter);
-      }),
       appBar: CustomAppBar(title: S.of(context).printer),
+      floatingActionButton: CustomFloatingActionBtn(
+        onPressed: () {
+          Navigator.pushNamed(context, AppRoutes.addPrinter);
+        },
+      ),
       body: CustomRefreshIndicator(
         onRefresh: () async {
-          await cubit.refresh();
+          await cubit.fetchPrintersFromApi();
         },
         child: Padding(
           padding: AppPaddings.defaultView,
           child: BlocBuilder<ScanPrintersCubit, ScanPrintersState>(
             builder: (context, state) {
-              // Loading screen (show same loading cards as Products)
               if (state is ScanPrintersLoading) {
                 return CustomGridViewCard(
                   heightOfCard: MediaQuery.of(context).textScaler.scale(110),
-                  itemBuilder: (context, index) {
-                    return const Center(child: Text('Loading...'));
-                  },
+                  itemBuilder: (context, index) =>
+                      const Center(child: Text('Loading...')),
                   itemCount: AppConstant.numberOfCardLoading,
                 );
               }
 
-              // Failing -> show message and a retry button
               if (state is ScanPrintersFailing) {
                 return Center(
                   child: Column(
@@ -68,7 +69,7 @@ class _PrintersViewBody extends StatelessWidget {
                       Text('Error: ${state.error}'),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: () => cubit.startScan(force: true),
+                        onPressed: () => cubit.fetchPrintersFromApi(),
                         child: const Text('Retry'),
                       ),
                     ],
@@ -76,28 +77,40 @@ class _PrintersViewBody extends StatelessWidget {
                 );
               }
 
-              // Success (may be empty)
-              final printers =
-                  (state is ScanPrintersSuccess) ? state.printers : [];
+              if (state is ScanPrintersSuccess) {
+               final printers = state.printers;
+               print(printers);
 
-              if (printers.isEmpty) {
-                return SizedBox.expand(
-                  child: Center(
+
+                if (printers.isEmpty) {
+                  return Center(
                     child: Text(
                       S.of(context).youHaveNoData,
                       style: const TextStyle(fontSize: 16),
                     ),
-                  ),
+                  );
+                }
+
+                return CustomGridViewCard(
+                  heightOfCard: MediaQuery.of(context).textScaler.scale(110),
+                  itemBuilder: (context, index) {
+                    final printer = printers[index];
+                    return PrinterItem(
+                      printer: printer,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.printerDetails,
+                          arguments: printer,
+                        );
+                      },
+                    );
+                  },
+                  itemCount: printers.length,
                 );
               }
 
-              return CustomGridViewCard(
-                heightOfCard: MediaQuery.of(context).textScaler.scale(110),
-                itemBuilder: (context, index) {
-                  return PrinterItem(printer: printers[index]);
-                },
-                itemCount: printers.length,
-              );
+              return const SizedBox.shrink();
             },
           ),
         ),

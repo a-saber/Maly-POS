@@ -164,7 +164,7 @@ class _CategoryHeader extends StatelessWidget {
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         IconButton(
-          icon: const Icon(Icons.add, color: Colors.green),
+          icon: const Icon(Icons.add, color: Colors.blue),
           onPressed: onAdd,
         ),
       ],

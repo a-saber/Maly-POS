@@ -22,6 +22,7 @@ import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
 import 'package:pos_app/features/permissions/data/repo/permission_repo.dart';
 import 'package:pos_app/features/permissions/manager/get_permission/get_permissions_cubit.dart';
 import 'package:pos_app/features/permissions/manager/search_permission/search_permission_cubit.dart';
+import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
 import 'package:pos_app/features/sales/data/repo/sales_repo.dart';
@@ -62,6 +63,9 @@ class MyServiceLocator {
       api: getSingleton<ApiHelper>(),
     ));
     registerSingleton<CategoryRepo>(CategoryRepo(
+      api: getSingleton<ApiHelper>(),
+    ));
+    registerSingleton<PrinterRepo>(PrinterRepo(
       api: getSingleton<ApiHelper>(),
     ));
     registerSingleton<UsersRepo>(UsersRepo(

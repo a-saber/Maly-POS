@@ -36,8 +36,13 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LanguageControlCubit()..init(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => LanguageControlCubit()..init(),
+        ),
+        // Bloc
+      ],
       child: BlocBuilder<LanguageControlCubit, LanguageControlState>(
         builder: (context, state) {
           return MaterialApp(
