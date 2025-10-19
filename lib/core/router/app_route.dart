@@ -60,6 +60,7 @@ import 'package:pos_app/features/sales_returns/view/sales_return_view.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/features/selling_point/view/selling_point_card_view.dart';
 import 'package:pos_app/features/selling_point/view/selling_point_view.dart';
+import 'package:pos_app/features/shifts/view/shifts_view.dart';
 import 'package:pos_app/features/shop_setting/manager/cubit/shop_setting_cubit.dart';
 import 'package:pos_app/features/shop_setting/view/shop_setting_view.dart';
 import 'package:pos_app/features/splash/splash_view.dart';
@@ -145,6 +146,7 @@ class AppRoutes {
   static const String addPrinter = '/addPrinter';
   static const String printerDetails = '/printerDetails';
   static const String printerEdit = '/printerEdit';
+  static const String shiftsView = '/shiftsView';
 
   // Custom route with left-to-right + fade transition
   static PageRouteBuilder customGetPageRouteBuilder({
@@ -572,6 +574,10 @@ class AppRoutes {
             page: EditPrinterView(
               printer: settings.arguments,
             ),
+          );
+        case shiftsView:
+          return customGetPageRouteBuilder(
+            page: const ShiftsView(),
           );
 
         default:

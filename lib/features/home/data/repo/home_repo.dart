@@ -6,6 +6,7 @@ import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
 import 'package:pos_app/features/home/data/model/get_single_user_model.dart';
+import 'package:pos_app/features/home/data/model/shifts_model.dart';
 
 class HomeRepo {
   final ApiHelper api;
@@ -38,8 +39,69 @@ class HomeRepo {
       return Left(ApiResponse.unKnownError());
     }
   }
-}
 
-Future<void> saveUser({required UserModel user}) async {
-  await CustomUserHiveBox.setUser(user);
+  Future<Either<ApiResponse, void>> startShift() async {
+    try {
+      ApiResponse? response;
+      String url = await ApiEndPoints.startShift();
+      response = await api.get(
+        url: url,
+      );
+      if (response.status) {
+        return Right(unit);
+      } else {
+        return Left(
+          response,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(ApiResponse.unKnownError());
+    }
+  }
+
+  Future<void> saveUser({required UserModel user}) async {
+    await CustomUserHiveBox.setUser(user);
+  }
+
+  Future<Either<ApiResponse, void>> endShift() async {
+    try {
+      ApiResponse? response;
+      String url = await ApiEndPoints.endShift();
+      response = await api.get(
+        url: url,
+      );
+      if (response.status) {
+        return Right(unit);
+      } else {
+        return Left(
+          response,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(ApiResponse.unKnownError());
+    }
+  }
+
+  Future<Either<ApiResponse, ShiftsModel>> getShifts() async {
+    try {
+      ApiResponse? response;
+      String url = await ApiEndPoints.getShifts();
+      response = await api.get(
+        url: url,
+      );
+      if (response.status) {
+        ShiftsModel shifts = ShiftsModel.fromJson(response.data);
+        return Right(shifts);
+      } else {
+        return Left(
+          response,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(ApiResponse.unKnownError());
+    }
+  }
 }

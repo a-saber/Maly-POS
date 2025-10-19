@@ -150,6 +150,14 @@ class AppConstant {
         // canAccess: user.role?.storeMove ?? false,
         canAccess: true,
       ),
+      HomeViewItemModel(
+        color: Color(0xffffa700),
+        icon: Icons.print_outlined,
+        pageRoute: AppRoutes.shiftsView,
+        title: S.of(context).shifts,
+        // canAccess: user.role?.storeMove ?? false,
+        canAccess: true,
+      ),
     ];
 
     List<HomeViewItemBuilder> homeViewItemBuilders = [];

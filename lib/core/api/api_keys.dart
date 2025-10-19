@@ -142,6 +142,9 @@ abstract class ApiKeys {
   static const String zatcaQrcode = 'zatca_qrcode';
   static const String perPage = 'per_page';
   static const String printer= 'printers';
+  static const String startshift= 'users/shifts/start';
+  static const String endshift= 'users/shifts/end';
+  static const String shifts= 'users/get/shifts/1';
 }
 
 abstract class ApiEndPoints {
@@ -250,6 +253,18 @@ abstract class ApiEndPoints {
   static Future<String> getPrinters() async {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}printers";
+  }
+  static Future<String> startShift() async {
+    final baseUrl = await _getPosUrl();
+    return "${baseUrl}users/shifts/start";
+  }
+  static Future<String> endShift() async {
+    final baseUrl = await _getPosUrl();
+    return "${baseUrl}users/shifts/end";
+  }
+  static Future<String> getShifts() async {
+    final baseUrl = await _getPosUrl();
+    return "${baseUrl}users/get/shifts/1";
   }
   
 }

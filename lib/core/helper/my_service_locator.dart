@@ -19,6 +19,7 @@ import 'package:pos_app/features/expense_categories/data/repo/expense_categories
 import 'package:pos_app/features/expense_categories/manager/get_expense_categories_cubit/get_expense_categories_cubit.dart';
 import 'package:pos_app/features/home/data/repo/home_repo.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
+import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/permissions/data/repo/permission_repo.dart';
 import 'package:pos_app/features/permissions/manager/get_permission/get_permissions_cubit.dart';
 import 'package:pos_app/features/permissions/manager/search_permission/search_permission_cubit.dart';
@@ -212,6 +213,9 @@ class MyServiceLocator {
       getIt(),
     ));
     registerSingleton<AddPrinterCubit>(AddPrinterCubit(
+      getIt(),
+    ));
+    registerSingleton<ShiftCubit>(ShiftCubit(
       getIt(),
     ));
   }

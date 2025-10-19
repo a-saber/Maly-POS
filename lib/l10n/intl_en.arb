@@ -271,5 +271,6 @@
   "savechanges":"Save Changes",
   "printername":"Printer Name",
   "ip printer":"Ip Printer",
-  "editprinter":"Edit Printer"
+  "editprinter":"Edit Printer",
+  "shifts":"Shifts"
 }

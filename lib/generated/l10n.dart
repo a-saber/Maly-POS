@@ -2116,6 +2116,14 @@ class S {
          args: []
          );
   } 
+  String get shifts {
+    return Intl.message(
+      'Shifts',
+       name: 'shifts',
+        desc: '',
+         args: []
+         );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
