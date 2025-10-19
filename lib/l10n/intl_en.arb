@@ -267,5 +267,9 @@
   "printCategories":"Print Catec",
   "chooseCategory":"Choose Category",
   "copiesCount":"Copies Count",
-  "done":"Done"
+  "done":"Done",
+  "savechanges":"Save Changes",
+  "printername":"Printer Name",
+  "ip printer":"Ip Printer",
+  "editprinter":"Edit Printer"
 }

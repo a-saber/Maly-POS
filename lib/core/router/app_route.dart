@@ -40,6 +40,7 @@ import 'package:pos_app/features/permissions/view/add_permission_view.dart';
 import 'package:pos_app/features/permissions/view/edit_permission_view.dart';
 import 'package:pos_app/features/permissions/view/permissions_view.dart';
 import 'package:pos_app/features/printer/view/add_printer_view.dart';
+import 'package:pos_app/features/printer/view/edit_printers.dart';
 import 'package:pos_app/features/printer/view/printer_detailes.dart';
 import 'package:pos_app/features/printer/view/printerview.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
@@ -143,6 +144,7 @@ class AppRoutes {
   static const String sellingPointCardView = '/sellingPointCardView';
   static const String addPrinter = '/addPrinter';
   static const String printerDetails = '/printerDetails';
+  static const String printerEdit = '/printerEdit';
 
   // Custom route with left-to-right + fade transition
   static PageRouteBuilder customGetPageRouteBuilder({
@@ -563,6 +565,12 @@ class AppRoutes {
           return customGetPageRouteBuilder(
             page: PrinterDetailsView(
               printer: settings.arguments as DiscoveredPrinter,
+            ),
+          );
+        case printerEdit:
+          return customGetPageRouteBuilder(
+            page: EditPrinterView(
+              printer: settings.arguments,
             ),
           );
 

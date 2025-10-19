@@ -411,5 +411,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "copiesCount": MessageLookupByLibrary.simpleMessage("عدد النسخ"),
     "chooseCategory": MessageLookupByLibrary.simpleMessage("اختر فئة"),
     "done": MessageLookupByLibrary.simpleMessage("تم"),
+    "printerName": MessageLookupByLibrary.simpleMessage("اسم الطابعة"),
+    "printerIP": MessageLookupByLibrary.simpleMessage("IP الطابعة"),
+    "saveChanges": MessageLookupByLibrary.simpleMessage("حفظ التعديلات"),
+    "editPrinter": MessageLookupByLibrary.simpleMessage("تعديل الطابعة"),
+
   };
 }

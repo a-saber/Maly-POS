@@ -268,4 +268,8 @@
     "chooseCategory":"اختار الفئة",
     "copiesCount":"عدد النسخ",
     "done":"تم",
+    "printerName:"اسم الطاعة",
+    "Ip printer":"Ip الطابعة",
+    "savechanges":"حفظ التعديلات",
+    "editprinter":"حفظ التعديلات"
 }

@@ -251,4 +251,5 @@ abstract class ApiEndPoints {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}printers";
   }
+  
 }

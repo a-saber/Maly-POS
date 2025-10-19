@@ -52,7 +52,7 @@ class _AddPrinterViewBody extends StatelessWidget {
                         itemBuilder: (context, index) => const Center(
                           child: Text('Scanning for printers...'),
                         ),
-                        itemCount: AppConstant.numberOfCardLoading, // أو AppConstant.numberOfCardLoading
+                        itemCount: AppConstant.numberOfCardLoading, 
                       );
                     }
 

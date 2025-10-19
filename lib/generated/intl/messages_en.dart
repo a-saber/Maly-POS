@@ -417,5 +417,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "copiesCount": MessageLookupByLibrary.simpleMessage("Copies Count"),
     "chooseCategory": MessageLookupByLibrary.simpleMessage("Choose Category"),
     "done": MessageLookupByLibrary.simpleMessage("Done"),
+    "printerName": MessageLookupByLibrary.simpleMessage("Printer Name"),
+    "printerIP": MessageLookupByLibrary.simpleMessage("Printer IP"),
+    "saveChanges": MessageLookupByLibrary.simpleMessage("Save Changes"),
+    "editPrinter": MessageLookupByLibrary.simpleMessage("Edit Printer"),
   };
 }

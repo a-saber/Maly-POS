@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_state.dart';
@@ -54,6 +53,8 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
 
     try {
       final result = await _repo.getPrinters(isFresh: isFresh);
+      print('Next Page: ${_repo.printersModel?.nextPageUrl}');
+    print('Total Printers: ${_repo.printersModel?.total}');
       result.fold(
         (failure) => emit(ScanPrintersFailing(error: failure)),
         (apiPrinters) {

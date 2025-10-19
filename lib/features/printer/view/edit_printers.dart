@@ -1,7 +1,5 @@
-// printer_details_view.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
@@ -10,19 +8,18 @@ import 'package:pos_app/core/widget/custom_drop_down.dart';
 import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
 import 'package:pos_app/features/categories/manager/get_category/get_category_cubit.dart';
-import 'package:pos_app/features/printer/data/model/post_printers_model.dart';
-import 'package:pos_app/features/printer/manager/add_printers/add_printers_cubit.dart';
-import 'package:pos_app/features/printer/manager/add_printers/add_printers_state.dart';
+import 'package:pos_app/features/printer/manager/edit_printers/edit_printers_cubit.dart';
+import 'package:pos_app/features/printer/manager/edit_printers/edit_printers_state.dart';
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_cubit.dart';
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_state.dart';
-import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
 
-class PrinterDetailsView extends StatelessWidget {
-  final DiscoveredPrinter printer;
+class EditPrinterView extends StatelessWidget {
+  final dynamic printer;
 
-  const PrinterDetailsView({super.key, required this.printer});
+  const EditPrinterView({super.key, required this.printer});
 
   @override
   Widget build(BuildContext context) {
@@ -33,24 +30,25 @@ class PrinterDetailsView extends StatelessWidget {
             create: (_) =>
                 MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
         BlocProvider(
-            create: (_) => AddPrinterCubit(MyServiceLocator.getSingleton())),
+          create: (_) => EditPrinterCubit(MyServiceLocator.getSingleton())..initPrinter(printer),
+        ),
       ],
       child: BlocBuilder<PrinterDetailsCubit, PrinterDetailsState>(
         builder: (context, state) {
           final cubit = PrinterDetailsCubit.get(context);
           final categoriesCubit = GetCategoryCubit.get(context);
-          final addCubit = AddPrinterCubit.get(context);
+          final editCubit = EditPrinterCubit.get(context);
 
           return Scaffold(
-            appBar: CustomAppBar(title: S.of(context).printerDetails),
+            appBar: CustomAppBar(title: S.of(context).editPrinter),
             body: Padding(
               padding: AppPaddings.defaultView,
               child: Form(
-                key: addCubit.formKey,
-                autovalidateMode: addCubit.autovalidateMode,
+                key: editCubit.formKey,
+                autovalidateMode: editCubit.autovalidateMode,
                 child: ListView(
                   children: [
-                    _PrinterHeader(printer: printer),
+                    _EditPrinterHeader(printer: printer),
                     const SizedBox(height: 20),
                     _PrinterOptions(cubit: cubit),
                     if (cubit.printCategories)
@@ -59,20 +57,20 @@ class PrinterDetailsView extends StatelessWidget {
                         categories: categoriesCubit.categories,
                       ),
                     const SizedBox(height: 20),
-                    BlocConsumer<AddPrinterCubit, AddPrinterState>(
+                    BlocConsumer<EditPrinterCubit, EditPrinterState>(
                       listener: (context, state) {
-                        if (state is AddPrinterSuccess) {
+                        if (state is EditPrinterSuccess) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("printer added successfully "),
+                              content: Text("printer updated successfully "),
                               backgroundColor: Colors.green,
                             ),
                           );
-                          cubit.init();
-                        } else if (state is AddPrinterFail) {
+                          Navigator.pop(context, true);
+                        } else if (state is EditPrinterError) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(state.errMessage),
+                              content: Text(state.message),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -80,13 +78,12 @@ class PrinterDetailsView extends StatelessWidget {
                       },
                       builder: (context, state) {
                         return CustomFilledBtn(
-                          text: S.of(context).done,
+                          text: S.of(context).saveChanges,
                           onPressed: () async {
                             final selectedIds = PrinterDetailsCubit.get(context)
                                 .getSelectedCategoryIds();
-                            AddPrinterCubit.get(context)
-                                .onChangeCategories(selectedIds);
-                            await AddPrinterCubit.get(context).addPrinter(context);
+                            editCubit.onChangeCategories(selectedIds);
+                            await editCubit.updatePrinter(context);
                           },
                         );
                       },
@@ -102,20 +99,22 @@ class PrinterDetailsView extends StatelessWidget {
   }
 }
 
-class _PrinterHeader extends StatelessWidget {
-  final DiscoveredPrinter printer;
+class _EditPrinterHeader extends StatelessWidget {
+  final dynamic printer;
 
-  const _PrinterHeader({required this.printer});
+  const _EditPrinterHeader({required this.printer});
 
   @override
   Widget build(BuildContext context) {
+    final cubit = EditPrinterCubit.get(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PrinterItem(printer: printer),
         const SizedBox(height: 16),
         CustomFormField(
-          controller: AddPrinterCubit.get(context).printerNameController,
+          controller: cubit.printerNameController,
           labelText: S.of(context).name,
         ),
       ],
@@ -206,7 +205,7 @@ class _CategoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final row = cubit.categoryRows[index];
-    final controller = row.copiesCount; 
+    final controller = row.copiesCount;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

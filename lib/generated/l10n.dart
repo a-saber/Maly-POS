@@ -159,6 +159,14 @@ class S {
       args: [],
     );
   }
+  String get categoryName {
+    return Intl.message(
+      'Category Name',
+      name: 'categoryName',
+      desc: '',
+      args: [],
+    );
+  }
 
   /// `Field`
   String get field {
@@ -2092,6 +2100,22 @@ class S {
          args: []
          );
   }
+  String get saveChanges {
+    return Intl.message(
+      'Save Changes',
+       name: 'saveChanges',
+        desc: '',
+         args: []
+         );
+  }
+  String get editPrinter {
+    return Intl.message(
+      'Edit Printer',
+       name: 'editPrinter',
+        desc: '',
+         args: []
+         );
+  } 
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -6,74 +6,71 @@ class PrintersModel {
   int? lastPage;
   String? lastPageUrl;
   List<Links>? links;
-  Null? nextPageUrl;
+  String? nextPageUrl;
   String? path;
   int? perPage;
-  Null? prevPageUrl;
+  String? prevPageUrl;
   int? to;
   int? total;
 
-  PrintersModel(
-      {this.currentPage,
-      this.data,
-      this.firstPageUrl,
-      this.from,
-      this.lastPage,
-      this.lastPageUrl,
-      this.links,
-      this.nextPageUrl,
-      this.path,
-      this.perPage,
-      this.prevPageUrl,
-      this.to,
-      this.total});
+  PrintersModel({
+    this.currentPage,
+    this.data,
+    this.firstPageUrl,
+    this.from,
+    this.lastPage,
+    this.lastPageUrl,
+    this.links,
+    this.nextPageUrl,
+    this.path,
+    this.perPage,
+    this.prevPageUrl,
+    this.to,
+    this.total,
+  });
 
-  PrintersModel.fromJson(Map<String, dynamic> json) {
-    currentPage = json['current_page'];
-    if (json['data'] != null) {
-      data = <Data>[];
-      json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
-      });
-    }
-    firstPageUrl = json['first_page_url'];
-    from = json['from'];
-    lastPage = json['last_page'];
-    lastPageUrl = json['last_page_url'];
-    if (json['links'] != null) {
-      links = <Links>[];
-      json['links'].forEach((v) {
-        links!.add(new Links.fromJson(v));
-      });
-    }
-    nextPageUrl = json['next_page_url'];
-    path = json['path'];
-    perPage = json['per_page'];
-    prevPageUrl = json['prev_page_url'];
-    to = json['to'];
-    total = json['total'];
+  factory PrintersModel.fromJson(Map<String, dynamic> json) {
+    return PrintersModel(
+      currentPage: json['current_page'] as int?,
+      data: json['data'] != null && json['data'] is List
+          ? (json['data'] as List)
+              .map((e) => Data.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+      firstPageUrl: json['first_page_url'] as String?,
+      from: json['from'] as int?,
+      lastPage: json['last_page'] as int?,
+      lastPageUrl: json['last_page_url'] as String?,
+      links: json['links'] != null && json['links'] is List
+          ? (json['links'] as List)
+              .map((e) => Links.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+      nextPageUrl: json['next_page_url'] as String?,
+      path: json['path'] as String?,
+      perPage: json['per_page'] as int?,
+      prevPageUrl: json['prev_page_url'] as String?,
+      to: json['to'] as int?,
+      total: json['total'] as int?,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['current_page'] = this.currentPage;
-    if (this.data != null) {
-      data['data'] = this.data!.map((v) => v.toJson()).toList();
-    }
-    data['first_page_url'] = this.firstPageUrl;
-    data['from'] = this.from;
-    data['last_page'] = this.lastPage;
-    data['last_page_url'] = this.lastPageUrl;
-    if (this.links != null) {
-      data['links'] = this.links!.map((v) => v.toJson()).toList();
-    }
-    data['next_page_url'] = this.nextPageUrl;
-    data['path'] = this.path;
-    data['per_page'] = this.perPage;
-    data['prev_page_url'] = this.prevPageUrl;
-    data['to'] = this.to;
-    data['total'] = this.total;
-    return data;
+    return {
+      'current_page': currentPage,
+      'data': data?.map((e) => e.toJson()).toList(),
+      'first_page_url': firstPageUrl,
+      'from': from,
+      'last_page': lastPage,
+      'last_page_url': lastPageUrl,
+      'links': links?.map((e) => e.toJson()).toList(),
+      'next_page_url': nextPageUrl,
+      'path': path,
+      'per_page': perPage,
+      'prev_page_url': prevPageUrl,
+      'to': to,
+      'total': total,
+    };
   }
 }
 
@@ -86,89 +83,92 @@ class Data {
   String? communicationType;
   List<Categories>? categories;
 
-  Data(
-      {this.id,
-      this.createdAt,
-      this.updatedAt,
-      this.printerName,
-      this.printerType,
-      this.communicationType,
-      this.categories});
+  Data({
+    this.id,
+    this.createdAt,
+    this.updatedAt,
+    this.printerName,
+    this.printerType,
+    this.communicationType,
+    this.categories,
+  });
 
-  Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    printerName = json['printer_name'];
-    printerType = json['printer_type'];
-    communicationType = json['communication_type'];
-    if (json['categories'] != null) {
-      categories = <Categories>[];
-      json['categories'].forEach((v) {
-        categories!.add(new Categories.fromJson(v));
-      });
-    }
+  factory Data.fromJson(Map<String, dynamic> json) {
+    return Data(
+      id: json['id'] as int?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      printerName: json['printer_name'] as String?,
+      printerType: json['printer_type'] as String?,
+      communicationType: json['communication_type'] as String?,
+      categories: json['categories'] != null && json['categories'] is List
+          ? (json['categories'] as List)
+              .map((e) => Categories.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : [],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['printer_name'] = this.printerName;
-    data['printer_type'] = this.printerType;
-    data['communication_type'] = this.communicationType;
-    if (this.categories != null) {
-      data['categories'] = this.categories!.map((v) => v.toJson()).toList();
-    }
-    return data;
+    return {
+      'id': id,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'printer_name': printerName,
+      'printer_type': printerType,
+      'communication_type': communicationType,
+      'categories': categories?.map((e) => e.toJson()).toList(),
+    };
   }
 }
 
 class Categories {
   int? id;
   String? name;
-  Null? description;
+  String? description;
   String? imagePath;
   String? createdAt;
   String? updatedAt;
   String? imageUrl;
   Pivot? pivot;
 
-  Categories(
-      {this.id,
-      this.name,
-      this.description,
-      this.imagePath,
-      this.createdAt,
-      this.updatedAt,
-      this.imageUrl,
-      this.pivot});
+  Categories({
+    this.id,
+    this.name,
+    this.description,
+    this.imagePath,
+    this.createdAt,
+    this.updatedAt,
+    this.imageUrl,
+    this.pivot,
+  });
 
-  Categories.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    description = json['description'];
-    imagePath = json['image_path'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    imageUrl = json['image_url'];
-    pivot = json['pivot'] != null ? new Pivot.fromJson(json['pivot']) : null;
+  factory Categories.fromJson(Map<String, dynamic> json) {
+    return Categories(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
+      description: json['description'] as String?,
+      imagePath: json['image_path'] as String?,
+      createdAt: json['created_at'] as String?,
+      updatedAt: json['updated_at'] as String?,
+      imageUrl: json['image_url'] as String?,
+      pivot: json['pivot'] != null
+          ? Pivot.fromJson(json['pivot'] as Map<String, dynamic>)
+          : null,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['description'] = this.description;
-    data['image_path'] = this.imagePath;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['image_url'] = this.imageUrl;
-    if (this.pivot != null) {
-      data['pivot'] = this.pivot!.toJson();
-    }
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'image_path': imagePath,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+      'image_url': imageUrl,
+      'pivot': pivot?.toJson(),
+    };
   }
 }
 
@@ -178,16 +178,18 @@ class Pivot {
 
   Pivot({this.printerId, this.categoryId});
 
-  Pivot.fromJson(Map<String, dynamic> json) {
-    printerId = json['printer_id'];
-    categoryId = json['category_id'];
+  factory Pivot.fromJson(Map<String, dynamic> json) {
+    return Pivot(
+      printerId: json['printer_id'] as int?,
+      categoryId: json['category_id'] as int?,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['printer_id'] = this.printerId;
-    data['category_id'] = this.categoryId;
-    return data;
+    return {
+      'printer_id': printerId,
+      'category_id': categoryId,
+    };
   }
 }
 
@@ -198,17 +200,19 @@ class Links {
 
   Links({this.url, this.label, this.active});
 
-  Links.fromJson(Map<String, dynamic> json) {
-    url = json['url'];
-    label = json['label'];
-    active = json['active'];
+  factory Links.fromJson(Map<String, dynamic> json) {
+    return Links(
+      url: json['url'] as String?,
+      label: json['label'] as String?,
+      active: json['active'] as bool?,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['url'] = this.url;
-    data['label'] = this.label;
-    data['active'] = this.active;
-    return data;
+    return {
+      'url': url,
+      'label': label,
+      'active': active,
+    };
   }
 }
