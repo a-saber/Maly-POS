@@ -12,6 +12,7 @@ import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_asset.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/show_delete_confirm_dialog.dart';
 import 'package:pos_app/features/home/data/repo/home_repo.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
@@ -59,8 +60,7 @@ class CustomDrawer extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox(
-                          height:
-                              DeviceSize.getHeight(context: context) * 0.02,
+                          height: DeviceSize.getHeight(context: context) * 0.02,
                         ),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,8 +90,7 @@ class CustomDrawer extends StatelessWidget {
                           ],
                         ),
                         SizedBox(
-                          height:
-                              DeviceSize.getHeight(context: context) * 0.02,
+                          height: DeviceSize.getHeight(context: context) * 0.02,
                         ),
                         Row(
                           children: [
@@ -118,8 +117,7 @@ class CustomDrawer extends StatelessWidget {
                             IconButton(
                               splashColor: AppColors.white,
                               onPressed: () {
-                                Navigator.pushNamed(
-                                    context, AppRoutes.profile);
+                                Navigator.pushNamed(context, AppRoutes.profile);
                               },
                               icon: const Icon(
                                 Icons.edit_square,
@@ -139,88 +137,46 @@ class CustomDrawer extends StatelessWidget {
                     Navigator.pushNamed(context, AppRoutes.settingsView);
                   },
                 ),
-
-                // 🔹 أزرار Start / End Shift
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
                         child: SizedBox(
-                          height: 36,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
+                          height: 32,
+                          child: CustomFilledBtn(
+                            text: 'Start',
+                            backgroundColor: Colors.blueAccent,
                             onPressed: state is ShiftLoading
-                                ? null
-                                : () {
-                                    cubit.startShift();
-                                  },
-                            child: state is ShiftLoading
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Text(
-                                    'Start',
-                                    style: AppFontStyle.formText(
-                                            context: context)
-                                        .copyWith(
-                                            color: Colors.white, fontSize: 13),
-                                  ),
+                                ? () {}
+                                : () => cubit.startShift(),
                           ),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: SizedBox(
-                          height: 36,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.redAccent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                          height: 32,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border.all(color: Colors.blueAccent),
+                              borderRadius: BorderRadius.circular(5),
                             ),
-                            onPressed: state is ShiftLoading
-                                ? null
-                                : () {
-                                    cubit.endShift();
-                                  },
-                            child: state is ShiftLoading
-                                ? const SizedBox(
-                                    width: 16,
-                                    height: 16,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      color: Colors.white,
-                                    ),
-                                  )
-                                : Text(
-                                    'End',
-                                    style: AppFontStyle.formText(
-                                            context: context)
-                                        .copyWith(
-                                            color: Colors.white, fontSize: 13),
-                                  ),
+                            child: CustomFilledBtn(
+                              text: 'End',
+                              backgroundColor: Colors.transparent,
+                              onPressed: state is ShiftLoading
+                                  ? () {}
+                                  : () => cubit.endShift(),
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                // 🔹 زر اللوج آوت
                 ListTile(
                   leading: const Icon(Icons.logout),
                   title: Text(S.of(context).logout),
