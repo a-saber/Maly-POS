@@ -117,4 +117,26 @@ class PrinterRepo {
       return Left(ApiResponse.unKnownError());
     }
   }
+  Future<Either<ApiResponse, int>> deletePrinter({
+    required int id,
+  }) async {
+    try {
+      String url = await ApiEndPoints.getPrinters();
+      var response = await api.delete(
+        url: "$url/$id",
+      );
+      if (response.status) {
+        return Right(id);
+      } else {
+        return Left(
+          response,
+        );
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(
+        ApiResponse.unKnownError(),
+      );
+    }
+  }
 }

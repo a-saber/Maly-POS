@@ -416,6 +416,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "saveChanges": MessageLookupByLibrary.simpleMessage("حفظ التعديلات"),
     "editPrinter": MessageLookupByLibrary.simpleMessage("تعديل الطابعة"),
     "shifts": MessageLookupByLibrary.simpleMessage("الفترات"),
+    
 
   };
 }

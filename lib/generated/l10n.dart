@@ -2124,6 +2124,14 @@ class S {
          args: []
          );
   }
+  String get deletePrinter {
+    return Intl.message(
+      'Delete Printer',
+       name: 'deletePrinter',
+        desc: '',
+         args: []
+         );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

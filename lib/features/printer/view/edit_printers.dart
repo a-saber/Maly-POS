@@ -13,7 +13,9 @@ import 'package:pos_app/features/printer/manager/edit_printers/edit_printers_sta
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_cubit.dart';
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_state.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/features/printer/widget/custom_delete_printer_dialog.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
+import 'package:pos_app/features/products/view/widget/show_delete_product_confirm_dialog.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class EditPrinterView extends StatelessWidget {
@@ -65,7 +67,17 @@ class EditPrinterView extends StatelessWidget {
         final cubit = PrinterDetailsCubit.get(context);
 
         return Scaffold(
-          appBar: CustomAppBar(title: S.of(context).editPrinter),
+          appBar: CustomAppBar(
+          title: S.of(context).editPrinter,
+          actions: [
+            CustomTextBtn(
+                text: S.of(context).delete,
+                onPressed: () async {
+                  await showDeletePrinterConfirmDialog(
+                      context: context, printer: printer, goBack: true);
+                })
+          ],
+        ),
           body: Padding(
             padding: AppPaddings.defaultView,
             child: Form(

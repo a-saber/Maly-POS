@@ -166,4 +166,8 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
     _helper.stopScan();
     return super.close();
   }
+  void removePrinter(int id) {
+    _printers.removeWhere((element) => element.id == id);
+    emit(ScanPrintersSuccess(printers: List.from(_printers)));
+  }
 }
