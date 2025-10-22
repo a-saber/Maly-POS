@@ -25,6 +25,28 @@ class PrinterDetailsCubit extends Cubit<PrinterDetailsState> {
   void init() {
     if (categoryRows.isEmpty) addCategoryRow();
   }
+void initWithSelectedCategories(
+  List<CategoryModel> allCategories,
+  List<int> selectedIds,
+) {
+  categoryRows.clear();
+
+  for (final id in selectedIds) {
+    final category = allCategories.firstWhere(
+      (cat) => cat.id == id,
+      orElse: () => allCategories.first,
+    );
+
+    categoryRows.add(CategoryRows(category: category));
+  }
+
+  if (selectedIds.isNotEmpty) {
+    printCategories = true;
+  }
+
+  emit(PrinterDetailsUpdated());
+}
+
 
   void toggleAutomatic(bool value) {
     automatic = value;

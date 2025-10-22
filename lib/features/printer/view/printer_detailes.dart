@@ -10,13 +10,12 @@ import 'package:pos_app/core/widget/custom_drop_down.dart';
 import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
 import 'package:pos_app/features/categories/manager/get_category/get_category_cubit.dart';
-import 'package:pos_app/features/printer/data/model/post_printers_model.dart';
 import 'package:pos_app/features/printer/manager/add_printers/add_printers_cubit.dart';
 import 'package:pos_app/features/printer/manager/add_printers/add_printers_state.dart';
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_cubit.dart';
 import 'package:pos_app/features/printer/manager/details_printer/printer_details_state.dart';
-import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class PrinterDetailsView extends StatelessWidget {
@@ -82,11 +81,27 @@ class PrinterDetailsView extends StatelessWidget {
                         return CustomFilledBtn(
                           text: S.of(context).done,
                           onPressed: () async {
-                            final selectedIds = PrinterDetailsCubit.get(context)
-                                .getSelectedCategoryIds();
-                            AddPrinterCubit.get(context)
-                                .onChangeCategories(selectedIds);
-                            await AddPrinterCubit.get(context).addPrinter(context);
+                            final detailsCubit =
+                                PrinterDetailsCubit.get(context);
+                            final addCubit = AddPrinterCubit.get(context);
+
+                            final selectedIds =
+                                detailsCubit.getSelectedCategoryIds();
+
+                            if (detailsCubit.printCategories &&
+                                selectedIds.isEmpty) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Please select at least one category."),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+
+                            addCubit.onChangeCategories(selectedIds);
+                            await addCubit.addPrinter(context);
                           },
                         );
                       },
@@ -206,7 +221,7 @@ class _CategoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final row = cubit.categoryRows[index];
-    final controller = row.copiesCount; 
+    final controller = row.copiesCount;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),

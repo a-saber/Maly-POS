@@ -1,3 +1,5 @@
+import 'package:pos_app/features/categories/data/model/category_model.dart';
+
 class PrintersModel {
   int? currentPage;
   List<Data>? data;
@@ -48,7 +50,9 @@ class PrintersModel {
           : [],
       nextPageUrl: json['next_page_url'] as String?,
       path: json['path'] as String?,
-      perPage: json['per_page'] as int?,
+      perPage: json['per_page'] is String
+          ? int.tryParse(json['per_page'])
+          : json['per_page'] as int?,
       prevPageUrl: json['prev_page_url'] as String?,
       to: json['to'] as int?,
       total: json['total'] as int?,
@@ -72,8 +76,8 @@ class PrintersModel {
       'total': total,
     };
   }
+  bool get hasNextPage => nextPageUrl != null && nextPageUrl!.isNotEmpty;
 }
-
 class Data {
   int? id;
   String? createdAt;
@@ -81,7 +85,7 @@ class Data {
   String? printerName;
   String? printerType;
   String? communicationType;
-  List<Categories>? categories;
+  List<CategoryModel>? categories;
 
   Data({
     this.id,
@@ -103,7 +107,7 @@ class Data {
       communicationType: json['communication_type'] as String?,
       categories: json['categories'] != null && json['categories'] is List
           ? (json['categories'] as List)
-              .map((e) => Categories.fromJson(e as Map<String, dynamic>))
+              .map((e) => CategoryModel.fromJson(e as Map<String, dynamic>))
               .toList()
           : [],
     );
@@ -118,77 +122,6 @@ class Data {
       'printer_type': printerType,
       'communication_type': communicationType,
       'categories': categories?.map((e) => e.toJson()).toList(),
-    };
-  }
-}
-
-class Categories {
-  int? id;
-  String? name;
-  String? description;
-  String? imagePath;
-  String? createdAt;
-  String? updatedAt;
-  String? imageUrl;
-  Pivot? pivot;
-
-  Categories({
-    this.id,
-    this.name,
-    this.description,
-    this.imagePath,
-    this.createdAt,
-    this.updatedAt,
-    this.imageUrl,
-    this.pivot,
-  });
-
-  factory Categories.fromJson(Map<String, dynamic> json) {
-    return Categories(
-      id: json['id'] as int?,
-      name: json['name'] as String?,
-      description: json['description'] as String?,
-      imagePath: json['image_path'] as String?,
-      createdAt: json['created_at'] as String?,
-      updatedAt: json['updated_at'] as String?,
-      imageUrl: json['image_url'] as String?,
-      pivot: json['pivot'] != null
-          ? Pivot.fromJson(json['pivot'] as Map<String, dynamic>)
-          : null,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'image_path': imagePath,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-      'image_url': imageUrl,
-      'pivot': pivot?.toJson(),
-    };
-  }
-}
-
-class Pivot {
-  int? printerId;
-  int? categoryId;
-
-  Pivot({this.printerId, this.categoryId});
-
-  factory Pivot.fromJson(Map<String, dynamic> json) {
-    return Pivot(
-      printerId: json['printer_id'] as int?,
-      categoryId: json['category_id'] as int?,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'printer_id': printerId,
-      'category_id': categoryId,
     };
   }
 }

@@ -17,29 +17,41 @@ class PrinterRepo {
   }) async {
     try {
       String? url;
+
       if (printersModel == null || isFresh) {
         url = await ApiEndPoints.getPrinters();
+        printersModel = null;
       } else {
         if (printersModel!.nextPageUrl == null) {
           return const Right([]);
         }
+        url = printersModel!.nextPageUrl!;
       }
-      var response = await api.get(
-        url: url ?? printersModel!.nextPageUrl!,
+
+      final response = await api.get(
+        url: url,
         data: {
           ApiKeys.search: query,
         },
       );
 
       if (response.status) {
-        printersModel = PrintersModel.fromJson(response.data);
-        return Right(printersModel!.data ?? []);
+        final newModel = PrintersModel.fromJson(response.data);
+
+        if (printersModel == null || isFresh) {
+          printersModel = newModel;
+          return Right(printersModel!.data ?? []);
+        } else {
+          printersModel!.data!.addAll(newModel.data ?? []);
+          printersModel!.nextPageUrl = newModel.nextPageUrl;
+          return Right(printersModel!.data ?? []);
+        }
       } else {
         debugPrint('API Error: ${response.message}');
         return Left(response);
       }
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint(' Exception in getPrinters: $e');
       return Left(ApiResponse.unKnownError());
     }
   }
@@ -50,10 +62,7 @@ class PrinterRepo {
     try {
       final url = await ApiEndPoints.getPrinters();
       Map<String, dynamic> printerData = printer.toJson();
-      if (printer.printer?.categories is List<int>) {
-        printerData['categories'] =
-            printer.printer?.categories; // array of ints
-      }
+      printerData['categories'] = printer.printer?.categories ?? [];
       debugPrint('Request Data: $printerData');
 
       final response = await api.post(url: url, data: printerData);
@@ -84,18 +93,18 @@ class PrinterRepo {
     try {
       String url = await ApiEndPoints.getPrinters();
       Map<String, dynamic> data = {
-      "printer_name": printerName,
-      "categories": categoryIds.map((id) => {"category_id": id}).toList(),
-    };
+        "printer_name": printerName,
+        "categories": categoryIds.map((id) => {"category_id": id}).toList(),
+      };
 
-    debugPrint(" Sending to: $url/$id");
-    debugPrint(" Body: $data");
+      debugPrint(" Sending to: $url/$id");
+      debugPrint(" Body: $data");
 
-    var response = await api.post(
-      url: "$url/$id",
-      data: data,
-      isFormData: true, 
-    );
+      var response = await api.post(
+        url: "$url/$id",
+        data: data,
+        isFormData: true,
+      );
       if (response.status) {
         final printerModel = UpdatePrinters.fromJson(response.data);
 

@@ -18,10 +18,18 @@ class EditPrinterCubit extends Cubit<EditPrinterState> {
   List<int> selectedCategoryIds = [];
   dynamic printerData;
 
-  void initPrinter(Data printer) {
+ void initPrinter(Data printer) {
   printerData = printer;
   printerNameController.text = printer.printerName ?? '';
-
+  if (printer.categories != null && printer.categories!.isNotEmpty) {
+    selectedCategoryIds = printer.categories!
+        .map((cat) => cat.id ?? cat.id ?? 0)
+        .where((id) => id != 0)
+        .toList();
+  } else {
+    selectedCategoryIds = [];
+  }
+  emit(EditPrinterSuccess());
 }
 
 

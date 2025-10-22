@@ -30,75 +30,101 @@ class EditPrinterView extends StatelessWidget {
             create: (_) =>
                 MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
         BlocProvider(
-          create: (_) => EditPrinterCubit(MyServiceLocator.getSingleton())..initPrinter(printer),
+          create: (context) {
+            final editCubit = EditPrinterCubit(MyServiceLocator.getSingleton());
+            editCubit.initPrinter(printer);
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final categoriesCubit = GetCategoryCubit.get(context);
+              final detailsCubit = PrinterDetailsCubit.get(context);
+              detailsCubit.initWithSelectedCategories(
+                categoriesCubit.categories,
+                editCubit.selectedCategoryIds,
+              );
+            });
+
+            return editCubit;
+          },
         ),
       ],
-      child: BlocBuilder<PrinterDetailsCubit, PrinterDetailsState>(
-        builder: (context, state) {
-          final cubit = PrinterDetailsCubit.get(context);
-          final categoriesCubit = GetCategoryCubit.get(context);
-          final editCubit = EditPrinterCubit.get(context);
+      child: BlocBuilder<GetCategoryCubit, GetCategoryState>(
+  builder: (context, catState) {
+    final categoriesCubit = GetCategoryCubit.get(context);
+    final editCubit = EditPrinterCubit.get(context);
+    final detailsCubit = PrinterDetailsCubit.get(context);
+    if (categoriesCubit.categories.isNotEmpty &&
+        editCubit.selectedCategoryIds.isNotEmpty &&
+        detailsCubit.categoryRows.isEmpty) {
+      detailsCubit.initWithSelectedCategories(
+        categoriesCubit.categories,
+        editCubit.selectedCategoryIds,
+      );
+    }
 
-          return Scaffold(
-            appBar: CustomAppBar(title: S.of(context).editPrinter),
-            body: Padding(
-              padding: AppPaddings.defaultView,
-              child: Form(
-                key: editCubit.formKey,
-                autovalidateMode: editCubit.autovalidateMode,
-                child: ListView(
-                  children: [
-                    _EditPrinterHeader(printer: printer),
-                    const SizedBox(height: 20),
-                    _PrinterOptions(cubit: cubit),
-                    if (cubit.printCategories)
-                      _CategorySection(
-                        cubit: cubit,
-                        categories: categoriesCubit.categories,
-                      ),
-                    const SizedBox(height: 20),
-                    BlocConsumer<EditPrinterCubit, EditPrinterState>(
-                      listener: (context, state) {
-                        if (state is EditPrinterSuccess) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("printer updated successfully "),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                          Navigator.pop(context, true);
-                        } else if (state is EditPrinterError) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(state.message),
-                              backgroundColor: Colors.red,
-                            ),
-                          );
-                        }
-                      },
-                      builder: (context, state) {
-                        return CustomFilledBtn(
-                          text: S.of(context).saveChanges,
-                          onPressed: () async {
-                            final selectedIds = PrinterDetailsCubit.get(context)
-                                .getSelectedCategoryIds();
-                            editCubit.onChangeCategories(selectedIds);
-                            await editCubit.updatePrinter(context);
-                          },
-                        );
-                      },
+    return BlocBuilder<PrinterDetailsCubit, PrinterDetailsState>(
+      builder: (context, state) {
+        final cubit = PrinterDetailsCubit.get(context);
+
+        return Scaffold(
+          appBar: CustomAppBar(title: S.of(context).editPrinter),
+          body: Padding(
+            padding: AppPaddings.defaultView,
+            child: Form(
+              key: editCubit.formKey,
+              autovalidateMode: editCubit.autovalidateMode,
+              child: ListView(
+                children: [
+                  _EditPrinterHeader(printer: printer),
+                  const SizedBox(height: 20),
+                  _PrinterOptions(cubit: cubit),
+                  if (cubit.printCategories)
+                    _CategorySection(
+                      cubit: cubit,
+                      categories: categoriesCubit.categories,
                     ),
-                  ],
-                ),
+                  const SizedBox(height: 20),
+                  BlocConsumer<EditPrinterCubit, EditPrinterState>(
+                    listener: (context, state) {
+                      if (state is EditPrinterSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Printer updated successfully"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                        Navigator.pop(context, true);
+                      } else if (state is EditPrinterError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(state.message),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    builder: (context, state) {
+                      return CustomFilledBtn(
+                        text: S.of(context).saveChanges,
+                        onPressed: () async {
+                          final selectedIds =
+                              detailsCubit.getSelectedCategoryIds();
+                          editCubit.onChangeCategories(selectedIds);
+                          await editCubit.updatePrinter(context);
+                        },
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
+    );
+  },
+),
     );
   }
-}
-
+} 
 class _EditPrinterHeader extends StatelessWidget {
   final dynamic printer;
 

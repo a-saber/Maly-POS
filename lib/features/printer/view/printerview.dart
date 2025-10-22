@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/constant/constant.dart';
@@ -9,7 +8,6 @@ import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_floating_action_btn.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
-import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_cubit.dart';
 import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_state.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
@@ -20,10 +18,8 @@ class PrintersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          ScanPrintersCubit(MyServiceLocator.getSingleton<PrinterRepo>())
-            ..fetchPrintersFromApi(),
+    return BlocProvider.value(
+      value: MyServiceLocator.getSingleton<ScanPrintersCubit>()..init(),
       child: const _PrintersViewBody(),
     );
   }
@@ -90,6 +86,7 @@ class _PrintersViewBody extends StatelessWidget {
                 }
 
                 return CustomGridViewCard(
+                  controller: cubit.scrollController,
                   heightOfCard: MediaQuery.of(context).textScaler.scale(110),
                   itemBuilder: (context, index) {
                     final printer = printers[index];
