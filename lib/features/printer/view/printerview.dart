@@ -13,6 +13,8 @@ import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_state
 import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../../../core/api/api_response.dart';
+
 class PrintersView extends StatelessWidget {
   const PrintersView({super.key});
 
@@ -34,11 +36,15 @@ class _PrintersViewBody extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomAppBar(title: S.of(context).printer),
-      floatingActionButton: CustomFloatingActionBtn(
-        onPressed: () {
-          Navigator.pushNamed(context, AppRoutes.addPrinter);
-        },
-      ),
+      floatingActionButton:CustomFloatingActionBtn(
+  onPressed: () async {
+    final result = await Navigator.pushNamed(context, AppRoutes.addPrinter);
+    if (result == true) {
+      cubit.fetchPrintersFromApi(isFresh: true);
+    }
+  },
+),
+
       body: CustomRefreshIndicator(
         onRefresh: () async {
           await cubit.fetchPrintersFromApi();
@@ -61,7 +67,7 @@ class _PrintersViewBody extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Error: ${state.error}'),
+                      Text('Error: ${state.errMessage!= null? mapStatusCodeToMessage(context, state.errMessage!): state.message??'error'}'),
                       const SizedBox(height: 12),
                       ElevatedButton(
                         onPressed: () => cubit.fetchPrintersFromApi(),
@@ -73,7 +79,7 @@ class _PrintersViewBody extends StatelessWidget {
               }
 
               if (state is ScanPrintersSuccess) {
-                final printers = state.printers;
+                final printers = state.discoveredPrinters;
                 print(printers);
 
                 if (printers.isEmpty) {

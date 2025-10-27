@@ -212,9 +212,9 @@ class MyServiceLocator {
     registerSingleton<ScanPrintersCubit>(ScanPrintersCubit(
       getIt(),
     ));
-    registerSingleton<AddPrinterCubit>(AddPrinterCubit(
-      getIt(),
-    ));
+    // registerSingleton<AddPrinterCubit>(AddPrinterCubit(
+    //   getIt(),
+    // ));
     registerSingleton<ShiftCubit>(ShiftCubit(
       getIt(),
     ));

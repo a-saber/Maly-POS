@@ -20,10 +20,9 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
   final ScrollController scrollController = ScrollController();
   bool _scanning = false;
   bool get isScanning => _scanning;
-  List<dynamic> get printers => List.unmodifiable(_printers);
+  List<DiscoveredPrinter> get printers => List.unmodifiable(_printers);
   bool canLoading() {
-    return _repo.printersModel?.nextPageUrl != null &&
-        _repo.printersModel!.nextPageUrl!.isNotEmpty;
+    return _repo.printersModel?.nextPageUrl != null;
   }
 
   bool isFirtsTime() => _repo.printersModel == null;
@@ -70,7 +69,7 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
 
   Future<void> startLocalScan({bool force = false}) async {
     if (!force && _printers.isNotEmpty) {
-      emit(ScanPrintersSuccess(printers: printers));
+      emit(ScanPrintersSuccess(discoveredPrinters: printers));
       return;
     }
 
@@ -88,7 +87,7 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
 
       _syncFromHelper(); // sync immediately
     } catch (e) {
-      emit(ScanPrintersFailing(error: e));
+      emit(ScanPrintersFailing(message: 'Failed to start scan'));
     } finally {
       _scanning = false;
     }
@@ -106,7 +105,7 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
       final result = await _repo.getPrinters(isFresh: isFresh);
 
       result.fold(
-        (failure) => emit(ScanPrintersFailing(error: failure)),
+        (failure) => emit(ScanPrintersFailing(errMessage: failure)),
         (apiPrinters) {
           if (apiPrinters.isEmpty) return;
           final existingIds = _printers.map((p) => p.id).toSet();
@@ -115,12 +114,12 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
 
           _printers.addAll(uniqueNewPrinters);
 
-          emit(ScanPrintersSuccess(printers: List.from(_printers)));
+          emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
           ifNotFillScreen();
         },
       );
     } catch (e) {
-      emit(ScanPrintersFailing(error: e));
+      emit(ScanPrintersFailing(message: 'Failed to fetch printers'));
     }
   }
 
@@ -129,7 +128,7 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
       ..clear()
       ..addAll(_helper.discoveredDevices.values.toList());
 
-    emit(ScanPrintersSuccess(printers: List.from(_printers)));
+    emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
   }
 
   /// Stop scanning
@@ -142,7 +141,7 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
     _scanning = false;
 
     if (clear) _printers.clear();
-    emit(ScanPrintersSuccess(printers: List.from(_printers)));
+    emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
   }
 
   /// Refresh scan
@@ -168,6 +167,6 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
   }
   void removePrinter(int id) {
     _printers.removeWhere((element) => element.id == id);
-    emit(ScanPrintersSuccess(printers: List.from(_printers)));
+    emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
   }
 }

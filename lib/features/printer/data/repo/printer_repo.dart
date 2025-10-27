@@ -3,15 +3,17 @@ import 'package:flutter/foundation.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
-import 'package:pos_app/features/printer/data/model/post_printers_model.dart';
 import 'package:pos_app/features/printer/data/model/printers_search_model.dart';
 import 'package:pos_app/features/printer/data/model/update_printers_model.dart';
 
+import '../../manager/printer_data_cubit/printer_data_cubit.dart';
+import '../model/printer_model.dart';
+
 class PrinterRepo {
-  PrintersModel? printersModel;
+  GetPrintersReponseModel? printersModel;
   final ApiHelper api;
   PrinterRepo({required this.api});
-  Future<Either<ApiResponse, List<Data>>> getPrinters({
+  Future<Either<ApiResponse, List<PrinterModel>>> getPrinters({
     bool isFresh = false,
     String? query,
   }) async {
@@ -25,7 +27,6 @@ class PrinterRepo {
         if (printersModel!.nextPageUrl == null) {
           return const Right([]);
         }
-        url = printersModel!.nextPageUrl!;
       }
 
       final response = await api.get(
@@ -36,7 +37,7 @@ class PrinterRepo {
       );
 
       if (response.status) {
-        final newModel = PrintersModel.fromJson(response.data);
+        final newModel = GetPrintersReponseModel.fromJson(response.data);
 
         if (printersModel == null || isFresh) {
           printersModel = newModel;
@@ -56,25 +57,19 @@ class PrinterRepo {
     }
   }
 
-  Future<Either<ApiResponse, AddPrinters>> addPrinter({
-    required AddPrinters printer,
+  Future<Either<ApiResponse, Unit>> addPrinter({
+    required PrinterModel printer,
+    required List<CategoryRowsModel> categoryRows,
   }) async {
     try {
+      // printer.printer.
       final url = await ApiEndPoints.getPrinters();
-      Map<String, dynamic> printerData = printer.toJson();
-      printerData['categories'] = printer.printer?.categories ?? [];
-      debugPrint('Request Data: $printerData');
 
+      Map<String, dynamic> printerData = printer.toJson(categoryRows);
       final response = await api.post(url: url, data: printerData);
       debugPrint('Response Data: ${response.data}');
-
       if (response.status) {
-        final addedPrinter = AddPrinters.fromJson(response.data);
-        if (addedPrinter.printer != null) {
-          return Right(addedPrinter);
-        } else {
-          return Left(response);
-        }
+        return Right(unit);
       } else {
         debugPrint('API Error: ${response.message}');
         return Left(response);
@@ -85,38 +80,55 @@ class PrinterRepo {
     }
   }
 
-  Future<Either<ApiResponse, UpdatePrinters>> updatePrinter({
+  Future<Either<ApiResponse, UpdatePrinterResponseModel>> updatePrinter({
     required int id,
-    required String printerName,
-    required List<int> categoryIds,
+    required PrinterModel printer,
   }) async {
     try {
-      String url = await ApiEndPoints.getPrinters();
-      Map<String, dynamic> data = {
-        "printer_name": printerName,
-        "categories": categoryIds.map((id) => {"category_id": id}).toList(),
+      final String url = await ApiEndPoints.getPrinters();
+
+      final Map<String, dynamic> data = {
+        "printer_name": printer.printerName?.trim(),
+        "printer_type": printer.printerType?.trim(),
+        "communication_type": printer.communicationType?.toLowerCase().trim(),
+        "print_receipt_count": printer.printReceiptCount ?? "1",
+        "categories":
+            (printer.categories != null && printer.categories!.isNotEmpty)
+                ? printer.categories!.map((c) {
+                    return {
+                      "id": c.id,
+                      "pivot": {
+                        "category_id": c.id,
+                        "print_receipt_count": c.pivot?.printReceiptCount ?? 1,
+                      }
+                    };
+                  }).toList()
+                : [],
       };
 
       debugPrint(" Sending to: $url/$id");
       debugPrint(" Body: $data");
-
-      var response = await api.post(
+      final response = await api.post(
         url: "$url/$id",
         data: data,
         isFormData: true,
       );
-      if (response.status) {
-        final printerModel = UpdatePrinters.fromJson(response.data);
 
+      if (response.status) {
+        final printerModel = UpdatePrinterResponseModel.fromJson(response.data);
+        debugPrint(
+            " Printer updated successfully:");
         return Right(printerModel);
       } else {
+        debugPrint(" API Error: ${response.message}");
         return Left(response);
       }
     } catch (e) {
-      debugPrint(" Update Printer Error: $e");
+      debugPrint(" Exception in updatePrinter: $e");
       return Left(ApiResponse.unKnownError());
     }
   }
+
   Future<Either<ApiResponse, int>> deletePrinter({
     required int id,
   }) async {

@@ -9,7 +9,7 @@ class AddPrinterInitial extends AddPrinterState {}
 class AddPrinterLoading extends AddPrinterState {}
 
 class AddPrinterSuccess extends AddPrinterState {
-  final AddPrinters addPrinter;
+  final AddPrinterResponseModel addPrinter;
   AddPrinterSuccess({required this.addPrinter});
 }
 

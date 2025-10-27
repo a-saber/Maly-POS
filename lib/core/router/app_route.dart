@@ -563,18 +563,18 @@ class AppRoutes {
           return customGetPageRouteBuilder(
             page: const AddPrinterView(),
           );
-        case printerDetails:
-          return customGetPageRouteBuilder(
-            page: PrinterDetailsView(
-              printer: settings.arguments as DiscoveredPrinter,
-            ),
-          );
-        case printerEdit:
-          return customGetPageRouteBuilder(
-            page: EditPrinterView(
-              printer: settings.arguments,
-            ),
-          );
+        // case printerDetails:
+        //   return customGetPageRouteBuilder(
+        //     page: PrinterDetailsView(
+        //       discoveredPrinter: settings.arguments as DiscoveredPrinter,
+        //     ),
+        //   );
+        // case printerEdit:
+        //   return customGetPageRouteBuilder(
+        //     page: EditPrinterView(
+        //       printer: settings.arguments,
+        //     ),
+        //   );
         case shiftsView:
           return customGetPageRouteBuilder(
             page: const ShiftsView(),

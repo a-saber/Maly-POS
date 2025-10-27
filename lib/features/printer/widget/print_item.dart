@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pos_app/features/printer/data/model/printers_search_model.dart';
+import 'package:pos_app/features/printer/data/model/printer_model.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
 
 class PrinterItem extends StatelessWidget {
@@ -12,8 +12,8 @@ class PrinterItem extends StatelessWidget {
     String title = '';
     String subtitle = '';
     String? type;
-    if (printer is Data) {
-      final apiPrinter = printer as Data;
+    if (printer is PrinterModel) {
+      final apiPrinter = printer as PrinterModel;
       title = apiPrinter.printerName ?? 'Unnamed Printer';
       type = apiPrinter.printerType;
       subtitle = 'Type: ${apiPrinter.printerType ?? 'Unknown'}';

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/widget/show_delete_confirm_dialog.dart';
-import 'package:pos_app/features/printer/data/model/printers_search_model.dart';
+import 'package:pos_app/features/printer/data/model/printer_model.dart';
 import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/delete_printer/delete_printer_cubit.dart';
 import 'package:pos_app/features/printer/manager/delete_printer/delete_printer_state.dart';
@@ -12,7 +12,7 @@ import 'package:pos_app/generated/l10n.dart';
 
 Future<bool?> showDeletePrinterConfirmDialog({
   required BuildContext context,
-  required Data printer,
+  required PrinterModel printer,
   bool goBack = false,
 }) async {
   return await showDeleteConfirmationDialog(

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_helper.dart';
+import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
@@ -9,11 +10,12 @@ import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
 import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
-import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_cubit.dart';
-import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_state.dart';
+import 'package:pos_app/features/printer/manager/scan_local_printers_cubit/scan_local_printers_state.dart';
 import 'package:pos_app/features/printer/view/printer_detailes.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
+
+import '../manager/scan_local_printers_cubit/scan_local_printers_cubit.dart';
 
 class AddPrinterView extends StatelessWidget {
   const AddPrinterView({super.key});
@@ -22,7 +24,7 @@ class AddPrinterView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          ScanPrintersCubit(MyServiceLocator.getSingleton<PrinterRepo>())..startLocalScan(),
+          ScanLocalPrintersCubit()..getDiscoveredPrinters(),
       child: const _AddPrinterViewBody(),
     );
   }
@@ -33,7 +35,7 @@ class _AddPrinterViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = ScanPrintersCubit.get(context);
+    final cubit = ScanLocalPrintersCubit.get(context);
 
     return Scaffold(
       appBar: CustomAppBar(title: S.of(context).addPrinter),
@@ -43,10 +45,10 @@ class _AddPrinterViewBody extends StatelessWidget {
           children: [
             Expanded(
               child: CustomRefreshIndicator(
-                onRefresh: () async => cubit.refreshLocalScan(),
-                child: BlocBuilder<ScanPrintersCubit, ScanPrintersState>(
+                onRefresh: () async => cubit.getDiscoveredPrinters(),
+                child: BlocBuilder<ScanLocalPrintersCubit, ScanLocalPrintersState>(
                   builder: (context, state) {
-                    if (state is ScanPrintersLoading) {
+                    if (state is ScanLocalPrintersLoading) {
                       return CustomGridViewCard(
                         heightOfCard: 140,
                         itemBuilder: (context, index) => const Center(
@@ -56,15 +58,15 @@ class _AddPrinterViewBody extends StatelessWidget {
                       );
                     }
 
-                    if (state is ScanPrintersFailing) {
+                    if (state is ScanLocalPrintersFailure) {
                       return Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text('Error: ${state.error}'),
+                            Text('Error: ${state.message}'),
                             const SizedBox(height: 12),
                             ElevatedButton(
-                              onPressed: () => cubit.startLocalScan(),
+                              onPressed: () => cubit.getDiscoveredPrinters(),
                               child: const Text('Retry'),
                             ),
                           ],
@@ -72,8 +74,8 @@ class _AddPrinterViewBody extends StatelessWidget {
                       );
                     }
 
-                    if (state is ScanPrintersSuccess) {
-                      final printers = state.printers;
+                    if (state is ScanLocalPrintersSuccess) {
+                      final printers = state.discoveredPrinters;
                       if (printers.isEmpty) {
                         return const Center(
                             child: Text('No local printers found.'));
@@ -86,13 +88,13 @@ class _AddPrinterViewBody extends StatelessWidget {
                           return PrinterItem(
                             printer: printer,
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      PrinterDetailsView(printer: printer),
-                                ),
-                              );
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (_) =>
+                              //         PrinterDetailsView(discoveredPrinter: printer),
+                              //   ),
+                              // );
                             },
                           );
                         },
