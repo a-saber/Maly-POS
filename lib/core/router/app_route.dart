@@ -39,10 +39,11 @@ import 'package:pos_app/features/permissions/manager/get_permission/get_permissi
 import 'package:pos_app/features/permissions/view/add_permission_view.dart';
 import 'package:pos_app/features/permissions/view/edit_permission_view.dart';
 import 'package:pos_app/features/permissions/view/permissions_view.dart';
-import 'package:pos_app/features/printer/view/add_printer_view.dart';
+import 'package:pos_app/features/printer/data/model/printer_model.dart';
+import 'package:pos_app/features/printer/view/scan_printers_view.dart';
 import 'package:pos_app/features/printer/view/edit_printers.dart';
-import 'package:pos_app/features/printer/view/printer_detailes.dart';
-import 'package:pos_app/features/printer/view/printerview.dart';
+import 'package:pos_app/features/printer/view/add_printer_view.dart';
+import 'package:pos_app/features/printer/view/get_printers_view.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
 import 'package:pos_app/features/products/view/add_product_view.dart';
@@ -550,7 +551,7 @@ class AppRoutes {
           );
         case printersView:
           return customGetPageRouteBuilder(
-            page: const PrintersView(),
+            page: const GetPrintersView(),
           );
         // TODO: add printer view
         // case printersView:
@@ -561,7 +562,7 @@ class AppRoutes {
         // );
         case addPrinter:
           return customGetPageRouteBuilder(
-            page: const AddPrinterView(),
+            page: const ScanPrintersView(),
           );
         // case printerDetails:
         //   return customGetPageRouteBuilder(
@@ -569,12 +570,12 @@ class AppRoutes {
         //       discoveredPrinter: settings.arguments as DiscoveredPrinter,
         //     ),
         //   );
-        // case printerEdit:
-        //   return customGetPageRouteBuilder(
-        //     page: EditPrinterView(
-        //       printer: settings.arguments,
-        //     ),
-        //   );
+        case printerEdit:
+          return customGetPageRouteBuilder(
+            page: EditPrinterView(
+              printerModel: settings.arguments as PrinterModel,
+            ),
+          );
         case shiftsView:
           return customGetPageRouteBuilder(
             page: const ShiftsView(),

@@ -15,7 +15,7 @@ class PrinterModel {
   String? port;
   String? ipAccress;
   bool? automatic;
-  String? printReceiptCount;
+  int? printReceiptCount;
   String? updatedAt;
   String? createdAt;
   int? id;
@@ -82,7 +82,7 @@ class PrinterModel {
     isble = json['isble'];
     port = json['port'];
     ipAccress = json['ip_accress'];
-    automatic = json['automatic']=='1'?true:false;
+    automatic = json['automatic']==1?true:false;
     printReceiptCount = json['print_receipt_count'];
     updatedAt = json['updated_at'];
     createdAt = json['created_at'];
@@ -96,25 +96,25 @@ class PrinterModel {
   }
 
   Map<String, dynamic> toJson(List<CategoryRowsModel> categoryRows) {
-    Map<String, dynamic> discoverdPrinerData ={};
+    Map<String, dynamic> discoveredPrinterData ={};
     if(discoveredPrinter != null){
       switch (discoveredPrinter!.type) {
         case PrinterType.usb:
-          discoverdPrinerData = {
+          discoveredPrinterData = {
             'printer_type': discoveredPrinter?.device.name.trim(),
             'vendor': discoveredPrinter?.device.vendorId?.trim(),
             'product': discoveredPrinter?.device.productId?.trim(),
             'communication_type': 'usb',
           };
         case PrinterType.bluetooth:
-          discoverdPrinerData = {
+          discoveredPrinterData = {
             'printer_type': discoveredPrinter?.device.name.trim(),
             'address': discoveredPrinter?.device.address?.trim(),
             'isble': discoveredPrinter?.isBle==true ? '1' : '0',
             'communication_type': 'bluetooth',
           };
         case PrinterType.network:
-          discoverdPrinerData = {
+          discoveredPrinterData = {
             'ip_accress': discoveredPrinter?.device.address?.trim(),
             'communication_type': 'wifi',
           };
@@ -129,8 +129,8 @@ class PrinterModel {
     final Map<String, dynamic> data = {
       'printer_name': printerName?.trim(),
       'automatic': automatic == true ? '1' : '0',
-      'print_receipt_count': '2',
-      ...discoverdPrinerData,
+      'print_receipt_count': printReceiptCount??0,
+      ...discoveredPrinterData,
       ...categoryRowsData
     };
     return data;

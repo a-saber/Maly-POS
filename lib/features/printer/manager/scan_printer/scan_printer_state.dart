@@ -1,19 +1,19 @@
 import 'package:pos_app/core/api/api_response.dart';
-import 'package:pos_app/core/helper/printer_helper.dart';
+import 'package:pos_app/features/printer/data/model/printer_model.dart';
 
-abstract class ScanPrintersState {}
+abstract class GetPrintersState {}
 
-class ScanPrintersInitial extends ScanPrintersState {}
+class ScanPrintersInitial extends GetPrintersState {}
 
-class ScanPrintersLoading extends ScanPrintersState {}
+class ScanPrintersLoading extends GetPrintersState {}
 
-class ScanPrintersSuccess extends ScanPrintersState {
-  final List<DiscoveredPrinter> discoveredPrinters;
+class ScanPrintersSuccess extends GetPrintersState {
+  final List<PrinterModel> printers;
 
-  ScanPrintersSuccess({required this.discoveredPrinters});
+  ScanPrintersSuccess({required this.printers});
 }
 
-class ScanPrintersFailing extends ScanPrintersState {
+class ScanPrintersFailing extends GetPrintersState {
   final ApiResponse? errMessage;
   final String? message;
 

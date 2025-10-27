@@ -26,7 +26,7 @@ Future<bool?> showDeletePrinterConfirmDialog({
         listener: (context, state) {
           if (state is DeletePrinterSuccess) {
             deleteConfirmationDialogSuccess(ctx);
-            MyServiceLocator.getSingleton<ScanPrintersCubit>()
+            MyServiceLocator.getSingleton<GetPrintersCubit>()
                 .removePrinter(state.id);
             if (goBack) {
               Navigator.pop(context);

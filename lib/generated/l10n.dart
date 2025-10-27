@@ -84,6 +84,15 @@ class S {
       args: [],
     );
   }
+  /// testPrint
+  String get testPrint {
+    return Intl.message(
+      'Test Print',
+      name: 'testPrint',
+      desc: '',
+      args: [],
+    );
+  }
 
   /// `Enter a valid phone number`
   String get enteravalidphonenumber {

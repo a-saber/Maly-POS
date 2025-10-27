@@ -422,5 +422,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "saveChanges": MessageLookupByLibrary.simpleMessage("Save Changes"),
     "editPrinter": MessageLookupByLibrary.simpleMessage("Edit Printer"),
     "shifts": MessageLookupByLibrary.simpleMessage("Shifts"),
+    "testPrint": MessageLookupByLibrary.simpleMessage("Test Print"),
   };
 }

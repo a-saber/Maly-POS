@@ -3,32 +3,31 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/constant/constant.dart';
-import 'package:pos_app/core/helper/printer_helper.dart';
+import 'package:pos_app/features/printer/data/model/printer_model.dart';
 import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
-import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_state.dart';
 
-class ScanPrintersCubit extends Cubit<ScanPrintersState> {
-  ScanPrintersCubit(this._repo) : super(ScanPrintersInitial());
+import 'scan_printer_state.dart';
 
-  static ScanPrintersCubit get(context) =>
-      BlocProvider.of<ScanPrintersCubit>(context);
+class GetPrintersCubit extends Cubit<GetPrintersState> {
+  GetPrintersCubit(this._repo) : super(ScanPrintersInitial());
 
-  final PrinterHelper _helper = PrinterHelper();
+  static GetPrintersCubit get(context) =>
+      BlocProvider.of<GetPrintersCubit>(context);
+
   final PrinterRepo _repo;
-  final List<dynamic> _printers = [];
-  Timer? _debounceTimer;
+  final List<PrinterModel> _printers = [];
   final ScrollController scrollController = ScrollController();
   bool _scanning = false;
   bool get isScanning => _scanning;
-  List<DiscoveredPrinter> get printers => List.unmodifiable(_printers);
+  List<PrinterModel> get printers => List.unmodifiable(_printers);
   bool canLoading() {
     return _repo.printersModel?.nextPageUrl != null;
   }
 
-  bool isFirtsTime() => _repo.printersModel == null;
+  bool isFirstTime() => _repo.printersModel == null;
 
   void init() {
-    if (isFirtsTime()) {
+    if (isFirstTime()) {
       fetchPrintersFromApi();
     }
 
@@ -67,31 +66,6 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
     });
   }
 
-  Future<void> startLocalScan({bool force = false}) async {
-    if (!force && _printers.isNotEmpty) {
-      emit(ScanPrintersSuccess(discoveredPrinters: printers));
-      return;
-    }
-
-    emit(ScanPrintersLoading());
-    _scanning = true;
-    _printers.clear();
-
-    try {
-      await _helper.startScan(onUpdate: () {
-        _debounceTimer?.cancel();
-        _debounceTimer = Timer(const Duration(milliseconds: 250), () {
-          _syncFromHelper();
-        });
-      });
-
-      _syncFromHelper(); // sync immediately
-    } catch (e) {
-      emit(ScanPrintersFailing(message: 'Failed to start scan'));
-    } finally {
-      _scanning = false;
-    }
-  }
 
   /// Fetch printers from API
   Future<void> fetchPrintersFromApi({bool isFresh = false}) async {
@@ -114,7 +88,7 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
 
           _printers.addAll(uniqueNewPrinters);
 
-          emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
+          emit(ScanPrintersSuccess(printers: List.from(_printers)));
           ifNotFillScreen();
         },
       );
@@ -123,50 +97,8 @@ class ScanPrintersCubit extends Cubit<ScanPrintersState> {
     }
   }
 
-  void _syncFromHelper() {
-    _printers
-      ..clear()
-      ..addAll(_helper.discoveredDevices.values.toList());
-
-    emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
-  }
-
-  /// Stop scanning
-  Future<void> stopScan({bool clear = false}) async {
-    try {
-      await _helper.stopScan();
-    } catch (_) {}
-
-    _debounceTimer?.cancel();
-    _scanning = false;
-
-    if (clear) _printers.clear();
-    emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
-  }
-
-  /// Refresh scan
-  Future<void> refreshLocalScan() async {
-    await stopScan(clear: true);
-    await startLocalScan(force: true);
-  }
-
-  /// Print a test page
-  Future<void> printTest(dynamic printer) async {
-    try {
-      await _helper.printTest(printer);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> close() {
-    _debounceTimer?.cancel();
-    _helper.stopScan();
-    return super.close();
-  }
   void removePrinter(int id) {
     _printers.removeWhere((element) => element.id == id);
-    emit(ScanPrintersSuccess(discoveredPrinters: List.from(_printers)));
+    emit(ScanPrintersSuccess(printers: List.from(_printers)));
   }
 }

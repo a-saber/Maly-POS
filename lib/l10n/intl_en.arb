@@ -272,5 +272,6 @@
   "printername":"Printer Name",
   "ip printer":"Ip Printer",
   "editprinter":"Edit Printer",
-  "shifts":"Shifts"
+  "shifts":"Shifts",
+  "testPrint": "Test Print"
 }

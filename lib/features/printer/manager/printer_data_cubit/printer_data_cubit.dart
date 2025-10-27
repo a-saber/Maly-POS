@@ -13,10 +13,26 @@ class CategoryRowsModel {
   CategoryRowsModel({this.category, required this.copiesCount});
 }
 class PrinterDataCubit extends Cubit<PrinterDataState>{
-  PrinterDataCubit(this._repo, {required this.printer}) : super(PrinterDataInitialState());
+  PrinterDataCubit(this._repo, { this.discoveredPrinter, this.printerModel}) : super(PrinterDataInitialState())
+  {
+    if(printerModel != null) {
+      automatic = printerModel!.automatic??false;
+      receiptCopies.text = printerModel!.printReceiptCount != null? printerModel!.printReceiptCount.toString() : '0';
+      printerName.text = printerModel!.printerName??'';
+      printCategories = printerModel!.categories?.isNotEmpty == true? true : false;
+      if(printCategories)
+      {
+        categoryRows = printerModel!.categories!.map((e) => CategoryRowsModel(category: e, copiesCount: TextEditingController(
+          text: e.pivot?.printReceiptCount != null? e.pivot!.printReceiptCount.toString() : '0'
+        ))).toList();
+      }
+
+    }
+  }
   static PrinterDataCubit get(context) => BlocProvider.of(context);
   final PrinterRepo _repo;
-  final DiscoveredPrinter printer;
+  final DiscoveredPrinter? discoveredPrinter;
+  final PrinterModel? printerModel;
 
 
   bool automatic = false;
@@ -45,6 +61,10 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
     emit(PrinterDataToggleSwitchState());
   }
   List<CategoryRowsModel> categoryRows = [];
+  void addCategoryRow() {
+    categoryRows.add(CategoryRowsModel(copiesCount: TextEditingController()));
+    emit(PrinterDataCategoryChanged());
+  }
   void assignCategories({required CategoryModel model, required int index}) {
     categoryRows[index].category = CategoryModel.copyWith(model); // call by vlaue
     emit(PrinterDataCategoryChanged());
@@ -58,19 +78,32 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
   }
 
 
-void savePrinter()async{
-  if(!formKey.currentState!.validate())return;
-  emit(PrinterDataLoadingState());
-  var result = await _repo.addPrinter(
-    printer: PrinterModel(
-      discoveredPrinter: printer,
+  void addPrinter()async{
+    if(!formKey.currentState!.validate())return;
+    emit(PrinterDataLoadingState());
+    var result = await _repo.addPrinter( printer:PrinterModel(
+      discoveredPrinter: discoveredPrinter,
       automatic: automatic,
-      printReceiptCount: printReceipt ? receiptCopies.text : null,
+      printReceiptCount: int.tryParse(receiptCopies.text),
       printerName: printerName.text,
     ), categoryRows: categoryRows);
 
-  result.fold((l) => emit(PrinterDataErrorState(errMessage: l)), (r) => emit(PrinterDataSuccessState()));
-}
+    result.fold((l) => emit(PrinterDataErrorState(errMessage: l)), (r) => emit(PrinterDataSuccessState()));
+  }
+  void editPrinter()async{
+    if(printerModel != null) {
+      if (!formKey.currentState!.validate()) return;
+      emit(PrinterDataLoadingState());
+      printerModel?.automatic = automatic;
+      printerModel?.printReceiptCount = int.tryParse(receiptCopies.text);
+      printerModel?.printerName = printerName.text;
+      var result = await _repo.updatePrinter(
+          printer: printerModel!, categoryRows: categoryRows);
+
+      result.fold((l) => emit(PrinterDataErrorState(errMessage: l)),
+          (r) => emit(PrinterDataSuccessState()));
+    }
+  }
 
 
 }

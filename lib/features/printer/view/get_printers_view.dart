@@ -15,13 +15,13 @@ import 'package:pos_app/generated/l10n.dart';
 
 import '../../../core/api/api_response.dart';
 
-class PrintersView extends StatelessWidget {
-  const PrintersView({super.key});
+class GetPrintersView extends StatelessWidget {
+  const GetPrintersView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: MyServiceLocator.getSingleton<ScanPrintersCubit>()..init(),
+      value: MyServiceLocator.getSingleton<GetPrintersCubit>()..init(),
       child: const _PrintersViewBody(),
     );
   }
@@ -32,7 +32,7 @@ class _PrintersViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = ScanPrintersCubit.get(context);
+    final cubit = GetPrintersCubit.get(context);
 
     return Scaffold(
       appBar: CustomAppBar(title: S.of(context).printer),
@@ -51,7 +51,7 @@ class _PrintersViewBody extends StatelessWidget {
         },
         child: Padding(
           padding: AppPaddings.defaultView,
-          child: BlocBuilder<ScanPrintersCubit, ScanPrintersState>(
+          child: BlocBuilder<GetPrintersCubit, GetPrintersState>(
             builder: (context, state) {
               if (state is ScanPrintersLoading) {
                 return CustomGridViewCard(
@@ -79,7 +79,7 @@ class _PrintersViewBody extends StatelessWidget {
               }
 
               if (state is ScanPrintersSuccess) {
-                final printers = state.discoveredPrinters;
+                final printers = state.printers;
                 print(printers);
 
                 if (printers.isEmpty) {
