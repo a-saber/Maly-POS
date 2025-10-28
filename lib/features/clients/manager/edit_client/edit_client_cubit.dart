@@ -13,6 +13,11 @@ class EditClientCubit extends Cubit<EditClientState> {
     emailController = TextEditingController(text: client.email);
     phoneController = TextEditingController(text: client.phone);
     addressController = TextEditingController(text: client.address);
+    streetController = TextEditingController(text: client.street);
+    buildingController = TextEditingController(text: client.building);
+    cityController = TextEditingController(text: client.city);
+    districtController = TextEditingController(text: client.district);
+    countryController = TextEditingController(text: client.country);
     // commercialRegisterController =
     //     TextEditingController(text: client.commercialRegister);
     // taxIdentificationNumberController =
@@ -31,6 +36,11 @@ class EditClientCubit extends Cubit<EditClientState> {
   late TextEditingController emailController;
   late TextEditingController phoneController;
   late TextEditingController addressController;
+  late TextEditingController streetController;
+  late TextEditingController buildingController;
+  late TextEditingController cityController;
+  late TextEditingController districtController;
+  late TextEditingController countryController;
   // late TextEditingController commercialRegisterController;
   // late TextEditingController taxIdentificationNumberController;
   // late TextEditingController noteController;
@@ -47,6 +57,11 @@ class EditClientCubit extends Cubit<EditClientState> {
           email: emailController.text,
           phone: phoneController.text,
           address: addressController.text,
+          street: streetController.text,
+          building: buildingController.text,
+          city: cityController.text,
+          district: districtController.text,
+          country: countryController.text,
           createdAt: null,
           updatedAt: null,
           // commercialRegister: commercialRegisterController.text,
@@ -73,6 +88,11 @@ class EditClientCubit extends Cubit<EditClientState> {
     emailController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    streetController.dispose();
+    buildingController.dispose();
+    cityController.dispose();
+    districtController.dispose();
+    countryController.dispose();
     // commercialRegisterController.dispose();
     // taxIdentificationNumberController.dispose();
     // noteController.dispose();

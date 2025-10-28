@@ -417,7 +417,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "editPrinter": MessageLookupByLibrary.simpleMessage("تعديل الطابعة"),
     "shifts": MessageLookupByLibrary.simpleMessage("الفترات"),
     "testPrint": MessageLookupByLibrary.simpleMessage("اختبار الطباعة"),
-
+     "street": MessageLookupByLibrary.simpleMessage("الشارع"),
+    "building": MessageLookupByLibrary.simpleMessage("المبنى"),
+    "city": MessageLookupByLibrary.simpleMessage("المدينة"),
+    "district": MessageLookupByLibrary.simpleMessage("الحي"),
+    "country": MessageLookupByLibrary.simpleMessage("الدولة"),
 
   };
 }

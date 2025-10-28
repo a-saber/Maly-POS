@@ -274,4 +274,9 @@
   "editprinter":"Edit Printer",
   "shifts":"Shifts",
   "testPrint": "Test Print"
+    "street":"Street",
+    "building":"Building",
+    "city":"City",
+    "district":"District",
+    "country":"Country"
 }

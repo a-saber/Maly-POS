@@ -18,6 +18,11 @@ class AddClientCubit extends Cubit<AddClientState> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController streetController = TextEditingController();
+  final TextEditingController buildingController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController districtController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
   // final TextEditingController commercialRegisterController =
   //     TextEditingController();
   // final TextEditingController taxIdentificationNumberController =
@@ -33,6 +38,11 @@ class AddClientCubit extends Cubit<AddClientState> {
         email: emailController.text,
         phone: phoneController.text,
         address: addressController.text,
+        street: streetController.text,
+        building: buildingController.text,
+        city: cityController.text,    
+        district: districtController.text,
+        country: countryController.text,
       ));
       reponse.fold(
           (error) => emit(AddClientFailing(errMessage: error)),
@@ -51,6 +61,11 @@ class AddClientCubit extends Cubit<AddClientState> {
     emailController.dispose();
     phoneController.dispose();
     addressController.dispose();
+    streetController.dispose();
+    buildingController.dispose();
+    cityController.dispose();
+    districtController.dispose();
+    countryController.dispose();
     // commercialRegisterController.dispose();
     // taxIdentificationNumberController.dispose();
     // noteController.dispose();

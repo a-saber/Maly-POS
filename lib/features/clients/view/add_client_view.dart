@@ -77,6 +77,11 @@ class AddClientMobileBody extends StatelessWidget {
       emailController: AddClientCubit.get(context).emailController,
       phoneController: AddClientCubit.get(context).phoneController,
       addressController: AddClientCubit.get(context).addressController,
+      streetController: AddClientCubit.get(context).streetController,
+      buildingController: AddClientCubit.get(context).buildingController,
+      cityController: AddClientCubit.get(context).cityController,
+      districtController: AddClientCubit.get(context).districtController,
+      countryController: AddClientCubit.get(context).countryController,
       // commercialRegisterController:
       //     AddClientCubit.get(context).commercialRegisterController,
       // taxIdentificationNumberController:

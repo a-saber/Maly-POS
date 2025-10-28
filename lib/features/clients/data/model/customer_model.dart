@@ -6,6 +6,11 @@ class CustomerModel {
   final String? phone;
   final String? email;
   final String? address;
+  final String? street;
+  final String? building;
+  final String? city;
+  final String? district;
+  final String? country;
   final String? createdAt;
   final String? updatedAt;
 
@@ -15,6 +20,11 @@ class CustomerModel {
       required this.phone,
       required this.email,
       required this.address,
+      required this.street,
+      required this.building,
+      required this.city,
+      required this.district,
+      required this.country,
       required this.createdAt,
       required this.updatedAt});
 
@@ -27,6 +37,11 @@ class CustomerModel {
       address: json[ApiKeys.address],
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
+      street: json[ApiKeys.street],
+      building: json[ApiKeys.building],
+      city: json[ApiKeys.city],
+      district: json[ApiKeys.district],
+      country: json[ApiKeys.country],
     );
   }
   factory CustomerModel.createWithoutId({
@@ -34,6 +49,11 @@ class CustomerModel {
     required String phone,
     required String email,
     required String address,
+    required String street,
+    required String building,
+    required String city,
+    required String district,
+    required String country,
   }) {
     return CustomerModel(
       id: null,
@@ -41,6 +61,11 @@ class CustomerModel {
       phone: phone,
       email: email,
       address: address,
+      street: street,
+      building: building,
+      city: city,
+      district: district,
+      country: country,
       createdAt: null,
       updatedAt: null,
     );
@@ -53,6 +78,11 @@ class CustomerModel {
     data[ApiKeys.phone] = phone;
     data[ApiKeys.email] = email;
     data[ApiKeys.address] = address;
+    data[ApiKeys.street] = street;
+    data[ApiKeys.building] = building;
+    data[ApiKeys.city] = city;
+    data[ApiKeys.district] = district;
+    data[ApiKeys.country] = country;
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
     return data;
@@ -64,6 +94,11 @@ class CustomerModel {
     data[ApiKeys.name] = name;
     data[ApiKeys.phone] = phone;
     data[ApiKeys.email] = email;
+    data[ApiKeys.street] = street;
+    data[ApiKeys.building] = building;
+    data[ApiKeys.city] = city;
+    data[ApiKeys.district] = district;
+    data[ApiKeys.country] = country;
     data[ApiKeys.address] = address;
 
     return data;

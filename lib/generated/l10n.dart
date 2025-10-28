@@ -681,7 +681,46 @@ class S {
       args: [],
     );
   }
+  String get street {
+    return Intl.message(
+      'Street',
+       name: 'street',
+        desc: '',
+         args: []);
+  }
+  String get building {
+    return Intl.message(
+      'Building',
+       name: 'building',
+        desc: '',
+         args: []);
+  }
 
+  /// `City`
+  String get city {
+    return Intl.message(
+      'City',
+       name: 'city',
+        desc: '',
+         args: []);
+  }
+  /// `District`
+  String get district {
+    return Intl.message(
+      'District',
+       name: 'district',
+        desc: '',
+         args: []);
+  }
+  /// `Country`
+  String get country {
+    return Intl.message(
+      'Country',
+       name: 'country',
+        desc: '',
+         args: []);
+  }
+  
   /// `Enter a valid price`
   String get enteravalidprice {
     return Intl.message(

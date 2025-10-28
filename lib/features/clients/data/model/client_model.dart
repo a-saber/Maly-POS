@@ -9,6 +9,8 @@ class ClientModel {
   String? note;
   String? imagePath;
 
+
+
   ClientModel({
     this.id,
     this.name,

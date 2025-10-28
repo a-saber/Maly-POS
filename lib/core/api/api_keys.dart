@@ -145,6 +145,11 @@ abstract class ApiKeys {
   static const String startshift= 'users/shifts/start';
   static const String endshift= 'users/shifts/end';
   static const String shifts= 'users/get/shifts/1';
+  static const String street = 'street';
+  static const String building = 'building';  
+  static const String city = 'city';
+  static const String district = 'district';
+  static const String country = 'country';
 }
 
 abstract class ApiEndPoints {

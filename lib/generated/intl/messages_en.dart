@@ -423,5 +423,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "editPrinter": MessageLookupByLibrary.simpleMessage("Edit Printer"),
     "shifts": MessageLookupByLibrary.simpleMessage("Shifts"),
     "testPrint": MessageLookupByLibrary.simpleMessage("Test Print"),
+    "street": MessageLookupByLibrary.simpleMessage("Street"),
+    "building": MessageLookupByLibrary.simpleMessage("Building"),
+    "city": MessageLookupByLibrary.simpleMessage("City"),
+    "district": MessageLookupByLibrary.simpleMessage("District"),
+    "country": MessageLookupByLibrary.simpleMessage("Country"),
   };
 }

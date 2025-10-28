@@ -12,6 +12,11 @@ class ShopSettingModel {
   final String? commercialNo;
   final String? phone;
   final String? email;
+  final String? street;
+  final String? building;
+  final String? city;
+  final String? district;
+  final String? country;
   final String? logoUrl;
   final String? createdAt;
   final String? updatedAt;
@@ -26,6 +31,11 @@ class ShopSettingModel {
       required this.commercialNo,
       required this.phone,
       required this.email,
+      required this.street,
+      required this.building,
+      required this.city,
+      required this.district,
+      required this.country,
       required this.logoUrl,
       required this.createdAt,
       required this.updatedAt,
@@ -41,6 +51,11 @@ class ShopSettingModel {
       commercialNo: json[ApiKeys.commercialno],
       phone: json[ApiKeys.phone],
       email: json[ApiKeys.email],
+      street: json[ApiKeys.street],
+      building: json[ApiKeys.building],
+      city: json[ApiKeys.city],
+      district: json[ApiKeys.district],
+      country: json[ApiKeys.country],
       logoUrl: json[ApiKeys.logourl],
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
@@ -55,6 +70,11 @@ class ShopSettingModel {
     required String? commercialNo,
     required String? phone,
     required String? email,
+    required String? street,
+    required String? building,
+    required String? city,
+    required String? district,
+    required String? country,
   }) {
     return ShopSettingModel(
       id: null,
@@ -65,6 +85,11 @@ class ShopSettingModel {
       commercialNo: commercialNo,
       phone: phone,
       email: email,
+      street: street,
+      building: building,
+      city: city,
+      district: district,
+      country: country,
       logoUrl: null,
       createdAt: null,
       updatedAt: null,
@@ -82,6 +107,11 @@ class ShopSettingModel {
     data[ApiKeys.commercialno] = commercialNo;
     data[ApiKeys.phone] = phone;
     data[ApiKeys.email] = email;
+    data[ApiKeys.street] = street;
+    data[ApiKeys.building] = building;
+    data[ApiKeys.city] = city;
+    data[ApiKeys.district] = district;
+    data[ApiKeys.country] = country;
     data[ApiKeys.logourl] = logoUrl;
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
@@ -110,6 +140,21 @@ class ShopSettingModel {
     }
     if (email != null) {
       data[ApiKeys.email] = email;
+    }
+    if (street != null) {
+      data[ApiKeys.street] = street;
+    }
+    if (building != null) {
+      data[ApiKeys.building] = building;
+    }
+    if (city != null) {
+      data[ApiKeys.city] = city;
+    }
+    if (district != null) {
+      data[ApiKeys.district] = district;
+    }
+    if (country != null) {
+      data[ApiKeys.country] = country;
     }
     if (image != null) {
       var myImage = await uploadImageToApi(image: image);

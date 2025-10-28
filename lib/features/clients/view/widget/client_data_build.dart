@@ -16,6 +16,11 @@ class ClientDataBuilder extends StatelessWidget {
     required this.emailController,
     required this.phoneController,
     required this.addressController,
+    required this.streetController,
+    required this.buildingController,
+    required this.cityController,
+    required this.districtController,
+    required this.countryController,
     required this.isLoading,
     required this.onPressed,
     required this.isEdit,
@@ -31,6 +36,11 @@ class ClientDataBuilder extends StatelessWidget {
   final TextEditingController emailController;
   final TextEditingController phoneController;
   final TextEditingController addressController;
+  final TextEditingController streetController;
+  final TextEditingController buildingController; // building number
+  final TextEditingController cityController;
+  final TextEditingController districtController;
+  final TextEditingController countryController;
   // final TextEditingController commercialRegisterController;
   // final TextEditingController taxIdentificationNumberController;
   // final TextEditingController noteController;
@@ -96,6 +106,58 @@ class ClientDataBuilder extends StatelessWidget {
                   controller: addressController,
                   labelText: S.of(context).address,
                   keyboardType: TextInputType.streetAddress,
+                  validator: (value) => MyFormValidators.validateRequired(value,
+                      context: context),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                 CustomFormField(
+                  controller: streetController,
+                  labelText: S.of(context).street,
+                  keyboardType: TextInputType.streetAddress,
+                  validator: (value) => MyFormValidators.validateRequired(value,
+                      context: context),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomFormField(
+                  controller: buildingController,
+                  labelText: S.of(context).building,
+                  keyboardType: TextInputType.streetAddress,
+                  validator: (value) => MyFormValidators.validateRequired(value,
+                      context: context),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomFormField(
+                  controller: cityController,
+                  labelText: S.of(context).city,
+                  keyboardType: TextInputType.streetAddress,
+                  validator: (value) => MyFormValidators.validateRequired(value,
+                      context: context),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomFormField(
+                  controller: districtController,
+                  labelText: S.of(context).district,
+                  keyboardType: TextInputType.streetAddress,
+                  validator: (value) => MyFormValidators.validateRequired(value,
+                      context: context),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                CustomFormField(
+                  controller: countryController,
+                  labelText: S.of(context).country,
+                  keyboardType: TextInputType.streetAddress,
+                  validator: (value) => MyFormValidators.validateRequired(value,
+                      context: context),
                 ),
                 // SizedBox(
                 //   height: 20,

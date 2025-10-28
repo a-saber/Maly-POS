@@ -153,6 +153,56 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
             ),
             keyboardType: TextInputType.emailAddress,
           ),
+          CustomFormField(
+            controller: ShopSettingCubit.get(context).streetController,
+            hintText: S.of(context).street,
+            labelText: S.of(context). street,
+            validator: (value) => MyFormValidators.validateRequired(
+              value,
+              context: context,
+            ),
+            keyboardType: TextInputType.streetAddress,
+          ),
+          CustomFormField(
+            controller: ShopSettingCubit.get(context).cityController,
+            hintText: S.of(context).city,
+            labelText: S.of(context).city,
+            validator: (value) => MyFormValidators.validateRequired(
+              value,
+              context: context,
+            ),
+            keyboardType: TextInputType.streetAddress,
+          ),
+          CustomFormField(
+            controller: ShopSettingCubit.get(context).countryController,
+            hintText: S.of(context).country,
+            labelText: S.of(context).country,
+            validator: (value) => MyFormValidators.validateRequired(
+              value,
+              context: context,
+            ),
+            keyboardType: TextInputType.streetAddress,
+          ),
+          CustomFormField(
+            controller: ShopSettingCubit.get(context).districtController,
+            hintText: S.of(context).district,
+            labelText: S.of(context).district,
+            validator: (value) => MyFormValidators.validateRequired(
+              value,
+              context: context,
+            ),
+            keyboardType: TextInputType.streetAddress,
+          ),
+          CustomFormField(
+            controller: ShopSettingCubit.get(context).buildingController,
+            hintText: S.of(context).building,
+            labelText: S.of(context).building,
+            validator: (value) => MyFormValidators.validateRequired(
+              value,
+              context: context,
+            ),
+            keyboardType: TextInputType.streetAddress,
+          ),
           state is ShopSettingUpdateLoading
               ? const CustomLoading()
               : CustomFilledBtn(

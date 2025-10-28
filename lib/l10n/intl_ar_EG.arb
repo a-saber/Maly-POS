@@ -273,5 +273,10 @@
     "savechanges":"حفظ التعديلات",
     "editprinter":"حفظ التعديلات",
     "shifts":"الفترات",
-    "testPrint":"اختبار الطباعة"
+    "testPrint":"اختبار الطباعة",
+    "street":"الشارع",
+    "building":"المبني",
+    "city":"المدينه",
+    "district":"الحي",
+    "country":"الدولة"
 }

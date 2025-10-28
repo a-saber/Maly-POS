@@ -94,6 +94,11 @@ class EditClientMobileBody extends StatelessWidget {
       emailController: EditClientCubit.get(context).emailController,
       phoneController: EditClientCubit.get(context).phoneController,
       addressController: EditClientCubit.get(context).addressController,
+      streetController: EditClientCubit.get(context).streetController,
+      buildingController: EditClientCubit.get(context).buildingController,
+      cityController: EditClientCubit.get(context).cityController,
+      districtController: EditClientCubit.get(context).districtController,
+      countryController: EditClientCubit.get(context).countryController,
       // commercialRegisterController:
       //     EditClientCubit.get(context).commercialRegisterController,
       // taxIdentificationNumberController:

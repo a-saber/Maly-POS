@@ -21,7 +21,12 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
       taxNoController,
       commercialNoController,
       phoneController,
-      emailController;
+      emailController,
+      streetController,
+      buildingController,
+      cityController,
+      districtController,
+      countryController;
   FileImage? image;
   String? imageUrl;
   XFile? newImage;
@@ -37,6 +42,11 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
     commercialNoController = TextEditingController();
     phoneController = TextEditingController();
     emailController = TextEditingController();
+    streetController = TextEditingController();
+    buildingController = TextEditingController();
+    cityController = TextEditingController();
+    districtController = TextEditingController();
+    countryController = TextEditingController();
     autovalidateMode = AutovalidateMode.disabled;
     var response = await repo.getShopSettingData();
     response.fold(
@@ -49,6 +59,11 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
         commercialNoController.text = success.commercialNo ?? '';
         phoneController.text = success.phone ?? '';
         emailController.text = success.email ?? '';
+        streetController.text = success.street ?? '';
+        buildingController.text = success.building ?? '';
+        cityController.text = success.city ?? '';
+        districtController.text = success.district ?? '';
+        countryController.text = success.country ?? '';
         imageUrl = success.imageUrl;
         emit(ShopSettingGetSuccess());
       },
@@ -67,6 +82,11 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
           commercialNo: commercialNoController.text,
           phone: phoneController.text,
           email: emailController.text,
+          street: streetController.text,
+          building: buildingController.text,
+          city: cityController.text,
+          district: districtController.text,
+          country: countryController.text,
         ),
         image: newImage == null ? null : File(newImage!.path),
       );
@@ -104,6 +124,11 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
     commercialNoController.dispose();
     phoneController.dispose();
     emailController.dispose();
+    streetController.dispose();
+    buildingController.dispose();
+    cityController.dispose();
+    districtController.dispose();
+    countryController.dispose();
     return super.close();
   }
 }
