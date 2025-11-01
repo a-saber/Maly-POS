@@ -41,12 +41,9 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
     emit(PrinterDataToggleSwitchState());
   }
   bool printReceipt = false;
-  void togglePrintReceipt(bool value) {
-    printReceipt = value;
-    emit(PrinterDataToggleSwitchState());
-  }
   var receiptCopies = TextEditingController(); 
   var printerName = TextEditingController();
+  var printReceiptController= TextEditingController();
   var formKey = GlobalKey<FormState>();
 
   bool printCategories = false;
@@ -84,7 +81,7 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
     var result = await _repo.addPrinter( printer:PrinterModel(
       discoveredPrinter: discoveredPrinter,
       automatic: automatic,
-      printReceiptCount: int.tryParse(receiptCopies.text),
+      printReceiptCount: int.tryParse(printReceiptController.text),
       printerName: printerName.text,
     ), categoryRows: categoryRows);
 
@@ -95,7 +92,7 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
       if (!formKey.currentState!.validate()) return;
       emit(PrinterDataLoadingState());
       printerModel?.automatic = automatic;
-      printerModel?.printReceiptCount = int.tryParse(receiptCopies.text);
+      printerModel?.printReceiptCount = int.tryParse(printReceiptController.text);
       printerModel?.printerName = printerName.text;
       var result = await _repo.updatePrinter(
           printer: printerModel!, categoryRows: categoryRows);

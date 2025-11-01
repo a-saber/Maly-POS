@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pos_app/core/helper/my_form_validators.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
@@ -14,8 +15,6 @@ import 'package:pos_app/features/printer/data/model/printer_model.dart';
 import 'package:pos_app/features/printer/manager/printer_data_cubit/printer_data_cubit.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
-import 'package:pos_app/features/printer/data/model/post_printers_model.dart';
-
 import '../../../core/api/api_response.dart';
 import '../data/repo/printer_repo.dart';
 import '../manager/printer_data_cubit/printer_data_state.dart';
@@ -79,7 +78,7 @@ class EditPrinterView extends StatelessWidget {
               padding: AppPaddings.defaultView,
               child: Form(
                 key: cubit.formKey,
-                autovalidateMode: AutovalidateMode.always,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: ListView(
                   children: [
                     if (printerModel.discoveredPrinter != null)
@@ -163,7 +162,7 @@ class AddPrinterView extends StatelessWidget {
               padding: AppPaddings.defaultView,
               child: Form(
                 key: cubit.formKey,
-                autovalidateMode: AutovalidateMode.always,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: ListView(
                   children: [
                     _PrinterHeader(printer: discoveredPrinter, cubit: cubit),
@@ -227,6 +226,12 @@ class _PrinterOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+         CustomFormField(
+          controller: PrinterDataCubit.get(context).printReceiptController,
+          labelText: S.of(context).printReceipt,
+          validator: (value) => MyFormValidators.validateZeroOrOne(value,
+              context: context),
+        ),
         BlocBuilder<PrinterDataCubit, PrinterDataState>(
           builder: (_, state) => CustomCheckbox(
             title: S.of(context).automatic,
@@ -234,13 +239,7 @@ class _PrinterOptions extends StatelessWidget {
             onChanged: (v) => cubit.toggleAutomatic(v ?? false),
           ),
         ),
-        BlocBuilder<PrinterDataCubit, PrinterDataState>(
-          builder: (_, state) => CustomCheckbox(
-            title: S.of(context).printreceipt,
-            value: cubit.printReceipt,
-            onChanged: (v) => cubit.togglePrintReceipt(v ?? false),
-          ),
-        ),
+       
         BlocBuilder<PrinterDataCubit, PrinterDataState>(
           builder: (_, state) => CustomCheckbox(
             title: S.of(context).printCategories,
@@ -340,6 +339,10 @@ class _CategoryRow extends StatelessWidget {
                   controller: controller,
                   labelText: S.of(context).copiesCount,
                   keyboardType: TextInputType.number,
+                  validator: (value) => MyFormValidators.validateInteger(
+                    value,
+                    context: context,
+                  ),
                   // onChanged: (value) {
                   //   cubit.categoryRows[index].copiesCount.text = value;
                   //   cubit.emit(PrinterDetailsUpdated());

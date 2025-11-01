@@ -2180,6 +2180,14 @@ class S {
          args: []
          );
   }
+  String get printReceipt {
+    return Intl.message(
+      'Print Receipt',
+       name: 'printReceipt',
+        desc: '',
+         args: []
+         );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

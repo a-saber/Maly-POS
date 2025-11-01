@@ -1,20 +1,15 @@
-import 'package:dio/dio.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/core/api/api_helper.dart';
-import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
-import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
-import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/scan_local_printers_cubit/scan_local_printers_state.dart';
 import 'package:pos_app/features/printer/view/add_printer_view.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
-
 import '../manager/scan_local_printers_cubit/scan_local_printers_cubit.dart';
 
 class ScanPrintersView extends StatelessWidget {

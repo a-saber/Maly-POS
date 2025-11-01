@@ -1,4 +1,4 @@
-import 'printer_model.dart';
+
 
 class AddPrinterResponseModel {
   bool? status;

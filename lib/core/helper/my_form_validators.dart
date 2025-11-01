@@ -291,4 +291,17 @@ class MyFormValidators {
 
     return null; // null means valid (common in Flutter validators)
   }
+  static String? validateZeroOrOne(String? value, {required BuildContext context}) {
+  if (value == null || value.trim().isEmpty) {
+    return S.of(context).fieldisrequired;
+  }
+
+  final regex = RegExp(r'^[01]$');
+  if (!regex.hasMatch(value.trim())) {
+    return " only 0 or 1 allowed.";
+  }
+
+  return null;
+}
+
 }
