@@ -6,6 +6,7 @@ import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
+import 'package:pos_app/features/printer/data/model/printer_model.dart';
 import 'package:pos_app/features/products/data/model/get_products_model.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/selling_point/data/model/category_saving_data_model.dart';
@@ -14,11 +15,48 @@ import 'package:pos_app/features/selling_point/data/model/print_model.dart';
 import 'package:pos_app/features/selling_point/data/model/product_selling_model.dart';
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 
+import '../../../printer/data/model/printers_search_model.dart';
+
 class SellingPointRepo {
   final ApiHelper api;
 
   BrancheModel? branch;
 
+  List<PrinterModel> printers = [];
+  Future<Either<String, Unit>> getPrinters({
+    bool force = false
+  }) async {
+    try {
+      if(printers.isEmpty || force){
+        String? url = await ApiEndPoints.getPrinters();
+        final response = await api.get(
+          url: url,
+          data: {
+            ApiKeys.perPage: 200,
+          },
+        );
+
+        if (response.status) {
+          final newModel = GetPrintersReponseModel.fromJson(response.data);
+          printers = newModel.data ?? [];
+          return right(unit);
+
+        } else {
+          debugPrint('API Error: ${response.message}');
+          return Left(response.message??"Something went wrong");
+        }
+      }
+      else
+      {
+        return right(unit);
+      }
+
+
+    } catch (e) {
+      debugPrint(' Exception in getPrinters: $e');
+      return Left(ApiResponse.unKnownError().message??'Something went wrong');
+    }
+  }
   SellingPointRepo({required this.api});
   Future<Either<ApiResponse, PrintModel>> newSales({
     required double subtotal,
@@ -108,10 +146,22 @@ class SellingPointRepo {
         //     Printer(url: '{sharedPreferences!.getString( "cashierprinter")}'),
         //     onLayout: (format) =>
         //     salesInvoicesPdf80(response.data as Map<String, dynamic>));
+
+
+        try{
+          await getPrinters();
+        }
+        catch(e){
+
+          debugPrint("Error getPrinters in newSales: $e");
+        }
+
         return Right(PrintModel(
             apiResponse: response,
             branchName: branch?.name ?? 'مش معروف',
-            paid: paid));
+            paid: paid,
+            printers: printers
+        ));
       } else {
         return Left(
           response,

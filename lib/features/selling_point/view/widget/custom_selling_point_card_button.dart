@@ -63,6 +63,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   // ignore: use_build_context_synchronously
                   Navigator.pop(context);
                 }
+                // state.printModel.;
                 try {
                   if (!Platform.isAndroid) {
                     throw 'not android';
