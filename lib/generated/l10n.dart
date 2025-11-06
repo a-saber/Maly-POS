@@ -835,7 +835,14 @@ class S {
       args: [],
     );
   }
-
+  String get addPrinterIp {
+    return Intl.message(
+      'Add Printer IP',
+      name: 'addPrinterIp',
+      desc: '',
+      args: [],
+    );
+  }
   /// `between`
   String get between {
     return Intl.message('between', name: 'between', desc: '', args: []);
@@ -2184,6 +2191,22 @@ class S {
     return Intl.message(
       'Print Receipt',
        name: 'printReceipt',
+        desc: '',
+         args: []
+         );
+  }
+  String get printerIp {
+    return Intl.message(
+      'Printer Ip',
+       name: 'printerIp',
+        desc: '',
+         args: []
+         );
+  }
+  String get enteravalidip {
+    return Intl.message(
+      'Enter a valid ip',
+       name: 'enteravalidip',
         desc: '',
          args: []
          );

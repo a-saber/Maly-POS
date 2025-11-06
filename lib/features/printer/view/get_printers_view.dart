@@ -35,7 +35,8 @@ class _PrintersViewBody extends StatelessWidget {
     final cubit = GetPrintersCubit.get(context);
 
     return Scaffold(
-      appBar: CustomAppBar(title: S.of(context).printer),
+      appBar: CustomAppBar(title: S.of(context).printer,),
+     
       floatingActionButton:CustomFloatingActionBtn(
   onPressed: () async {
     final result = await Navigator.pushNamed(context, AppRoutes.addPrinter);

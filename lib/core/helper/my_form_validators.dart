@@ -303,5 +303,45 @@ class MyFormValidators {
 
   return null;
 }
+static String? validateIP(String? value, {required BuildContext context}) {
+  if (value == null || value.trim().isEmpty) {
+    return S.of(context).fieldisrequired;
+  }
+
+  // IPv4 Pattern
+  final ipRegex = RegExp(
+    r'^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}'
+    r'(25[0-5]|2[0-4]\d|[01]?\d\d?)$',
+  );
+
+  if (!ipRegex.hasMatch(value.trim())) {
+    return S.of(context).enteravalidip; 
+  }
+
+  return null;
+}
+static String? validateDecimalOrInt(String? value, {required BuildContext context, bool validateEmpty = true}) {
+  if (validateEmpty) {
+    if (value == null || value.trim().isEmpty) {
+      return S.of(context).fieldisrequired;
+    }
+  }
+
+  if (value != null && value.trim().isNotEmpty) {
+    final trimmedValue = value.trim();
+    final decimalRegex = RegExp(r'^\d+(\.\d+)?$');
+
+    if (!decimalRegex.hasMatch(trimmedValue)) {
+      return S.of(context).enteravalidnumber; 
+    }
+
+    if (double.tryParse(trimmedValue) == null) {
+      return S.of(context).enteravalidnumber;
+    }
+  }
+
+  return null;
+}
+
 
 }

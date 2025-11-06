@@ -18,3 +18,4 @@ class PrinterDataEmptyState extends PrinterDataState {}
 class PrinterDataToggleSwitchState extends PrinterDataState {}
 
 class PrinterDataCategoryChanged extends PrinterDataState {}
+class PrinterDetailsUpdatedState extends PrinterDataState {}

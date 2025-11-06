@@ -44,6 +44,7 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
   var receiptCopies = TextEditingController(); 
   var printerName = TextEditingController();
   var printReceiptController= TextEditingController();
+  final ipController = TextEditingController();
   var formKey = GlobalKey<FormState>();
 
   bool printCategories = false;
@@ -73,6 +74,14 @@ class PrinterDataCubit extends Cubit<PrinterDataState>{
       emit(PrinterDataCategoryChanged());
     }
   }
+  final List<String> paperSizes = ["80mm", "58mm", "72mm"];
+  String paperSize = "80mm";
+void changePaperSize(String? value) {
+  if(value == null) return;
+  paperSize = value;
+  emit(PrinterDetailsUpdatedState());
+}
+
 
 
   void addPrinter()async{

@@ -29,11 +29,18 @@ class EditPrinterView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) =>MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
-        BlocProvider(create: (_) => PrinterDataCubit(MyServiceLocator.getSingleton<PrinterRepo>(), printerModel: printerModel)),
+        BlocProvider(
+            create: (_) =>
+                MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
+        BlocProvider(
+            create: (_) => PrinterDataCubit(
+                MyServiceLocator.getSingleton<PrinterRepo>(),
+                printerModel: printerModel)),
       ],
       child: BlocConsumer<PrinterDataCubit, PrinterDataState>(
-        listenWhen: (previous, current) => current is PrinterDataSuccessState || current is PrinterDataErrorState,
+        listenWhen: (previous, current) =>
+            current is PrinterDataSuccessState ||
+            current is PrinterDataErrorState,
         listener: (context, state) {
           if (state is PrinterDataSuccessState) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -43,7 +50,8 @@ class EditPrinterView extends StatelessWidget {
               ),
             );
             MyServiceLocator.getSingleton<GetCategoryCubit>().init();
-            MyServiceLocator.getSingleton<GetPrintersCubit>().fetchPrintersFromApi(isFresh: true);
+            MyServiceLocator.getSingleton<GetPrintersCubit>()
+                .fetchPrintersFromApi(isFresh: true);
           } else if (state is PrinterDataErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -60,19 +68,20 @@ class EditPrinterView extends StatelessWidget {
           final categoriesCubit = GetCategoryCubit.get(context);
 
           return Scaffold(
-            appBar: CustomAppBar(title: S.of(context).printerDetails,
-                actions: [
-                    CustomTextBtn(
-                      text: S.of(context).delete,
-                      onPressed: () async {
-                        await showDeletePrinterConfirmDialog(
-                          context: context,
-                          printer: printerModel,
-                          goBack: true,
-                        );
-                      },
-                    ),
-                  ],
+            appBar: CustomAppBar(
+              title: S.of(context).printerDetails,
+              actions: [
+                CustomTextBtn(
+                  text: S.of(context).delete,
+                  onPressed: () async {
+                    await showDeletePrinterConfirmDialog(
+                      context: context,
+                      printer: printerModel,
+                      goBack: true,
+                    );
+                  },
+                ),
+              ],
             ),
             body: Padding(
               padding: AppPaddings.defaultView,
@@ -82,7 +91,9 @@ class EditPrinterView extends StatelessWidget {
                 child: ListView(
                   children: [
                     if (printerModel.discoveredPrinter != null)
-                    _PrinterHeader(printer: printerModel.discoveredPrinter!, cubit: cubit),
+                      _PrinterHeader(
+                          printer: printerModel.discoveredPrinter!,
+                          cubit: cubit),
                     const SizedBox(height: 20),
                     _PrinterOptions(cubit: cubit),
                     if (cubit.printCategories)
@@ -91,21 +102,25 @@ class EditPrinterView extends StatelessWidget {
                         categories: categoriesCubit.categories,
                       ),
                     const SizedBox(height: 20),
-                    state is PrinterDataLoadingState?
-                    Center(child: CircularProgressIndicator(),):
-                    CustomFilledBtn(
-                      text: S.of(context).done,
-                      onPressed: ()=> cubit.editPrinter(),
+                    state is PrinterDataLoadingState
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : CustomFilledBtn(
+                            text: S.of(context).done,
+                            onPressed: () => cubit.editPrinter(),
+                          ),
+                    SizedBox(
+                      height: 30,
                     ),
-
-                    SizedBox(height: 30,),
-
-                    CustomFilledBtn(text: S.of(context).testPrint, onPressed: ()async {
-                      if(printerModel.discoveredPrinter != null) {
-                        await PrinterHelper().printTest(printerModel.discoveredPrinter!);
-                      }
-                    })
-
+                    CustomFilledBtn(
+                        text: S.of(context).testPrint,
+                        onPressed: () async {
+                          if (printerModel.discoveredPrinter != null) {
+                            await PrinterHelper()
+                                .printTest(printerModel.discoveredPrinter!);
+                          }
+                        })
                   ],
                 ),
               ),
@@ -126,11 +141,18 @@ class AddPrinterView extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) =>MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
-        BlocProvider(create: (_) => PrinterDataCubit(MyServiceLocator.getSingleton<PrinterRepo>(), discoveredPrinter: discoveredPrinter)),
+        BlocProvider(
+            create: (_) =>
+                MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
+        BlocProvider(
+            create: (_) => PrinterDataCubit(
+                MyServiceLocator.getSingleton<PrinterRepo>(),
+                discoveredPrinter: discoveredPrinter)),
       ],
       child: BlocConsumer<PrinterDataCubit, PrinterDataState>(
-        listenWhen: (previous, current) => current is PrinterDataSuccessState || current is PrinterDataErrorState,
+        listenWhen: (previous, current) =>
+            current is PrinterDataSuccessState ||
+            current is PrinterDataErrorState,
         listener: (context, state) {
           if (state is PrinterDataSuccessState) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -140,7 +162,8 @@ class AddPrinterView extends StatelessWidget {
               ),
             );
             MyServiceLocator.getSingleton<GetCategoryCubit>().init();
-            MyServiceLocator.getSingleton<GetPrintersCubit>().fetchPrintersFromApi(isFresh: true);
+            MyServiceLocator.getSingleton<GetPrintersCubit>()
+                .fetchPrintersFromApi(isFresh: true);
           } else if (state is PrinterDataErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -157,7 +180,8 @@ class AddPrinterView extends StatelessWidget {
           final categoriesCubit = GetCategoryCubit.get(context);
 
           return Scaffold(
-            appBar: CustomAppBar(title: S.of(context).printerDetails),
+            appBar: CustomAppBar(title: S.of(context).printerDetails,
+            ),
             body: Padding(
               padding: AppPaddings.defaultView,
               child: Form(
@@ -174,17 +198,21 @@ class AddPrinterView extends StatelessWidget {
                         categories: categoriesCubit.categories,
                       ),
                     const SizedBox(height: 20),
-                    state is PrinterDataLoadingState?
-                    Center(child: CircularProgressIndicator(),):
-                    CustomFilledBtn(
-                      text: S.of(context).done,
-                      onPressed: ()=> cubit.addPrinter(),
+                    state is PrinterDataLoadingState
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : CustomFilledBtn(
+                            text: S.of(context).done,
+                            onPressed: () => cubit.addPrinter(),
+                          ),
+                    SizedBox(
+                      height: 30,
                     ),
-
-                    SizedBox(height: 30,),
-
-                    CustomFilledBtn(text: S.of(context).testPrint, onPressed: ()async=>await PrinterHelper().printTest(discoveredPrinter))
-                        
+                    CustomFilledBtn(
+                        text: S.of(context).testPrint,
+                        onPressed: () async =>
+                            await PrinterHelper().printTest(discoveredPrinter))
                   ],
                 ),
               ),
@@ -217,6 +245,8 @@ class _PrinterHeader extends StatelessWidget {
   }
 }
 
+final List<String> paperSizes = ["80mm", "58mm", "72mm"];
+
 class _PrinterOptions extends StatelessWidget {
   final PrinterDataCubit cubit;
 
@@ -226,12 +256,25 @@ class _PrinterOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-         CustomFormField(
+          CustomDropdown<String>(
+          value: cubit.paperSize,
+          items: paperSizes,
+          onChanged: (value) => cubit.changePaperSize(value),
+          builder: (item) => Text(
+            item ?? '',
+            style: const TextStyle(fontSize: 16),
+          ),
+          validator: (value) =>
+              MyFormValidators.validateRequired(value, context: context),
+        ),
+        SizedBox(height: 16),
+        CustomFormField(
           controller: PrinterDataCubit.get(context).printReceiptController,
           labelText: S.of(context).printReceipt,
-          validator: (value) => MyFormValidators.validateZeroOrOne(value,
-              context: context),
+          validator: (value) =>
+              MyFormValidators.validateInteger(value, context: context),
         ),
+      
         BlocBuilder<PrinterDataCubit, PrinterDataState>(
           builder: (_, state) => CustomCheckbox(
             title: S.of(context).automatic,
@@ -239,7 +282,6 @@ class _PrinterOptions extends StatelessWidget {
             onChanged: (v) => cubit.toggleAutomatic(v ?? false),
           ),
         ),
-       
         BlocBuilder<PrinterDataCubit, PrinterDataState>(
           builder: (_, state) => CustomCheckbox(
             title: S.of(context).printCategories,
@@ -319,7 +361,7 @@ class _CategoryRow extends StatelessWidget {
               value: row.category,
               items: categories,
               onChanged: (value) {
-                if(value!= null){
+                if (value != null) {
                   cubit.categoryRows[index].category = value;
                   cubit.assignCategories(index: index, model: value);
                 }

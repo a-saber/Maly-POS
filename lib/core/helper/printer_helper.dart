@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
@@ -191,5 +192,28 @@ class PrinterHelper {
       ...generator.feed(2),
       ...generator.cut(),
     ];
+  } 
+  Future<void> printTestByIp(String ip, {int port = 9100}) async {
+    try {
+      final profile = await CapabilityProfile.load();
+      final generator = Generator(PaperSize.mm80, profile);
+
+      List<int> bytes = [];
+      bytes += generator.text(
+        'Test Print Successful by IP',
+        styles: PosStyles(bold: true, align: PosAlign.center),
+        linesAfter: 2,
+      );
+
+      final socket = await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
+      socket.add(bytes);
+      await socket.flush();
+      await socket.close();
+    } catch (e) {
+      print("Print error: $e");
+    }
   }
 }
+
+
+

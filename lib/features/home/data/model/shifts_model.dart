@@ -1,69 +1,159 @@
 class ShiftsModel {
   bool? status;
   String? message;
-  List<Shifts>? shifts;
+  Data? data;
 
-  ShiftsModel({this.status, this.message, this.shifts});
+  ShiftsModel({this.status, this.message, this.data});
 
   ShiftsModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    if (json['shifts'] != null) {
-      shifts = <Shifts>[];
-      json['shifts'].forEach((v) {
-        shifts!.add(new Shifts.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['status'] = this.status;
-    data['message'] = this.message;
-    if (this.shifts != null) {
-      data['shifts'] = this.shifts!.map((v) => v.toJson()).toList();
-    }
-    return data;
+    data = json['data'] != null ? Data.fromJson(json['data']) : null;
   }
 }
 
-class Shifts {
+class Data {
+  int? currentPage;
+  List<ShiftData>? data;
+  String? firstPageUrl;
+  int? from;
+  int? lastPage;
+  String? lastPageUrl;
+  List<Links>? links;
+  String? nextPageUrl;
+  String? path;
+  int? perPage;
+  dynamic prevPageUrl;
+  int? to;
+  int? total;
+
+  Data({
+    this.currentPage,
+    this.data,
+    this.firstPageUrl,
+    this.from,
+    this.lastPage,
+    this.lastPageUrl,
+    this.links,
+    this.nextPageUrl,
+    this.path,
+    this.perPage,
+    this.prevPageUrl,
+    this.to,
+    this.total,
+  });
+
+  Data.fromJson(Map<String, dynamic> json) {
+    currentPage = json['current_page'];
+
+    if (json['data'] != null) {
+      data = <ShiftData>[];
+      json['data'].forEach((v) {
+        data!.add(ShiftData.fromJson(v));
+      });
+    }
+
+    firstPageUrl = json['first_page_url'];
+    from = json['from'];
+    lastPage = json['last_page'];
+    lastPageUrl = json['last_page_url'];
+
+    if (json['links'] != null) {
+      links = <Links>[];
+      json['links'].forEach((v) {
+        links!.add(Links.fromJson(v));
+      });
+    }
+
+    nextPageUrl = json['next_page_url'];
+    path = json['path'];
+    perPage = json['per_page'];
+    prevPageUrl = json['prev_page_url'];
+    to = json['to'];
+    total = json['total'];
+  }
+}
+
+class ShiftData {
   int? id;
+  int? openingQuantity;
   String? createdAt;
   String? updatedAt;
   int? userId;
   String? startAt;
   String? endAt;
+  int? branchId;
   int? ordersCount;
+  User? user;
+  Branch? branch;
 
-  Shifts(
-      {this.id,
-      this.createdAt,
-      this.updatedAt,
-      this.userId,
-      this.startAt,
-      this.endAt,
-      this.ordersCount});
+  ShiftData({
+    this.id,
+    this.openingQuantity,
+    this.createdAt,
+    this.updatedAt,
+    this.userId,
+    this.startAt,
+    this.endAt,
+    this.branchId,
+    this.ordersCount,
+    this.user,
+    this.branch,
+  });
 
-  Shifts.fromJson(Map<String, dynamic> json) {
+  ShiftData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
+    openingQuantity = json['opening_quantity'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     userId = json['user_id'];
     startAt = json['start_at'];
     endAt = json['end_at'];
+    branchId = json['branch_id'];
     ordersCount = json['orders_count'];
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
   }
+}
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['user_id'] = this.userId;
-    data['start_at'] = this.startAt;
-    data['end_at'] = this.endAt;
-    data['orders_count'] = this.ordersCount;
-    return data;
+class User {
+  int? id;
+  String? name;
+  String? email;
+  String? phone;
+
+  User({this.id, this.name, this.email, this.phone});
+
+  User.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    email = json['email'];
+    phone = json['phone'];
+  }
+}
+
+class Branch {
+  int? id;
+  String? name;
+
+  Branch({this.id, this.name});
+
+  Branch.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+  }
+}
+
+class Links {
+  String? url;
+  String? label;
+  bool? active;
+
+  Links({this.url, this.label, this.active});
+
+  Links.fromJson(Map<String, dynamic> json) {
+    url = json['url'];
+    label = json['label'];
+    active = json['active'];
   }
 }

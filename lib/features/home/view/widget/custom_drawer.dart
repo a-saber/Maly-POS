@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/cache/cache_helper.dart';
 import 'package:pos_app/core/cache/cache_keys.dart';
 import 'package:pos_app/core/cache/custom_secure_storage.dart';
@@ -17,6 +16,8 @@ import 'package:pos_app/core/widget/show_delete_confirm_dialog.dart';
 import 'package:pos_app/features/home/data/repo/home_repo.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
+import 'package:pos_app/features/shifts/widget/showdialog_for_end.dart';
+import 'package:pos_app/features/shifts/widget/showdialog_for_shift.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -26,200 +27,195 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ShiftCubit(
-        MyServiceLocator.getSingleton<HomeRepo>(),
-      ),
-      child: BlocConsumer<ShiftCubit, ShiftState>(
-        listener: (context, state) {
-          if (state is ShiftSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          } else if (state is ShiftError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        builder: (context, state) {
-          final cubit = ShiftCubit.get(context);
+    return BlocConsumer<ShiftCubit, ShiftState>(
+      listener: (context, state) {
+        if (state is ShiftSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        } else if (state is ShiftError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      builder: (context, state) {
+        final cubit = ShiftCubit.get(context);
 
-          return Drawer(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: DeviceSize.getHeight(context: context) * 0.02,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10.0)),
-                              child: SizedBox(
-                                height: 60,
-                                width: 60,
-                                child: Image.asset(
-                                  ImagesAsset.logo,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                scaffoldKey.currentState?.closeDrawer();
-                              },
-                              icon: const Icon(
-                                Icons.cancel,
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: DeviceSize.getHeight(context: context) * 0.02,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    S.of(context).hello,
-                                    style: AppFontStyle.itemsTitle(
-                                        context: context),
-                                  ),
-                                  Text(
-                                    CustomUserHiveBox.getUser().name ??
-                                        S.of(context).noName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: AppFontStyle.itemsSubTitle(
-                                        context: context),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              splashColor: AppColors.white,
-                              onPressed: () {
-                                Navigator.pushNamed(context, AppRoutes.profile);
-                              },
-                              icon: const Icon(
-                                Icons.edit_square,
-                                color: AppColors.white,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+        return Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
                 ),
-                ListTile(
-                  leading: const Icon(Icons.settings),
-                  title: Text(S.of(context).settings),
-                  onTap: () {
-                    Navigator.pushNamed(context, AppRoutes.settingsView);
-                  },
-                ),
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
+                child: SafeArea(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 32,
-                          child: CustomFilledBtn(
-                            text: 'Start',
-                            backgroundColor: Colors.blueAccent,
-                            onPressed: state is ShiftLoading
-                                ? () {}
-                                : () => cubit.startShift(),
-                          ),
-                        ),
+                      SizedBox(
+                        height: DeviceSize.getHeight(context: context) * 0.02,
                       ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: SizedBox(
-                          height: 32,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              border: Border.all(color: Colors.blueAccent),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: CustomFilledBtn(
-                              text: 'End',
-                              backgroundColor: Colors.transparent,
-                              onPressed: state is ShiftLoading
-                                  ? () {}
-                                  : () => cubit.endShift(),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(10.0)),
+                            child: SizedBox(
+                              height: 60,
+                              width: 60,
+                              child: Image.asset(
+                                ImagesAsset.logo,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
-                        ),
+                          IconButton(
+                            onPressed: () {
+                              scaffoldKey.currentState?.closeDrawer();
+                            },
+                            icon: const Icon(
+                              Icons.cancel,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: DeviceSize.getHeight(context: context) * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  S.of(context).hello,
+                                  style:
+                                      AppFontStyle.itemsTitle(context: context),
+                                ),
+                                Text(
+                                  CustomUserHiveBox.getUser().name ??
+                                      S.of(context).noName,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppFontStyle.itemsSubTitle(
+                                      context: context),
+                                ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            splashColor: AppColors.white,
+                            onPressed: () {
+                              Navigator.pushNamed(context, AppRoutes.profile);
+                            },
+                            icon: const Icon(
+                              Icons.edit_square,
+                              color: AppColors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.logout),
-                  title: Text(S.of(context).logout),
-                  onTap: () {
-                    showDeleteConfirmationDialog(
-                      context: context,
-                      title: S.of(context).logout,
-                      content: S.of(context).sureWannaLogOut,
-                      deleteButtonBuilder: (ctx, button, loading) => button(
-                        context: ctx,
-                        title: S.of(context).logout,
-                        onPressed: () async {
-                          await CacheHelper.saveData(
-                            key: CacheKeys.isLogin,
-                            value: false,
-                          );
-                          CacheHelper.removeData(key: CacheKeys.accessToken);
-                          CacheHelper.removeData(key: CacheKeys.domain);
-                          await CustomSecureStorage.delete(
-                            key: CacheKeys.accessToken,
-                          );
-                          await CustomSecureStorage.delete(
-                            key: CacheKeys.domain,
-                          );
-                          CustomUserHiveBox.removeUser();
-
-                          resetAllGetCubit(context);
-
-                          Navigator.pushNamedAndRemoveUntil(
-                            context,
-                            AppRoutes.login,
-                            (route) => false,
-                          );
-                        },
+              ),
+              ListTile(
+                leading: const Icon(Icons.settings),
+                title: Text(S.of(context).settings),
+                onTap: () {
+                  Navigator.pushNamed(context, AppRoutes.settingsView);
+                },
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SizedBox(
+                        height: 32,
+                        child: CustomFilledBtn(
+                          text: 'Start',
+                          backgroundColor: Colors.blueAccent,
+                          onPressed: state is ShiftLoading
+                              ? () {}
+                              : () => showStartShiftDialog(context),
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SizedBox(
+                        height: 32,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(color: Colors.blueAccent),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: CustomFilledBtn(
+                            text: 'End',
+                            backgroundColor: Colors.transparent,
+                            onPressed: state is ShiftLoading
+                                ? () {}
+                                : () => showEndShiftDialog(context),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          );
-        },
-      ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.logout),
+                title: Text(S.of(context).logout),
+                onTap: () {
+                  showDeleteConfirmationDialog(
+                    context: context,
+                    title: S.of(context).logout,
+                    content: S.of(context).sureWannaLogOut,
+                    deleteButtonBuilder: (ctx, button, loading) => button(
+                      context: ctx,
+                      title: S.of(context).logout,
+                      onPressed: () async {
+                        await CacheHelper.saveData(
+                          key: CacheKeys.isLogin,
+                          value: false,
+                        );
+                        CacheHelper.removeData(key: CacheKeys.accessToken);
+                        CacheHelper.removeData(key: CacheKeys.domain);
+                        await CustomSecureStorage.delete(
+                          key: CacheKeys.accessToken,
+                        );
+                        await CustomSecureStorage.delete(
+                          key: CacheKeys.domain,
+                        );
+                        CustomUserHiveBox.removeUser();
+
+                        resetAllGetCubit(context);
+
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRoutes.login,
+                          (route) => false,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

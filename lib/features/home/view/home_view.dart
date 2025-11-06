@@ -7,9 +7,14 @@ import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
+import 'package:pos_app/features/branch/data/repo/branches_repo.dart';
+import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_branches_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
 import 'package:pos_app/features/home/view/widget/custom_drawer.dart';
 import 'package:pos_app/generated/l10n.dart';
+import 'package:pos_app/features/home/data/repo/home_repo.dart';
+import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
+
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -31,15 +36,24 @@ class _HomeViewState extends State<HomeView> {
   }
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     int columnCount = getColumnCount(context);
-    return BlocProvider.value(
-      value: MyServiceLocator.getIt<HomeCubit>()..init(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<HomeCubit>.value(
+          value: MyServiceLocator.getIt<HomeCubit>()..init(),
+        ),
+        BlocProvider(
+          create: (_) => ShiftCubit(
+            MyServiceLocator.getSingleton<HomeRepo>(),
+          ),
+        ),
+        BlocProvider(
+          create: (_) => GetAllBranchesCubit(
+            MyServiceLocator.getSingleton<BranchesRepo>(),
+          )..getBranches(),
+        ),
+      ],
       child: Builder(builder: (context) {
         return BlocConsumer<HomeCubit, HomeState>(
           listener: (context, state) {

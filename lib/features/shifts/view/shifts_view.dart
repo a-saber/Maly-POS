@@ -13,8 +13,8 @@ class ShiftsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          ShiftCubit(MyServiceLocator.getIt())..fetchShifts(), // Fetch shifts on init
+      create: (context) => ShiftCubit(MyServiceLocator.getIt())
+        ..fetchShifts(), // Fetch shifts on init
       child: const _ShiftsViewBody(),
     );
   }
@@ -45,23 +45,22 @@ class _ShiftsViewBody extends StatelessWidget {
           inAsyncCall: isLoading,
           child: Scaffold(
             appBar: CustomAppBar(
-              title: S.of(context).shifts, 
+              title: S.of(context).shifts,
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: state is ShiftSuccessWithData &&
-                      state.shifts.shifts != null &&
-                      state.shifts.shifts!.isNotEmpty
+              child: state is ShiftSuccessWithData && state.shifts.isNotEmpty
                   ? ListView.builder(
-                      itemCount: state.shifts.shifts!.length,
+                      itemCount: state.shifts.length,
                       itemBuilder: (context, index) {
-                        final shift = state.shifts.shifts![index];
+                        final shift = state.shifts[index];
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: ListTile(
                             title: Text(
                               "Shift ID: ${shift.id}",
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -69,6 +68,8 @@ class _ShiftsViewBody extends StatelessWidget {
                                 Text("Start: ${shift.startAt ?? '-'}"),
                                 Text("End: ${shift.endAt ?? '-'}"),
                                 Text("Orders: ${shift.ordersCount ?? 0}"),
+                                Text("Branch: ${shift.branch?.name ?? '-'}"),
+                                Text("User: ${shift.user?.name ?? '-'}"),
                               ],
                             ),
                           ),

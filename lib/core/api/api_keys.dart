@@ -267,9 +267,9 @@ abstract class ApiEndPoints {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}users/shifts/end";
   }
-  static Future<String> getShifts() async {
+  static Future<String> getShifts({required int userId}) async {
     final baseUrl = await _getPosUrl();
-    return "${baseUrl}users/get/shifts/1";
+    return "${baseUrl}shifts?user_id=$userId";
   }
   
 }

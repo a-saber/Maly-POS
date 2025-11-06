@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
-import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/auth/login/data/model/role_model.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
@@ -40,8 +39,8 @@ import 'package:pos_app/features/permissions/view/add_permission_view.dart';
 import 'package:pos_app/features/permissions/view/edit_permission_view.dart';
 import 'package:pos_app/features/permissions/view/permissions_view.dart';
 import 'package:pos_app/features/printer/data/model/printer_model.dart';
+import 'package:pos_app/features/printer/view/addipprinter_view.dart';
 import 'package:pos_app/features/printer/view/scan_printers_view.dart';
-import 'package:pos_app/features/printer/view/edit_printers.dart';
 import 'package:pos_app/features/printer/view/add_printer_view.dart';
 import 'package:pos_app/features/printer/view/get_printers_view.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
@@ -148,6 +147,7 @@ class AppRoutes {
   static const String printerDetails = '/printerDetails';
   static const String printerEdit = '/printerEdit';
   static const String shiftsView = '/shiftsView';
+  static const String addIpPrinter="/addIpPrinter";
 
   // Custom route with left-to-right + fade transition
   static PageRouteBuilder customGetPageRouteBuilder({
@@ -580,7 +580,11 @@ class AppRoutes {
           return customGetPageRouteBuilder(
             page: const ShiftsView(),
           );
-
+          
+        case addIpPrinter:
+          return customGetPageRouteBuilder(
+            page: const AddIpPrinterView(),
+        );
         default:
           throw Exception("Route not found: ${settings.name}");
       }

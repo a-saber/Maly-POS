@@ -1,9 +1,13 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/constant/constant.dart';
+import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
+import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
 import 'package:pos_app/features/printer/manager/scan_local_printers_cubit/scan_local_printers_state.dart';
@@ -33,7 +37,17 @@ class _AddPrinterViewBody extends StatelessWidget {
     final cubit = ScanLocalPrintersCubit.get(context);
 
     return Scaffold(
-      appBar: CustomAppBar(title: S.of(context).addPrinter),
+      appBar: CustomAppBar(title: S.of(context).addPrinter,
+          actions:(!kIsWeb&&(Platform.isAndroid||Platform.isIOS))
+              ? [
+              CustomTextBtn(
+                text: S.of(context).addPrinterIp,
+                onPressed:(){
+                  Navigator.pushNamed(context, AppRoutes.addIpPrinter);
+                } ,
+              ),
+            ]
+              : []),
       body: Padding(
         padding: AppPaddings.defaultView,
         child: Column(

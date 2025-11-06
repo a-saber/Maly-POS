@@ -1,4 +1,6 @@
 
+import 'package:pos_app/features/home/data/model/shifts_model.dart';
+
 abstract class ShiftState {}
 
 class ShiftInitial extends ShiftState {}
@@ -10,8 +12,9 @@ class ShiftSuccess extends ShiftState {
   ShiftSuccess({required this.message});
 }
 class ShiftSuccessWithData extends ShiftState {
-  final dynamic shifts;
-  ShiftSuccessWithData({required this.shifts});
+ final List<ShiftData> shifts;
+  final Data? pagination;
+  ShiftSuccessWithData({required this.shifts, this.pagination});
 }
 
 class ShiftError extends ShiftState {
