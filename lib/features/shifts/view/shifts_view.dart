@@ -40,7 +40,7 @@ class _ShiftsViewBody extends StatelessWidget {
       },
       builder: (context, state) {
         final isLoading = state is ShiftLoading;
-
+        final cubit = ShiftCubit.get(context);
         return ModalProgressHUD(
           inAsyncCall: isLoading,
           child: Scaffold(
@@ -51,6 +51,8 @@ class _ShiftsViewBody extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: state is ShiftSuccessWithData && state.shifts.isNotEmpty
                   ? ListView.builder(
+
+                      controller: cubit.scrollController, 
                       itemCount: state.shifts.length,
                       itemBuilder: (context, index) {
                         final shift = state.shifts[index];

@@ -92,17 +92,37 @@ class HomeRepo {
     }
   }
 
- Future<Either<ApiResponse, ShiftsModel>> getShifts() async {
+ShiftsModel? shiftsModel;
+
+Future<Either<ApiResponse, List<ShiftData>>> getShifts({bool isFresh = false}) async {
   try {
-    ApiResponse? response;
+    String url;
 
     int userId = CustomUserHiveBox.getUser().id!;
-    String url = await ApiEndPoints.getShifts(userId: userId);
-    response = await api.get(url: url);
+    if (shiftsModel == null || isFresh) {
+      url = await ApiEndPoints.getShifts(userId: userId);
+      shiftsModel = null;
+    } 
+    else {
+      if (shiftsModel!.data!.nextPageUrl == null) {
+        return const Right([]); 
+      }
+      url = shiftsModel!.data!.nextPageUrl!;
+    }
+
+    final response = await api.get(url: url);
 
     if (response.status) {
-      ShiftsModel shifts = ShiftsModel.fromJson(response.data);
-      return Right(shifts);
+      final newModel = ShiftsModel.fromJson(response.data);
+
+      if (shiftsModel == null || isFresh) {
+        shiftsModel = newModel;
+      } else {
+        shiftsModel!.data!.data!.addAll(newModel.data!.data!);
+        shiftsModel!.data!.nextPageUrl = newModel.data!.nextPageUrl;
+      }
+
+      return Right(shiftsModel!.data!.data ?? []);
     } else {
       return Left(response);
     }
@@ -111,5 +131,6 @@ class HomeRepo {
     return Left(ApiResponse.unKnownError());
   }
 }
+
 
 }
