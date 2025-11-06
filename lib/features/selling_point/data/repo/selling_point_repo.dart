@@ -4,6 +4,7 @@ import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
+import 'package:pos_app/features/categories/data/model/category_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/printer/data/model/printer_model.dart';
@@ -17,6 +18,59 @@ import 'package:pos_app/features/selling_point/data/model/type_of_take_order_mod
 
 import '../../../printer/data/model/printers_search_model.dart';
 
+class ProductsPrinters
+{
+  bool isMainPrinter;
+  PrinterModel printerModel;
+  CategoryModel? categoryModel;
+  int count;
+  List<ProductSellingModel> soledProducts ;
+
+  ProductsPrinters({this.isMainPrinter=false,required this.printerModel, required this.categoryModel, required this.count, required this.soledProducts});
+}
+Future<List<ProductsPrinters>> toPrint({required List<ProductSellingModel> soledProducts, required List<PrinterModel> printers})async
+{
+  List<ProductsPrinters> productsPrinters = []; 
+  for(int i=0; i<printers.length;i++)
+  {
+    if(printers[i].automatic == true && (printers[i].printReceiptCount??0) >0)
+    {
+      productsPrinters.add(ProductsPrinters(
+        isMainPrinter: true,
+        printerModel: printers[i],
+        categoryModel: null,
+        count: printers[i].printReceiptCount??0,
+        soledProducts: soledProducts
+      ));
+    }
+    for(int j=0; j<(printers[i].categories?.length??0);j++)
+    {
+      int? categoryId = printers[i].categories?[j].id;
+      ProductsPrinters pp= ProductsPrinters(
+          printerModel: printers[i],
+          categoryModel: printers[i].categories![j],
+          count: printers[i].categories?[j].pivot?.printReceiptCount??0,
+          soledProducts: []);
+      for(int k=0; k<(soledProducts.length);k++)
+      {
+        if(soledProducts[k].product.categoryId == categoryId) // product has category related to printer
+        {
+          pp.soledProducts.add(
+              ProductSellingModel(
+                count: soledProducts[k].count,
+                product: soledProducts[k].product
+              )
+          );
+        }
+      }
+      if(pp.soledProducts.isNotEmpty)
+      {
+        productsPrinters.add(pp);
+      }
+    }
+  }
+  return productsPrinters;
+}
 class SellingPointRepo {
   final ApiHelper api;
 
@@ -141,6 +195,17 @@ class SellingPointRepo {
         isFormData: false,
       );
       if (response.status) {
+        List<ProductsPrinters> productPrinters = [];
+        try{
+          await getPrinters();
+          productPrinters = await toPrint(soledProducts: products, printers: printers);
+
+        }
+        catch(e){
+
+          debugPrint("Error getPrinters in newSales: $e");
+        }
+
         // Printing.directPrintPdf(
         //     printer:
         //     Printer(url: '{sharedPreferences!.getString( "cashierprinter")}'),
@@ -148,19 +213,13 @@ class SellingPointRepo {
         //     salesInvoicesPdf80(response.data as Map<String, dynamic>));
 
 
-        try{
-          await getPrinters();
-        }
-        catch(e){
 
-          debugPrint("Error getPrinters in newSales: $e");
-        }
 
         return Right(PrintModel(
             apiResponse: response,
             branchName: branch?.name ?? 'مش معروف',
             paid: paid,
-            printers: printers
+            productsPrinters: productPrinters
         ));
       } else {
         return Left(

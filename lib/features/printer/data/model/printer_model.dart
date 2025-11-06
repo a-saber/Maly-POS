@@ -1,5 +1,6 @@
 import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
+import 'package:pos_app/features/selling_point/data/model/product_selling_model.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 
 import '../../manager/printer_data_cubit/printer_data_cubit.dart';
@@ -19,8 +20,9 @@ class PrinterModel {
   String? updatedAt;
   String? createdAt;
   int? id;
-  List<CategoryModel>? categories;
+  List<CategoryModel>? categories=[];
   DiscoveredPrinter? discoveredPrinter;
+
 
   PrinterModel(
       {this.printerType,

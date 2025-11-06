@@ -61,7 +61,9 @@ dependencies:
   shared_preferences: ^2.5.3
   shimmer: ^3.0.0
   sunmi_printer_plus: null
+  path_provider:
   thermal_printer:
+  pdf_render:
   esc_pos_utils_plus:
 
 dev_dependencies:

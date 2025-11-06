@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/helper/is_mobile.dart';
+import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/core/invoice/sales_invoices_pdf_80.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
@@ -63,18 +64,25 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   // ignore: use_build_context_synchronously
                   Navigator.pop(context);
                 }
-                // state.printModel.;
+                state.printModel.productsPrinters;
+
                 try {
-                  if (!Platform.isAndroid) {
-                    throw 'not android';
-                  }
-                  await printSunmiPDF(await salesInvoicesPdf80(
-                    state.printModel.apiResponse.data as Map<String, dynamic>,
+                  PrinterHelper().printAfterSale(
+                    productsPrinters: state.printModel.productsPrinters,
+                    data: state.printModel.apiResponse.data as Map<String, dynamic>,
                     branchName: state.printModel.branchName,
                     paid: state.printModel.paid,
-                  ));
-                  await SunmiPrinter.lineWrap(4);
-                  await SunmiPrinter.cutPaper();
+                  );
+                  // if (!Platform.isAndroid) {
+                  //   throw 'not android';
+                  // }
+                  // await printSunmiPDF(await salesInvoicesPdf80(
+                  //   state.printModel.apiResponse.data as Map<String, dynamic>,
+                  //   branchName: state.printModel.branchName,
+                  //   paid: state.printModel.paid,
+                  // ));
+                  // await SunmiPrinter.lineWrap(4);
+                  // await SunmiPrinter.cutPaper();
                 } catch (e) {
                   Navigator.push(
                     // ignore: use_build_context_synchronously
