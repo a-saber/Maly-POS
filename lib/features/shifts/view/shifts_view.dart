@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
@@ -51,27 +52,33 @@ class _ShiftsViewBody extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: state is ShiftSuccessWithData && state.shifts.isNotEmpty
                   ? ListView.builder(
-
-                      controller: cubit.scrollController, 
+                      controller: cubit.scrollController,
                       itemCount: state.shifts.length,
                       itemBuilder: (context, index) {
                         final shift = state.shifts[index];
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           child: ListTile(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                               AppRoutes.shiftDetails,
+                                arguments: shift.id!,
+                              );
+                            },
                             title: Text(
-                              "Shift ID: ${shift.id}",
+                              "${S.of(context).shiftNumber}: ${shift.id}",
                               style:
                                   const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("Start: ${shift.startAt ?? '-'}"),
-                                Text("End: ${shift.endAt ?? '-'}"),
-                                Text("Orders: ${shift.ordersCount ?? 0}"),
-                                Text("Branch: ${shift.branch?.name ?? '-'}"),
-                                Text("User: ${shift.user?.name ?? '-'}"),
+                                Text("${S.of(  context).startAt}: ${shift.startAt ?? '-'}"),
+                                Text("${S.of(context).endAt}: ${shift.endAt ?? '-'}"),
+                                Text("${S.of(context).ordersCount}: ${shift.ordersCount ?? 0}"),
+                                Text("${S.of(context).branch}: ${shift.branch?.name ?? '-'}"),
+                                Text("${S.of(context).manager}: ${shift.user?.name ?? '-'}"),
                               ],
                             ),
                           ),

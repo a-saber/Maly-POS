@@ -2211,6 +2211,94 @@ class S {
          args: []
          );
   }
+  String get shiftDetails {
+    return Intl.message(
+      'Shift Details',
+       name: 'shiftDetails',
+        desc: '',
+         args: []
+         );
+  }
+  String get shiftNumber {
+    return Intl.message(
+      'Shift Number',
+       name: 'shiftNumber',
+        desc: '',
+         args: []
+         );
+  }
+  String get startAt {
+    return Intl.message(
+      'Start At',
+       name: 'startAt',
+        desc: '',
+         args: []
+         );
+  }
+  String get endAt {
+    return Intl.message(
+      'End At',
+       name: 'endAt',
+        desc: '',
+         args: []
+         );
+  }
+  String get ordersCount {
+    return Intl.message(
+      'Orders Count',
+       name: 'ordersCount',
+        desc: '',
+         args: []
+         );
+  }
+  String get openingQuantity {
+    return Intl.message(
+      'Opening Quantity',
+       name: 'openingQuantity',
+        desc: '',
+         args: []
+         );
+  }
+  String get summary {
+    return Intl.message(
+      'Summary',
+       name: 'summary',
+        desc: '',
+         args: []
+         );
+  }
+  String get tax{
+    return Intl.message(
+      'Tax',
+       name: 'tax',
+        desc: '',
+         args: []
+         );
+  }
+  String get somethingWentWrong {
+    return Intl.message(
+      'Something went wrong',
+       name: 'somethingWentWrong',
+        desc: '',
+         args: []
+         );
+  }
+  String get manager {
+    return Intl.message(
+      'Manager',
+       name: 'manager',
+        desc: '',
+         args: []
+         );
+  }
+  String get orders {
+    return Intl.message(
+      'Orders',
+       name: 'orders',
+        desc: '',
+         args: []
+         );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

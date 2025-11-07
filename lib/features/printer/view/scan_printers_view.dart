@@ -1,6 +1,5 @@
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/constant/constant.dart';
@@ -11,7 +10,6 @@ import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
 import 'package:pos_app/features/printer/manager/scan_local_printers_cubit/scan_local_printers_state.dart';
-import 'package:pos_app/features/printer/view/add_printer_view.dart';
 import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
 import '../manager/scan_local_printers_cubit/scan_local_printers_cubit.dart';
@@ -97,13 +95,10 @@ class _AddPrinterViewBody extends StatelessWidget {
                           return PrinterItem(
                             printer: printer,
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      AddPrinterView(discoveredPrinter: printer),
-                                ),
-                              );
+                              Navigator.pushNamed(context
+                              , AppRoutes.addPrinter,
+                                  arguments: printer)
+                                  .then((value) => cubit.getDiscoveredPrinters());
                             },
                           );
                         },

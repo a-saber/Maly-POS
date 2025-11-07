@@ -1,3 +1,5 @@
+import 'package:pos_app/features/home/data/model/end_shift_model.dart';
+import 'package:pos_app/features/home/data/model/getshift.dart' hide User, Branch;
 class ShiftsModel {
   bool? status;
   String? message;
@@ -116,44 +118,3 @@ class ShiftData {
   }
 }
 
-class User {
-  int? id;
-  String? name;
-  String? email;
-  String? phone;
-
-  User({this.id, this.name, this.email, this.phone});
-
-  User.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    email = json['email'];
-    phone = json['phone'];
-  }
-}
-
-class Branch {
-  int? id;
-  String? name;
-
-  Branch({this.id, this.name});
-
-  Branch.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-  }
-}
-
-class Links {
-  String? url;
-  String? label;
-  bool? active;
-
-  Links({this.url, this.label, this.active});
-
-  Links.fromJson(Map<String, dynamic> json) {
-    url = json['url'];
-    label = json['label'];
-    active = json['active'];
-  }
-}

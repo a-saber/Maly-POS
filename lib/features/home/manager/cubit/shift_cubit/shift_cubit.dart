@@ -93,6 +93,16 @@ Future<void> loadMoreShifts() async {
 }
 
 
+Future<void> fetchShiftDetails(int shiftId) async {
+  emit(ShiftDetailsLoading());
+
+  final result = await homeRepo.getShiftDetails(shiftId);
+
+  result.fold(
+    (failure) => emit(ShiftDetailsError(message: failure.message ?? "Failed")),
+    (shiftDetails) => emit(ShiftDetailsSuccess(shiftDetails: shiftDetails)),
+  );
+}
 
 
 }

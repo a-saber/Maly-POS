@@ -7,6 +7,7 @@ import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
 import 'package:pos_app/features/home/data/model/get_single_user_model.dart';
+import 'package:pos_app/features/home/data/model/getshift.dart';
 import 'package:pos_app/features/home/data/model/shifts_model.dart';
 
 class HomeRepo {
@@ -131,6 +132,24 @@ Future<Either<ApiResponse, List<ShiftData>>> getShifts({bool isFresh = false}) a
     return Left(ApiResponse.unKnownError());
   }
 }
+Future<Either<ApiResponse, GetShift>> getShiftDetails(int shiftId) async {
+  try {
+    String url = await ApiEndPoints.getShiftDetails(shiftId: shiftId,);
+
+    final response = await api.get(url: url);
+
+    if (response.status) {
+      final model = GetShift.fromJson(response.data);
+      return Right(model);
+    } else {
+      return Left(response);
+    }
+  } catch (e) {
+    debugPrint(e.toString());
+    return Left(ApiResponse.unKnownError());
+  }
+}
+
 
 
 }

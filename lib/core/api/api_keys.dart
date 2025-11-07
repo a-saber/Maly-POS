@@ -271,5 +271,15 @@ abstract class ApiEndPoints {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}shifts?user_id=$userId";
   }
-  
+ static Future<String> getShiftDetails({
+  required int shiftId,
+  int perPage = 10,
+  String sort = "desc",
+  String sortBy = "created_at",
+}) async {
+  final baseUrl = await _getPosUrl();
+  return "${baseUrl}shifts/$shiftId?per_page=$perPage&sort=$sort&sort_by=$sortBy";
+}
+
+
 }
