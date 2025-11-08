@@ -3,7 +3,7 @@ class GetShift {
   String? message;
   Shift? shift;
   Summary? summary;
-  Data? data;
+  Dataforshift? data;
   Settings? settings;
 
   GetShift(
@@ -20,7 +20,7 @@ class GetShift {
     shift = json['shift'] != null ? new Shift.fromJson(json['shift']) : null;
     summary =
         json['summary'] != null ? new Summary.fromJson(json['summary']) : null;
-    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? new Dataforshift.fromJson(json['data']) : null;
     settings = json['settings'] != null
         ? new Settings.fromJson(json['settings'])
         : null;
@@ -259,7 +259,7 @@ class Summary {
   }
 }
 
-class Data {
+class Dataforshift {
   int? currentPage;
   List<dynamic>? data;
   String? firstPageUrl;
@@ -274,7 +274,7 @@ class Data {
   dynamic to;
   int? total;
 
-  Data(
+  Dataforshift(
       {this.currentPage,
       this.data,
       this.firstPageUrl,
@@ -289,7 +289,7 @@ class Data {
       this.to,
       this.total});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  Dataforshift.fromJson(Map<String, dynamic> json) {
     currentPage = json['current_page'];
     if (json['data'] != null) {
       data = <dynamic>[];

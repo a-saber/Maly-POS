@@ -1,5 +1,5 @@
 
-import 'package:pos_app/features/home/data/model/getshift.dart' hide Data;
+import 'package:pos_app/features/home/data/model/getshift.dart';
 import 'package:pos_app/features/home/data/model/shifts_model.dart';
 
 abstract class ShiftState {}
@@ -26,7 +26,9 @@ class ShiftDetailsLoading extends ShiftState {}
 
 class ShiftDetailsSuccess extends ShiftState {
   final GetShift shiftDetails;
-  ShiftDetailsSuccess({required this.shiftDetails});
+  final Dataforshift? pagination;
+  ShiftDetailsSuccess({required this.shiftDetails,
+    this.pagination});
 }
 
 class ShiftDetailsError extends ShiftState {

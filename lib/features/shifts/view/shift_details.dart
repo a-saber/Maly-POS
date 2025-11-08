@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
 import 'package:pos_app/generated/l10n.dart';
@@ -11,11 +12,16 @@ class ShiftDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = MyServiceLocator.getSingleton<ShiftCubit>();
+
+    // Fetch details
+    cubit.fetchShiftDetails(shiftId);
+    final scrollController = cubit.shiftDetailsScrollController;
     return BlocProvider.value(
-      value: MyServiceLocator.getSingleton<ShiftCubit>()..fetchShiftDetails(shiftId),     
+      value: cubit,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(S.of(context).shiftDetails),
+        appBar: CustomAppBar(
+          title: S.of(context).shiftDetails, 
         ),
         body: BlocBuilder<ShiftCubit, ShiftState>(
           builder: (context, state) {
@@ -27,13 +33,14 @@ class ShiftDetailsView extends StatelessWidget {
               final shift = state.shiftDetails.shift!;
               final summary = state.shiftDetails.summary;
               final orders = state.shiftDetails.data?.data ?? [];
-
-              return SingleChildScrollView(
+                print("ORDERS DATA: $orders");
+              return ListView.builder(
+                controller: scrollController,
                 padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card(
+                itemCount: orders.length + 5, 
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return Card(
                       child: ListTile(
                         title: Text("${S.of(context).shiftNumber} : $shiftId"),
                         subtitle: Column(
@@ -46,52 +53,56 @@ class ShiftDetailsView extends StatelessWidget {
                           ],
                         ),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-                    Card(
+                    );
+                  } else if (index == 1) {
+                    return const SizedBox(height: 12);
+                  } else if (index == 2) {
+                    return Card(
                       child: ListTile(
                         title: Text(S.of(context).branch),
                         subtitle: Text(shift.branch?.name ?? "-"),
                       ),
-                    ),
-
-                    const SizedBox(height: 12),
-                    Card(
+                    );
+                  } else if (index == 3) {
+                    return Card(
                       child: ListTile(
                         title: Text(S.of(context).user),
                         subtitle: Text(shift.user?.name ?? "-"),
                       ),
-                    ),
-
-                    const SizedBox(height: 16),
-                    Text(S.of(context).summary,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 8),
-
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          children: [
-                            _row("${S.of(context).total}:", summary?.subtotal),
-                            _row("${S.of(context).discount}:", summary?.discountTotal),
-                            _row("${S.of(context).totalAfterDiscount}:", summary?.totalAfterDiscount),
-                            _row("${S.of(context).tax}:", summary?.taxTotal),
-                            _row("${S.of(context).totalAfterTax}:", summary?.totalAfterTax),
-                            _row("${S.of(context).cash}:", summary?.cashTotal),
-                            _row("${S.of(context).online}:", summary?.onlineTotal),
-                          ],
+                    );
+                  } else if (index == 4) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 16),
+                        Text(S.of(context).summary,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const SizedBox(height: 8),
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Column(
+                              children: [
+                                _row("${S.of(context).total}:", summary?.subtotal),
+                                _row("${S.of(context).discount}:", summary?.discountTotal),
+                                _row("${S.of(context).totalAfterDiscount}:", summary?.totalAfterDiscount),
+                                _row("${S.of(context).tax}:", summary?.taxTotal),
+                                _row("${S.of(context).totalAfterTax}:", summary?.totalAfterTax),
+                                _row("${S.of(context).cash}:", summary?.cashTotal),
+                                _row("${S.of(context).online}:", summary?.onlineTotal),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-                    Text(S.of(context).orders,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 8),
-
-                    Card(
+                        const SizedBox(height: 24),
+                        Text(S.of(context).orders,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                        const SizedBox(height: 8),
+                      ],
+                    );
+                  } else {
+                    final order = orders[index - 5];
+                    return Card(
                       child: Table(
                         border: TableBorder.all(color: Colors.grey),
                         columnWidths: const {
@@ -100,37 +111,45 @@ class ShiftDetailsView extends StatelessWidget {
                           2: FlexColumnWidth(2),
                         },
                         children: [
-                          const TableRow(
-                            decoration: BoxDecoration(color: Colors.black12),
+                          TableRow(
+                            decoration: const BoxDecoration(color: Colors.black12),
                             children: [
-                              Padding(padding: EdgeInsets.all(8), child: Text("Order #", style: TextStyle(fontWeight: FontWeight.bold))),
-                              Padding(padding: EdgeInsets.all(8), child: Text("Total", style: TextStyle(fontWeight: FontWeight.bold))),
-                              Padding(padding: EdgeInsets.all(8), child: Text("Created At", style: TextStyle(fontWeight: FontWeight.bold))),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text("Order #", style: const TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text("Total", style: const TextStyle(fontWeight: FontWeight.bold)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text("Created At", style: const TextStyle(fontWeight: FontWeight.bold)),
+                              ),
                             ],
                           ),
+                          TableRow(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(order["id"]?.toString() ?? "-"),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(order["total_after_tax"] != null ? double.tryParse(order["total_after_tax"].toString())?.toStringAsFixed(2) ?? "-" : "-"),
 
-                          for (var order in orders)
-                            TableRow(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(order["id"]?.toString() ?? "-"),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(order["total"]?.toString() ?? "-"),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Text(order["created_at"]?.toString() ?? "-"),
-                                ),
-                              ],
-                            ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Text(order["created_at"]?.toString() ?? "-"),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
+                    );
+                  }
+                },
               );
             }
 
