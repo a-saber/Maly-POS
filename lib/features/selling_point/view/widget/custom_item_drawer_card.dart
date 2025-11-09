@@ -56,7 +56,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                           maxLines: 1,
                         ),
                         Text(
-                          "${product.product.price}",
+                          "${product.product.priceAfterTax}",
                           style: AppFontStyle.s12(
                             context: context,
                             color: AppColors.black,

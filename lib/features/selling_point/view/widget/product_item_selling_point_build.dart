@@ -102,7 +102,7 @@ class ProductItemSellingPointBuild extends StatelessWidget {
               //   textAlign: TextAlign.center,
               // ),
               Text(
-                "${product.price}",
+                "${product.priceAfterTax}",
                 style: AppFontStyle.itemssmallTitle(
                   fontWeight: FontWeight.w400,
                   color: Colors.black,
