@@ -6,16 +6,21 @@ import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
 import 'package:pos_app/generated/l10n.dart';
 
-class ShiftDetailsView extends StatelessWidget {
+class ShiftDetailsView extends StatefulWidget {
   final int shiftId;
   const ShiftDetailsView({super.key, required this.shiftId});
 
+  @override
+  State<ShiftDetailsView> createState() => _ShiftDetailsViewState();
+}
+
+class _ShiftDetailsViewState extends State<ShiftDetailsView> {
   @override
   Widget build(BuildContext context) {
     final cubit = MyServiceLocator.getSingleton<ShiftCubit>();
 
     // Fetch details
-    cubit.fetchShiftDetails(shiftId);
+    cubit.fetchShiftDetails(widget.shiftId);
     final scrollController = cubit.shiftDetailsScrollController;
     return BlocProvider.value(
       value: cubit,
@@ -32,7 +37,7 @@ class ShiftDetailsView extends StatelessWidget {
             if (state is ShiftDetailsSuccess) {
               final shift = state.shiftDetails.shift!;
               final summary = state.shiftDetails.summary;
-              final orders = state.shiftDetails.data?.data ?? [];
+              final orders = cubit.shiftOrders;
                 print("ORDERS DATA: $orders");
               return ListView.builder(
                 controller: scrollController,
@@ -42,7 +47,7 @@ class ShiftDetailsView extends StatelessWidget {
                   if (index == 0) {
                     return Card(
                       child: ListTile(
-                        title: Text("${S.of(context).shiftNumber} : $shiftId"),
+                        title: Text("${S.of(context).shiftNumber} : ${widget.shiftId}"),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [

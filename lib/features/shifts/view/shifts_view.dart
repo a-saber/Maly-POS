@@ -14,8 +14,8 @@ class ShiftsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ShiftCubit(MyServiceLocator.getIt())
-        ..fetchShifts(), // Fetch shifts on init
+      create: (context) => ShiftCubit(MyServiceLocator.getIt())..init(),
+ // Fetch shifts on init
       child: const _ShiftsViewBody(),
     );
   }
