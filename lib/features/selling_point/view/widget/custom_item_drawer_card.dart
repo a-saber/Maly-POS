@@ -105,7 +105,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${product.totalPrice()}',
+                '${product.product.priceAfterTax !* product.count}',
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,
