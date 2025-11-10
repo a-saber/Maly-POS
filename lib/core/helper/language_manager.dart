@@ -28,13 +28,15 @@ class LanguageManager {
     CacheHelper.saveData(key: CacheKeys.language, value: languageModel.name);
   }
 
-  static Locale getLanguage() {
+  static Locale? getLanguage() {
     String? data = CacheHelper.getString(key: CacheKeys.language);
-
-    LanguageModel languageModel = LanguageModel.values.firstWhere(
+    if (data == null) {
+      return null;
+    }
+    LanguageModel? languageModel = LanguageModel.values.firstWhere(
       (element) => element.name == data,
-      orElse: () => LanguageModel.english,
     );
+
     if (languageModel == LanguageModel.arabic) {
       return _getArabicLocale();
     } else {
