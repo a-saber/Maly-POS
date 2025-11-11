@@ -15,12 +15,16 @@ class ShiftDetailsView extends StatefulWidget {
 }
 
 class _ShiftDetailsViewState extends State<ShiftDetailsView> {
+   late final ShiftCubit cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    cubit = MyServiceLocator.getSingleton<ShiftCubit>();
+    cubit.initShiftDetails(widget.shiftId); 
+  }
   @override
   Widget build(BuildContext context) {
-    final cubit = MyServiceLocator.getSingleton<ShiftCubit>();
-
-    // Fetch details
-    cubit.fetchShiftDetails(widget.shiftId);
     final scrollController = cubit.shiftDetailsScrollController;
     return BlocProvider.value(
       value: cubit,
@@ -53,7 +57,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                           children: [
                             Text("${S.of(context).startAt}: ${shift.startAt ?? '-'}"),
                             Text("${S.of(context).endAt}: ${shift.endAt ?? '-'}"),
-                            Text("${S.of(context).openingQuantity}: ${shift.openingQuantity ?? 0}"),
+                            Text("${S.of(context).openingQuantity}: ${shift.openingQuantity}"),
                             Text("${S.of(context).ordersCount}: ${shift.ordersCount ?? 0}"),
                           ],
                         ),

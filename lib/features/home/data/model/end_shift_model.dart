@@ -34,68 +34,6 @@ class EndShiftModel {
   }
 }
 
-class Shift {
-  int? id;
-  int? openingQuantity;
-  String? createdAt;
-  String? updatedAt;
-  int? userId;
-  String? startAt;
-  String? endAt;
-  int? branchId;
-  int? ordersCount;
-  User? user;
-  Branch? branch;
-
-  Shift(
-      {this.id,
-      this.openingQuantity,
-      this.createdAt,
-      this.updatedAt,
-      this.userId,
-      this.startAt,
-      this.endAt,
-      this.branchId,
-      this.ordersCount,
-      this.user,
-      this.branch});
-
-  Shift.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    openingQuantity = json['opening_quantity'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    userId = json['user_id'];
-    startAt = json['start_at'];
-    endAt = json['end_at'];
-    branchId = json['branch_id'];
-    ordersCount = json['orders_count'];
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
-    branch =
-        json['branch'] != null ? new Branch.fromJson(json['branch']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['opening_quantity'] = this.openingQuantity;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    data['user_id'] = this.userId;
-    data['start_at'] = this.startAt;
-    data['end_at'] = this.endAt;
-    data['branch_id'] = this.branchId;
-    data['orders_count'] = this.ordersCount;
-    if (this.user != null) {
-      data['user'] = this.user!.toJson();
-    }
-    if (this.branch != null) {
-      data['branch'] = this.branch!.toJson();
-    }
-    return data;
-  }
-}
-
 class User {
   int? id;
   String? name;

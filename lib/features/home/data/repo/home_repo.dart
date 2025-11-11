@@ -4,7 +4,6 @@ import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
-import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
 import 'package:pos_app/features/home/data/model/end_shift_model.dart';
 import 'package:pos_app/features/home/data/model/get_single_user_model.dart';
@@ -52,7 +51,7 @@ class HomeRepo {
         url: url,
         data: {
           "branch_id": branchId,
-          "opening_quantity": cash,
+          "opening_quantity": cash.toString(),
         },
       );
       if (response.status) {
@@ -95,80 +94,83 @@ class HomeRepo {
 
   ShiftsModel? shiftsModel;
 
- Future<Either<ApiResponse, List<ShiftData>>> getShifts({bool isFresh = false}) async {
-  try {
-    String url;
+  Future<Either<ApiResponse, List<ShiftData>>> getShifts(
+      {bool isFresh = false}) async {
+    try {
+      String url;
 
-    if (shiftsModel == null || isFresh) {
-      url = await ApiEndPoints.getShifts(
-        userId: CustomUserHiveBox.getUser().id!,
-      );
-      shiftsModel = null;
-    } else {
-      if (shiftsModel!.data!.nextPageUrl == null) {
-        return const Right([]);
-      }
-      url = shiftsModel!.data!.nextPageUrl!;
-    }
-
-    final response = await api.get(url: url);
-
-    if (response.status) {
-      final newModel = ShiftsModel.fromJson(response.data);
-      
       if (shiftsModel == null || isFresh) {
-        shiftsModel = newModel;
-        return Right(shiftsModel!.data!.data!);
+        url = await ApiEndPoints.getShifts(
+          userId: CustomUserHiveBox.getUser().id!,
+        );
+        shiftsModel = null;
       } else {
-        shiftsModel!.data!.data!.addAll(newModel.data!.data!);
-        shiftsModel!.data!.nextPageUrl = newModel.data!.nextPageUrl;
-        return Right(shiftsModel!.data!.data!);
-      }
-    }
-
-    return Left(response);
-  } catch (_) {
-    return Left(ApiResponse.unKnownError());
-  }
-}
-GetShift? getShift; 
-
-Future<Either<ApiResponse, GetShift>> getShiftDetails(int shiftId, {bool isFresh = false}) async {
-  try {
-    String url;
-    if (getShift == null || isFresh) {
-      url = await ApiEndPoints.getShiftDetails(shiftId: shiftId);
-      getShift = null; 
-    } else {
-      if (getShift?.data?.nextPageUrl == null) {
-        return Right(getShift!); 
-      }
-      url = getShift!.data!.nextPageUrl!.toString();
-    }
-
-    final response = await api.get(url: url);
-
-    if (response.status) {
-      final model = GetShift.fromJson(response.data);
-
-      if (isFresh || getShift == null) {
-        getShift = model; 
-      } else {
-        final existingOrders = getShift!.data?.data ?? [];
-        final newOrders = model.data?.data ?? [];
-        getShift!.data?.data = [...existingOrders, ...newOrders];
-        getShift!.data?.nextPageUrl = model.data?.nextPageUrl;
+        if (shiftsModel!.data!.nextPageUrl == null) {
+          return const Right([]);
+        }
+        url = shiftsModel!.data!.nextPageUrl!;
       }
 
-      return Right(getShift!);
-    } else {
+      final response = await api.get(url: url);
+
+      if (response.status) {
+        final newModel = ShiftsModel.fromJson(response.data);
+
+        if (shiftsModel == null || isFresh) {
+          shiftsModel = newModel;
+          return Right(shiftsModel!.data!.data!);
+        } else {
+          shiftsModel!.data!.data!.addAll(newModel.data!.data!);
+          shiftsModel!.data!.nextPageUrl = newModel.data!.nextPageUrl;
+          return Right(shiftsModel!.data!.data!);
+        }
+      }
+
       return Left(response);
+    } catch (_) {
+      return Left(ApiResponse.unKnownError());
     }
-  } catch (e) {
-    debugPrint(e.toString());
-    return Left(ApiResponse.unKnownError());
   }
-}
 
+  GetShift? getShift;
 
+  Future<Either<ApiResponse, GetShift>> getShiftDetails(int shiftId,
+      {bool isFresh = false}) async {
+    try {
+      String url;
+      if (getShift == null || isFresh) {
+        url = await ApiEndPoints.getShiftDetails(shiftId: shiftId);
+        getShift = null;
+      } else {
+        if (getShift?.data?.nextPageUrl == null) {
+          return Right(getShift!);
+        }
+        url = getShift!.data!.nextPageUrl!.toString();
+      }
+
+      final response = await api.get(url: url);
+
+      if (response.status) {
+        final model = GetShift.fromJson(response.data);
+
+        if (isFresh || getShift == null) {
+          getShift = model;
+        } else {
+          final existingOrders = getShift!.data?.data ?? [];
+          final newOrders = model.data?.data ?? [];
+          getShift!.data?.data = [...existingOrders, ...newOrders];
+          getShift!.data?.nextPageUrl = model.data?.nextPageUrl;
+          getShift!.shift = model.shift;
+          getShift!.summary = model.summary;
+        }
+
+        return Right(getShift!);
+      } else {
+        return Left(response);
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+      return Left(ApiResponse.unKnownError());
+    }
+  }
 }

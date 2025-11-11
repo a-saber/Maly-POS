@@ -13,18 +13,37 @@ class ShiftCubit extends Cubit<ShiftState> {
   static ShiftCubit get(context) => BlocProvider.of<ShiftCubit>(context);
   List<Map<String, dynamic>> shiftOrders = [];
   bool _isLoadingMoreShiftOrders = false;
+  final TextEditingController useridController = TextEditingController();
+  final TextEditingController cashController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
+ Future<void> startShift({
+  required int branchId,
+  required double cash,
+}) async {
+  emit(ShiftLoading());
 
-  Future<void> startShift({
-    required int branchId,
-    required double cash,
-  }) async {
-    emit(ShiftLoading());
-    final result = await homeRepo.startShift(branchId: branchId, cash: cash);
-    result.fold(
-      (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
-      (_) => emit(ShiftSuccess(message: "Shift started successfully")),
-    );
-  }
+  final result = await homeRepo.startShift(branchId: branchId, cash: cash);
+  
+  result.fold(
+    (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
+    (shift) async {
+      final shiftDetailsResult = await homeRepo.getShiftDetails(branchId, isFresh: true);
+
+      shiftDetailsResult.fold(
+        (failure) => emit(ShiftError(message: failure.message ?? "Failed to fetch shift details")),
+        (shiftDetails) {
+          print("=== START SHIFT RESPONSE ===");
+          print("Shift ID: ${shiftDetails.shift?.id}");
+          print("Opening Quantity: ${shiftDetails.shift?.openingQuantity}");
+          print("Full Response: ${shiftDetails.toJson()}");
+          emit (ShiftStarted(message: "Shift started successfully",
+         shift: shiftDetails.shift, ));
+        },
+      );
+    },
+  );
+}
+
 
   Future<void> endShift({required int branchId}) async {
     emit(ShiftLoading());
@@ -41,13 +60,22 @@ class ShiftCubit extends Cubit<ShiftState> {
 
           if (index != -1) shifts[index] = updatedShift;
 
-          emit(ShiftSuccessWithData(
-            shifts: shifts,
-            pagination: currentState.pagination,
-          ));
+         emit(
+          ShiftEnded(message: "Shift ended successfully", shifts: shifts,
+          endShiftModel,
+          pagination: currentState.pagination,)
+         );
+        }else{
+           emit(
+          ShiftEnded(
+            message: "Shift ended successfully",
+            endShiftModel,
+            shifts: updatedShift != null ? [updatedShift] : [],
+          ),
+        );
         }
 
-        emit(ShiftSuccess(message: "Shift ended successfully"));
+        
       },
     );
   }
@@ -111,26 +139,27 @@ class ShiftCubit extends Cubit<ShiftState> {
     }
   }
 
-  Future<void> fetchShiftDetails(int shiftId, {bool isFresh = false}) async {
-    if (isFresh) shiftOrders.clear();
+ Future<void> fetchShiftDetails(int shiftId, {bool isFresh = false}) async {
+  if (isFresh) shiftOrders.clear();
 
-    emit(ShiftDetailsLoading());
+  emit(ShiftDetailsLoading());
 
-    final result = await homeRepo.getShiftDetails(shiftId, isFresh: isFresh);
-    result.fold(
-      (failure) =>
-          emit(ShiftDetailsError(message: failure.message ?? "Failed")),
-      (shiftDetails) {
-        shiftOrders = List.of(shiftDetails.data?.data ?? [])
-            .map((e) => e as Map<String, dynamic>)
-            .toList();
-        emit(ShiftDetailsSuccess(
-          shiftDetails: shiftDetails,
-          pagination: shiftDetails.data,
-        ));
-      },
-    );
-  }
+  final result = await homeRepo.getShiftDetails(shiftId, isFresh: isFresh);
+  result.fold(
+    (failure) => emit(ShiftDetailsError(message: failure.message ?? "Failed")),
+    (shiftDetails) {
+      // orders
+      shiftOrders = List.of(shiftDetails.data?.data ?? [])
+          .map((e) => e as Map<String, dynamic>)
+          .toList();
+      emit(ShiftDetailsSuccess(
+        shiftDetails: shiftDetails, 
+        pagination: shiftDetails.data,
+      ));
+    },
+  );
+}
+
 
   Future<void> loadMoreShiftOrders(int shiftId) async {
       final currentState = state;
@@ -157,4 +186,33 @@ class ShiftCubit extends Cubit<ShiftState> {
       },
     );
   }
+  Future<void> filterShifts({
+  int? userId,
+  int? branchId,
+  DateTime? startAt,
+  DateTime? endAt,
+}) async {
+  emit(ShiftLoading());
+
+  final result = await homeRepo.getShifts(isFresh: true);
+  result.fold(
+    (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
+    (data) {
+      final filtered = data.where((shift) {
+        final userMatch = userId == null || shift.userId == userId;
+        final branchMatch = branchId == null || shift.branchId == branchId;
+        final startMatch = startAt == null ||
+            (shift.startAt != null &&
+                DateTime.tryParse(shift.startAt!)!.isAfter(startAt));
+        final endMatch = endAt == null ||
+            (shift.endAt != null &&
+                DateTime.tryParse(shift.endAt!)!.isBefore(endAt));
+        return userMatch && branchMatch && startMatch && endMatch;
+      }).toList();
+
+      emit(ShiftSuccessWithData(shifts: filtered));
+    },
+  );
+}
+
 }

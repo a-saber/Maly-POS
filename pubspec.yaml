@@ -63,7 +63,7 @@ dependencies:
   sunmi_printer_plus: null
   thermal_printer:
   esc_pos_utils_plus:
-
+  fluttertoast: ^8.2.1
 dev_dependencies:
   build_runner: ^2.1.0
   flutter_lints: ^5.0.0

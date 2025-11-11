@@ -4,8 +4,11 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
+import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_branches_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
+import 'package:pos_app/features/shifts/widget/show_toast.dart';
+import 'package:pos_app/features/shifts/widget/showdialog_for_shift.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class ShiftsView extends StatelessWidget {
@@ -13,9 +16,17 @@ class ShiftsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ShiftCubit(MyServiceLocator.getIt())..init(),
- // Fetch shifts on init
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => GetAllBranchesCubit(MyServiceLocator.getIt()),
+        ),
+        BlocProvider(
+          create: (context) => ShiftCubit(MyServiceLocator.getIt())..init(),
+        ),
+      ],
+
+      // Fetch shifts on init
       child: const _ShiftsViewBody(),
     );
   }
@@ -28,16 +39,22 @@ class _ShiftsViewBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<ShiftCubit, ShiftState>(
       listener: (context, state) {
-        if (state is ShiftError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
-        if (state is ShiftSuccess && state is! ShiftSuccessWithData) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
-        }
+      if (state is ShiftError) {
+    showTopToast(
+      Navigator.of(context, rootNavigator: true).context,
+      state.message,
+    );
+  } else if (state is ShiftStarted) {
+    showTopToast(
+      Navigator.of(context, rootNavigator: true).context,
+      state.message,
+    );
+  } else if (state is ShiftEnded) {
+    showTopToast(
+      Navigator.of(context, rootNavigator: true).context,
+      state.message,
+    );
+  }
       },
       builder: (context, state) {
         final isLoading = state is ShiftLoading;
@@ -47,6 +64,21 @@ class _ShiftsViewBody extends StatelessWidget {
           child: Scaffold(
             appBar: CustomAppBar(
               title: S.of(context).shifts,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () {
+                    final branchesCubit = GetAllBranchesCubit.get(context);
+                    final shiftCubit = ShiftCubit.get(context);
+
+                    showShiftFilterDialog(
+                      context,
+                      branchesCubit: branchesCubit,
+                      shiftCubit: shiftCubit,
+                    );
+                  },
+                ),
+              ],
             ),
             body: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -62,7 +94,7 @@ class _ShiftsViewBody extends StatelessWidget {
                             onTap: () {
                               Navigator.pushNamed(
                                 context,
-                               AppRoutes.shiftDetails,
+                                AppRoutes.shiftDetails,
                                 arguments: shift.id!,
                               );
                             },
@@ -74,11 +106,16 @@ class _ShiftsViewBody extends StatelessWidget {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text("${S.of(  context).startAt}: ${shift.startAt ?? '-'}"),
-                                Text("${S.of(context).endAt}: ${shift.endAt ?? '-'}"),
-                                Text("${S.of(context).ordersCount}: ${shift.ordersCount ?? 0}"),
-                                Text("${S.of(context).branch}: ${shift.branch?.name ?? '-'}"),
-                                Text("${S.of(context).manager}: ${shift.user?.name ?? '-'}"),
+                                Text(
+                                    "${S.of(context).startAt}: ${shift.startAt ?? '-'}"),
+                                Text(
+                                    "${S.of(context).endAt}: ${shift.endAt ?? '-'}"),
+                                Text(
+                                    "${S.of(context).ordersCount}: ${shift.ordersCount ?? 0}"),
+                                Text(
+                                    "${S.of(context).branch}: ${shift.branch?.name ?? '-'}"),
+                                Text(
+                                    "${S.of(context).user}: ${shift.user?.name ?? '-'}"),
                               ],
                             ),
                           ),
