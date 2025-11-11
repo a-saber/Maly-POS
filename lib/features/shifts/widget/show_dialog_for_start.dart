@@ -9,6 +9,7 @@ import 'package:pos_app/features/branch/view/widget/custom_drop_down_branch.dart
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
 import 'package:pos_app/features/shifts/widget/show_toast.dart';
+import 'package:pos_app/generated/l10n.dart';
 
 Future<void> showStartShiftDialog(BuildContext context) async {
   final branchesCubit = GetAllBranchesCubit.get(context);
@@ -28,73 +29,108 @@ Future<void> showStartShiftDialog(BuildContext context) async {
         ],
         child: StatefulBuilder(
           builder: (ctx, setState) {
-            return AlertDialog(
-              title: const Text("Start Shift"),
-              content: Form(
-                key: shiftCubit.formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Branch Dropdown
-                    CustomDropDownBranch(
-                      value: selectedBranch,
-                      onChanged: (v) => setState(() => selectedBranch = v),
-                    ),
-                    const SizedBox(height: 12),
+            return BlocConsumer<ShiftCubit, ShiftState>(
+              listener: (context, state) async {
+                if (state is ShiftStarted) {
+                  Navigator.of(ctx).pop();
 
-                    // Cash input
-                    CustomFormField(
-                      controller: shiftCubit.cashController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      labelText: "Cash",
-                      
-                      validator: (value) =>
-                          MyFormValidators.validateDouble(value, context: ctx),
+                  final shift = state.shift;
+                  await showDialog(
+                    context: context,
+                    builder: (dialogCtx) {
+                      return AlertDialog(
+                        title:  Text(S.of(context).shiftStarted),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (shift != null) ...[
+                              Text("${S.of(context).shiftNumber}: ${shift.id ?? '-'}",
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              Text("${S.of(context).user}: ${shift.user?.name ?? '-'}"),
+                              Text("${S.of(context).branch}: ${shift.branch?.name ?? '-'}"),
+                              Text(
+                                  "${S.of(context).openingQuantity}: ${shift.openingQuantity ?? 0}"),
+                              Text("${S.of(context).startAt}: ${shift.startAt ?? '-'}"),
+                            ],
+                          ],
+                        ),
+                        actions: [
+                          CustomFilledBtn(
+                            text: S.of(context).ok,
+                            onPressed: () => Navigator.pop(dialogCtx),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+              },
+              builder: (ctx, state) {
+                return AlertDialog(
+                  title:  Text(S.of(context).startShift),
+                  content: Form(
+                    key: shiftCubit.formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CustomDropDownBranch(
+                          value: selectedBranch,
+                          onChanged: (v) => setState(() => selectedBranch = v),
+                        ),
+                        const SizedBox(height: 12),
+                        CustomFormField(
+                          controller: shiftCubit.cashController,
+                          keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true),
+                          labelText: S.of(context).cash,
+                          validator: (value) => MyFormValidators.validateDouble(
+                              value,
+                              context: ctx),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              actions: [
-                CustomTextBtn(
-                  onPressed: () => Navigator.pop(ctx),
-                  text: "Cancel",
-                ),
-                BlocBuilder<ShiftCubit, ShiftState>(
-                  builder: (ctx, state) {
-                    if (state is ShiftLoading) {
-                      return const CircularProgressIndicator();
-                    }
-                    return ElevatedButton(
-                      onPressed: () {
-                        final isFormValid =
-                            shiftCubit.formKey.currentState!.validate();
-                        final isBranchSelected = selectedBranch != null;
+                  ),
+                  actions: [
+                    CustomTextBtn(
+                      onPressed: () => Navigator.pop(ctx),
+                      text: S.of(context).cancel,
+                    ),
+                    if (state is ShiftLoading)
+                      const CircularProgressIndicator()
+                    else
+                      ElevatedButton(
+                        onPressed: () {
+                          final isFormValid =
+                              shiftCubit.formKey.currentState!.validate();
+                          final isBranchSelected = selectedBranch != null;
 
-                        if (!isFormValid || !isBranchSelected) {
-                          if (!isBranchSelected) {
-                            showTopToast(
-                              Navigator.of(ctx).context,
-                              "Please select a branch",
-                            );
+                          if (!isFormValid || !isBranchSelected) {
+                            if (!isBranchSelected) {
+                              showTopToast(ctx, S.of( context).pleaseSelectBranch);
+                            }
+                            return;
                           }
-                          return;
-                        }
-                        final cash =
-                            double.tryParse(shiftCubit.cashController.text);
-                        if (cash == null|| cash <= 0) return;
-                        shiftCubit.startShift(
-                          branchId: selectedBranch!.id!,
-                          cash: cash,
-                        );
 
-                        Navigator.pop(ctx);
-                      },
-                      child: const Text("Start"),
-                    );
-                  },
-                ),
-              ],
+                          final cash =
+                              double.tryParse(shiftCubit.cashController.text);
+                          if (cash == null || cash < 0) {
+                            showTopToast(ctx, S.of( context).pleaseEnterValidCash);
+                            return;
+                          }
+
+                          shiftCubit.startShift(
+                            branchId: selectedBranch!.id!,
+                            cash: cash,
+                          );
+                        },
+                        child:  Text(S.of(context).startShift),
+                      ),
+                  ],
+                );
+              },
             );
           },
         ),

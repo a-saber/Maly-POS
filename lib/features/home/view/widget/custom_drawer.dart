@@ -171,7 +171,7 @@ class CustomDrawer extends StatelessWidget {
                             onPressed: state is ShiftLoading
                                 ? () {}
                                 : (){  showEndShiftDialog(context);
-                                Navigator.pop(context);},
+                            },
                           ),
                         ),
                       ),

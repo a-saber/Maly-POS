@@ -20,8 +20,8 @@ class ShiftSuccessWithData extends ShiftState {
 }
 class ShiftStarted extends ShiftSuccess {
   final String message;
-  
-  ShiftStarted({required this.message,Shift? shift}); }
+    final ShiftData? shift;
+  ShiftStarted({required this.message, this.shift}); }
 
 
 class ShiftEnded extends ShiftSuccess {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/features/home/data/model/getshift.dart';
 import 'package:pos_app/features/home/data/model/shifts_model.dart';
 import 'package:pos_app/features/home/data/repo/home_repo.dart';
 import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
@@ -17,7 +16,7 @@ class ShiftCubit extends Cubit<ShiftState> {
   final TextEditingController useridController = TextEditingController();
   final TextEditingController cashController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  Shift? activeShift;
+  ShiftData? activeShift;
   int? _filterUserId;
   int? _filterBranchId;
   DateTime? _filterStartAt;
@@ -26,83 +25,75 @@ class ShiftCubit extends Cubit<ShiftState> {
   
   bool isLoadingMore = false;
 
-  Future<void> startShift({
-    required int branchId,
-    required double cash,
-  }) async {
-    emit(ShiftLoading());
+Future<void> startShift({
+  required int branchId,
+  required double cash,
+}) async {
+  emit(ShiftLoading());
 
-    final result = await homeRepo.startShift(branchId: branchId, cash: cash);
+  final result = await homeRepo.startShift(branchId: branchId, cash: cash);
 
-    result.fold(
-      (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
-      (shift) async {
-        final shiftDetailsResult =
-            await homeRepo.getShiftDetails(branchId, isFresh: true);
+  result.fold(
+    (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
+    (startShiftModel) {
+      activeShift = startShiftModel.shift;
 
-        shiftDetailsResult.fold(
-          (failure) => emit(ShiftError(
-              message: failure.message ?? "Failed to fetch shift details")),
-          (shiftDetails) {
-            activeShift = shiftDetails.shift;
-
-            print("=== START SHIFT RESPONSE ===");
-            print("Shift ID: ${shiftDetails.shift?.id}");
-            print("Opening Quantity: ${shiftDetails.shift?.openingQuantity}");
-            print("Full Response: ${shiftDetails.toJson()}");
-            emit(ShiftStarted(
-              message: "Shift started successfully",
-              shift: shiftDetails.shift,
-            ));
-          },
-        );
-      },
-    );
-  }
-
-  Future<void> endShift({required int branchId}) async {
-    if (activeShift == null) {
-      emit(ShiftError(message: "NO ACTIVE SHIFT"));
-      return;
-    }
-    if (activeShift!.branchId != branchId) {
-      emit(ShiftError(
-        message: "Shift does not belong to this branch",
+      print("=== START SHIFT RESPONSE ===");
+      print("Shift ID: ${startShiftModel.shift?.id}");
+      print("Opening Quantity: ${startShiftModel.shift?.openingQuantity}");
+      print("Branch: ${startShiftModel.shift?.branch?.name}");
+      
+      emit(ShiftStarted(
+        message: startShiftModel.message ?? "Shift started successfully",
+        shift: startShiftModel.shift,
       ));
-      return;
-    }
-    emit(ShiftLoading());
-    final result = await homeRepo.endShift(branchId: branchId);
-    result.fold(
-      (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
-      (endShiftModel) {
-        final updatedShift = endShiftModel.shift;
+    },
+  );
+}
 
-        final currentState = state;
-        if (currentState is ShiftSuccessWithData && updatedShift != null) {
-          final shifts = List<ShiftData>.from(currentState.shifts);
-          final index = shifts.indexWhere((s) => s.id == updatedShift.id);
-
-          if (index != -1) shifts[index] = updatedShift;
-
-          emit(ShiftEnded(
-            message: "Shift ended successfully",
-            shifts: shifts,
-            endShiftModel,
-            pagination: currentState.pagination,
-          ));
-        } else {
-          emit(
-            ShiftEnded(
-              message: "Shift ended successfully",
-              endShiftModel,
-              shifts: updatedShift != null ? [updatedShift] : [],
-            ),
-          );
-        }
-      },
-    );
+Future<void> endShift({required int branchId}) async {
+  print(" endShift called with branchId: $branchId");
+  print(" activeShift: ${activeShift?.id}");
+    if (activeShift == null) {
+    emit(ShiftError(message: "NO ACTIVE SHIFT"));
+    return;
   }
+  if (activeShift!.branchId != branchId) {
+    emit(ShiftError(message: "Shift does not belong to this branch"));
+    return;
+  }
+
+  
+  emit(ShiftLoading());
+  print(" Loading state emitted");
+  
+  final result = await homeRepo.endShift(branchId: branchId);
+  print(" API call completed");
+  
+  result.fold(
+    (failure) {
+      print(" Error: ${failure.message}");
+      emit(ShiftError(message: failure.message ?? "Failed"));
+    },
+    (endShiftModel) {
+      print("=== END SHIFT SUCCESS ===");
+      print("Shift ID: ${endShiftModel.shift?.id}");
+      print("Orders Count: ${endShiftModel.shift?.ordersCount}");
+      print("Summary Total: ${endShiftModel.summary?.totalAfterTax}");
+      print("Summary Count: ${endShiftModel.summary?.count}");
+      
+      final updatedShift = endShiftModel.shift;
+      emit(ShiftEnded(
+        message: "Shift ended successfully",
+         endShiftModel,
+        shifts: updatedShift != null ? [updatedShift] : [],
+      ));
+      
+      print(" ShiftEnded state emitted!");
+      activeShift = null;
+    },
+  );
+}
 
   void init() {
     getShifts(isFresh: true);

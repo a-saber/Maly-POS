@@ -2291,6 +2291,86 @@ class S {
          args: []
          );
   }
+  String get shiftStarted {
+    return Intl.message(
+      'Shift Started',
+       name: 'shiftStarted',
+        desc: '',
+         args: []
+         );
+  }
+  String get ok {
+    return Intl.message(
+      'OK',
+       name: 'ok',
+        desc: '',
+         args: []
+         );
+  }
+  String get startShift {
+    return Intl.message(
+      'Start Shift',
+       name: 'startShift',
+        desc: '',
+         args: []
+         );
+  }
+  String get pleaseSelectBranch {
+    return Intl.message(
+      'Please select branch',
+       name: 'pleaseSelectBranch',
+        desc: '',
+         args: []
+         );
+  }
+  String get pleaseEnterValidCash {
+    return Intl.message(
+      'Please enter valid cash',
+       name: 'pleaseEnterValidCash',
+        desc: '',
+         args: []
+         );
+  }
+  String get endShift {
+    return Intl.message(
+      'End Shift',
+       name: 'endShift',
+        desc: '',
+         args: []
+         );
+  }
+  String get print{
+    return Intl.message(
+      'Print',
+       name: 'print',
+        desc: '',
+         args: []
+         );
+  }
+  String get close{
+    return Intl.message(
+      'Close',
+       name: 'close',
+        desc: '',
+         args: []
+         );
+  }
+  String get subtotal{
+    return Intl.message(
+      'Subtotal',
+       name: 'subtotal',
+        desc: '',
+         args: []
+         );
+  }
+  String get shiftEnded {
+    return Intl.message(
+      'Shift Ended',
+       name: 'shiftEnded',
+        desc: '',
+         args: []
+         );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

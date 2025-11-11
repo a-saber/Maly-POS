@@ -9,6 +9,7 @@ import 'package:pos_app/features/home/data/model/end_shift_model.dart';
 import 'package:pos_app/features/home/data/model/get_single_user_model.dart';
 import 'package:pos_app/features/home/data/model/getshift.dart';
 import 'package:pos_app/features/home/data/model/shifts_model.dart';
+import 'package:pos_app/features/home/data/model/start_shift_model.dart';
 
 class HomeRepo {
   final ApiHelper api;
@@ -42,30 +43,30 @@ class HomeRepo {
     }
   }
 
-  Future<Either<ApiResponse, void>> startShift(
-      {required int branchId, required double cash}) async {
-    try {
-      ApiResponse? response;
-      String url = await ApiEndPoints.startShift();
-      response = await api.post(
-        url: url,
-        data: {
-          "branch_id": branchId,
-          "opening_quantity": cash.toString(),
-        },
-      );
-      if (response.status) {
-        return Right(unit);
-      } else {
-        return Left(
-          response,
-        );
-      }
-    } catch (e) {
-      debugPrint(e.toString());
-      return Left(ApiResponse.unKnownError());
+Future<Either<ApiResponse, StartShiftModel>> startShift({
+  required int branchId,
+  required double cash,
+}) async {
+  try {
+    ApiResponse? response;
+    String url = await ApiEndPoints.startShift();
+    response = await api.post(
+      url: url,
+      data: {
+        "branch_id": branchId,
+        "opening_quantity": cash.toString(),
+      },
+    );
+    if (response.status) {
+      return Right(StartShiftModel.fromJson(response.data));
+    } else {
+      return Left(response);
     }
+  } catch (e) {
+    debugPrint(e.toString());
+    return Left(ApiResponse.unKnownError());
   }
+}
 
   Future<void> saveUser({required UserModel user}) async {
     await CustomUserHiveBox.setUser(user);
