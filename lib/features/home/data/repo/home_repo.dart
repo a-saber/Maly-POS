@@ -94,39 +94,32 @@ class HomeRepo {
 
   ShiftsModel? shiftsModel;
 
-  Future<Either<ApiResponse, List<ShiftData>>> getShifts(
-      {bool isFresh = false}) async {
+  Future<Either<ApiResponse, List<ShiftData>>> getShifts({bool isFresh = false}) async {
     try {
       String url;
 
       if (shiftsModel == null || isFresh) {
-        url = await ApiEndPoints.getShifts(
-          userId: CustomUserHiveBox.getUser().id!,
-        );
-        shiftsModel = null;
+        url = await ApiEndPoints.getShifts(userId: CustomUserHiveBox.getUser().id!);
+       if (isFresh) shiftsModel = null; // reset
       } else {
-        if (shiftsModel!.data!.nextPageUrl == null) {
-          return const Right([]);
-        }
+        if (shiftsModel!.data!.nextPageUrl == null) return const Right([]);
         url = shiftsModel!.data!.nextPageUrl!;
       }
 
       final response = await api.get(url: url);
+      if (!response.status) return Left(response);
 
-      if (response.status) {
-        final newModel = ShiftsModel.fromJson(response.data);
+      final newModel = ShiftsModel.fromJson(response.data);
 
-        if (shiftsModel == null || isFresh) {
-          shiftsModel = newModel;
-          return Right(shiftsModel!.data!.data!);
-        } else {
-          shiftsModel!.data!.data!.addAll(newModel.data!.data!);
-          shiftsModel!.data!.nextPageUrl = newModel.data!.nextPageUrl;
-          return Right(shiftsModel!.data!.data!);
-        }
+      if (shiftsModel == null || isFresh) {
+        shiftsModel = newModel;
+      } else {
+ 
+        shiftsModel!.data!.data!.addAll(newModel.data!.data!);
+        shiftsModel!.data!.nextPageUrl = newModel.data!.nextPageUrl;
       }
 
-      return Left(response);
+      return Right(newModel.data!.data!);
     } catch (_) {
       return Left(ApiResponse.unKnownError());
     }

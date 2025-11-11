@@ -428,5 +428,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "city": MessageLookupByLibrary.simpleMessage("City"),
     "district": MessageLookupByLibrary.simpleMessage("District"),
     "country": MessageLookupByLibrary.simpleMessage("Country"),
+    "orders": MessageLookupByLibrary.simpleMessage("Orders"),
+    "somethingWentWrong": MessageLookupByLibrary.simpleMessage("Something went wrong"),
+    "tax": MessageLookupByLibrary.simpleMessage("Tax"),
+    "summary": MessageLookupByLibrary.simpleMessage("Summary"),
+    "openingQuantity": MessageLookupByLibrary.simpleMessage("Opening Quantity"),
+    "ordersCount": MessageLookupByLibrary.simpleMessage("Orders Count"),
+    "endAt": MessageLookupByLibrary.simpleMessage("End At"),
+    "startAt": MessageLookupByLibrary.simpleMessage("Start At"),
+    "shiftNumber": MessageLookupByLibrary.simpleMessage("Shift Number"),
+    "shiftDetails": MessageLookupByLibrary.simpleMessage("Shift Details"),
   };
 }

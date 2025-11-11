@@ -87,11 +87,6 @@ Future<void> showEndShiftDialog(BuildContext context) async {
                                   Navigator.pop(dialogCtx);
                                 },
                               ),
-                              SizedBox(height: 10,),
-                              CustomFilledBtn(
-                                text: "Close",
-                                onPressed: () => Navigator.pop(dialogCtx),
-                              ),
                             ],
                           );
                         },

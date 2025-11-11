@@ -278,5 +278,16 @@
     "building":"Building",
     "city":"City",
     "district":"District",
-    "country":"Country"
+    "country":"Country",
+      "orders": "Orders",
+    "somethingWentWrong":"Something went wrong",
+    "tax": "Tax",
+    "summary":"Summary",
+    "openingQuantity":"Opening Quantity",
+    "ordersCount": "Orders Count",
+    "endAt":"End At",
+    "startAt": "Start At",
+    "shiftNumber": "Shift Number",
+    "shiftDetails":"Shift Details",
+
 }

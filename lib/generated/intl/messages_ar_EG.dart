@@ -422,6 +422,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "city": MessageLookupByLibrary.simpleMessage("المدينة"),
     "district": MessageLookupByLibrary.simpleMessage("الحي"),
     "country": MessageLookupByLibrary.simpleMessage("الدولة"),
-
+    "orders": MessageLookupByLibrary.simpleMessage("الطلبات"),
+    "somethingWentWrong": MessageLookupByLibrary.simpleMessage("حدث خطاء غير متوقع"),
+    "tax": MessageLookupByLibrary.simpleMessage("ضريبة"),
+    "summary": MessageLookupByLibrary.simpleMessage("ملخص"),
+    "openingQuantity": MessageLookupByLibrary.simpleMessage("الكمية الافتتاحية"),
+    "ordersCount": MessageLookupByLibrary.simpleMessage("عدد الطلبات"),
+    "endAt": MessageLookupByLibrary.simpleMessage("النهاية في"),
+    "startAt": MessageLookupByLibrary.simpleMessage("البدء في"),
+    "shiftNumber": MessageLookupByLibrary.simpleMessage("رقم الفترة"),
+    "shiftDetails": MessageLookupByLibrary.simpleMessage("تفاصيل الفترة"),
   };
 }

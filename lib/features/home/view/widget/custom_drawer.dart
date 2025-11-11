@@ -161,8 +161,8 @@ class CustomDrawer extends StatelessWidget {
                         height: 32,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(color: Colors.blueAccent),
+                            color: AppColors.white,
+                            border: Border.all(color: AppColors.primary),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: CustomFilledBtn(
@@ -170,7 +170,8 @@ class CustomDrawer extends StatelessWidget {
                             backgroundColor: Colors.transparent,
                             onPressed: state is ShiftLoading
                                 ? () {}
-                                : () => showEndShiftDialog(context),
+                                : (){  showEndShiftDialog(context);
+                                Navigator.pop(context);},
                           ),
                         ),
                       ),

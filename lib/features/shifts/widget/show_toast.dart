@@ -15,12 +15,12 @@ void showTopToast(BuildContext context, String message) {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.black,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
             message,
-            style: const TextStyle(color: AppColors.black, fontSize: 16),
+            style: const TextStyle(color: AppColors.white, fontSize: 16),
           ),
         ),
       ),

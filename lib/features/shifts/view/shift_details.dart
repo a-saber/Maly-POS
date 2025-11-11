@@ -125,15 +125,15 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: Text("Order #", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(S.of(context).orders, style: const TextStyle(fontWeight: FontWeight.bold)),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: Text("Total", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(S.of(context).total, style: const TextStyle(fontWeight: FontWeight.bold)),
                               ),
                               Padding(
                                 padding: const EdgeInsets.all(8),
-                                child: Text("Created At", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                child: Text(S.of(context).createdAt, style: const TextStyle(fontWeight: FontWeight.bold)),
                               ),
                             ],
                           ),

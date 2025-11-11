@@ -278,5 +278,17 @@
     "building":"المبني",
     "city":"المدينه",
     "district":"الحي",
-    "country":"الدولة"
+    "country":"الدولة",
+    "orders":"طلبات",
+    "somethingWentWrong":"حدث خطاء غير متوقع",
+     "tax":"ضريبة",
+    "summary":"ملخص",
+    "openingQuantity":"الكمية الافتتاحية",
+    "ordersCount":"عدد الطلبات",
+    "endAt": "النهاية في",
+    "startAt": "البدء في",
+    "shiftNumber":"رقم الفترة",
+    "shiftDetails": "تفاصيل الفترة",
 }
+    
+ 

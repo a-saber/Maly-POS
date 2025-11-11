@@ -2283,14 +2283,6 @@ class S {
          args: []
          );
   }
-  String get manager {
-    return Intl.message(
-      'Manager',
-       name: 'manager',
-        desc: '',
-         args: []
-         );
-  }
   String get orders {
     return Intl.message(
       'Orders',
