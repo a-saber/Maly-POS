@@ -13,7 +13,7 @@ class LanguageControlCubit extends Cubit<LanguageControlState> {
 
   static LanguageControlCubit get(context) => BlocProvider.of(context);
 
-  late Locale local;
+  late Locale? local;
 
   init() {
     local = LanguageManager.getLanguage();
@@ -24,8 +24,8 @@ class LanguageControlCubit extends Cubit<LanguageControlState> {
   }) {
     if (language == null ||
         language.isEmpty ||
-        language == local.languageCode) {
-      log(local.languageCode);
+        language == local?.languageCode) {
+      log(local?.languageCode ?? 'is null');
       return;
     }
     local = LanguageManager.changeCurrentLanguage();
