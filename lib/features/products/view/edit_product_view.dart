@@ -32,59 +32,63 @@ class EditProductView extends StatelessWidget {
         // context: context,
         product: product,
       ),
-      child: Scaffold(
-        appBar: CustomAppBar(
-          title: S.of(context).editProduct,
-          actions: [
-            CustomTextBtn(
-                text: S.of(context).delete,
-                onPressed: () async {
-                  await showDeleteProductConfirmDialog(
-                      context: context, product: product, goBack: true);
-                })
-          ],
-        ),
-        body: BlocConsumer<EditProductCubit, EditProductState>(
-          listener: (context, state) {
-            if (state is EditProductSuccess) {
-              GetAllProductsCubit.get(context).updateProduct(state.product);
-              SellingPointCubit.get(context).updateProduct(state.product,
-                  context: context, oldCayegoryId: product.categoryId);
-              CustomPopUp.callMyToast(
-                  context: context,
-                  massage: S.of(context).updatedSuccess,
-                  state: PopUpState.SUCCESS);
-              Navigator.pop(context);
-            } else if (state is EditProductFailing) {
-              if (context.mounted) {
+      child: Builder(builder: (context) {
+        return Scaffold(
+          appBar: CustomAppBar(
+            title: S.of(context).editProduct,
+            actions: [
+              CustomTextBtn(
+                  text: S.of(context).delete,
+                  onPressed: () async {
+                    await showDeleteProductConfirmDialog(
+                        context: context, product: product, goBack: true);
+                  })
+            ],
+          ),
+          body: BlocConsumer<EditProductCubit, EditProductState>(
+            listener: (context, state) {
+              if (state is EditProductSuccess) {
+                GetAllProductsCubit.get(context).updateProduct(state.product);
+                MyServiceLocator.getSingleton<SellingPointCubit>()
+                    .updateProduct(state.product,
+                        context: context, oldCayegoryId: product.categoryId);
                 CustomPopUp.callMyToast(
                     context: context,
-                    massage: mapStatusCodeToMessage(context, state.errMessage),
-                    state: PopUpState.ERROR);
+                    massage: S.of(context).updatedSuccess,
+                    state: PopUpState.SUCCESS);
+                Navigator.pop(context);
+              } else if (state is EditProductFailing) {
+                if (context.mounted) {
+                  CustomPopUp.callMyToast(
+                      context: context,
+                      massage:
+                          mapStatusCodeToMessage(context, state.errMessage),
+                      state: PopUpState.ERROR);
+                }
               }
-            }
-          },
-          builder: (context, state) {
-            return CustomLayoutBuilder(
-              mobile: MyCustomScrollView(
-                child: EditProductMobileBody(
-                  state: state,
+            },
+            builder: (context, state) {
+              return CustomLayoutBuilder(
+                mobile: MyCustomScrollView(
+                  child: EditProductMobileBody(
+                    state: state,
+                  ),
                 ),
-              ),
-              tablet: MyCustomScrollView(
-                child: EditProductTabletAndDesktopBody(
-                  state: state,
+                tablet: MyCustomScrollView(
+                  child: EditProductTabletAndDesktopBody(
+                    state: state,
+                  ),
                 ),
-              ),
-              desktop: MyCustomScrollView(
-                child: EditProductTabletAndDesktopBody(
-                  state: state,
+                desktop: MyCustomScrollView(
+                  child: EditProductTabletAndDesktopBody(
+                    state: state,
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-      ),
+              );
+            },
+          ),
+        );
+      }),
     );
   }
 }

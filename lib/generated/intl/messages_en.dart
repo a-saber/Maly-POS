@@ -217,6 +217,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "No response from server.",
     ),
     "noUnitName": MessageLookupByLibrary.simpleMessage("No Unit Name"),
+    "notFoundShift": MessageLookupByLibrary.simpleMessage("Not Found Shift"),
     "notallowtoaccessthisscreen": MessageLookupByLibrary.simpleMessage(
       "Not allow to access this screen",
     ),
@@ -268,6 +269,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "Price Shoud Be Bigger Than Or Equal Total Price",
         ),
+    "print": MessageLookupByLibrary.simpleMessage("print"),
     "printCategories": MessageLookupByLibrary.simpleMessage("Print Catec"),
     "printReceipt": MessageLookupByLibrary.simpleMessage("Print Receipt"),
     "printer": MessageLookupByLibrary.simpleMessage("Printer"),

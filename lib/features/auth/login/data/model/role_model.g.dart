@@ -42,13 +42,14 @@ class RoleModelAdapter extends TypeAdapter<RoleModel> {
       printers: fields[24] as bool?,
       createdAt: fields[20] as String?,
       updatedAt: fields[21] as String?,
+      shifts: fields[25] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, RoleModel obj) {
     writer
-      ..writeByte(25)
+      ..writeByte(26)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -89,16 +90,18 @@ class RoleModelAdapter extends TypeAdapter<RoleModel> {
       ..write(obj.taxes)
       ..writeByte(19)
       ..write(obj.discounts)
+      ..writeByte(20)
+      ..write(obj.createdAt)
+      ..writeByte(21)
+      ..write(obj.updatedAt)
       ..writeByte(22)
       ..write(obj.inventory)
       ..writeByte(23)
       ..write(obj.stock)
       ..writeByte(24)
       ..write(obj.printers)
-      ..writeByte(20)
-      ..write(obj.createdAt)
-      ..writeByte(21)
-      ..write(obj.updatedAt);
+      ..writeByte(25)
+      ..write(obj.shifts);
   }
 
   @override

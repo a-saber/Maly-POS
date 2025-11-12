@@ -301,5 +301,7 @@
    "date": "التاريخ",
    "details": "التفاصيل",
    "showMore":"اظهار المزيد",
-   "orderDetails":"تفاصيل الاوردر"
+   "orderDetails":"تفاصيل الاوردر",
+   "print":"طباعة",
+   "notFoundShift":"لايوجد شيفت"
 }

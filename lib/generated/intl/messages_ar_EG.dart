@@ -221,6 +221,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "لا يوجد استجابة من الخادم.",
     ),
     "noUnitName": MessageLookupByLibrary.simpleMessage("لا يوجد اسم وحدة"),
+    "notFoundShift": MessageLookupByLibrary.simpleMessage("لايوجد شيفت"),
     "notallowtoaccessthisscreen": MessageLookupByLibrary.simpleMessage(
       "غير مسموح بالوصول إلى هذه الشاشة",
     ),
@@ -274,6 +275,7 @@ class MessageLookup extends MessageLookupByLibrary {
         MessageLookupByLibrary.simpleMessage(
           "السعر يجب أن يكون أكبر من أو يساوي السعر الإجمالي",
         ),
+    "print": MessageLookupByLibrary.simpleMessage("طباعة"),
     "printCategories": MessageLookupByLibrary.simpleMessage("طباعة الفئات"),
     "printReceipt": MessageLookupByLibrary.simpleMessage("طباعة الايصال"),
     "printer": MessageLookupByLibrary.simpleMessage("طابعة"),

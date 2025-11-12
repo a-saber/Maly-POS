@@ -147,16 +147,16 @@ class AppConstant {
         icon: Icons.print_outlined,
         pageRoute: AppRoutes.printersView,
         title: S.of(context).printer,
-        // canAccess: user.role?.storeMove ?? false,
-        canAccess: true,
+        canAccess: user.role?.printers ?? false,
+        // canAccess: true,
       ),
       HomeViewItemModel(
         color: Color(0xffffa700),
         icon: Icons.timer,
         pageRoute: AppRoutes.shiftsView,
         title: S.of(context).shifts,
-        // canAccess: user.role?.storeMove ?? false,
-        canAccess: true,
+        canAccess: user.role?.shifts ?? false,
+        // canAccess: true,
       ),
     ];
 
@@ -198,6 +198,7 @@ class AppConstant {
         PermissionItemModel(name: ApiKeys.inventory, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.stock, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.printers, isSelected: asAdmin),
+        PermissionItemModel(name: ApiKeys.shifts, isSelected: asAdmin),
       ];
   static List<PermissionItemModel> getUserPermissions(RoleModel role) {
     return role.permissions.entries

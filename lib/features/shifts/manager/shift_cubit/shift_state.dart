@@ -1,3 +1,4 @@
+import 'package:pos_app/features/shifts/data/model/end_shift_model.dart';
 import 'package:pos_app/features/shifts/data/model/getshift.dart';
 import 'package:pos_app/features/shifts/data/model/shifts_model.dart';
 
@@ -15,7 +16,22 @@ class ShiftSuccess extends ShiftState {
 class ShiftSuccessWithData extends ShiftState {
   final List<ShiftData> shifts;
   final Data? pagination;
-  ShiftSuccessWithData({required this.shifts, this.pagination});
+
+  ShiftSuccessWithData({
+    required this.shifts,
+    this.pagination,
+  });
+}
+
+class ShiftSuccessEndWithData extends ShiftState {
+  final List<ShiftData> shifts;
+  // final Data? pagination;
+  final EndShiftModel? endShiftModel;
+  ShiftSuccessEndWithData({
+    required this.shifts,
+    // this.pagination,
+    this.endShiftModel,
+  });
 }
 
 class ShiftError extends ShiftState {

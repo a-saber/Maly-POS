@@ -46,43 +46,47 @@ class RoleModel {
   final bool? taxes;
   @HiveField(19)
   final bool? discounts;
+  @HiveField(20)
+  final String? createdAt;
+  @HiveField(21)
+  final String? updatedAt;
   @HiveField(22)
   final bool? inventory;
   @HiveField(23)
   final bool? stock;
   @HiveField(24)
   final bool? printers;
-  @HiveField(20)
-  final String? createdAt;
-  @HiveField(21)
-  final String? updatedAt;
+  @HiveField(25)
+  final bool? shifts;
 
-  RoleModel(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.sales,
-      required this.purchase,
-      required this.users,
-      required this.roles,
-      required this.settings,
-      required this.categories,
-      required this.products,
-      required this.units,
-      required this.branches,
-      required this.customers,
-      required this.expenseCategories,
-      required this.expenses,
-      required this.purchaseReturn,
-      required this.saleReturn,
-      required this.suppliers,
-      required this.taxes,
-      required this.discounts,
-      required this.inventory,
-      required this.stock,
-      required this.printers,
-      required this.createdAt,
-      required this.updatedAt});
+  RoleModel({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.sales,
+    required this.purchase,
+    required this.users,
+    required this.roles,
+    required this.settings,
+    required this.categories,
+    required this.products,
+    required this.units,
+    required this.branches,
+    required this.customers,
+    required this.expenseCategories,
+    required this.expenses,
+    required this.purchaseReturn,
+    required this.saleReturn,
+    required this.suppliers,
+    required this.taxes,
+    required this.discounts,
+    required this.inventory,
+    required this.stock,
+    required this.printers,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.shifts,
+  });
 
   factory RoleModel.fromJson(Map<String, dynamic> json) {
     return RoleModel(
@@ -107,6 +111,7 @@ class RoleModel {
       taxes: json[ApiKeys.taxes],
       discounts: json[ApiKeys.discounts],
       printers: json[ApiKeys.printers],
+      shifts: json[ApiKeys.shifts],
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
       inventory:
@@ -148,6 +153,7 @@ class RoleModel {
       inventory: permMap[ApiKeys.inventory],
       stock: permMap[ApiKeys.stock],
       printers: permMap[ApiKeys.printers],
+      shifts: permMap[ApiKeys.shifts],
       createdAt: null,
       updatedAt: null,
     );
@@ -182,6 +188,7 @@ class RoleModel {
     data[ApiKeys.inventory] = boolToInt(inventory);
     data[ApiKeys.stock] = boolToInt(stock);
     data[ApiKeys.printers] = boolToInt(printers);
+    data[ApiKeys.shifts] = boolToInt(shifts);
 
     return data;
   }
@@ -213,6 +220,7 @@ class RoleModel {
     data[ApiKeys.printers] = printers;
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
+    data[ApiKeys.shifts] = shifts;
 
     return data;
   }
@@ -237,6 +245,7 @@ class RoleModel {
         ApiKeys.discounts: discounts,
         ApiKeys.inventory: inventory,
         ApiKeys.stock: stock,
-        ApiKeys.printers: printers
+        ApiKeys.printers: printers,
+        ApiKeys.shifts: shifts
       };
 }

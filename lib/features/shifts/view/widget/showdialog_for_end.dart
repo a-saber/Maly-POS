@@ -20,40 +20,44 @@ Future<void> showEndShiftDialog(BuildContext context) async {
           BlocProvider.value(value: branchesCubit),
           BlocProvider.value(value: ShiftCubit.get(context)),
         ],
-        child: AlertDialog(
-          title: const Text("End Shift"),
-          content: CustomDropDownBranch(
-            value: selectedBranch,
-            onChanged: (v) {
-              selectedBranch = v;
-            },
-          ),
-          actions: [
-            CustomTextBtn(
-              onPressed: () => Navigator.pop(ctx),
-              text: "Cancel",
-            ),
-            BlocBuilder<ShiftCubit, ShiftState>(
-              builder: (ctx, state) {
-                if (state is ShiftLoading) {
-                  return const CircularProgressIndicator();
-                }
-                return ElevatedButton(
-                  onPressed: () {
-                    if (selectedBranch == null) return;
-
-                    ShiftCubit.get(ctx).endShift(
-                      branchId: selectedBranch!.id!,
-                    );
-
-                    Navigator.pop(ctx);
-                  },
-                  child: const Text("End"),
-                );
+        child: StatefulBuilder(builder: (ctx, setState) {
+          return AlertDialog(
+            title: const Text("End Shift"),
+            content: CustomDropDownBranch(
+              value: selectedBranch,
+              onChanged: (v) {
+                setState(() {
+                  selectedBranch = v;
+                });
               },
             ),
-          ],
-        ),
+            actions: [
+              CustomTextBtn(
+                onPressed: () => Navigator.pop(ctx),
+                text: "Cancel",
+              ),
+              BlocBuilder<ShiftCubit, ShiftState>(
+                builder: (ctx, state) {
+                  if (state is ShiftLoading) {
+                    return const CircularProgressIndicator();
+                  }
+                  return ElevatedButton(
+                    onPressed: () {
+                      if (selectedBranch == null) return;
+
+                      ShiftCubit.get(ctx).endShift(
+                        branchId: selectedBranch!.id!,
+                      );
+
+                      Navigator.pop(ctx);
+                    },
+                    child: const Text("End"),
+                  );
+                },
+              ),
+            ],
+          );
+        }),
       );
     },
   );

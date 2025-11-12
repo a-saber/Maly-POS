@@ -16,6 +16,7 @@ import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
 import 'package:pos_app/features/shifts/view/widget/showdialog_for_end.dart';
 import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift.dart';
+import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift_end.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -157,12 +158,24 @@ class CustomDrawer extends StatelessWidget {
                             border: Border.all(color: Colors.blueAccent),
                             borderRadius: BorderRadius.circular(5),
                           ),
-                          child: CustomFilledBtn(
-                            text: 'End',
-                            backgroundColor: Colors.transparent,
-                            onPressed: state is ShiftLoading
-                                ? () {}
-                                : () => showEndShiftDialog(context),
+                          child: BlocListener<ShiftCubit, ShiftState>(
+                            listener: (context, state) {
+                              if (state is ShiftSuccessEndWithData) {
+                                debugPrint(
+                                    "/n/n/n ------------------------------------ /n show details of shift /n -------------------------------------/n/n/nn/ ");
+                                showDialogForShiftEnd(context,
+                                    shift: state.endShiftModel!);
+                              }
+                            },
+                            child: CustomFilledBtn(
+                              text: 'End',
+                              backgroundColor: Colors.transparent,
+                              onPressed: state is ShiftLoading
+                                  ? () {}
+                                  : () {
+                                      showEndShiftDialog(context);
+                                    },
+                            ),
                           ),
                         ),
                       ),

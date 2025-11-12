@@ -32,22 +32,24 @@ class ShiftCubit extends Cubit<ShiftState> {
     result.fold(
       (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
       (endShiftModel) {
-        final updatedShift = endShiftModel.shift;
+        // final updatedShift = endShiftModel.shift;
 
-        final currentState = state;
-        if (currentState is ShiftSuccessWithData && updatedShift != null) {
-          final shifts = List<ShiftData>.from(currentState.shifts);
-          final index = shifts.indexWhere((s) => s.id == updatedShift.id);
+        // final currentState = state;
+        // if (currentState is ShiftSuccessWithData && updatedShift != null) {
+        //   final shifts = List<ShiftData>.from(currentState.shifts);
+        //   final index = shifts.indexWhere((s) => s.id == updatedShift.id);
 
-          if (index != -1) shifts[index] = updatedShift;
+        //   if (index != -1) shifts[index] = updatedShift;
 
-          emit(ShiftSuccessWithData(
-            shifts: shifts,
-            pagination: currentState.pagination,
-          ));
-        }
+        // }
 
-        emit(ShiftSuccess(message: "Shift ended successfully"));
+        emit(ShiftSuccessEndWithData(
+          endShiftModel: endShiftModel,
+          shifts: shifts,
+          // pagination: currentState.pagination,
+        ));
+
+        // emit(ShiftSuccess(message: "Shift ended successfully"));
       },
     );
   }
