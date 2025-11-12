@@ -114,10 +114,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                 if (context.mounted) {
                   if (state.message.shiftError != null &&
                       (state.message.shiftError ?? false)) {
-                    showStartShiftDialog(context,
-                        branchescubit:
-                            MyServiceLocator.getIt<GetAllBranchesCubit>(),
-                        shiftcubit: MyServiceLocator.getIt<ShiftCubit>());
+                    showStartShiftDialog(
+                      context,
+                      branchescubit:
+                          MyServiceLocator.getIt<GetAllBranchesCubit>(),
+                      shiftcubit: MyServiceLocator.getIt<ShiftCubit>(),
+                      currentBranch:
+                          SellingPointProductCubit.get(context).repo.branch,
+                    );
                   }
                   CustomPopUp.callMyToast(
                     context: context,
