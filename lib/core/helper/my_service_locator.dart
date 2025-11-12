@@ -19,7 +19,8 @@ import 'package:pos_app/features/expense_categories/data/repo/expense_categories
 import 'package:pos_app/features/expense_categories/manager/get_expense_categories_cubit/get_expense_categories_cubit.dart';
 import 'package:pos_app/features/home/data/repo/home_repo.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
+import 'package:pos_app/features/shifts/data/repo/shift_repo.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/permissions/data/repo/permission_repo.dart';
 import 'package:pos_app/features/permissions/manager/get_permission/get_permissions_cubit.dart';
 import 'package:pos_app/features/permissions/manager/search_permission/search_permission_cubit.dart';
@@ -62,67 +63,70 @@ class MyServiceLocator {
       dio: getDio(),
     ));
     registerSingleton<PermissionsRepo>(PermissionsRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<CategoryRepo>(CategoryRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<PrinterRepo>(PrinterRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<UsersRepo>(UsersRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<ClientsRepo>(ClientsRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<SuppliersRepo>(SuppliersRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<UnitsRepo>(UnitsRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<BranchesRepo>(BranchesRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<ProductsRepo>(ProductsRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<DiscountsRepo>(DiscountsRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<TaxesRepo>(TaxesRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<ExpenseCategoriesRepo>(ExpenseCategoriesRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<StoreQuantityRepo>(StoreQuantityRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<StoreMoveRepo>(StoreMoveRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<SellingPointRepo>(SellingPointRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<RegisterRepo>(RegisterRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<LoginRepo>(LoginRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<SalesRepo>(SalesRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<SalesReturnRepo>(SalesReturnRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
     ));
     registerSingleton<HomeRepo>(HomeRepo(
-      api: getSingleton<ApiHelper>(),
+      api: getIt(),
+    ));
+    registerSingleton<ShiftRepo>(ShiftRepo(
+      api: getIt(),
     ));
     registerSingleton<ShopSettingRepo>(ShopSettingRepo(
-      getSingleton<ApiHelper>(),
+      getIt(),
     ));
     registerSingleton<GetCategoryCubit>(GetCategoryCubit(
       getIt(),
@@ -214,7 +218,6 @@ class MyServiceLocator {
     registerSingleton<ShiftCubit>(ShiftCubit(
       getIt(),
     ));
-   
   }
 
   static void registerSingleton<T extends Object>(T instance) {

@@ -12,11 +12,10 @@ import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/show_delete_confirm_dialog.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
-import 'package:pos_app/features/shifts/widget/show_dialog_for_start.dart';
-import 'package:pos_app/features/shifts/widget/show_toast.dart';
-import 'package:pos_app/features/shifts/widget/showdialog_for_end.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
+import 'package:pos_app/features/shifts/view/widget/showdialog_for_end.dart';
+import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -28,20 +27,13 @@ class CustomDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<ShiftCubit, ShiftState>(
       listener: (context, state) {
-        if (state is ShiftError) {
-          showTopToast(
-            Navigator.of(context, rootNavigator: true).context,
-            state.message,
+        if (state is ShiftSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
           );
-        } else if (state is ShiftStarted) {
-          showTopToast(
-            Navigator.of(context, rootNavigator: true).context,
-            state.message,
-          );
-        } else if (state is ShiftEnded) {
-          showTopToast(
-            Navigator.of(context, rootNavigator: true).context,
-            state.message,
+        } else if (state is ShiftError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
           );
         }
       },
@@ -161,8 +153,8 @@ class CustomDrawer extends StatelessWidget {
                         height: 32,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.white,
-                            border: Border.all(color: AppColors.primary),
+                            color: Colors.white,
+                            border: Border.all(color: Colors.blueAccent),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: CustomFilledBtn(
@@ -170,8 +162,7 @@ class CustomDrawer extends StatelessWidget {
                             backgroundColor: Colors.transparent,
                             onPressed: state is ShiftLoading
                                 ? () {}
-                                : (){  showEndShiftDialog(context);
-                            },
+                                : () => showEndShiftDialog(context),
                           ),
                         ),
                       ),

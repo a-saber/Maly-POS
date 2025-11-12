@@ -35,14 +35,18 @@ class PrinterHelper {
     _devices.clear();
 
     // Bluetooth (classic)
-    final subBt = _manager.discovery(type: PrinterType.bluetooth, isBle: false).listen((d) {
+    final subBt = _manager
+        .discovery(type: PrinterType.bluetooth, isBle: false)
+        .listen((d) {
       _addOrUpdateDevice(d, PrinterType.bluetooth, isBle: false);
       onUpdate?.call();
     }, onError: (e) => debugPrint('BT discovery error: $e'));
     _subscriptions.add(subBt);
 
     // Bluetooth Low Energy
-    final subBle = _manager.discovery(type: PrinterType.bluetooth, isBle: true).listen((d) {
+    final subBle = _manager
+        .discovery(type: PrinterType.bluetooth, isBle: true)
+        .listen((d) {
       _addOrUpdateDevice(d, PrinterType.bluetooth, isBle: true);
       onUpdate?.call();
     }, onError: (e) => debugPrint('BLE discovery error: $e'));
@@ -70,14 +74,17 @@ class PrinterHelper {
     _subscriptions.clear();
   }
 
-  void _addOrUpdateDevice(PrinterDevice d, PrinterType type, {bool isBle = false}) {
+  void _addOrUpdateDevice(PrinterDevice d, PrinterType type,
+      {bool isBle = false}) {
     final key = _deviceKey(d, type);
     _devices[key] = DiscoveredPrinter(device: d, type: type, isBle: isBle);
   }
 
   String _deviceKey(PrinterDevice d, PrinterType type) {
-    if (d.address != null && d.address!.isNotEmpty) return '${type.name}_${d.address}';
-    return '${type.name}_${d.vendorId ?? 'v'}_${d.productId ?? 'p'}_${d.name ?? 'n'}';
+    if (d.address != null && d.address!.isNotEmpty) {
+      return '${type.name}_${d.address}';
+    }
+    return '${type.name}_${d.vendorId ?? 'v'}_${d.productId ?? 'p'}_${d.name}';
   }
 
   /// --- PRINTING SECTION ---
@@ -87,7 +94,8 @@ class PrinterHelper {
     await _printBytes(printer, bytes);
   }
 
-  Future<void> printInvoice(DiscoveredPrinter printer, Map<String, dynamic> invoice) async {
+  Future<void> printInvoice(
+      DiscoveredPrinter printer, Map<String, dynamic> invoice) async {
     final bytes = await _buildInvoiceBytes(printer, invoice);
     await _printBytes(printer, bytes);
   }
@@ -109,7 +117,9 @@ class PrinterHelper {
           );
           break;
         case PrinterType.bluetooth:
-          if (device.address == null) throw Exception('Bluetooth printer missing address');
+          if (device.address == null) {
+            throw Exception('Bluetooth printer missing address');
+          }
           await _manager.connect(
             type: PrinterType.bluetooth,
             model: BluetoothPrinterInput(
@@ -121,14 +131,14 @@ class PrinterHelper {
           );
           break;
         case PrinterType.network:
-          if (device.address == null) throw Exception('Network printer missing IP');
+          if (device.address == null) {
+            throw Exception('Network printer missing IP');
+          }
           await _manager.connect(
             type: PrinterType.network,
             model: TcpPrinterInput(ipAddress: device.address!),
           );
           break;
-        default:
-          throw Exception('Unsupported printer type');
       }
 
       _manager.send(type: type, bytes: bytes);
@@ -161,7 +171,7 @@ class PrinterHelper {
       ...generator.text('***************',
           styles: PosStyles(align: PosAlign.center, bold: true)),
       ...generator.hr(),
-      ...generator.text('Printer: ${p.device.name ?? "Unknown"}'),
+      ...generator.text('Printer: ${p.device.name}'),
       if (p.device.address != null)
         ...generator.text('Address: ${p.device.address}'),
       ...generator.feed(2),
@@ -176,7 +186,7 @@ class PrinterHelper {
 
     final items = (invoice['items'] as List<dynamic>? ?? [])
         .map((item) =>
-    '${item['name']} x${item['qty']}  ${item['price']} = ${item['total']}')
+            '${item['name']} x${item['qty']}  ${item['price']} = ${item['total']}')
         .toList();
 
     return [
@@ -185,14 +195,15 @@ class PrinterHelper {
       ...generator.text('Date: ${invoice['date'] ?? ''}'),
       ...generator.text('Invoice #: ${invoice['id'] ?? ''}'),
       ...generator.hr(),
-      ...items.expand((line) => generator.text(line)).toList(),
+      ...items.expand((line) => generator.text(line)),
       ...generator.hr(),
       ...generator.text('Total: ${invoice['total'] ?? '0.00'}',
           styles: PosStyles(align: PosAlign.right, bold: true)),
       ...generator.feed(2),
       ...generator.cut(),
     ];
-  } 
+  }
+
   Future<void> printTestByIp(String ip, {int port = 9100}) async {
     try {
       final profile = await CapabilityProfile.load();
@@ -205,15 +216,13 @@ class PrinterHelper {
         linesAfter: 2,
       );
 
-      final socket = await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
+      final socket =
+          await Socket.connect(ip, port, timeout: const Duration(seconds: 3));
       socket.add(bytes);
       await socket.flush();
       await socket.close();
     } catch (e) {
-      print("Print error: $e");
+      debugPrint("Print error: $e");
     }
   }
 }
-
-
-

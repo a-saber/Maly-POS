@@ -152,7 +152,7 @@ class AppConstant {
       ),
       HomeViewItemModel(
         color: Color(0xffffa700),
-        icon: Icons.schedule_outlined,
+        icon: Icons.timer,
         pageRoute: AppRoutes.shiftsView,
         title: S.of(context).shifts,
         // canAccess: user.role?.storeMove ?? false,

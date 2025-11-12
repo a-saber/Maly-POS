@@ -66,12 +66,14 @@ class CustomTextBtn extends StatelessWidget {
     this.icon,
     required this.onPressed,
     this.style,
+    this.textColor,
   });
 
   final String text;
   final Widget? icon;
-  final void Function() onPressed;
+  final void Function()? onPressed;
   final TextStyle? style;
+  final Color? textColor;
   @override
   Widget build(BuildContext context) {
     return TextButton(
@@ -90,8 +92,7 @@ class CustomTextBtn extends StatelessWidget {
                 text,
                 style: style ??
                     AppFontStyle.deleteBtnText(
-                      context: context,
-                    ),
+                        context: context, color: textColor ?? AppColors.error),
               ),
             ],
           ),

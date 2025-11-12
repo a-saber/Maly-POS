@@ -57,3 +57,6 @@ final class SellingPointProductResetProduct extends SellingPointProductState {}
 final class SellingPointProductUpdateProduct extends SellingPointProductState {}
 
 final class SellingPointProductDeleteProduct extends SellingPointProductState {}
+
+final class SellingPointProductChangePaidFailing
+    extends SellingPointProductState {}

@@ -84,15 +84,6 @@ class S {
       args: [],
     );
   }
-  /// testPrint
-  String get testPrint {
-    return Intl.message(
-      'Test Print',
-      name: 'testPrint',
-      desc: '',
-      args: [],
-    );
-  }
 
   /// `Enter a valid phone number`
   String get enteravalidphonenumber {
@@ -168,14 +159,6 @@ class S {
       args: [],
     );
   }
-  String get categoryName {
-    return Intl.message(
-      'Category Name',
-      name: 'categoryName',
-      desc: '',
-      args: [],
-    );
-  }
 
   /// `Field`
   String get field {
@@ -187,9 +170,9 @@ class S {
     return Intl.message('is required', name: 'isrequired', desc: '', args: []);
   }
 
-  /// `name`
+  /// `Name`
   String get name {
-    return Intl.message('name', name: 'name', desc: '', args: []);
+    return Intl.message('Name', name: 'name', desc: '', args: []);
   }
 
   /// `Phone`
@@ -681,46 +664,7 @@ class S {
       args: [],
     );
   }
-  String get street {
-    return Intl.message(
-      'Street',
-       name: 'street',
-        desc: '',
-         args: []);
-  }
-  String get building {
-    return Intl.message(
-      'Building',
-       name: 'building',
-        desc: '',
-         args: []);
-  }
 
-  /// `City`
-  String get city {
-    return Intl.message(
-      'City',
-       name: 'city',
-        desc: '',
-         args: []);
-  }
-  /// `District`
-  String get district {
-    return Intl.message(
-      'District',
-       name: 'district',
-        desc: '',
-         args: []);
-  }
-  /// `Country`
-  String get country {
-    return Intl.message(
-      'Country',
-       name: 'country',
-        desc: '',
-         args: []);
-  }
-  
   /// `Enter a valid price`
   String get enteravalidprice {
     return Intl.message(
@@ -835,14 +779,7 @@ class S {
       args: [],
     );
   }
-  String get addPrinterIp {
-    return Intl.message(
-      'Add Printer IP',
-      name: 'addPrinterIp',
-      desc: '',
-      args: [],
-    );
-  }
+
   /// `between`
   String get between {
     return Intl.message('between', name: 'between', desc: '', args: []);
@@ -2082,294 +2019,315 @@ class S {
       args: [],
     );
   }
-  ///' printer '
+
+  /// `Printer`
   String get printer {
-    return Intl.message(
-      ' printer ',
-       name: 'printer',
-        desc: '',
-         args: []
-         );
+    return Intl.message('Printer', name: 'printer', desc: '', args: []);
   }
+
+  /// `Add Pinter`
   String get addPrinter {
-    return Intl.message(
-      'Add Printer',
-       name: 'addPrinter',
-        desc: '',
-         args: []
-         );
-  } 
+    return Intl.message('Add Pinter', name: 'addPrinter', desc: '', args: []);
+  }
+
+  /// `Printer Details`
   String get printerDetails {
     return Intl.message(
       'Printer Details',
-       name: 'printerDetails',
-        desc: '',
-         args: []
-         );
+      name: 'printerDetails',
+      desc: '',
+      args: [],
+    );
   }
+
+  /// `Automatic`
   String get automatic {
-    return Intl.message(
-      'Automatic',
-       name: 'automatic',
-        desc: '',
-         args: []
-         );
+    return Intl.message('Automatic', name: 'automatic', desc: '', args: []);
   }
-  String get printreceipt {
-    return Intl.message(
-      'Print receipt',
-       name: 'printreceipt',
-        desc: '',
-         args: []
-         );
-  }
-  String get printCategories {
-    return Intl.message(
-      'Print Categories',
-       name: 'printCategories',
-        desc: '',
-         args: []
-         );
-  }
-  String get copiesCount {
-    return Intl.message(
-      'Copies Count',
-       name: 'copiesCount',
-        desc: '',
-         args: []
-         );
-  }
-  String get chooseCategory {
-    return Intl.message(
-      'Choose Category',
-       name: 'chooseCategory',
-        desc: '',
-         args: []
-         );
-  }
-  String get done {
-    return Intl.message(
-      'Done',
-       name: 'done',
-        desc: '',
-         args: []
-         );
-  }
-  String get saveChanges {
-    return Intl.message(
-      'Save Changes',
-       name: 'saveChanges',
-        desc: '',
-         args: []
-         );
-  }
-  String get editPrinter {
-    return Intl.message(
-      'Edit Printer',
-       name: 'editPrinter',
-        desc: '',
-         args: []
-         );
-  } 
-  String get shifts {
-    return Intl.message(
-      'Shifts',
-       name: 'shifts',
-        desc: '',
-         args: []
-         );
-  }
-  String get deletePrinter {
-    return Intl.message(
-      'Delete Printer',
-       name: 'deletePrinter',
-        desc: '',
-         args: []
-         );
-  }
+
+  /// `Print Receipt`
   String get printReceipt {
     return Intl.message(
       'Print Receipt',
-       name: 'printReceipt',
-        desc: '',
-         args: []
-         );
+      name: 'printReceipt',
+      desc: '',
+      args: [],
+    );
   }
-  String get printerIp {
+
+  /// `Print Catec`
+  String get printCategories {
     return Intl.message(
-      'Printer Ip',
-       name: 'printerIp',
-        desc: '',
-         args: []
-         );
+      'Print Catec',
+      name: 'printCategories',
+      desc: '',
+      args: [],
+    );
   }
-  String get enteravalidip {
+
+  /// `Choose Category`
+  String get chooseCategory {
     return Intl.message(
-      'Enter a valid ip',
-       name: 'enteravalidip',
-        desc: '',
-         args: []
-         );
+      'Choose Category',
+      name: 'chooseCategory',
+      desc: '',
+      args: [],
+    );
   }
+
+  /// `Copies Count`
+  String get copiesCount {
+    return Intl.message(
+      'Copies Count',
+      name: 'copiesCount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Done`
+  String get done {
+    return Intl.message('Done', name: 'done', desc: '', args: []);
+  }
+
+  /// `Save Changes`
+  String get savechanges {
+    return Intl.message(
+      'Save Changes',
+      name: 'savechanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Printer Name`
+  String get printerName {
+    return Intl.message(
+      'Printer Name',
+      name: 'printerName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Ip Printer`
+  String get Ipprinter {
+    return Intl.message('Ip Printer', name: 'Ipprinter', desc: '', args: []);
+  }
+
+  /// `Edit Printer`
+  String get editprinter {
+    return Intl.message(
+      'Edit Printer',
+      name: 'editprinter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shifts`
+  String get shifts {
+    return Intl.message('Shifts', name: 'shifts', desc: '', args: []);
+  }
+
+  /// `Test Print`
+  String get testPrint {
+    return Intl.message('Test Print', name: 'testPrint', desc: '', args: []);
+  }
+
+  /// `Street`
+  String get street {
+    return Intl.message('Street', name: 'street', desc: '', args: []);
+  }
+
+  /// `Building`
+  String get building {
+    return Intl.message('Building', name: 'building', desc: '', args: []);
+  }
+
+  /// `City`
+  String get city {
+    return Intl.message('City', name: 'city', desc: '', args: []);
+  }
+
+  /// `District`
+  String get district {
+    return Intl.message('District', name: 'district', desc: '', args: []);
+  }
+
+  /// `Country`
+  String get country {
+    return Intl.message('Country', name: 'country', desc: '', args: []);
+  }
+
+  /// `Price Shoud Be Bigger Than Or Equal Total Price`
+  String get priceShoudBeBiggerThanOrEqualTotalPrice {
+    return Intl.message(
+      'Price Shoud Be Bigger Than Or Equal Total Price',
+      name: 'priceShoudBeBiggerThanOrEqualTotalPrice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Shift Details`
   String get shiftDetails {
     return Intl.message(
       'Shift Details',
-       name: 'shiftDetails',
-        desc: '',
-         args: []
-         );
+      name: 'shiftDetails',
+      desc: '',
+      args: [],
+    );
   }
+
+  /// `Shift Number`
   String get shiftNumber {
     return Intl.message(
       'Shift Number',
-       name: 'shiftNumber',
-        desc: '',
-         args: []
-         );
+      name: 'shiftNumber',
+      desc: '',
+      args: [],
+    );
   }
+
+  /// `Start At`
   String get startAt {
-    return Intl.message(
-      'Start At',
-       name: 'startAt',
-        desc: '',
-         args: []
-         );
+    return Intl.message('Start At', name: 'startAt', desc: '', args: []);
   }
+
+  /// `End At`
   String get endAt {
-    return Intl.message(
-      'End At',
-       name: 'endAt',
-        desc: '',
-         args: []
-         );
+    return Intl.message('End At', name: 'endAt', desc: '', args: []);
   }
+
+  /// `Orders Count`
   String get ordersCount {
     return Intl.message(
       'Orders Count',
-       name: 'ordersCount',
-        desc: '',
-         args: []
-         );
+      name: 'ordersCount',
+      desc: '',
+      args: [],
+    );
   }
+
+  /// `Summary`
+  String get summary {
+    return Intl.message('Summary', name: 'summary', desc: '', args: []);
+  }
+
+  /// `Orders`
+  String get orders {
+    return Intl.message('Orders', name: 'orders', desc: '', args: []);
+  }
+
+  /// `Something Went Wrong`
+  String get somethingWentWrong {
+    return Intl.message(
+      'Something Went Wrong',
+      name: 'somethingWentWrong',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter a valid ip`
+  String get enteravalidip {
+    return Intl.message(
+      'Enter a valid ip',
+      name: 'enteravalidip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Printer Ip`
+  String get addPrinterIp {
+    return Intl.message(
+      'Add Printer Ip',
+      name: 'addPrinterIp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Printer`
+  String get deletePrinter {
+    return Intl.message(
+      'Delete Printer',
+      name: 'deletePrinter',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Opening Quantity`
   String get openingQuantity {
     return Intl.message(
       'Opening Quantity',
-       name: 'openingQuantity',
-        desc: '',
-         args: []
-         );
+      name: 'openingQuantity',
+      desc: '',
+      args: [],
+    );
   }
-  String get summary {
-    return Intl.message(
-      'Summary',
-       name: 'summary',
-        desc: '',
-         args: []
-         );
+
+  /// `Tax`
+  String get tax {
+    return Intl.message('Tax', name: 'tax', desc: '', args: []);
   }
-  String get tax{
-    return Intl.message(
-      'Tax',
-       name: 'tax',
-        desc: '',
-         args: []
-         );
+
+  /// `Manager`
+  String get manager {
+    return Intl.message('Manager', name: 'manager', desc: '', args: []);
   }
-  String get somethingWentWrong {
-    return Intl.message(
-      'Something went wrong',
-       name: 'somethingWentWrong',
-        desc: '',
-         args: []
-         );
+
+  /// `Cash Total`
+  String get cashTotal {
+    return Intl.message('Cash Total', name: 'cashTotal', desc: '', args: []);
   }
-  String get orders {
+
+  /// `Online Total`
+  String get onlineTotal {
     return Intl.message(
-      'Orders',
-       name: 'orders',
-        desc: '',
-         args: []
-         );
+      'Online Total',
+      name: 'onlineTotal',
+      desc: '',
+      args: [],
+    );
   }
-  String get shiftStarted {
-    return Intl.message(
-      'Shift Started',
-       name: 'shiftStarted',
-        desc: '',
-         args: []
-         );
+
+  /// `Shop`
+  String get shop {
+    return Intl.message('Shop', name: 'shop', desc: '', args: []);
   }
-  String get ok {
-    return Intl.message(
-      'OK',
-       name: 'ok',
-        desc: '',
-         args: []
-         );
+
+  /// `Order Id`
+  String get orderId {
+    return Intl.message('Order Id', name: 'orderId', desc: '', args: []);
   }
-  String get startShift {
-    return Intl.message(
-      'Start Shift',
-       name: 'startShift',
-        desc: '',
-         args: []
-         );
+
+  /// `Date`
+  String get date {
+    return Intl.message('Date', name: 'date', desc: '', args: []);
   }
-  String get pleaseSelectBranch {
-    return Intl.message(
-      'Please select branch',
-       name: 'pleaseSelectBranch',
-        desc: '',
-         args: []
-         );
+
+  /// `Details`
+  String get details {
+    return Intl.message('Details', name: 'details', desc: '', args: []);
   }
-  String get pleaseEnterValidCash {
-    return Intl.message(
-      'Please enter valid cash',
-       name: 'pleaseEnterValidCash',
-        desc: '',
-         args: []
-         );
+
+  /// `Show More`
+  String get showMore {
+    return Intl.message('Show More', name: 'showMore', desc: '', args: []);
   }
-  String get endShift {
+
+  /// `Order Details`
+  String get orderDetails {
     return Intl.message(
-      'End Shift',
-       name: 'endShift',
-        desc: '',
-         args: []
-         );
-  }
-  String get print{
-    return Intl.message(
-      'Print',
-       name: 'print',
-        desc: '',
-         args: []
-         );
-  }
-  String get close{
-    return Intl.message(
-      'Close',
-       name: 'close',
-        desc: '',
-         args: []
-         );
-  }
-  String get subtotal{
-    return Intl.message(
-      'Subtotal',
-       name: 'subtotal',
-        desc: '',
-         args: []
-         );
-  }
-  String get shiftEnded {
-    return Intl.message(
-      'Shift Ended',
-       name: 'shiftEnded',
-        desc: '',
-         args: []
-         );
+      'Order Details',
+      name: 'orderDetails',
+      desc: '',
+      args: [],
+    );
   }
 }
 

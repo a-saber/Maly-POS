@@ -56,7 +56,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                           maxLines: 1,
                         ),
                         Text(
-                          "${product.product.priceAfterTax}",
+                          "${product.product.priceAfterTax?.toDouble() ?? 0.0}",
                           style: AppFontStyle.s12(
                             context: context,
                             color: AppColors.black,
@@ -105,7 +105,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${product.product.priceAfterTax !* product.count}',
+                '${(product.product.priceAfterTax?.toDouble() ?? 0.0) * product.count}',
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,
@@ -121,7 +121,7 @@ class CustomItemDrawerCard extends StatelessWidget {
         Row(
           children: [
             Expanded(
-                flex: 3,
+                flex: 4,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 20,

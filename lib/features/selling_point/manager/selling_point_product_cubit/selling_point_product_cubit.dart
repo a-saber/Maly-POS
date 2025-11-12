@@ -32,8 +32,8 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   // String? valuePaid;
   TextEditingController paidController = TextEditingController();
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
+  // GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  // AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
 
   init() {
     // formKey = GlobalKey<FormState>();
@@ -42,7 +42,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     // taxes = null;
     // value = '';
     // discount = null;
-    autovalidateMode = AutovalidateMode.disabled;
+    // autovalidateMode = AutovalidateMode.disabled;
 
     user = null;
     // paymentController = TextEditingController();
@@ -58,47 +58,41 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void confirmPayment() async {
-    if (formKey.currentState!.validate()) {
-      emit(SellingPointProductLoading());
-      debugPrint(
-          " \n ******* subtotal : ${subTotalPrice()} *************** \n");
-      debugPrint(
-          " \n ******* discounttotal : ${discountPrice()} *************** \n");
-      debugPrint(
-          " \n ******* totalafterdiscount : ${totalAfterDiscount()} *************** \n");
-      debugPrint(" \n ******* taxtotal : ${taxesPrice()} *************** \n");
-      debugPrint(
-          " \n ******* totalaftertax : ${totalAfterTax()} *************** \n");
-      var respons = await repo.newSales(
-        typeOfTakeOrder: typeOfTakeOrder!,
-        paid: double.parse(
-          (paidController.text.isEmpty)
-              ? (round2(totalPrice()).toString())
-              : paidController.text,
-        ),
+    emit(SellingPointProductLoading());
+    debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
+    debugPrint(
+        " \n ******* discounttotal : ${discountPrice()} *************** \n");
+    debugPrint(
+        " \n ******* totalafterdiscount : ${totalAfterDiscount()} *************** \n");
+    debugPrint(" \n ******* taxtotal : ${taxesPrice()} *************** \n");
+    debugPrint(
+        " \n ******* totalaftertax : ${totalAfterTax()} *************** \n");
+    var respons = await repo.newSales(
+      typeOfTakeOrder: typeOfTakeOrder!,
+      paid: double.parse(
+        (paidController.text.isEmpty)
+            ? (round2(totalPrice()).toString())
+            : paidController.text,
+      ),
 
-        subtotal: round2(subTotalPrice()),
-        discounttotal: round2(discountPrice()),
-        totalafterdiscount: round2(totalAfterDiscount()),
-        taxtotal: round2(taxesPrice()),
-        totalaftertax: round2(totalAfterTax()),
-        paymentType: paymentMethod,
-        // taxes: taxes!,
-        discount: discount,
+      subtotal: round2(subTotalPrice()),
+      discounttotal: round2(discountPrice()),
+      totalafterdiscount: round2(totalAfterDiscount()),
+      taxtotal: round2(taxesPrice()),
+      totalaftertax: round2(totalAfterTax()),
+      paymentType: paymentMethod,
+      // taxes: taxes!,
+      discount: discount,
 
-        customer: user,
-        products: products,
-      );
-      respons.fold(
-          (errMessage) => emit(SellingPointProductFailing(message: errMessage)),
-          (success) {
-        init();
-        emit(SellingPointProductSuccess(printModel: success));
-      });
-    } else {
-      autovalidateMode = AutovalidateMode.always;
-      emit(SellingPointProductUnvalidTextField());
-    }
+      customer: user,
+      products: products,
+    );
+    respons.fold(
+        (errMessage) => emit(SellingPointProductFailing(message: errMessage)),
+        (success) {
+      init();
+      emit(SellingPointProductSuccess(printModel: success));
+    });
   }
 
   bool containProduct() => products.isNotEmpty;
@@ -322,6 +316,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void changePaid(String? value) {
-    emit(SellingPointProductChangePaid());
+    if (value == null || ((double.tryParse(value) ?? 0) < totalPrice())) {
+      emit(SellingPointProductChangePaidFailing());
+    } else {
+      paidController.text = value;
+      emit(SellingPointProductChangePaid());
+    }
   }
 }

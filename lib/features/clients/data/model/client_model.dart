@@ -9,8 +9,6 @@ class ClientModel {
   String? note;
   String? imagePath;
 
-
-
   ClientModel({
     this.id,
     this.name,
@@ -34,6 +32,20 @@ class ClientModel {
       taxIdentificationNumber: source.taxIdentificationNumber,
       note: source.note,
       imagePath: source.imagePath,
+    );
+  }
+
+  static ClientModel fromJson(Map<String, dynamic> json) {
+    return ClientModel(
+      id: json['id'],
+      name: json['name'],
+      phone: json['phone'],
+      email: json['email'],
+      address: json['address'],
+      commercialRegister: json['commercial_register'],
+      taxIdentificationNumber: json['tax_identification_number'],
+      note: json['note'],
+      imagePath: json['image_path'],
     );
   }
 }

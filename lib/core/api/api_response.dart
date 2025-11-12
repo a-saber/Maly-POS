@@ -9,13 +9,15 @@ class ApiResponse {
   final String? message;
   final dynamic data;
   final dynamic error;
+  final bool? shiftError;
 
   ApiResponse(
       {required this.status,
       required this.message,
       required this.data,
       required this.statusCode,
-      required this.error});
+      required this.error,
+      this.shiftError});
 
   factory ApiResponse.successResonse(
           {required String? message, required dynamic data}) =>
@@ -35,7 +37,7 @@ class ApiResponse {
       );
 
   factory ApiResponse.errorResonse(String error,
-      {dynamic errorResponse, required int? statusCode}) {
+      {dynamic errorResponse, required int? statusCode, bool? shiftError}) {
     debugPrint(errorResponse.toString());
     String errorRes = "";
     if (errorResponse != null) {
@@ -61,6 +63,7 @@ class ApiResponse {
       data: null,
       error: errorResponse,
       statusCode: ApiStatusCode.badResponse,
+      shiftError: shiftError,
     );
   }
 }
@@ -142,6 +145,7 @@ ApiResponse _handleServerError(Response? response) {
       response.data[ApiKeys.message] ?? "An error occurred",
       errorResponse: response.data[ApiKeys.errors],
       statusCode: ApiStatusCode.badResponse,
+      shiftError: response.data[ApiKeys.shifterror],
     );
   }
 

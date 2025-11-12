@@ -141,15 +141,16 @@ abstract class ApiKeys {
   static const String hall = 'hall';
   static const String zatcaQrcode = 'zatca_qrcode';
   static const String perPage = 'per_page';
-  static const String printer= 'printers';
-  static const String startshift= 'users/shifts/start';
-  static const String endshift= 'users/shifts/end';
-  static const String shifts= 'users/get/shifts/1';
+  static const String printer = 'printers';
+  static const String startshift = 'users/shifts/start';
+  static const String endshift = 'users/shifts/end';
+  static const String shifts = 'users/get/shifts/1';
   static const String street = 'street';
-  static const String building = 'building';  
+  static const String building = 'building';
   static const String city = 'city';
   static const String district = 'district';
   static const String country = 'country';
+  static const String shifterror = 'shift_error';
 }
 
 abstract class ApiEndPoints {
@@ -255,31 +256,34 @@ abstract class ApiEndPoints {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}settings";
   }
+
   static Future<String> getPrinters() async {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}printers";
   }
+
   static Future<String> startShift() async {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}users/shifts/start";
   }
+
   static Future<String> endShift() async {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}users/shifts/end";
   }
-  static Future<String> getShifts({required int userId}) async {
+
+  static Future<String> getShifts() async {
     final baseUrl = await _getPosUrl();
-    return "${baseUrl}shifts?user_id=$userId";
+    return "${baseUrl}shifts";
   }
- static Future<String> getShiftDetails({
-  required int shiftId,
-  int perPage = 10,
-  String sort = "desc",
-  String sortBy = "created_at",
-}) async {
-  final baseUrl = await _getPosUrl();
-  return "${baseUrl}shifts/$shiftId?per_page=$perPage&sort=$sort&sort_by=$sortBy";
-}
 
-
+  static Future<String> getShiftDetails({
+    required int shiftId,
+    int perPage = 10,
+    String sort = "desc",
+    String sortBy = "created_at",
+  }) async {
+    final baseUrl = await _getPosUrl();
+    return "${baseUrl}shifts/$shiftId?per_page=$perPage&sort=$sort&sort_by=$sortBy";
+  }
 }

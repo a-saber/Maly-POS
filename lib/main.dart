@@ -23,6 +23,7 @@ void main() async {
   await Future.wait<void>([
     CacheHelper.init(),
     Hive.initFlutter(),
+    // GetLocation.getParameterOfLocation(),
   ]);
 
   hiveRegisterAdapter();

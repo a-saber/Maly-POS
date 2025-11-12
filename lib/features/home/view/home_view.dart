@@ -11,10 +11,9 @@ import 'package:pos_app/features/branch/data/repo/branches_repo.dart';
 import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_branches_cubit.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
 import 'package:pos_app/features/home/view/widget/custom_drawer.dart';
+import 'package:pos_app/features/shifts/data/repo/shift_repo.dart';
 import 'package:pos_app/generated/l10n.dart';
-import 'package:pos_app/features/home/data/repo/home_repo.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
-
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -45,7 +44,7 @@ class _HomeViewState extends State<HomeView> {
         ),
         BlocProvider(
           create: (_) => ShiftCubit(
-            MyServiceLocator.getSingleton<HomeRepo>(),
+            MyServiceLocator.getSingleton<ShiftRepo>(),
           ),
         ),
         BlocProvider(
@@ -105,7 +104,8 @@ class _HomeViewState extends State<HomeView> {
                                 duration: Duration(seconds: 2),
                                 curve: Curves.fastLinearToSlowEaseIn,
                                 child: FadeInAnimation(
-                                  child: AppConstant.gridItems( context: context)[index],
+                                  child: AppConstant.gridItems(
+                                      context: context)[index],
                                 ),
                               ),
                             );

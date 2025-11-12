@@ -1,5 +1,7 @@
-import 'package:pos_app/features/home/data/model/end_shift_model.dart';
-import 'package:pos_app/features/home/data/model/getshift.dart' hide User, Branch;
+import 'package:pos_app/features/shifts/data/model/end_shift_model.dart';
+import 'package:pos_app/features/shifts/data/model/getshift.dart'
+    hide User, Branch;
+
 class ShiftsModel {
   bool? status;
   String? message;
@@ -117,4 +119,3 @@ class ShiftData {
     branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
   }
 }
-
