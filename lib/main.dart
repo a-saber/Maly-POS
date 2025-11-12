@@ -19,6 +19,7 @@ import 'package:pos_app/generated/l10n.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await PdfFontLoader.init();
   await Future.wait<void>([
     CacheHelper.init(),

@@ -301,5 +301,7 @@
   "date":"Date",
   "details":"Details",
   "showMore":"Show More",
-  "orderDetails":"Order Details"
+  "orderDetails":"Order Details",
+  "print":"print",
+  "notFoundShift":"Not Found Shift"
 }

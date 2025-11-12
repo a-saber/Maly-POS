@@ -2329,6 +2329,21 @@ class S {
       args: [],
     );
   }
+
+  /// `print`
+  String get print {
+    return Intl.message('print', name: 'print', desc: '', args: []);
+  }
+
+  /// `Not Found Shift`
+  String get notFoundShift {
+    return Intl.message(
+      'Not Found Shift',
+      name: 'notFoundShift',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

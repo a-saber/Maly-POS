@@ -29,7 +29,8 @@ class AddProductView extends StatelessWidget {
             if (state is AddProductSuccess) {
               GetAllProductsCubit.get(context).addProduct(state.product);
               // Selling Point
-              SellingPointCubit.get(context).addProduct(state.product);
+              MyServiceLocator.getSingleton<SellingPointCubit>()
+                  .addProduct(state.product);
               CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,

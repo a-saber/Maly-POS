@@ -29,7 +29,7 @@ class PrinterRepo {
       }
 
       final response = await api.get(
-        url: url,
+        url: url!,
         data: {
           ApiKeys.search: query,
         },

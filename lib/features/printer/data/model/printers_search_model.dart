@@ -8,10 +8,10 @@ class GetPrintersReponseModel {
   int? lastPage;
   String? lastPageUrl;
   List<LinksModel>? links;
-  Null? nextPageUrl;
+  String? nextPageUrl;
   String? path;
   int? perPage;
-  Null? prevPageUrl;
+  String? prevPageUrl;
   int? to;
   int? total;
 
@@ -55,7 +55,6 @@ class GetPrintersReponseModel {
     to = json['to'];
     total = json['total'];
   }
-
 }
 
 class LinksModel {
