@@ -5,7 +5,6 @@ import 'package:pos_app/core/cache/cache_keys.dart';
 import 'package:pos_app/core/cache/custom_secure_storage.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/core/constant/device_size.dart';
-import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/helper/reset_all_get_cubit.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_asset.dart';
@@ -13,11 +12,10 @@ import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/show_delete_confirm_dialog.dart';
-import 'package:pos_app/features/home/data/repo/home_repo.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
-import 'package:pos_app/features/shifts/widget/showdialog_for_end.dart';
-import 'package:pos_app/features/shifts/widget/showdialog_for_shift.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
+import 'package:pos_app/features/shifts/view/widget/showdialog_for_end.dart';
+import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -40,8 +38,6 @@ class CustomDrawer extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        final cubit = ShiftCubit.get(context);
-
         return Drawer(
           child: ListView(
             padding: EdgeInsets.zero,

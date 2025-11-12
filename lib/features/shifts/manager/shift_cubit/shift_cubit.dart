@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/features/home/data/model/shifts_model.dart';
-import 'package:pos_app/features/home/data/repo/home_repo.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
+import 'package:pos_app/features/shifts/data/model/shifts_model.dart';
+import 'package:pos_app/features/shifts/data/repo/shift_repo.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
 
 class ShiftCubit extends Cubit<ShiftState> {
-  final HomeRepo homeRepo;
+  final ShiftRepo shiftRepo;
   List<ShiftData> shifts = [];
   ScrollController scrollController = ScrollController();
   ScrollController shiftDetailsScrollController = ScrollController();
-  ShiftCubit(this.homeRepo) : super(ShiftInitial());
+  ShiftCubit(this.shiftRepo) : super(ShiftInitial());
   static ShiftCubit get(context) => BlocProvider.of<ShiftCubit>(context);
   List<Map<String, dynamic>> shiftOrders = [];
   bool _isLoadingMoreShiftOrders = false;
@@ -19,7 +19,7 @@ class ShiftCubit extends Cubit<ShiftState> {
     required double cash,
   }) async {
     emit(ShiftLoading());
-    final result = await homeRepo.startShift(branchId: branchId, cash: cash);
+    final result = await shiftRepo.startShift(branchId: branchId, cash: cash);
     result.fold(
       (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
       (_) => emit(ShiftSuccess(message: "Shift started successfully")),
@@ -28,7 +28,7 @@ class ShiftCubit extends Cubit<ShiftState> {
 
   Future<void> endShift({required int branchId}) async {
     emit(ShiftLoading());
-    final result = await homeRepo.endShift(branchId: branchId);
+    final result = await shiftRepo.endShift(branchId: branchId);
     result.fold(
       (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
       (endShiftModel) {
@@ -66,7 +66,7 @@ class ShiftCubit extends Cubit<ShiftState> {
   bool isLoadingMore = false;
   Future<void> getShifts({bool isFresh = false}) async {
     emit(ShiftLoading());
-    final result = await homeRepo.getShifts(isFresh: isFresh);
+    final result = await shiftRepo.getShifts(isFresh: isFresh);
     result.fold(
       (l) => emit(ShiftError(message: l.message ?? "Error")),
       (data) {
@@ -80,12 +80,14 @@ class ShiftCubit extends Cubit<ShiftState> {
     if (isLoadingMore) return;
     isLoadingMore = true;
 
-    final result = await homeRepo.getShifts();
+    final result = await shiftRepo.getShifts();
     result.fold(
       (l) => emit(ShiftError(message: l.message ?? "Error")),
       (data) {
-        shifts.addAll(data);
-        emit(ShiftSuccessWithData(shifts: List.from(shifts)));
+        if (data.isNotEmpty) {
+          shifts = data;
+          emit(ShiftSuccessWithData(shifts: data));
+        }
       },
     );
 
@@ -116,14 +118,11 @@ class ShiftCubit extends Cubit<ShiftState> {
 
     emit(ShiftDetailsLoading());
 
-    final result = await homeRepo.getShiftDetails(shiftId, isFresh: isFresh);
+    final result = await shiftRepo.getShiftDetails(shiftId, isFresh: isFresh);
     result.fold(
       (failure) =>
           emit(ShiftDetailsError(message: failure.message ?? "Failed")),
       (shiftDetails) {
-        shiftOrders = List.of(shiftDetails.data?.data ?? [])
-            .map((e) => e as Map<String, dynamic>)
-            .toList();
         emit(ShiftDetailsSuccess(
           shiftDetails: shiftDetails,
           pagination: shiftDetails.data,
@@ -133,13 +132,13 @@ class ShiftCubit extends Cubit<ShiftState> {
   }
 
   Future<void> loadMoreShiftOrders(int shiftId) async {
-      final currentState = state;
-  if (currentState is! ShiftDetailsSuccess) return;
+    final currentState = state;
+    if (currentState is! ShiftDetailsSuccess) return;
     if (_isLoadingMoreShiftOrders) return;
-    if (homeRepo.getShift?.data?.nextPageUrl == null) return;
+    if (shiftRepo.getShift?.data?.nextPageUrl == null) return;
     _isLoadingMoreShiftOrders = true;
 
-    final result = await homeRepo.getShiftDetails(shiftId, isFresh: false);
+    final result = await shiftRepo.getShiftDetails(shiftId, isFresh: false);
     result.fold(
       (_) => _isLoadingMoreShiftOrders = false,
       (newShiftDetails) {
@@ -147,7 +146,7 @@ class ShiftCubit extends Cubit<ShiftState> {
             .map((e) => e as Map<String, dynamic>)
             .toList();
         shiftOrders.addAll(newOrders);
-        final updatedShiftDetails = homeRepo.getShift!;
+        final updatedShiftDetails = shiftRepo.getShift!;
         emit(ShiftDetailsSuccess(
           shiftDetails: updatedShiftDetails,
           pagination: updatedShiftDetails.data,

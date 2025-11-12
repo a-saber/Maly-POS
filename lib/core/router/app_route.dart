@@ -31,7 +31,8 @@ import 'package:pos_app/features/expense_categories/presentation/add_expense_cat
 import 'package:pos_app/features/expense_categories/presentation/edit_expense_categories_view.dart';
 import 'package:pos_app/features/expense_categories/presentation/expense_categories_view.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
+import 'package:pos_app/features/shifts/data/model/getshift.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/view/home_view.dart';
 import 'package:pos_app/features/home/view/profile_view.dart';
 import 'package:pos_app/features/home/view/setting_view.dart';
@@ -61,6 +62,7 @@ import 'package:pos_app/features/sales_returns/view/sales_return_view.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/features/selling_point/view/selling_point_card_view.dart';
 import 'package:pos_app/features/selling_point/view/selling_point_view.dart';
+import 'package:pos_app/features/shifts/view/order_details_view.dart';
 import 'package:pos_app/features/shifts/view/shift_details.dart';
 import 'package:pos_app/features/shifts/view/shifts_view.dart';
 import 'package:pos_app/features/shop_setting/manager/cubit/shop_setting_cubit.dart';
@@ -151,6 +153,7 @@ class AppRoutes {
   static const String shiftsView = '/shiftsView';
   static const String addIpPrinter = "/addIpPrinter";
   static const String shiftDetails = '/shiftDetailsView';
+  static const String orderDetailsView = '/orderDetailsView';
 
   // Custom route with left-to-right + fade transition
   static PageRouteBuilder customGetPageRouteBuilder({
@@ -583,7 +586,12 @@ class AppRoutes {
           return customGetPageRouteBuilder(
             page: const ShiftsView(),
           );
-
+        case orderDetailsView:
+          return customGetPageRouteBuilder(
+            page: OrderDetailsView(
+              order: settings.arguments as OrderData,
+            ),
+          );
         case addIpPrinter:
           return customGetPageRouteBuilder(
             page: const AddIpPrinterView(),

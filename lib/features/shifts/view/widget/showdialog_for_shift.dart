@@ -6,12 +6,13 @@ import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_branches_cubit.dart';
 import 'package:pos_app/features/branch/view/widget/custom_drop_down_branch.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_cubit.dart';
-import 'package:pos_app/features/home/manager/cubit/shift_cubit/shift_state.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
 
-Future<void> showStartShiftDialog(BuildContext context) async {
-  final branchesCubit = GetAllBranchesCubit.get(context);
-  final shiftCubit = ShiftCubit.get(context);
+Future<void> showStartShiftDialog(BuildContext context,
+    {GetAllBranchesCubit? branchescubit, ShiftCubit? shiftcubit}) async {
+  final branchesCubit = branchescubit ?? GetAllBranchesCubit.get(context);
+  final shiftCubit = shiftcubit ?? ShiftCubit.get(context);
 
   final TextEditingController cashController = TextEditingController();
   BrancheModel? selectedBranch;
@@ -45,8 +46,9 @@ Future<void> showStartShiftDialog(BuildContext context) async {
                     controller: cashController,
                     keyboardType: TextInputType.number,
                     labelText: "Cash",
-                    validator: (value) =>
-                        MyFormValidators.validateDecimalOrInt(value, context: ctx),
+                    validator: (value) => MyFormValidators.validateDecimalOrInt(
+                        value,
+                        context: ctx),
                   ),
                 ],
               ),

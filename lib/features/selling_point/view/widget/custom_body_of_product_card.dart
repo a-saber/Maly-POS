@@ -35,7 +35,7 @@ class CustomBodyOfProductCard extends StatelessWidget {
             ),
             Expanded(
                 child: Align(
-              alignment: AlignmentDirectional.centerStart,
+              alignment: AlignmentDirectional.center,
               child: Text(
                 S.of(context).quantity,
                 style: AppFontStyle.itemsSubTitle(
@@ -50,7 +50,7 @@ class CustomBodyOfProductCard extends StatelessWidget {
             )),
             Expanded(
                 child: Align(
-              alignment: AlignmentDirectional.centerStart,
+              alignment: AlignmentDirectional.center,
               child: Text(
                 S.of(context).price,
                 style: AppFontStyle.itemsSubTitle(
