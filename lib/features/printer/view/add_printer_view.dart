@@ -180,7 +180,8 @@ class AddPrinterView extends StatelessWidget {
           final categoriesCubit = GetCategoryCubit.get(context);
 
           return Scaffold(
-            appBar: CustomAppBar(title: S.of(context).printerDetails,
+            appBar: CustomAppBar(
+              title: S.of(context).printerDetails,
             ),
             body: Padding(
               padding: AppPaddings.defaultView,
@@ -256,7 +257,9 @@ class _PrinterOptions extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-          CustomDropdown<String>(
+        CustomDropdown<String>(
+          // hint: S.of(context).selectpapersize ,
+          hint: "Select Paper Size",
           value: cubit.paperSize,
           items: paperSizes,
           onChanged: (value) => cubit.changePaperSize(value),
@@ -274,7 +277,6 @@ class _PrinterOptions extends StatelessWidget {
           validator: (value) =>
               MyFormValidators.validateInteger(value, context: context),
         ),
-      
         BlocBuilder<PrinterDataCubit, PrinterDataState>(
           builder: (_, state) => CustomCheckbox(
             title: S.of(context).automatic,

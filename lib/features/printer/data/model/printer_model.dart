@@ -16,60 +16,64 @@ class PrinterModel {
   String? ipAccress;
   bool? automatic;
   int? printReceiptCount;
+  String? paperSize;
   String? updatedAt;
   String? createdAt;
+
   int? id;
   List<CategoryModel>? categories;
   DiscoveredPrinter? discoveredPrinter;
 
-  PrinterModel(
-      {this.printerType,
-      this.printerName,
-      this.communicationType,
-      this.vendor,
-      this.product,
-      this.address,
-      this.isble,
-      this.port,
-      this.ipAccress,
-      this.automatic,
-      this.printReceiptCount,
-      this.updatedAt,
-      this.createdAt,
-      this.id,
-      this.categories,
-      this.discoveredPrinter,
-      });
+  PrinterModel({
+    this.printerType,
+    this.printerName,
+    this.communicationType,
+    this.vendor,
+    this.product,
+    this.address,
+    this.isble,
+    this.port,
+    this.ipAccress,
+    this.automatic,
+    this.printReceiptCount,
+    this.updatedAt,
+    this.createdAt,
+    this.id,
+    this.categories,
+    this.discoveredPrinter,
+    this.paperSize,
+  });
 
   PrinterModel.fromJson(Map<String, dynamic> json) {
     printerType = json['printer_type'];
     printerName = json['printer_name'];
     communicationType = json['communication_type'];
+    paperSize = json['paper_size'];
 
     switch (json['communication_type']) {
       case 'usb':
         discoveredPrinter = DiscoveredPrinter(
           device: PrinterDevice(
-            name: json['printer_type']??'',
+            name: json['printer_type'] ?? '',
             vendorId: json['vendor'],
             productId: json['product'],
           ),
           type: PrinterType.usb,
           isBle: json['isble'] == '1' ? true : false,
         );
-        case 'bluetooth':
+      case 'bluetooth':
         discoveredPrinter = DiscoveredPrinter(
           device: PrinterDevice(
-            name: json['printer_type']??'',
+            name: json['printer_type'] ?? '',
             address: json['address'],
           ),
           type: PrinterType.bluetooth,
           isBle: json['isble'] == '1' ? true : false,
         );
-        case 'wifi':
+      case 'wifi':
         discoveredPrinter = DiscoveredPrinter(
           device: PrinterDevice(
-            name: json['printer_type']??'',
+            name: json['printer_type'] ?? '',
             address: json['ip_accress'],
           ),
           type: PrinterType.network,
@@ -82,7 +86,7 @@ class PrinterModel {
     isble = json['isble'];
     port = json['port'];
     ipAccress = json['ip_accress'];
-    automatic = json['automatic']==1?true:false;
+    automatic = json['automatic'] == 1 ? true : false;
     printReceiptCount = json['print_receipt_count'];
     updatedAt = json['updated_at'];
     createdAt = json['created_at'];
@@ -96,8 +100,8 @@ class PrinterModel {
   }
 
   Map<String, dynamic> toJson(List<CategoryRowsModel> categoryRows) {
-    Map<String, dynamic> discoveredPrinterData ={};
-    if(discoveredPrinter != null){
+    Map<String, dynamic> discoveredPrinterData = {};
+    if (discoveredPrinter != null) {
       switch (discoveredPrinter!.type) {
         case PrinterType.usb:
           discoveredPrinterData = {
@@ -110,7 +114,7 @@ class PrinterModel {
           discoveredPrinterData = {
             'printer_type': discoveredPrinter?.device.name.trim(),
             'address': discoveredPrinter?.device.address?.trim(),
-            'isble': discoveredPrinter?.isBle==true ? '1' : '0',
+            'isble': discoveredPrinter?.isBle == true ? '1' : '0',
             'communication_type': 'bluetooth',
           };
         case PrinterType.network:
@@ -120,16 +124,18 @@ class PrinterModel {
           };
       }
     }
-    Map<String, dynamic> categoryRowsData ={};
-    for(int i=0;i<categoryRows.length;i++){
+    Map<String, dynamic> categoryRowsData = {};
+    for (int i = 0; i < categoryRows.length; i++) {
       categoryRowsData['categories[$i][id]'] = categoryRows[i].category?.id;
-      categoryRowsData['categories[$i][print_receipt_count]'] = categoryRows[i].copiesCount.text;
+      categoryRowsData['categories[$i][print_receipt_count]'] =
+          categoryRows[i].copiesCount.text;
     }
 
     final Map<String, dynamic> data = {
+      'paper_size': paperSize,
       'printer_name': printerName?.trim(),
       'automatic': automatic == true ? '1' : '0',
-      'print_receipt_count': printReceiptCount??0,
+      'print_receipt_count': printReceiptCount ?? 0,
       ...discoveredPrinterData,
       ...categoryRowsData
     };

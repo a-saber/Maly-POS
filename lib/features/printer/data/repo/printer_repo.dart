@@ -65,6 +65,7 @@ class PrinterRepo {
       final url = await ApiEndPoints.getPrinters();
 
       Map<String, dynamic> printerData = printer.toJson(categoryRows);
+      debugPrint("------------\n  printData $printerData   \n----------------");
       final response = await api.post(url: url, data: printerData);
       debugPrint('Response Data: ${response.data}');
       if (response.status) {
