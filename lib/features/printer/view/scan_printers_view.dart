@@ -20,31 +20,34 @@ class ScanPrintersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-          ScanLocalPrintersCubit()..getDiscoveredPrinters(),
+      create: (_) => ScanLocalPrintersCubit()..getDiscoveredPrinters(),
       child: const _AddPrinterViewBody(),
     );
   }
 }
 
 class _AddPrinterViewBody extends StatelessWidget {
-  const _AddPrinterViewBody({super.key});
+  const _AddPrinterViewBody();
 
   @override
   Widget build(BuildContext context) {
     final cubit = ScanLocalPrintersCubit.get(context);
 
     return Scaffold(
-      appBar: CustomAppBar(title: S.of(context).addPrinter,
-          actions:(!kIsWeb&&(Platform.isAndroid||Platform.isIOS))
+      appBar: CustomAppBar(
+          title: S.of(context).addPrinter,
+          actions: (!kIsWeb && (Platform.isAndroid || Platform.isIOS))
               ? [
-              CustomTextBtn(
-                text: S.of(context).addPrinterIp,
-                onPressed:(){
-                  Navigator.pushNamed(context, AppRoutes.addIpPrinter);
-                } ,
-              ),
-            ]
+                  CustomTextBtn(
+                    text: S.of(context).addPrinterIp,
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.addIpPrinterView,
+                      );
+                    },
+                  ),
+                ]
               : []),
       body: Padding(
         padding: AppPaddings.defaultView,
@@ -53,7 +56,8 @@ class _AddPrinterViewBody extends StatelessWidget {
             Expanded(
               child: CustomRefreshIndicator(
                 onRefresh: () async => cubit.getDiscoveredPrinters(),
-                child: BlocBuilder<ScanLocalPrintersCubit, ScanLocalPrintersState>(
+                child:
+                    BlocBuilder<ScanLocalPrintersCubit, ScanLocalPrintersState>(
                   builder: (context, state) {
                     if (state is ScanLocalPrintersLoading) {
                       return CustomGridViewCard(
@@ -61,7 +65,7 @@ class _AddPrinterViewBody extends StatelessWidget {
                         itemBuilder: (context, index) => const Center(
                           child: Text('Scanning for printers...'),
                         ),
-                        itemCount: AppConstant.numberOfCardLoading, 
+                        itemCount: AppConstant.numberOfCardLoading,
                       );
                     }
 
@@ -95,10 +99,13 @@ class _AddPrinterViewBody extends StatelessWidget {
                           return PrinterItem(
                             printer: printer,
                             onTap: () {
-                              Navigator.pushNamed(context
-                              , AppRoutes.addPrinter,
-                                  arguments: printer)
-                                  .then((value) => cubit.getDiscoveredPrinters());
+                              // TODO : Add Printer Screen
+
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.addPrinterView,
+                                arguments: printer,
+                              );
                             },
                           );
                         },

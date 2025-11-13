@@ -145,7 +145,7 @@ class AppConstant {
       HomeViewItemModel(
         color: Color(0xffffa700),
         icon: Icons.print_outlined,
-        pageRoute: AppRoutes.printersView,
+        pageRoute: AppRoutes.getPrinterView,
         title: S.of(context).printer,
         canAccess: user.role?.printers ?? false,
         // canAccess: true,

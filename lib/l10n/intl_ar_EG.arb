@@ -263,7 +263,7 @@
     "addPrinter":"اضافة طابعة",
     "printerDetails":"تفاصيل الطابعة",
     "automatic":"تلقائي",
-    "printReceipt":"طباعة الايصال",
+    "printReceipt":"عدد طباعة الايصال",
     "printCategories":"طباعة الفئات",
     "chooseCategory":"اختار الفئة",
     "copiesCount":"عدد النسخ",
@@ -303,5 +303,6 @@
    "showMore":"اظهار المزيد",
    "orderDetails":"تفاصيل الاوردر",
    "print":"طباعة",
-   "notFoundShift":"لايوجد شيفت"
+   "notFoundShift":"لايوجد شيفت",
+   "selectpapersize":"اختر حجم الورقة"
 }

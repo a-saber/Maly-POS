@@ -3,8 +3,8 @@ import 'package:pos_app/features/printer/data/model/printer_model.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
 
 class PrinterItem extends StatelessWidget {
-  final dynamic printer; 
-   final VoidCallback? onTap;
+  final dynamic printer;
+  final VoidCallback? onTap;
   const PrinterItem({super.key, required this.printer, this.onTap});
 
   @override
@@ -17,10 +17,9 @@ class PrinterItem extends StatelessWidget {
       title = apiPrinter.printerName ?? 'Unnamed Printer';
       type = apiPrinter.printerType;
       subtitle = 'Type: ${apiPrinter.printerType ?? 'Unknown'}';
-    }
-    else if (printer is DiscoveredPrinter) {
+    } else if (printer is DiscoveredPrinter) {
       final localPrinter = printer as DiscoveredPrinter;
-      title = localPrinter.device.name ?? 'Discovered Printer';
+      title = localPrinter.device.name;
       type = 'Local';
       subtitle = localPrinter.device.address ?? 'Unknown address';
     }
@@ -28,22 +27,21 @@ class PrinterItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       child: ListTile(
-        leading: Icon(
-          Icons.print,
-          color: Colors.blueAccent,
-          size: 32,
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(subtitle),
-        trailing: Text(
-          type ?? '',
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-       onTap: onTap
-      ),
+          leading: Icon(
+            Icons.print,
+            color: Colors.blueAccent,
+            size: 32,
+          ),
+          title: Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Text(subtitle),
+          trailing: Text(
+            type ?? '',
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          onTap: onTap),
     );
   }
 }

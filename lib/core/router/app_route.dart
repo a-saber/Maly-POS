@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/auth/login/data/model/role_model.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
@@ -135,7 +136,7 @@ class AppRoutes {
   static const String editTaxes = '/editTaxes';
   static const String storequantity = '/storequantity';
   static const String storeMoveView = '/storeMoveView';
-  static const String printersView = '/printersView';
+
   static const String storeMoveDetailsView = '/storeMoveDetailsView';
   static const String expenseCategoriesView = '/expenseCategoriesView';
   static const String addexpenseCategoriesView = '/addexpenseCategoriesView';
@@ -147,11 +148,19 @@ class AppRoutes {
   static const String salesReturnDetailsView = '/salesReturnDetailsView';
   static const String shopSettingView = '/shopSettingView';
   static const String sellingPointCardView = '/sellingPointCardView';
-  static const String addPrinter = '/addPrinter';
-  static const String printerDetails = '/printerDetails';
-  static const String printerEdit = '/printerEdit';
+  // static const String printersView = '/printersView';
+  // static const String addPrinter = '/addPrinter';
+  // static const String printerDetails = '/printerDetails';
+  // static const String printerEdit = '/printerEdit';
+  // static const String addIpPrinter = "/addIpPrinter";
+
+  static const String getPrinterView = '/getPrinterView';
+  static const String scanPrinterView = '/scanPrinterView';
+  static const String addPrinterView = '/addPrinterView';
+  static const String addIpPrinterView = '/addIpPrinterView';
+  static const String editPrinterView = '/editPrinterView';
+
   static const String shiftsView = '/shiftsView';
-  static const String addIpPrinter = "/addIpPrinter";
   static const String shiftDetails = '/shiftDetailsView';
   static const String orderDetailsView = '/orderDetailsView';
 
@@ -555,33 +564,63 @@ class AppRoutes {
               salesModel: settings.arguments as SalesModel,
             ),
           );
-        case printersView:
+
+        case getPrinterView:
           return customGetPageRouteBuilder(
-            page: const GetPrintersView(),
+            page: GetPrintersView(),
           );
-        // TODO: add printer view
+        case scanPrinterView:
+          return customGetPageRouteBuilder(
+            page: ScanPrintersView(),
+          );
+        case addPrinterView:
+          return customGetPageRouteBuilder(
+            page: AddPrinterView(
+              discoveredPrinter: settings.arguments as DiscoveredPrinter,
+            ),
+          );
+        case addIpPrinterView:
+          return customGetPageRouteBuilder(
+            page: AddIpPrinterView(),
+          );
+        case editPrinterView:
+          return customGetPageRouteBuilder(
+            page: EditPrinterView(
+                printerModel: settings.arguments as PrinterModel),
+          );
         // case printersView:
-        // return customGetPageRouteBuilder(
-        //   page: PrintersView(
-        //
-        //   ),
-        // );
-        case addPrinter:
-          return customGetPageRouteBuilder(
-            page: const ScanPrintersView(),
-          );
-        // case printerDetails:
         //   return customGetPageRouteBuilder(
-        //     page: PrinterDetailsView(
+        //     page: const GetPrintersView(),
+        //   );
+        // // todo: add printer view
+        // // case printersView:
+        // // return customGetPageRouteBuilder(
+        // //   page: PrintersView(
+        // //
+        // //   ),
+        // // );
+        // case addPrinter:
+        //   return customGetPageRouteBuilder(
+        //     page: const ScanPrintersView(),
+        //   );
+        // // case printerDetails:
+        // //   return customGetPageRouteBuilder(
+        // //     page: PrinterDetailsView(
+        // //       discoveredPrinter: settings.arguments as DiscoveredPrinter,
+        // //     ),
+        // //   );
+        // case printerEdit:
+        //   return customGetPageRouteBuilder(
+        //     page: EditPrinterView(
+        //       printerModel: settings.arguments as PrinterModel,
+        //     ),
+        //   );
+        // case addIpPrinter:
+        //   return customGetPageRouteBuilder(
+        //     page: AddPrinterView(
         //       discoveredPrinter: settings.arguments as DiscoveredPrinter,
         //     ),
         //   );
-        case printerEdit:
-          return customGetPageRouteBuilder(
-            page: EditPrinterView(
-              printerModel: settings.arguments as PrinterModel,
-            ),
-          );
         case shiftsView:
           return customGetPageRouteBuilder(
             page: const ShiftsView(),
@@ -592,10 +631,7 @@ class AppRoutes {
               order: settings.arguments as OrderData,
             ),
           );
-        case addIpPrinter:
-          return customGetPageRouteBuilder(
-            page: const AddIpPrinterView(),
-          );
+
         case shiftDetails:
           return customGetPageRouteBuilder(
             page: BlocProvider.value(

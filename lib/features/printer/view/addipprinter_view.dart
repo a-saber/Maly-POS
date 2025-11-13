@@ -11,28 +11,39 @@ import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
 import 'package:pos_app/features/categories/manager/get_category/get_category_cubit.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/printer_data_cubit/printer_data_cubit.dart';
 import 'package:pos_app/generated/l10n.dart';
-import '../data/repo/printer_repo.dart';
 import '../manager/printer_data_cubit/printer_data_state.dart';
 
-
-
 class AddIpPrinterView extends StatelessWidget {
-  const AddIpPrinterView({super.key});
-
+  const AddIpPrinterView({
+    super.key,
+  });
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
+        BlocProvider(
+            create: (_) =>
+                MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
+        BlocProvider(
+          create: (_) => PrinterDataCubit(
+            MyServiceLocator.getSingleton<PrinterRepo>(),
+          ),
+        ),
+        BlocProvider(
+            create: (_) =>
+                MyServiceLocator.getSingleton<GetCategoryCubit>()..init()),
         // BlocProvider(create: (_) => PrinterDataCubit(MyServiceLocator.getSingleton<PrinterRepo>())),
       ],
       child: BlocConsumer<PrinterDataCubit, PrinterDataState>(
         listener: (context, state) {
           if (state is PrinterDataSuccessState) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Printer added successfully"), backgroundColor: Colors.green),
+              const SnackBar(
+                  content: Text("Printer added successfully"),
+                  backgroundColor: Colors.green),
             );
             Navigator.pop(context);
           } else if (state is PrinterDataErrorState) {
@@ -54,40 +65,32 @@ class AddIpPrinterView extends StatelessWidget {
                 child: ListView(
                   children: [
                     CustomFormField(
-                      controller: cubit.ipController,
-                      labelText: "Printer IP",
-                      validator: (v) =>
-                          MyFormValidators.validateIP(v, context: context)
-                    ),
+                        controller: cubit.ipController,
+                        labelText: "Printer IP",
+                        validator: (v) =>
+                            MyFormValidators.validateIP(v, context: context)),
                     const SizedBox(height: 16),
-
                     CustomFormField(
                       controller: cubit.printerName,
                       labelText: S.of(context).name,
                     ),
                     const SizedBox(height: 20),
-
                     _PrinterOptions(cubit: cubit),
-
                     if (cubit.printCategories)
                       _CategorySection(
                           cubit: cubit, categories: categoriesCubit.categories),
-
                     const SizedBox(height: 20),
-
                     state is PrinterDataLoadingState
                         ? Center(child: CircularProgressIndicator())
                         : CustomFilledBtn(
                             text: S.of(context).done,
                             onPressed: cubit.addPrinter,
                           ),
-
                     const SizedBox(height: 30),
-
                     CustomFilledBtn(
                       text: S.of(context).testPrint,
-                      onPressed: () async =>
-                          PrinterHelper().printTestByIp(cubit.ipController.text),
+                      onPressed: () async => PrinterHelper()
+                          .printTestByIp(cubit.ipController.text),
                     ),
                   ],
                 ),
@@ -112,18 +115,19 @@ class _PrinterOptions extends StatelessWidget {
           value: cubit.paperSize,
           items: cubit.paperSizes,
           onChanged: cubit.changePaperSize,
-          builder: (item) => Text(item ?? '', style: const TextStyle(fontSize: 16)),
-          validator: (value) => MyFormValidators.validateRequired(value, context: context),
+          builder: (item) =>
+              Text(item ?? '', style: const TextStyle(fontSize: 16)),
+          validator: (value) =>
+              MyFormValidators.validateRequired(value, context: context),
         ),
         const SizedBox(height: 16),
-
         CustomFormField(
           controller: cubit.printReceiptController,
           labelText: S.of(context).printReceipt,
-          validator: (value) => MyFormValidators.validateInteger(value, context: context),
+          validator: (value) =>
+              MyFormValidators.validateInteger(value, context: context),
         ),
         const SizedBox(height: 8),
-
         CustomCheckbox(
           title: S.of(context).automatic,
           value: cubit.automatic,
@@ -153,8 +157,12 @@ class _CategorySection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(S.of(context).chooseCategory, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
-            IconButton(icon: const Icon(Icons.add, color: Colors.blue), onPressed: cubit.addCategoryRow),
+            Text(S.of(context).chooseCategory,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+            IconButton(
+                icon: const Icon(Icons.add, color: Colors.blue),
+                onPressed: cubit.addCategoryRow),
           ],
         ),
         const SizedBox(height: 8),
@@ -182,7 +190,8 @@ class _CategorySection extends StatelessWidget {
                       controller: row.copiesCount,
                       labelText: S.of(context).copiesCount,
                       keyboardType: TextInputType.number,
-                      validator: (v) => MyFormValidators.validateInteger(v, context: context),
+                      validator: (v) =>
+                          MyFormValidators.validateInteger(v, context: context),
                     ),
                   ),
                   if (cubit.categoryRows.length > 1)

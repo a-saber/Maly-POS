@@ -28,24 +28,25 @@ class GetPrintersView extends StatelessWidget {
 }
 
 class _PrintersViewBody extends StatelessWidget {
-  const _PrintersViewBody({super.key});
+  const _PrintersViewBody();
 
   @override
   Widget build(BuildContext context) {
     final cubit = GetPrintersCubit.get(context);
 
     return Scaffold(
-      appBar: CustomAppBar(title: S.of(context).printer,),
-     
-      floatingActionButton:CustomFloatingActionBtn(
-  onPressed: () async {
-    final result = await Navigator.pushNamed(context, AppRoutes.addPrinter);
-    if (result == true) {
-      cubit.fetchPrintersFromApi(isFresh: true);
-    }
-  },
-),
-
+      appBar: CustomAppBar(
+        title: S.of(context).printer,
+      ),
+      floatingActionButton: CustomFloatingActionBtn(
+        onPressed: () async {
+          final result =
+              await Navigator.pushNamed(context, AppRoutes.scanPrinterView);
+          if (result == true) {
+            cubit.fetchPrintersFromApi(isFresh: true);
+          }
+        },
+      ),
       body: CustomRefreshIndicator(
         onRefresh: () async {
           await cubit.fetchPrintersFromApi();
@@ -68,7 +69,8 @@ class _PrintersViewBody extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text('Error: ${state.errMessage!= null? mapStatusCodeToMessage(context, state.errMessage!): state.message??'error'}'),
+                      Text(
+                          'Error: ${state.errMessage != null ? mapStatusCodeToMessage(context, state.errMessage!) : state.message ?? 'error'}'),
                       const SizedBox(height: 12),
                       ElevatedButton(
                         onPressed: () => cubit.fetchPrintersFromApi(),
@@ -81,7 +83,7 @@ class _PrintersViewBody extends StatelessWidget {
 
               if (state is ScanPrintersSuccess) {
                 final printers = state.printers;
-                print(printers);
+                // print(printers);
 
                 if (printers.isEmpty) {
                   return Center(
@@ -102,7 +104,7 @@ class _PrintersViewBody extends StatelessWidget {
                       onTap: () {
                         Navigator.pushNamed(
                           context,
-                          AppRoutes.printerEdit,
+                          AppRoutes.editPrinterView,
                           arguments: printer,
                         );
                       },
