@@ -19,6 +19,7 @@ class PrinterModel {
   String? paperSize;
   String? updatedAt;
   String? createdAt;
+  bool? fromscan;
 
   int? id;
   List<CategoryModel>? categories;
@@ -42,6 +43,7 @@ class PrinterModel {
     this.categories,
     this.discoveredPrinter,
     this.paperSize,
+    this.fromscan,
   });
 
   PrinterModel.fromJson(Map<String, dynamic> json) {
@@ -49,6 +51,7 @@ class PrinterModel {
     printerName = json['printer_name'];
     communicationType = json['communication_type'];
     paperSize = json['paper_size'];
+    fromscan = json['from_scan'];
 
     switch (json['communication_type']) {
       case 'usb':
@@ -132,6 +135,8 @@ class PrinterModel {
     }
 
     final Map<String, dynamic> data = {
+      if (address != null) 'address': address,
+      "from_scan": (fromscan ?? true) ? 1 : 0,
       'paper_size': paperSize,
       'printer_name': printerName?.trim(),
       'automatic': automatic == true ? '1' : '0',

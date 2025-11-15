@@ -52,12 +52,15 @@ class EditPrinterView extends StatelessWidget {
             MyServiceLocator.getSingleton<GetCategoryCubit>().init();
             MyServiceLocator.getSingleton<GetPrintersCubit>()
                 .fetchPrintersFromApi(isFresh: true);
+            Navigator.pop(context);
           } else if (state is PrinterDataErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(context.mounted
-                    ? mapStatusCodeToMessage(context, state.errMessage)
-                    : 'error'),
+                content: Text(
+                  context.mounted
+                      ? mapStatusCodeToMessage(context, state.errMessage)
+                      : 'error',
+                ),
                 backgroundColor: Colors.red,
               ),
             );
@@ -66,6 +69,8 @@ class EditPrinterView extends StatelessWidget {
         builder: (context, state) {
           final cubit = PrinterDataCubit.get(context);
           final categoriesCubit = GetCategoryCubit.get(context);
+          print("Product Mode ${printerModel.toJson([])}");
+          print("Product Mode ${printerModel.fromscan}");
 
           return Scaffold(
             appBar: CustomAppBar(
@@ -90,10 +95,11 @@ class EditPrinterView extends StatelessWidget {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: ListView(
                   children: [
-                    if (printerModel.discoveredPrinter != null)
-                      _PrinterHeader(
-                          printer: printerModel.discoveredPrinter!,
-                          cubit: cubit),
+                    (printerModel.discoveredPrinter != null)
+                        ? _PrinterHeader(
+                            printer: printerModel.discoveredPrinter!,
+                            cubit: cubit)
+                        : _printerIpHeader(cubit: cubit, context: context),
                     const SizedBox(height: 20),
                     _PrinterOptions(cubit: cubit),
                     if (cubit.printCategories)
@@ -132,6 +138,23 @@ class EditPrinterView extends StatelessWidget {
   }
 }
 
+Widget _printerIpHeader(
+    {required PrinterDataCubit cubit, required BuildContext context}) {
+  return Column(
+    children: [
+      CustomFormField(
+          controller: cubit.ipController,
+          labelText: "Printer IP",
+          validator: (v) => MyFormValidators.validateIP(v, context: context)),
+      const SizedBox(height: 16),
+      CustomFormField(
+        controller: cubit.printerName,
+        labelText: S.of(context).name,
+      ),
+    ],
+  );
+}
+
 class AddPrinterView extends StatelessWidget {
   final DiscoveredPrinter discoveredPrinter;
 
@@ -164,6 +187,7 @@ class AddPrinterView extends StatelessWidget {
             MyServiceLocator.getSingleton<GetCategoryCubit>().init();
             MyServiceLocator.getSingleton<GetPrintersCubit>()
                 .fetchPrintersFromApi(isFresh: true);
+            Navigator.pop(context);
           } else if (state is PrinterDataErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(

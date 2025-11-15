@@ -13,6 +13,7 @@ import 'package:pos_app/features/categories/manager/get_category/get_category_cu
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/features/printer/data/repo/printer_repo.dart';
 import 'package:pos_app/features/printer/manager/printer_data_cubit/printer_data_cubit.dart';
+import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_cubit.dart';
 import 'package:pos_app/generated/l10n.dart';
 import '../manager/printer_data_cubit/printer_data_state.dart';
 
@@ -45,6 +46,9 @@ class AddIpPrinterView extends StatelessWidget {
                   content: Text("Printer added successfully"),
                   backgroundColor: Colors.green),
             );
+            MyServiceLocator.getSingleton<GetCategoryCubit>().init();
+            MyServiceLocator.getSingleton<GetPrintersCubit>()
+                .fetchPrintersFromApi(isFresh: true);
             Navigator.pop(context);
           } else if (state is PrinterDataErrorState) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -84,7 +88,7 @@ class AddIpPrinterView extends StatelessWidget {
                         ? Center(child: CircularProgressIndicator())
                         : CustomFilledBtn(
                             text: S.of(context).done,
-                            onPressed: cubit.addPrinter,
+                            onPressed: () => cubit.addPrinter(fromScan: false),
                           ),
                     const SizedBox(height: 30),
                     CustomFilledBtn(
