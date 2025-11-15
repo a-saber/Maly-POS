@@ -30,6 +30,7 @@ class PrinterDataCubit extends Cubit<PrinterDataState> {
           : '';
       printCategories =
           printerModel!.categories?.isNotEmpty == true ? true : false;
+      ipController.text = printerModel?.address ?? '';
       if (printCategories) {
         categoryRows = printerModel!.categories!
             .map(
@@ -103,11 +104,17 @@ class PrinterDataCubit extends Cubit<PrinterDataState> {
     emit(PrinterDetailsUpdatedState());
   }
 
-  void addPrinter() async {
+  void addPrinter({
+    bool fromScan = true,
+  }) async {
     if (!formKey.currentState!.validate()) return;
     emit(PrinterDataLoadingState());
+    debugPrint("fromScan: $fromScan");
+    debugPrint("ip addresss : ${ipController.text}");
     var result = await _repo.addPrinter(
       printer: PrinterModel(
+        address: ipController.text.isEmpty ? null : ipController.text,
+        fromscan: fromScan,
         paperSize: paperSize.replaceAll('mm', ''),
         discoveredPrinter: discoveredPrinter,
         automatic: automatic,
