@@ -3,15 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
+import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/core/widget/cutsom_layout_builder.dart';
 import 'package:pos_app/core/widget/my_custom_scroll_view.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/products/manager/add_product_cubit/add_product_cubit.dart';
-import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
 import 'package:pos_app/features/products/view/widget/product_data_builder.dart';
-import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class AddProductView extends StatelessWidget {
@@ -27,10 +27,11 @@ class AddProductView extends StatelessWidget {
         body: BlocConsumer<AddProductCubit, AddProductState>(
           listener: (context, state) {
             if (state is AddProductSuccess) {
-              GetAllProductsCubit.get(context).addProduct(state.product);
-              // Selling Point
-              MyServiceLocator.getSingleton<SellingPointCubit>()
-                  .addProduct(state.product);
+              //  TODO : Will Add Update Product Moel Selling Point
+              // GetAllProductsCubit.get(context).addProduct(state.product);
+              // TODO : Will Give Update Product Model Selling Point
+              // MyServiceLocator.getSingleton<SellingPointCubit>()
+              //     .addProduct(state.product);
               CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,
@@ -70,37 +71,90 @@ class AddProductMobileBody extends StatelessWidget {
   final AddProductState state;
   @override
   Widget build(BuildContext context) {
-    return ProductDataBuilder(
-      onSelectedImage: (image) => AddProductCubit.get(context).image = image,
-      formKey: AddProductCubit.get(context).formKey,
-      autovalidateMode: AddProductCubit.get(context).autovalidateMode,
-      nameController: AddProductCubit.get(context).nameController,
-      descriptionController: AddProductCubit.get(context).descriptionController,
-      pricePerUnitController:
-          AddProductCubit.get(context).pricePerUnitController,
-      openingQuantityController:
-          AddProductCubit.get(context).openingQuantityController,
-      barCodeController: AddProductCubit.get(context).barCodeController,
-      brandController: AddProductCubit.get(context).brandController,
-      isLoading: state is AddProductLoading,
-      onPressed: () => AddProductCubit.get(context).addProduct(),
-      onChangedCategory: (category) =>
-          AddProductCubit.get(context).onChangeCategory(category),
-      category: AddProductCubit.get(context).category,
-      onChangedUnit: (unit) => AddProductCubit.get(context).onChangeUnit(unit),
-      unit: AddProductCubit.get(context).unit,
-      onChangedBranch: (branch) =>
-          AddProductCubit.get(context).onChangeBranch(branch),
-      branch: AddProductCubit.get(context).branch,
-      onInitialQuntitySubmit:
-          AddProductCubit.get(context).onSubmitInitalQunatity,
-      taxes: AddProductCubit.get(context).taxes,
-      onChangedTaxes: AddProductCubit.get(context).onChangeTaxes,
-      productType: AddProductCubit.get(context).productType,
-      onChangedProductType: AddProductCubit.get(context).onChangeProductType,
-      callInInit: () {},
-      isEdit: false,
-      imageUrl: null,
+    return BlocConsumer<AddProductCubit, AddProductState>(
+      listener: (context, state) {
+        if (state is UpdateProductUnitsCostWarning) {
+          showDialog(
+            context: context,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text(
+                  "The New Cost Of Simple Unit is ${state.myCost / state.factory} ",
+                ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CustomTextBtn(
+                          text: S.of(context).cancel,
+                          textColor: AppColors.primary,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          }),
+                      CustomTextBtn(
+                          text: S.of(context).done,
+                          onPressed: () {
+                            AddProductCubit.get(context).onChangeCost(
+                                state.index,
+                                changeCostToAll: true,
+                                cost: (state.myCost / state.factory));
+                            Navigator.pop(context);
+                          }),
+                    ],
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      },
+      builder: (context, state) {
+        return ProductDataBuilder(
+          baseCost: AddProductCubit.get(context).baseCost,
+          onChangeCost: AddProductCubit.get(context).onChangeCost,
+          addProductUnit: AddProductCubit.get(context).addProductUnits,
+          changeMinPriceWithoutTaxes:
+              AddProductCubit.get(context).changeMinPriceWithoutTaxes,
+          changeSalePriceWithoutTax:
+              AddProductCubit.get(context).changeSalePriceWithoutTax,
+          changeMinPriceWithTaxes:
+              AddProductCubit.get(context).changeMinPriceWithTaxes,
+          changeSalePriceWithTax:
+              AddProductCubit.get(context).changeSalePriceWithTax,
+          productUnits: AddProductCubit.get(context).productUnits,
+          branchQuantities: AddProductCubit.get(context).branchQuantities,
+          onSelectedImage: (image) =>
+              AddProductCubit.get(context).image = image,
+          formKey: AddProductCubit.get(context).formKey,
+          autovalidateMode: AddProductCubit.get(context).autovalidateMode,
+          nameController: AddProductCubit.get(context).nameController,
+          descriptionController:
+              AddProductCubit.get(context).descriptionController,
+          pricePerUnitController:
+              AddProductCubit.get(context).pricePerUnitController,
+          openingQuantityController: TextEditingController(),
+          barCodeController: TextEditingController(),
+          brandController: AddProductCubit.get(context).brandController,
+          isLoading: state is AddProductLoading,
+          onPressed: () => AddProductCubit.get(context).addProduct(),
+          onChangedCategory: (category) =>
+              AddProductCubit.get(context).onChangeCategory(category),
+          category: AddProductCubit.get(context).category,
+          onChangedUnit: (unit) {},
+          unit: null,
+          onChangedBranch: (branch) => () {},
+          branch: null,
+          onInitialQuntitySubmit: null,
+          taxes: AddProductCubit.get(context).taxes,
+          onChangedTaxes: AddProductCubit.get(context).onChangeTaxes,
+          productType: AddProductCubit.get(context).productType,
+          onChangedProductType:
+              AddProductCubit.get(context).onChangeProductType,
+          callInInit: () {},
+          isEdit: false,
+          imageUrl: null,
+        );
+      },
     );
   }
 }

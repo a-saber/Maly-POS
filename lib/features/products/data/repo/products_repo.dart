@@ -7,6 +7,7 @@ import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/products/data/model/add_or_update_product_model.dart';
 import 'package:pos_app/features/products/data/model/get_products_model.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
+import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
 class ProductsRepo {
@@ -88,6 +89,74 @@ class ProductsRepo {
         ApiResponse.unKnownError(),
       );
     }
+  }
+
+  Future<Either<ApiResponse, ProductModel?>> addUpdateProduct({
+    required UpdateProductModel updateProduct,
+    required List<List<BranchQuantity>> branchQuantities,
+  }) async {
+    // try {
+    for (int i = 0; i < updateProduct.productUnits!.length; i++) {
+      updateProduct.productUnits![i].unitId =
+          updateProduct.productUnits![i].unit!.id;
+      updateProduct.productUnits![i].costPrice =
+          updateProduct.productUnits![i].costPriceController!.text;
+      updateProduct.productUnits![i].conversionFactor =
+          updateProduct.productUnits![i].factoryController!.text;
+      debugPrint(
+          " \n ******* conversionFactor : ${updateProduct.productUnits![i].conversionFactor} *************** \n");
+      updateProduct.productUnits![i].barcode =
+          updateProduct.productUnits![i].barCodeController!.text;
+      updateProduct.productUnits![i].scaleBarcode =
+          updateProduct.productUnits![i].scaleBarcodeController!.text;
+      updateProduct.productUnits![i].minPriceWithoutTax =
+          updateProduct.productUnits![i].minPriceWithoutTaxController!.text;
+      updateProduct.productUnits![i].salePriceWithTax =
+          updateProduct.productUnits![i].salePriceWithTaxController!.text;
+      updateProduct.productUnits![i].salePriceWithoutTax =
+          updateProduct.productUnits![i].salePriceWithoutTaxController!.text;
+    }
+    for (int i = 0; i < branchQuantities.length; i++) {
+      for (int j = 0; j < branchQuantities[i].length; j++) {
+        branchQuantities[i][j].branchId = branchQuantities[i][j].branch!.id;
+        branchQuantities[i][j].qunantity =
+            int.tryParse(branchQuantities[i][j].quantityController.text);
+        debugPrint(
+          " \n ******* branchQuantity : ${branchQuantities[i][j].toJson(indexOfUnit: 0, index: i)} *************** \n",
+        );
+      }
+    }
+    String url = await ApiEndPoints.getProducts();
+
+    debugPrint(
+        " -----------------------------------\n\n ${updateProduct.toJson(branchQuantities: branchQuantities)}\n\n-----------------------------------\n\n");
+
+    var response = await api.post(
+        url: url,
+        data: updateProduct.toJson(branchQuantities: branchQuantities),
+        isFormData: true);
+    if (response.status) {
+      AddOrUpdateProduct addOrUpdateProduct =
+          AddOrUpdateProduct.fromJson(response.data);
+      if (addOrUpdateProduct.status ?? false) {
+        return Right(addOrUpdateProduct.product);
+      } else {
+        return Left(
+          response,
+        );
+      }
+    } else {
+      return Left(
+        response,
+      );
+    }
+    // }
+    // catch (e) {
+    //   debugPrint(e.toString());
+    //   return Left(
+    //     ApiResponse.unKnownError(),
+    //   );
+    // }
   }
 
   Future<Either<ApiResponse, int>> deleteProduct({

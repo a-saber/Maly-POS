@@ -151,6 +151,9 @@ abstract class ApiKeys {
   static const String district = 'district';
   static const String country = 'country';
   static const String shifterror = 'shift_error';
+  static const String baseUnit = 'base_unit';
+  static const String baseUnitId = 'base_unit_id';
+  static const String productUnits = 'product_units';
 }
 
 abstract class ApiEndPoints {

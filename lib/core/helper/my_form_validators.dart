@@ -168,7 +168,12 @@ class MyFormValidators {
   }
 
   static String? validateDoublePrice(String? value,
-      {bool validateEmpty = true, required BuildContext context}) {
+      {bool validateEmpty = true,
+      required BuildContext context,
+      bool haveMax = false,
+      bool haveMin = false,
+      double? min,
+      double? max}) {
     if (validateEmpty) {
       if (value == null || value.trim().isEmpty) {
         return S.of(context).fieldisrequired; // "Field is required"
@@ -184,6 +189,28 @@ class MyFormValidators {
         if (!doubleRegex.hasMatch(value.trim())) {
           return S.of(context).enteravalidprice;
         }
+      }
+    }
+
+    if (haveMin && min != null) {
+      double? price = double.tryParse(value!);
+
+      if (price == null) {
+        return S.of(context).enteravalidprice;
+      }
+      if (price < min) {
+        return "${S.of(context).enteravalidprice} greater than $min";
+      }
+    }
+
+    if (haveMax && max != null) {
+      double? price = double.tryParse(value!);
+
+      if (price == null) {
+        return S.of(context).enteravalidprice;
+      }
+      if (price > max) {
+        return "${S.of(context).enteravalidprice} less than $max";
       }
     }
 
@@ -291,57 +318,60 @@ class MyFormValidators {
 
     return null; // null means valid (common in Flutter validators)
   }
-  static String? validateZeroOrOne(String? value, {required BuildContext context}) {
-  if (value == null || value.trim().isEmpty) {
-    return S.of(context).fieldisrequired;
-  }
 
-  final regex = RegExp(r'^[01]$');
-  if (!regex.hasMatch(value.trim())) {
-    return " only 0 or 1 allowed.";
-  }
-
-  return null;
-}
-static String? validateIP(String? value, {required BuildContext context}) {
-  if (value == null || value.trim().isEmpty) {
-    return S.of(context).fieldisrequired;
-  }
-
-  // IPv4 Pattern
-  final ipRegex = RegExp(
-    r'^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}'
-    r'(25[0-5]|2[0-4]\d|[01]?\d\d?)$',
-  );
-
-  if (!ipRegex.hasMatch(value.trim())) {
-    return S.of(context).enteravalidip; 
-  }
-
-  return null;
-}
-static String? validateDecimalOrInt(String? value, {required BuildContext context, bool validateEmpty = true}) {
-  if (validateEmpty) {
+  static String? validateZeroOrOne(String? value,
+      {required BuildContext context}) {
     if (value == null || value.trim().isEmpty) {
       return S.of(context).fieldisrequired;
     }
-  }
 
-  if (value != null && value.trim().isNotEmpty) {
-    final trimmedValue = value.trim();
-    final decimalRegex = RegExp(r'^\d+(\.\d+)?$');
-
-    if (!decimalRegex.hasMatch(trimmedValue)) {
-      return S.of(context).enteravalidnumber; 
+    final regex = RegExp(r'^[01]$');
+    if (!regex.hasMatch(value.trim())) {
+      return " only 0 or 1 allowed.";
     }
 
-    if (double.tryParse(trimmedValue) == null) {
-      return S.of(context).enteravalidnumber;
-    }
+    return null;
   }
 
-  return null;
-}
+  static String? validateIP(String? value, {required BuildContext context}) {
+    if (value == null || value.trim().isEmpty) {
+      return S.of(context).fieldisrequired;
+    }
 
+    // IPv4 Pattern
+    final ipRegex = RegExp(
+      r'^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}'
+      r'(25[0-5]|2[0-4]\d|[01]?\d\d?)$',
+    );
 
+    if (!ipRegex.hasMatch(value.trim())) {
+      return S.of(context).enteravalidip;
+    }
+
+    return null;
+  }
+
+  static String? validateDecimalOrInt(String? value,
+      {required BuildContext context, bool validateEmpty = true}) {
+    if (validateEmpty) {
+      if (value == null || value.trim().isEmpty) {
+        return S.of(context).fieldisrequired;
+      }
+    }
+
+    if (value != null && value.trim().isNotEmpty) {
+      final trimmedValue = value.trim();
+      final decimalRegex = RegExp(r'^\d+(\.\d+)?$');
+
+      if (!decimalRegex.hasMatch(trimmedValue)) {
+        return S.of(context).enteravalidnumber;
+      }
+
+      if (double.tryParse(trimmedValue) == null) {
+        return S.of(context).enteravalidnumber;
+      }
+    }
+
+    return null;
+  }
 }

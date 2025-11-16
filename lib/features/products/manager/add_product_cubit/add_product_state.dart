@@ -8,7 +8,7 @@ final class AddProductInitial extends AddProductState {}
 final class AddProductLoading extends AddProductState {}
 
 final class AddProductSuccess extends AddProductState {
-  final ProductModel product;
+  final ProductModel? product;
   AddProductSuccess({required this.product});
 }
 
@@ -19,14 +19,25 @@ final class AddProductFailing extends AddProductState {
 
 final class AddProductUnValidate extends AddProductState {}
 
-final class AddProductAddInitialQunantity extends AddProductState {}
-
 final class AddChangeCategory extends AddProductState {}
-
-final class AddChangeUnit extends AddProductState {}
-
-final class AddChangeBranch extends AddProductState {}
 
 final class AddChangeTaxes extends AddProductState {}
 
 final class AddChangProductType extends AddProductState {}
+
+final class AddProductUnits extends AddProductState {}
+
+final class UpdateProductUnitsCost extends AddProductState {}
+
+final class UpdateProductUnitsCostWarning extends AddProductState {
+  final int factory;
+  final double myCost;
+  final int index;
+
+  UpdateProductUnitsCostWarning(
+      {required this.factory, required this.myCost, required this.index});
+}
+
+final class UpdateProductUnitsMinPrice extends AddProductState {}
+
+final class UpdateProductUnitsSalesPrice extends AddProductState {}

@@ -25,14 +25,15 @@ class EditProductCubit extends Cubit<EditProductState> {
     required this.unitsRepo,
     required this.categoryRepo,
   }) : super(EditProductInitial()) {
+    taxes = product.tax;
+    debugPrint(
+        " \n ******* taxes : ${product.tax?.toJson()} *************** \n");
     nameController = TextEditingController(text: product.name);
     descriptionController = TextEditingController(text: product.description);
     pricePerUnitController = TextEditingController(text: product.price);
     barCodeController = TextEditingController(text: product.barcode);
     brandController = TextEditingController(text: product.brand);
     openingQuantityController = TextEditingController(text: '');
-
-    taxes = product.tax;
   }
 
   void init({required BuildContext context}) {
@@ -46,21 +47,6 @@ class EditProductCubit extends Cubit<EditProductState> {
           product.type?.toLowerCase().trim();
     });
     getCategory(context: context);
-    getTaxesType(context: context);
-  }
-
-  void getTaxesType({
-    required BuildContext context,
-  }) async {
-    if (product.tax != null) {
-      productType = AppConstant.producttype(context).firstWhere((element) {
-        return element.value.toLowerCase().trim() ==
-            product.type?.toLowerCase().trim();
-      });
-      if (productType != null) {
-        emit(GetTaxesTypeSuccess());
-      }
-    }
   }
 
   void getCategory({
