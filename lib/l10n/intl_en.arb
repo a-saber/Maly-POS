@@ -304,5 +304,6 @@
   "orderDetails": "Order Details",
   "print": "print",
   "notFoundShift": "Not Found Shift",
-  "selectpapersize": "Select Paper Size"
+  "selectpapersize": "Select Paper Size",
+  "greaterthan": "greaterthan"
 }
