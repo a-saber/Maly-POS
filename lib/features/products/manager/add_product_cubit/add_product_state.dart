@@ -29,6 +29,7 @@ final class AddProductAddUnit extends AddProductState {}
 final class AddProductRemoveUnit extends AddProductState {}
 final class AddProductChangeUnit extends AddProductState {}
 final class AddProductAssignBranchQty extends AddProductState {}
+final class AddProductOnPriceChange extends AddProductState {}
 
 
 
