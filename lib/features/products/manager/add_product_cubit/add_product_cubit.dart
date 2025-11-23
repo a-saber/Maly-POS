@@ -42,7 +42,8 @@ class AddProductCubit extends Cubit<AddProductState> {
 
   Future<void> addProduct() async {
     emit(AddProductLoading());
-    if (formKey.currentState!.validate()) {
+
+    if (formKey.currentState?.validate() == true) {
       UpdateProductModel updateProductModel =
           UpdateProductModel.createWithoutId(
         unit: null,
@@ -55,6 +56,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         brand: brandController.text,
         tax: taxes,
         type: productType?.value,
+
       );
       var response = await repo.addUpdateProduct(
         updateProduct: updateProductModel,
@@ -154,6 +156,41 @@ class AddProductCubit extends Cubit<AddProductState> {
 
     }
   }
+
+  // void onChangeMinPriceWithoutTax({required int index, required String newValue})
+  // {
+  //
+  //   double? newValueDouble = double.tryParse(newValue);
+  //   if(newValueDouble != null){
+  //     double percentage = double.tryParse(taxes?.percentage??'0')??0;
+  //     double afterTax = newValueDouble * (1+((percentage)/100));
+  //     productUnits[index].minPriceWithTaxController?.text = afterTax.toString();
+  //   }
+  //   else
+  //   {
+  //     productUnits[index].minPriceWithTaxController?.text = '0';
+  //   }
+  //   emit(AddProductOnPriceChange());
+  //
+  // }
+  // void onChangeMinPriceWithTax({required int index, required String newValue})
+  // {
+  //
+  //   double? newValueDouble = double.tryParse(newValue);
+  //   if(newValueDouble != null){
+  //     double percentage = double.tryParse(taxes?.percentage??'0')??0;
+  //     print(percentage);
+  //     double beforeTax = newValueDouble / (1+((percentage)/100));
+  //     print(beforeTax);
+  //     productUnits[index].minPriceWithoutTaxController?.text = beforeTax.toString();
+  //   }
+  //   else
+  //   {
+  //     productUnits[index].minPriceWithoutTaxController?.text = '0';
+  //   }
+  //   emit(AddProductOnPriceChange());
+  //
+  // }
 
   // double baseCost = 0;
   // void onChangeCost(int index, {bool changeCostToAll = false, double? cost}) {

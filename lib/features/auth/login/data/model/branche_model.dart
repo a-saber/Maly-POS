@@ -32,6 +32,18 @@ class BrancheModel {
       required this.createdAt,
       required this.updatedAt,
       required this.pivot});
+  static BrancheModel from (BrancheModel model){
+    return BrancheModel(
+      id: model.id,
+      name: model.name,
+      address: model.address,
+      phone: model.phone,
+      email: model.email,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+      pivot: model.pivot,
+    );
+  }
 
   factory BrancheModel.fromJson(Map<String, dynamic> json) {
     return BrancheModel(

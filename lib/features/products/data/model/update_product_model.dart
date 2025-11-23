@@ -167,12 +167,29 @@ class UpdateProductModel {
     data[ApiKeys.type] = type;
     // data[ApiKeys.quantity] = quantity;
 
+    if (productUnits != null) {
+      for (int i = 0; i < productUnits!.length; i++) {
+        if(productUnits![i].branchQty.isNotEmpty){
+          data.addAll(productUnits![i].toJson(
+            index: i,
+            branches: productUnits![i].branchQty,
+          ));
+        }
+        else{
+          data.addAll(productUnits![i].toJson(
+            index: i,
+            branches: [],
+          ));
+        }
+      }
+    }
+
     // if (productUnits != null) {
     //   for (int i = 0; i < productUnits!.length; i++) {
-    //     if (i < branchQuantities.length) {
+    //     if (i < productUnits![i].branchQty.length) {
     //       data.addAll(productUnits![i].toJson(
     //         index: i,
-    //         branches: branchQuantities[i],
+    //          branches: productUnits![i].branchQty,
     //       ));
     //     } else {
     //       data.addAll(productUnits![i].toJson(
@@ -208,6 +225,22 @@ class UpdateProductModel {
       data[ApiKeys.type] = type;
     }
 
+    if (productUnits != null) {
+      for (int i = 0; i < productUnits!.length; i++) {
+        if(productUnits![i].branchQty.isNotEmpty){
+          data.addAll(productUnits![i].toJson(
+            index: i,
+            branches: productUnits![i].branchQty,
+          ));
+        }
+        else{
+          data.addAll(productUnits![i].toJson(
+            index: i,
+            branches: [],
+          ));
+        }
+      }
+    }
     // if (productUnits != null) {
     //   for (int i = 0; i < productUnits!.length; i++) {
     //     if (i < branchQuantities.length) {
@@ -350,7 +383,7 @@ class ProductUnits {
   }
 
   Map<String, dynamic> toJson(
-      {required int index})
+      {required int index, required List<BranchQuantity> branches})
   {
     final Map<String, dynamic> data = <String, dynamic>{};
 
@@ -375,11 +408,11 @@ class ProductUnits {
     /// units[0][scale_barcode]
     data["units[$index][scale_barcode]"] = scaleBarcode;
 
-    for (int i = 0; i < branchQty.length; i++) {
+    for (int i = 0; i < branches.length; i++) {
       data["units[$index][opening_stocks][$i][branch_id]"] =
-          branchQty[i].branchId;
+          branches[i].branch?.id;
       data["units[$index][opening_stocks][$i][quantity]"] =
-          branchQty[i].qunantity;
+          branches[i].quantityController.text;
     }
 
     /// units[0][opening_stocks][0][branch_id]
@@ -400,6 +433,16 @@ class BranchQuantity {
       required this.branchId,
       required this.qunantity,
       required this.quantityController});
+
+
+  static BranchQuantity from(BranchQuantity branchQuantity) {
+    return BranchQuantity(
+      branch: branchQuantity.branch,
+      branchId: branchQuantity.branchId,
+      qunantity: branchQuantity.qunantity,
+      quantityController: TextEditingController.fromValue( branchQuantity.quantityController.value),
+    );
+  }
 
   factory BranchQuantity.copyWith(
     BranchQuantity branchQuantity,
