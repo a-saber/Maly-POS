@@ -42,7 +42,7 @@ class CustomInterceptor extends Interceptor {
 
 Dio getDio() {
   Dio dio = Dio();
-  dio.options.connectTimeout = const Duration(seconds: 15); // connect to server
+  dio.options.connectTimeout = const Duration(seconds: 30); // connect to server
   dio.options.receiveTimeout =
       const Duration(seconds: 45); // wait for server response
   dio.options.sendTimeout = const Duration(seconds: 30); // send data (upload)

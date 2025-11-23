@@ -144,8 +144,7 @@ class UpdateProductModel {
     );
   }
 
-  Map<String, dynamic> toJson(
-      {required List<List<BranchQuantity>> branchQuantities}) {
+  Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data[ApiKeys.id] = id;
     data[ApiKeys.name] = name;
@@ -168,21 +167,21 @@ class UpdateProductModel {
     data[ApiKeys.type] = type;
     // data[ApiKeys.quantity] = quantity;
 
-    if (productUnits != null) {
-      for (int i = 0; i < productUnits!.length; i++) {
-        if (i < branchQuantities.length) {
-          data.addAll(productUnits![i].toJson(
-            index: i,
-            branches: branchQuantities[i],
-          ));
-        } else {
-          data.addAll(productUnits![i].toJson(
-            index: i,
-            branches: [],
-          ));
-        }
-      }
-    }
+    // if (productUnits != null) {
+    //   for (int i = 0; i < productUnits!.length; i++) {
+    //     if (i < branchQuantities.length) {
+    //       data.addAll(productUnits![i].toJson(
+    //         index: i,
+    //         branches: branchQuantities[i],
+    //       ));
+    //     } else {
+    //       data.addAll(productUnits![i].toJson(
+    //         index: i,
+    //         branches: [],
+    //       ));
+    //     }
+    //   }
+    // }
 
     return data;
   }
@@ -209,21 +208,21 @@ class UpdateProductModel {
       data[ApiKeys.type] = type;
     }
 
-    if (productUnits != null) {
-      for (int i = 0; i < productUnits!.length; i++) {
-        if (i < branchQuantities.length) {
-          data.addAll(productUnits![i].toJson(
-            index: i,
-            branches: branchQuantities[i],
-          ));
-        } else {
-          data.addAll(productUnits![i].toJson(
-            index: i,
-            branches: [],
-          ));
-        }
-      }
-    }
+    // if (productUnits != null) {
+    //   for (int i = 0; i < productUnits!.length; i++) {
+    //     if (i < branchQuantities.length) {
+    //       data.addAll(productUnits![i].toJson(
+    //         index: i,
+    //         branches: branchQuantities[i],
+    //       ));
+    //     } else {
+    //       data.addAll(productUnits![i].toJson(
+    //         index: i,
+    //         branches: [],
+    //       ));
+    //     }
+    //   }
+    // }
 
     return data;
   }
@@ -251,6 +250,7 @@ class ProductUnits {
   String? salePriceWithTax;
   TextEditingController? salePriceWithTaxController;
   UnitModel? unit;
+  List<BranchQuantity> branchQty =[];
 
   ProductUnits({
     this.id,
@@ -350,7 +350,8 @@ class ProductUnits {
   }
 
   Map<String, dynamic> toJson(
-      {required int index, required List<BranchQuantity> branches}) {
+      {required int index})
+  {
     final Map<String, dynamic> data = <String, dynamic>{};
 
     /// units[0][unit_id] ,
@@ -374,11 +375,11 @@ class ProductUnits {
     /// units[0][scale_barcode]
     data["units[$index][scale_barcode]"] = scaleBarcode;
 
-    for (int i = 0; i < branches.length; i++) {
+    for (int i = 0; i < branchQty.length; i++) {
       data["units[$index][opening_stocks][$i][branch_id]"] =
-          branches[i].branchId;
+          branchQty[i].branchId;
       data["units[$index][opening_stocks][$i][quantity]"] =
-          branches[i].qunantity;
+          branchQty[i].qunantity;
     }
 
     /// units[0][opening_stocks][0][branch_id]

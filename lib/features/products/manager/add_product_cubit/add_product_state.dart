@@ -25,7 +25,14 @@ final class AddChangeTaxes extends AddProductState {}
 
 final class AddChangProductType extends AddProductState {}
 
-final class AddProductUnits extends AddProductState {}
+final class AddProductAddUnit extends AddProductState {}
+final class AddProductRemoveUnit extends AddProductState {}
+final class AddProductChangeUnit extends AddProductState {}
+final class AddProductAssignBranchQty extends AddProductState {}
+
+
+
+
 
 final class UpdateProductUnitsCost extends AddProductState {}
 

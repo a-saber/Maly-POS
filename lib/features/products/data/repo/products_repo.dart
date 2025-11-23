@@ -93,7 +93,6 @@ class ProductsRepo {
 
   Future<Either<ApiResponse, ProductModel?>> addUpdateProduct({
     required UpdateProductModel updateProduct,
-    required List<List<BranchQuantity>> branchQuantities,
   }) async {
     // try {
     for (int i = 0; i < updateProduct.productUnits!.length; i++) {
@@ -116,24 +115,14 @@ class ProductsRepo {
       updateProduct.productUnits![i].salePriceWithoutTax =
           updateProduct.productUnits![i].salePriceWithoutTaxController!.text;
     }
-    for (int i = 0; i < branchQuantities.length; i++) {
-      for (int j = 0; j < branchQuantities[i].length; j++) {
-        branchQuantities[i][j].branchId = branchQuantities[i][j].branch!.id;
-        branchQuantities[i][j].qunantity =
-            int.tryParse(branchQuantities[i][j].quantityController.text);
-        debugPrint(
-          " \n ******* branchQuantity : ${branchQuantities[i][j].toJson(indexOfUnit: 0, index: i)} *************** \n",
-        );
-      }
-    }
     String url = await ApiEndPoints.getProducts();
 
     debugPrint(
-        " -----------------------------------\n\n ${updateProduct.toJson(branchQuantities: branchQuantities)}\n\n-----------------------------------\n\n");
+        " -----------------------------------\n\n ${updateProduct.toJson()}\n\n-----------------------------------\n\n");
 
     var response = await api.post(
         url: url,
-        data: updateProduct.toJson(branchQuantities: branchQuantities),
+        data: updateProduct.toJson(),
         isFormData: true);
     if (response.status) {
       AddOrUpdateProduct addOrUpdateProduct =

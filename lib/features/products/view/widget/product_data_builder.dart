@@ -23,6 +23,8 @@ import 'package:pos_app/features/units/data/model/unit_model.dart';
 import 'package:pos_app/features/units/view/widget/custom_drop_down_unit.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+
+
 // ignore: must_be_immutable
 class ProductDataBuilder extends StatefulWidget {
   ProductDataBuilder({
@@ -444,9 +446,11 @@ class _ProductDataBuilderState extends State<ProductDataBuilder> {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
+                  dataRowHeight: 80,
                   border: TableBorder.all(color: Colors.grey),
                   // decoration: const BoxDecoration(color: Colors.black12),
                   columns: const [
+                    DataColumn(label: Text('remove')),
                     DataColumn(label: Text('Unit Name')),
                     DataColumn(label: Text('Factory')),
                     DataColumn(label: Text('Cost Price')),
@@ -457,7 +461,6 @@ class _ProductDataBuilderState extends State<ProductDataBuilder> {
                     DataColumn(label: Text('BarCode')),
                     DataColumn(label: Text('Scale BarCode')),
                     DataColumn(label: Text('Quantity')),
-                    // DataColumn(label: Text('remove')),
                   ],
                   rows: List.generate(widget.productUnits.length, (index) {
                     return customRow(
@@ -495,6 +498,29 @@ class _ProductDataBuilderState extends State<ProductDataBuilder> {
   }) {
     return DataRow(
       cells: [
+        DataCell(
+          CustomTextBtn(
+            text: "Remove",
+            textColor: AppColors.grey,
+            onPressed: index == 0? null:() {
+              setState(
+                    () {
+                  productUnit = ProductUnits(
+                    factoryController: TextEditingController(),
+                    costPriceController: TextEditingController(),
+                    barCodeController: TextEditingController(),
+                    scaleBarcodeController: TextEditingController(),
+                    minPriceWithoutTaxController: TextEditingController(),
+                    salePriceWithoutTaxController: TextEditingController(),
+                    salePriceWithTaxController: TextEditingController(),
+                  );
+
+                  branchQuantities = [];
+                },
+              );
+            },
+          ),
+        ),
         DataCell(
           Center(
             child: Padding(
@@ -727,28 +753,7 @@ class _ProductDataBuilderState extends State<ProductDataBuilder> {
                 : null,
           ),
         ),
-        // DataCell(
-        //   CustomTextBtn(
-        //     text: "Remove",
-        //     onPressed: () {
-        //       setState(
-        //         () {
-        //           productUnit = ProductUnits(
-        //             factoryController: TextEditingController(),
-        //             costPriceController: TextEditingController(),
-        //             barCodeController: TextEditingController(),
-        //             scaleBarcodeController: TextEditingController(),
-        //             minPriceWithoutTaxController: TextEditingController(),
-        //             salePriceWithoutTaxController: TextEditingController(),
-        //             salePriceWithTaxController: TextEditingController(),
-        //           );
 
-        //           branchQuantities = [];
-        //         },
-        //       );
-        //     },
-        //   ),
-        // ),
       ],
     );
   }
