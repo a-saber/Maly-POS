@@ -18,7 +18,6 @@ import 'package:pos_app/features/products/manager/add_product_cubit/add_product_
 import 'package:pos_app/features/products/view/widget/product_data_builder.dart';
 import 'package:pos_app/features/units/view/widget/custom_drop_down_unit.dart';
 import 'package:pos_app/generated/l10n.dart';
-
 import '../../../core/helper/my_form_validators.dart';
 import '../../../core/utils/app_padding.dart';
 import '../../../core/widget/custom_drop_down.dart';
