@@ -7,11 +7,12 @@ class ProductSellingModel {
   final ProductModel product;
   final ProductUnit? productUnit;
   int count;
+
   double totalPrice() {
-    if (productUnit?.salePriceWithoutTax== null) {
+    if (productUnit?.salePriceWithoutTax == null) {
       return 0;
     }
-    double? price = double.tryParse(productUnit?.salePriceWithoutTax??'');
+    double? price = double.tryParse(productUnit?.salePriceWithoutTax ?? '');
     if (price == null) {
       return 0;
     }
@@ -42,5 +43,17 @@ class ProductSellingModel {
     return true;
   }
 
-  ProductSellingModel({required this.product, required this.count, this.productUnit});
+  ProductSellingModel(
+      {required this.product, required this.count, this.productUnit});
+
+  Map<String, dynamic> toJson() {
+    return {
+      ApiKeys.productid: product.id,
+      ApiKeys.quantity: count,
+      ApiKeys.unitId: productUnit?.unitId,
+      ApiKeys.pricePerUnitWithTax: double.tryParse(
+          productUnit?.salePriceWithTax ?? '0'),
+
+    };
+  }
 }
