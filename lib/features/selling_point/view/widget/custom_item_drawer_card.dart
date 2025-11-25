@@ -46,7 +46,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          product.product.name ?? S.of(context).noName,
+                          '${product.product.name ?? S.of(context).noName} ${product.productUnit?.unit?.name ?? ''}',
                           style: AppFontStyle.itemsSubTitle(
                             context: context,
                             color: AppColors.black,
@@ -56,7 +56,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                           maxLines: 1,
                         ),
                         Text(
-                          "${product.product.priceAfterTax?.toDouble() ?? 0.0}",
+                          "${double.tryParse(product.productUnit?.salePriceWithTax??'0')?.toStringAsFixed(2)}",
                           style: AppFontStyle.s12(
                             context: context,
                             color: AppColors.black,
@@ -105,7 +105,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${(product.product.priceAfterTax?.toDouble() ?? 0.0) * product.count}',
+                ((double.tryParse(product.productUnit?.salePriceWithTax??'0')??0) * product.count).toStringAsFixed(2),
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,

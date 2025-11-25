@@ -1,14 +1,17 @@
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 
+import '../../../products/data/model/product_unit_model.dart';
+
 class ProductSellingModel {
   final ProductModel product;
+  final ProductUnit? productUnit;
   int count;
   double totalPrice() {
-    if (product.price == null) {
+    if (productUnit?.salePriceWithoutTax== null) {
       return 0;
     }
-    double? price = double.tryParse(product.price!);
+    double? price = double.tryParse(productUnit?.salePriceWithoutTax??'');
     if (price == null) {
       return 0;
     }
@@ -39,5 +42,5 @@ class ProductSellingModel {
     return true;
   }
 
-  ProductSellingModel({required this.product, required this.count});
+  ProductSellingModel({required this.product, required this.count, this.productUnit});
 }

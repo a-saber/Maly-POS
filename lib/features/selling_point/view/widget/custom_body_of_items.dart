@@ -30,20 +30,23 @@ class CustomBodyOfItems extends StatelessWidget {
           child: CustomItemDrawerCard(
             product: SellingPointProductCubit.get(context).products[index],
             onTapAdd: () => SellingPointProductCubit.get(context).increaseCount(
+                productId:
                 SellingPointProductCubit.get(context)
                     .products[index]
                     .product
-                    .id!),
-            onTapRemove: () => SellingPointProductCubit.get(context)
-                .decreaseCount(SellingPointProductCubit.get(context)
+                    .id!,productUnitId:SellingPointProductCubit.get(context)
+                .products[index].productUnit?.unitId ),
+            onTapRemove: () => SellingPointProductCubit.get(context).decreaseCount(productId: SellingPointProductCubit.get(context)
                     .products[index]
                     .product
-                    .id!),
+                    .id!,productUnitId:SellingPointProductCubit.get(context)
+                .products[index].productUnit?.unitId ),
             onTapDelete: () => SellingPointProductCubit.get(context)
-                .removeProduct(SellingPointProductCubit.get(context)
+                .removeProduct( productId: SellingPointProductCubit.get(context)
                     .products[index]
                     .product
-                    .id!),
+                    .id!,productUnitId:SellingPointProductCubit.get(context)
+                .products[index].productUnit?.unitId ),
           ),
         );
       },

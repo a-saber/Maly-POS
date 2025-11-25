@@ -14,6 +14,8 @@ import 'package:pos_app/features/selling_point/data/model/product_selling_model.
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 
+import '../../../products/data/model/product_unit_model.dart';
+
 part 'selling_point_product_state.dart';
 
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
@@ -177,16 +179,14 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   /////// end of calculation function
   /////////////////////////////////////////////////////////////////////////////////
 
-  void addProduct(ProductModel product) {
-    bool isfound = products.any((element) => element.product.id == product.id);
-    if (isfound) {
-      var myproduct =
-          products.firstWhere((element) => element.product.id == product.id);
-      increaseCount(myproduct.product.id ?? -1);
+  void addProduct({required ProductModel product,ProductUnit? productUnit}) {
+    bool isFound = products.any((element) => element.product.id == product.id && element.productUnit?.unitId == productUnit?.unitId);
+    if (isFound) {
+      var myproduct = products.firstWhere((element) => element.product.id == product.id && element.productUnit?.unitId == productUnit?.unitId);
+      increaseCount(productId: myproduct.product.id ?? -1,productUnitId: productUnit?.unitId);
     } else {
-      if (product.type?.toLowerCase().trim() ==
-          ApiKeys.service.toLowerCase().trim()) {
-        products.add(ProductSellingModel(product: product, count: 1));
+      if (product.type?.toLowerCase().trim() == ApiKeys.service.toLowerCase().trim()) {
+        products.add(ProductSellingModel(product: product, count: 1,productUnit: productUnit));
         updatePaid();
         emit(SellingPointProductAddingProduct());
       } else if (product.quantity == null || product.quantity == 0) {
@@ -194,15 +194,15 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         emit(SellingPointProductAddingFailingProduct());
         return;
       } else {
-        products.add(ProductSellingModel(product: product, count: 1));
+        products.add(ProductSellingModel(product: product, count: 1,productUnit: productUnit));
         updatePaid();
         emit(SellingPointProductAddingProduct());
       }
     }
   }
 
-  void increaseCount(int id) {
-    var product = products.firstWhere((element) => element.product.id == id);
+  void increaseCount({ required int productId,required int? productUnitId}) {
+    var product = products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId);
 
     bool canIncrease = product.increaseCount();
 
@@ -215,18 +215,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void decreaseCount(int id) {
-    if (products.firstWhere((element) => element.product.id == id).count == 1) {
-      removeProduct(id);
+  void decreaseCount({ required int productId,required int? productUnitId}) {
+    if (products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).count == 1) {
+      removeProduct(productId: productId,productUnitId: productUnitId);
     } else {
-      products.firstWhere((element) => element.product.id == id).count--;
+      products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).count--;
       updatePaid();
       emit(SellingPointProductDecreaseCount());
     }
   }
 
-  void removeProduct(int id) {
-    products.removeWhere((element) => element.product.id == id);
+  void removeProduct({ required int productId,required int? productUnitId}) {
+    products.removeWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId);
     updatePaid();
     emit(SellingPointProductRemoveProduct());
   }

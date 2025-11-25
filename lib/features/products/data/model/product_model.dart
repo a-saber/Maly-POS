@@ -4,15 +4,17 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/helper/upload_image_to_api.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
+import 'package:pos_app/features/products/data/model/product_unit_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
+import 'package:collection/collection.dart';
 
 class ProductModel {
   final int? id;
   final String? name;
   final int? categoryId;
   final String? type;
-  final int? unitId;
+  final int? baseUnitId;
   final String? description;
   final String? imagePath;
   final String? barcode;
@@ -26,12 +28,13 @@ class ProductModel {
   final UnitModel? unit;
   final TaxesModel? tax;
   final int? quantity;
+  final List<ProductUnit>? productUnits;
 
   ProductModel({
     required this.id,
     required this.name,
     required this.categoryId,
-    required this.unitId,
+    required this.baseUnitId,
     required this.description,
     required this.imagePath,
     required this.barcode,
@@ -46,14 +49,18 @@ class ProductModel {
     required this.priceAfterTax,
     required this.type,
     required this.quantity,
+    this.productUnits,
   });
+
+  double? get salePriceWithTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithTax?? "").toString());
+
 
   factory ProductModel.empty() {
     return ProductModel(
       id: 0,
       name: '',
       categoryId: 0,
-      unitId: 0,
+      baseUnitId: 0,
       description: '',
       imagePath: '',
       barcode: '',
@@ -68,6 +75,7 @@ class ProductModel {
       priceAfterTax: 0,
       type: '',
       quantity: 0,
+      productUnits: null,
     );
   }
 
@@ -76,7 +84,7 @@ class ProductModel {
       id: json[ApiKeys.id],
       name: json[ApiKeys.name],
       categoryId: json[ApiKeys.categoryId],
-      unitId: json[ApiKeys.unitId],
+      baseUnitId: json[ApiKeys.baseUnitId],
       description: json[ApiKeys.description],
       imagePath: json[ApiKeys.imagepath],
       barcode: json[ApiKeys.barcode],
@@ -97,6 +105,11 @@ class ProductModel {
       taxId: json[ApiKeys.taxid],
       type: json[ApiKeys.type],
       quantity: json[ApiKeys.quantity],
+      productUnits:json[ApiKeys.productUnits] != null
+          ? (json[ApiKeys.productUnits] as List)
+          .map((item) => ProductUnit.fromJson(item as Map<String, dynamic>))
+          .toList()
+          : null ,
     );
   }
   factory ProductModel.copyWith(UnitModel? unit, ProductModel product) {
@@ -104,7 +117,7 @@ class ProductModel {
       id: product.id,
       name: product.name,
       categoryId: product.categoryId,
-      unitId: unit?.id,
+      baseUnitId: unit?.id,
       description: product.description,
       imagePath: product.imagePath,
       barcode: product.barcode,
@@ -119,6 +132,7 @@ class ProductModel {
       taxId: product.taxId,
       type: product.type,
       quantity: product.quantity,
+      productUnits: product.productUnits,
     );
   }
 
@@ -139,7 +153,7 @@ class ProductModel {
       id: id,
       name: name,
       categoryId: category?.id,
-      unitId: unit?.id,
+      baseUnitId: unit?.id,
       description: description,
       imagePath: image?.path,
       brand: brand,
@@ -162,7 +176,7 @@ class ProductModel {
     data[ApiKeys.id] = id;
     data[ApiKeys.name] = name;
     data[ApiKeys.categoryId] = categoryId;
-    data[ApiKeys.unitId] = unitId;
+    data[ApiKeys.baseUnitId] = baseUnitId;
     data[ApiKeys.description] = description;
     data[ApiKeys.imagepath] = imagePath;
     data[ApiKeys.barcode] = barcode;
@@ -176,6 +190,7 @@ class ProductModel {
     data[ApiKeys.priceAfterTax] = priceAfterTax;
     data[ApiKeys.type] = type;
     data[ApiKeys.quantity] = quantity;
+    data[ApiKeys.productUnits]=productUnits;
 
     return data;
   }
@@ -189,7 +204,7 @@ class ProductModel {
 
     data[ApiKeys.name] = name;
     data[ApiKeys.categoryId] = categoryId;
-    data[ApiKeys.unitId] = unitId;
+    data[ApiKeys.baseUnitId] = baseUnitId;
     data[ApiKeys.description] = description;
     if (imagePath != null) {
       data[ApiKeys.image] = await uploadImageToApi(image: File(imagePath!));

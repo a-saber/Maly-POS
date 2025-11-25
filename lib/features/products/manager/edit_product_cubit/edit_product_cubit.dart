@@ -66,9 +66,9 @@ class EditProductCubit extends Cubit<EditProductState> {
   void getUnits({
     required BuildContext context,
   }) async {
-    if (product.unitId == null) return;
+    if (product.baseUnitId == null) return;
     var result = await unitsRepo.getSpecificUnit(
-      id: product.unitId!,
+      id: product.baseUnitId!,
     );
     result.fold((l) => null, (r) {
       unit = r;
