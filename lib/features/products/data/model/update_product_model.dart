@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_keys.dart';
+import 'package:pos_app/core/helper/calc_helper.dart';
 import 'package:pos_app/core/helper/upload_image_to_api.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
@@ -284,6 +285,8 @@ class ProductUnits {
   TextEditingController? salePriceWithTaxController;
   UnitModel? unit;
   List<BranchQuantity> branchQty =[];
+  Decimal? minPriceWithoutTaxValue;
+  Decimal? minPriceWithTaxValue;
 
   ProductUnits({
     this.id,
@@ -307,6 +310,7 @@ class ProductUnits {
     this.salePriceWithoutTaxController,
     this.salePriceWithTaxController,
     this.minPriceWithTaxController,
+
   });
 
   factory ProductUnits.empty() {
