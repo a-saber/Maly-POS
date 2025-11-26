@@ -5,18 +5,25 @@ import 'package:pos_app/core/widget/custom_cach_network_image.dart';
 import 'package:pos_app/features/selling_point/data/model/product_selling_model.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../../../../core/helper/my_form_validators.dart';
+import '../../../../core/widget/custom_btn.dart';
+import '../../../../core/widget/custom_form_field.dart';
+
 class CustomItemDrawerCard extends StatelessWidget {
   const CustomItemDrawerCard({
     super.key,
     this.onTapAdd,
     this.onTapRemove,
     this.onTapDelete,
-    required this.product,
+    required this.product, this.onChangePrice,
+    this.onToggleShowEditPrice,
   });
   final ProductSellingModel product;
   final void Function()? onTapAdd;
   final void Function()? onTapRemove;
   final void Function()? onTapDelete;
+  final VoidCallback? onChangePrice;
+  final VoidCallback? onToggleShowEditPrice;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -55,14 +62,32 @@ class CustomItemDrawerCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        Text(
-                          "${double.tryParse(product.productUnit?.salePriceWithTax??'0')?.toStringAsFixed(2)}",
-                          style: AppFontStyle.s12(
-                            context: context,
-                            color: AppColors.black,
-                            fontWeight: FontWeight.w300,
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "${product?.currentPrice.toStringAsFixed(2)}",
+                              style: AppFontStyle.s12(
+                                context: context,
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                           const SizedBox(
+                              width: 10,
+                            ),
+                            InkWell(
+                              onTap: onToggleShowEditPrice,
+
+                              child: Icon(
+                                Icons.edit,
+                                color: AppColors.black,
+                                size: 15,
+                              ),
+                            )
+                          ],
                         ),
+
                       ],
                     ),
                   ),
@@ -105,7 +130,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                ((double.tryParse(product.productUnit?.salePriceWithTax??'0')??0) * product.count).toStringAsFixed(2),
+                (product.currentPrice * product.count).toStringAsFixed(2),
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,
@@ -180,6 +205,92 @@ class CustomItemDrawerCard extends StatelessWidget {
             ))
           ],
         ),
+        if(product.showEditPrice)...
+        [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+
+          children: [
+            Expanded(
+              flex: 3,
+
+
+              child: LayoutBuilder(
+                  builder: (context, constraints) {
+                  return Form(
+                    key: product.formKey,
+                    child: CustomFormField(
+                      controller: product.priceController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => MyFormValidators.validateDoublePrice(
+                        value,
+                        context: context,
+                        haveMin: true,
+                        min: product.minPrice,
+                      ),
+                    ),
+                  );
+                }
+              ),
+            ),
+            // CustomTextBtn(
+            //   text: "Save",
+            //   textColor: AppColors.primary,
+            //   onPressed: (){
+            //
+            //       // Defer setState to after the current frame
+            //       WidgetsBinding.instance.addPostFrameCallback((_) {
+            //
+            //           onChangePrice!();
+            //
+            //       });
+            //
+            //   },
+            // ),
+           const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              flex: 1,
+              child: GestureDetector(
+                onTap: (){
+
+                  // Defer setState to after the current frame
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+
+                    onChangePrice!();
+
+                  });
+
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.success,
+                    border:
+                    Border.all(color: AppColors.success, width: 1.5),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    S.of(context).save,
+                    textAlign: TextAlign.center,
+                    style: AppFontStyle.itemsSubTitle(
+                      context: context,
+                      color: AppColors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ],
+        )
+        ],
+
+
       ],
     );
   }

@@ -17,6 +17,10 @@ class CustomBodyOfItems extends StatelessWidget {
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
+        final productId = SellingPointProductCubit.get(context).products[index].product
+            .id!;
+        final productUnitId = SellingPointProductCubit.get(context).products[index].productUnit?.unitId;
+
         return BlocListener<SellingPointProductCubit, SellingPointProductState>(
           listener: (context, state) {
             if (state is SellingPointProductIncreaseCountFailing) {
@@ -30,23 +34,12 @@ class CustomBodyOfItems extends StatelessWidget {
           child: CustomItemDrawerCard(
             product: SellingPointProductCubit.get(context).products[index],
             onTapAdd: () => SellingPointProductCubit.get(context).increaseCount(
-                productId:
-                SellingPointProductCubit.get(context)
-                    .products[index]
-                    .product
-                    .id!,productUnitId:SellingPointProductCubit.get(context)
-                .products[index].productUnit?.unitId ),
-            onTapRemove: () => SellingPointProductCubit.get(context).decreaseCount(productId: SellingPointProductCubit.get(context)
-                    .products[index]
-                    .product
-                    .id!,productUnitId:SellingPointProductCubit.get(context)
-                .products[index].productUnit?.unitId ),
+                productId: productId,productUnitId:productUnitId ),
+            onTapRemove: () => SellingPointProductCubit.get(context).decreaseCount(productId: productId,productUnitId:productUnitId ),
             onTapDelete: () => SellingPointProductCubit.get(context)
-                .removeProduct( productId: SellingPointProductCubit.get(context)
-                    .products[index]
-                    .product
-                    .id!,productUnitId:SellingPointProductCubit.get(context)
-                .products[index].productUnit?.unitId ),
+                .removeProduct( productId: productId,productUnitId:productUnitId ),
+            onChangePrice:()=> SellingPointProductCubit.get(context).changePrice( productId: productId, productUnitId:productUnitId ),
+            onToggleShowEditPrice: ()=>SellingPointProductCubit.get(context).toggleShowEditPrice( productId: productId, productUnitId:productUnitId ) ,
           ),
         );
       },

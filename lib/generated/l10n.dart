@@ -2159,6 +2159,10 @@ class S {
   String get country {
     return Intl.message('Country', name: 'country', desc: '', args: []);
   }
+  /// `Country`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
 
   /// `Price Shoud Be Bigger Than Or Equal Total Price`
   String get priceShoudBeBiggerThanOrEqualTotalPrice {

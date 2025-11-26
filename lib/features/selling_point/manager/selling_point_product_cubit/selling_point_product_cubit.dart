@@ -230,6 +230,25 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     updatePaid();
     emit(SellingPointProductRemoveProduct());
   }
+  void toggleShowEditPrice({ required int productId,required int? productUnitId}){
+
+       products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).toggleShowEditPrice();
+
+    emit(SellingPointProductChangePrice());
+  }
+  void changePrice({ required int productId,required int? productUnitId}) {
+  final bool valid  =products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).formKey.currentState!.validate();
+
+      if(!valid) {
+        products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).validatePrice();
+      }else{
+        products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).toggleShowEditPrice();
+      }
+
+    updatePaid();
+    emit(SellingPointProductChangePrice());
+  }
+
 
   // Function Change
 
