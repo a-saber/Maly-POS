@@ -72,6 +72,21 @@ double baseSalePriceWithTax = 0;
           product: r,
         )),
       );
+      print("=============== PRODUCT UNITS TO SEND ===============");
+for (int i = 0; i < productUnits.length; i++) {
+  final unit = productUnits[i];
+  print("----- Unit #$i -----");
+  print("Unit ID: ${unit.unit?.id}");
+  print("Factory: ${unit.factoryController?.text}");
+  print("Cost: ${unit.costPriceController?.text}");
+  print("Min Price Without Tax: ${unit.minPriceWithoutTaxController?.text}");
+  print("Min Price With Tax: ${unit.minPriceWithTaxController?.text}");
+  print("Sale Price Without Tax: ${unit.salePriceWithoutTaxController?.text}");
+  print("Sale Price With Tax: ${unit.salePriceWithTaxController?.text}");
+  print("----------------------------------------");
+}
+print("=============== END UNITS ===============");
+
       // TODO : Add Product
       var reponse = await repo.addProduct(
         unit: unit!,
