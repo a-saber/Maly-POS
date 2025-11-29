@@ -328,7 +328,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
                             child: pw.Text(
-                              p[ApiKeys.price]?.toString() ?? "",
+                              double.tryParse(p[ApiKeys.price]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -339,8 +339,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
                             child: pw.Text(
-                              p[ApiKeys.linetotalafterdiscount]?.toString() ??
-                                  "",
+                              double.tryParse(p[ApiKeys.linetotalafterdiscount]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -406,7 +405,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
-                          "${sale[ApiKeys.subtotal]}",
+                          double.tryParse(sale[ApiKeys.subtotal]??'0')?.toStringAsFixed(2)??'0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -433,7 +432,8 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
-                          "${sale[ApiKeys.discounttotal]}",
+                          //"${sale[ApiKeys.discounttotal]}",
+                          double.tryParse(sale[ApiKeys.discounttotal]??'0')?.toStringAsFixed(2)??'0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -460,7 +460,8 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
-                          "${sale[ApiKeys.totalafterdiscount]}",
+                         // "${sale[ApiKeys.totalafterdiscount]}",
+                          double.tryParse(sale[ApiKeys.totalafterdiscount]??'0')?.toStringAsFixed(2)??'0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -487,7 +488,8 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
-                          "${sale[ApiKeys.taxtotal]}",
+                          //"${sale[ApiKeys.taxtotal]}",
+                          double.tryParse(sale[ApiKeys.taxtotal]??'0')?.toStringAsFixed(2)??'0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -515,7 +517,8 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
-                          "${sale[ApiKeys.totalaftertax]}",
+                         // "${sale[ApiKeys.totalaftertax]}",
+                          double.tryParse(sale[ApiKeys.totalaftertax]??'0')?.toStringAsFixed(2)??'0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             fontWeight: pw.FontWeight.bold,
@@ -597,7 +600,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(2),
                       child: pw.Text(
-                        "${((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100).truncateToDouble() / 100}",
+                        "${(((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100).truncateToDouble() / 100).toStringAsFixed(2)}",
                         style: pw.TextStyle(
                           fontSize: 8,
                           font: arabicFont,
