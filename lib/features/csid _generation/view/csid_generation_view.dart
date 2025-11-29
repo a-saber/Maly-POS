@@ -222,6 +222,14 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
                 context: context, validate: false),
             keyboardType: TextInputType.text,
           ),
+          CustomFormField(
+            controller: ScidGenerationCubit.get(context).countryNameController,
+            hintText: S.of(context).countryName,
+            labelText: S.of(context).countryName,
+            validator: (value) => MyFormValidators.validateInteger(value,
+                context: context, validate: false),
+            keyboardType: TextInputType.text,
+          ),
           CustomDropdown<String>(
 
             hint: S.of(context).invoiceType,
