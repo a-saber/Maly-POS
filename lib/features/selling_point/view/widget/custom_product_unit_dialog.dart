@@ -23,83 +23,93 @@ class CustomProductUnitDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
+    return SizedBox(
+      width: getResponsiveSize(context, size: 500),
 
-        ...?product.productUnits?.map((element)=> InkWell(
-          onTap: (){
-            SellingPointProductCubit.get(context).addProduct(product: product,productUnit:element );
-            Navigator.pop(context);
-          },
-          child: Padding(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            height: 30,
+          ),
 
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.grey),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Row(
-                      children: [
-                        CustomCachedNetworkImage(
-                          imageUrl: product.imageUrl,
-                          borderRadius: BorderRadius.circular(15),
-                          imageBuilder: (imageProvider) => Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: imageProvider, fit: BoxFit.cover)),
-                          ),
-                          width: 30,
-                          height: 30,
-                        ),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Expanded(
-                          child:  Text(
-                            "${ product.name ?? S.of(context).noName} ${element.unit?.name??''}",
-                            style: AppFontStyle.itemsSubTitle(
-                              context: context,
-                              color: AppColors.black,
-                              fontWeight: FontWeight.w500,
+          ...?product.productUnits?.map((element)=> InkWell(
+            onTap: (){
+              SellingPointProductCubit.get(context).addProduct(product: product,productUnit:element );
+              Navigator.pop(context);
+            },
+            child: Padding(
+
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColors.grey),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: Row(
+                        children: [
+                          CustomCachedNetworkImage(
+                            imageUrl: product.imageUrl,
+                            borderRadius: BorderRadius.circular(15),
+                            imageBuilder: (imageProvider) => Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover)),
                             ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                            width: 30,
+                            height: 30,
                           ),
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      double.tryParse( element.salePriceWithTax??'0')?.toStringAsFixed(2)??'',
-                      style: AppFontStyle.itemsSubTitle(
-                        context: context,
-                        color: AppColors.black,
-                        fontWeight: FontWeight.w600,
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Expanded(
+                            child:  Text(
+                              "${ product.name ?? S.of(context).noName} ${element.unit?.name??''}",
+                              style: AppFontStyle.itemsSubTitle(
+                                context: context,
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                        ],
                       ),
-                      textAlign: TextAlign.center,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
+                    Expanded(
+                      child: Text(
+                        double.tryParse( element.salePriceWithTax??'0')?.toStringAsFixed(2)??'',
+                        style: AppFontStyle.itemsSubTitle(
+                          context: context,
+                          color: AppColors.black,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
 
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        )).toList(),
+          )).toList(),
+           const SizedBox(
+             height: 30,
+           )
 
-      ],
+        ],
+      ),
     );
   }
 }

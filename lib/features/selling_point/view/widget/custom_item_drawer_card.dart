@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
@@ -9,7 +11,7 @@ import '../../../../core/helper/my_form_validators.dart';
 import '../../../../core/widget/custom_btn.dart';
 import '../../../../core/widget/custom_form_field.dart';
 
-class CustomItemDrawerCard extends StatelessWidget {
+class CustomItemDrawerCard extends StatefulWidget {
   const CustomItemDrawerCard({
     super.key,
     this.onTapAdd,
@@ -24,6 +26,19 @@ class CustomItemDrawerCard extends StatelessWidget {
   final void Function()? onTapDelete;
   final VoidCallback? onChangePrice;
   final VoidCallback? onToggleShowEditPrice;
+
+  @override
+  State<CustomItemDrawerCard> createState() => _CustomItemDrawerCardState();
+}
+
+class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
+  Timer? _debounce;
+   @override
+  void dispose() {
+
+     _debounce?.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -35,7 +50,7 @@ class CustomItemDrawerCard extends StatelessWidget {
               child: Row(
                 children: [
                   CustomCachedNetworkImage(
-                    imageUrl: product.product.imageUrl,
+                    imageUrl: widget.product.product.imageUrl,
                     borderRadius: BorderRadius.circular(15),
                     imageBuilder: (imageProvider) => Container(
                       decoration: BoxDecoration(
@@ -53,7 +68,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${product.product.name ?? S.of(context).noName} ${product.productUnit?.unit?.name ?? ''}',
+                          '${widget.product.product.name ?? S.of(context).noName} ${widget.product.productUnit?.unit?.name ?? ''}',
                           style: AppFontStyle.itemsSubTitle(
                             context: context,
                             color: AppColors.black,
@@ -62,30 +77,38 @@ class CustomItemDrawerCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "${product?.currentPrice.toStringAsFixed(2)}",
-                              style: AppFontStyle.s12(
-                                context: context,
-                                color: AppColors.black,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                           const SizedBox(
-                              width: 10,
-                            ),
-                            InkWell(
-                              onTap: onToggleShowEditPrice,
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        SizedBox(
 
-                              child: Icon(
-                                Icons.edit,
-                                color: AppColors.black,
-                                size: 15,
-                              ),
-                            )
-                          ],
+                          width: 200,
+                          child: Form(
+                            key: widget.product.formKey,
+                            child: CustomFormField(
+                                controller: widget.product.priceController,
+                                keyboardType: TextInputType.number,
+                                validator: (value) => MyFormValidators.validateDoublePrice(
+                                  value,
+                                  context: context,
+                                  haveMin: true,
+                                  min: widget.product.minPrice,
+                                ),
+                                onChanged: (value){
+                                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+                                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                                    widget.onChangePrice?.call();
+                                  });
+
+                                  // Future.delayed(Duration(milliseconds: 500)).then((value){
+                                  //
+                                  //
+                                  // });
+                                }
+
+                            ),
+                          ),
                         ),
 
                       ],
@@ -112,7 +135,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Center(
                         child: Text(
-                          product.count.toString(),
+                          widget.product.count.toString(),
                           style: AppFontStyle.itemsSubTitle(
                             context: context,
                             color: AppColors.white,
@@ -130,7 +153,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                (product.currentPrice * product.count).toStringAsFixed(2),
+                (widget.product.currentPrice * widget.product.count).toStringAsFixed(2),
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,
@@ -152,7 +175,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                   spacing: 20,
                   children: [
                     InkWell(
-                      onTap: onTapAdd,
+                      onTap: widget.onTapAdd,
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -167,7 +190,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: onTapRemove,
+                      onTap: widget.onTapRemove,
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -187,7 +210,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                 child: Align(
               alignment: AlignmentDirectional.center,
               child: InkWell(
-                onTap: onTapDelete,
+                onTap: widget.onTapDelete,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   width: 35,
@@ -205,7 +228,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ))
           ],
         ),
-        if(product.showEditPrice)...
+       /* if(product.showEditPrice)...
         [
         const SizedBox(
           height: 10,
@@ -220,7 +243,7 @@ class CustomItemDrawerCard extends StatelessWidget {
               child: LayoutBuilder(
                   builder: (context, constraints) {
                   return Form(
-                    key: product.formKey,
+                  //  key: product.formKey,
                     child: CustomFormField(
                       controller: product.priceController,
                       keyboardType: TextInputType.number,
@@ -288,7 +311,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             )
           ],
         )
-        ],
+        ],*/
 
 
       ],

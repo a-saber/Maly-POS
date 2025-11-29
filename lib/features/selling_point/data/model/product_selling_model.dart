@@ -13,7 +13,7 @@ class ProductSellingModel {
   late final double minPrice;
   late final   GlobalKey<FormState> formKey;
    bool showEditPrice=false;
-  // late final
+
 
 
 
@@ -69,7 +69,6 @@ class ProductSellingModel {
     }
 
   }
-
 
 
   Map<String, dynamic> toJson() {
