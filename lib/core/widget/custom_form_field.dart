@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pos_app/core/utils/app_decoration.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 
@@ -15,6 +16,7 @@ class CustomFormField extends StatelessWidget {
   final void Function(String)? onChanged;
   final bool? enabled;
   final String? initialValue;
+  final List<TextInputFormatter>?inputFormatters;
 
   const CustomFormField({
     super.key,
@@ -30,6 +32,7 @@ class CustomFormField extends StatelessWidget {
     this.onChanged,
     this.enabled,
     this.initialValue,
+    this.inputFormatters
   });
 
   @override
@@ -43,6 +46,7 @@ class CustomFormField extends StatelessWidget {
       obscuringCharacter: '●',
       validator: validator,
       onFieldSubmitted: onFieldSubmitted,
+      inputFormatters: inputFormatters,
       onChanged: onChanged,
       style: AppFontStyle.formText(
         context: context,

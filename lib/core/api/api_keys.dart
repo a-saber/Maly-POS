@@ -154,6 +154,7 @@ abstract class ApiKeys {
   static const String baseUnit = 'base_unit';
   static const String baseUnitId = 'base_unit_id';
   static const String productUnits = 'product_units';
+  static const String pricePerUnitWithTax = 'price_per_unit_with_tax';
 }
 
 abstract class ApiEndPoints {

@@ -1,18 +1,29 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 
+import '../../../products/data/model/product_unit_model.dart';
+
 class ProductSellingModel {
   final ProductModel product;
+  final ProductUnit? productUnit;
   int count;
+  late final TextEditingController priceController;
+  late final double minPrice;
+  late final   GlobalKey<FormState> formKey;
+   bool showEditPrice=false;
+
+
+
+
   double totalPrice() {
-    if (product.price == null) {
-      return 0;
-    }
-    double? price = double.tryParse(product.price!);
-    if (price == null) {
-      return 0;
-    }
-    return price * count;
+    // Use the price from the controller instead of productUnit
+    return currentPrice * count;
+  }
+  double get currentPrice {
+    double? price = double.tryParse(priceController.text);
+    return price ?? 0;
   }
 
   bool increaseCount() {
@@ -39,5 +50,35 @@ class ProductSellingModel {
     return true;
   }
 
-  ProductSellingModel({required this.product, required this.count});
+  ProductSellingModel({required this.product, required this.count, this.productUnit}){
+    final initialPrice =double.tryParse(productUnit?.salePriceWithTax ?? '0')?.toStringAsFixed(2) ;
+    minPrice = double.tryParse(productUnit?.minPriceWithoutTax ?? '0') ?? 0;
+
+    priceController = TextEditingController(text: initialPrice);
+    formKey=GlobalKey<FormState>();
+    showEditPrice=false;
+   }
+   void toggleShowEditPrice(){
+    showEditPrice=!showEditPrice;
+    validatePrice();
+   }
+
+ void   validatePrice() {
+    if(currentPrice < minPrice){
+      priceController.text = double.tryParse(productUnit?.salePriceWithTax ?? '0')!.toStringAsFixed(2);
+    }
+
+  }
+
+
+  Map<String, dynamic> toJson() {
+    return {
+      ApiKeys.productid: product.id,
+      ApiKeys.quantity: count,
+      ApiKeys.unitId: productUnit?.unitId,
+      ApiKeys.pricePerUnitWithTax: currentPrice,
+
+    };
+  }
 }
+

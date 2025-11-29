@@ -2159,6 +2159,10 @@ class S {
   String get country {
     return Intl.message('Country', name: 'country', desc: '', args: []);
   }
+  /// `Country`
+  String get save {
+    return Intl.message('Save', name: 'save', desc: '', args: []);
+  }
 
   /// `Price Shoud Be Bigger Than Or Equal Total Price`
   String get priceShoudBeBiggerThanOrEqualTotalPrice {
@@ -2340,6 +2344,213 @@ class S {
     return Intl.message(
       'Not Found Shift',
       name: 'notFoundShift',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `OTP`
+  String get otp {
+    return Intl.message(
+      'OTP',
+      name: 'otp',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Serial Number`
+  String get serialNumber {
+    return Intl.message(
+      'Serial Number',
+      name: 'serialNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Organization Identifier`
+  String get organizationIdentifier {
+    return Intl.message(
+      'Organization Identifier',
+      name: 'organizationIdentifier',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Organization Unit Name`
+  String get organizationUnitName {
+    return Intl.message(
+      'Organization Unit Name',
+      name: 'organizationUnitName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Organization Name`
+  String get organizationName {
+    return Intl.message(
+      'Organization Name',
+      name: 'organizationName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Country Name`
+  String get countryName {
+    return Intl.message(
+      'Country Name',
+      name: 'countryName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invoice Type`
+  String get invoiceType {
+    return Intl.message(
+      'Invoice Type',
+      name: 'invoiceType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Location`
+  String get location {
+    return Intl.message(
+      'Location',
+      name: 'location',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Industry`
+  String get industry {
+    return Intl.message(
+      'Industry',
+      name: 'industry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CSR`
+  String get csr {
+    return Intl.message(
+      'CSR',
+      name: 'csr',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private Key`
+  String get privateKey {
+    return Intl.message(
+      'Private Key',
+      name: 'privateKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public Key`
+  String get publicKey {
+    return Intl.message(
+      'Public Key',
+      name: 'publicKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Secret Key`
+  String get secretKey {
+    return Intl.message(
+      'Secret Key',
+      name: 'secretKey',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Common Name`
+  String get commonName {
+    return Intl.message(
+      'Common Name',
+      name: 'commonName',
+      desc: '',
+      args: [],
+    );
+  }
+
+
+
+  /// `Developer`
+  String get developer {
+    return Intl.message(
+      'Developer',
+      name: 'developer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Simulation`
+  String get simulation {
+    return Intl.message(
+      'Simulation',
+      name: 'simulation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Production`
+  String get production {
+    return Intl.message(
+      'Production',
+      name: 'production',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create CSID`
+  String get createCsid {
+    return Intl.message(
+      'Create CSID',
+      name: 'createCsid',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Create CSID`
+  String get userName {
+    return Intl.message(
+      'User Name',
+      name: 'userName',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Copy`
+  String get copy {
+    return Intl.message(
+      'Copy',
+      name: 'copy',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Copy`
+  String get ZakatAndTaxAuthority {
+    return Intl.message(
+      'Zakat and Tax Authority',
+      name: 'ZakatAndTaxAuthority',
       desc: '',
       args: [],
     );

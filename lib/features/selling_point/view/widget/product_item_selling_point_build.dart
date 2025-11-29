@@ -11,6 +11,9 @@ import 'package:pos_app/features/selling_point/manager/selling_point_product_cub
 import 'package:pos_app/generated/l10n.dart';
 import 'package:redacted/redacted.dart';
 
+import '../../../../core/widget/custom_dialog.dart';
+import 'custom_product_unit_dialog.dart';
+
 class ProductItemSellingPointBuild extends StatelessWidget {
   const ProductItemSellingPointBuild({
     super.key,
@@ -20,7 +23,7 @@ class ProductItemSellingPointBuild extends StatelessWidget {
   final ProductModel product;
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SellingPointProductCubit, SellingPointProductState>(
+    return BlocConsumer<SellingPointProductCubit, SellingPointProductState>(
       listener: (context, state) {
         if (state is SellingPointProductAddingFailingProduct) {
           CustomPopUp.callMyToast(
@@ -30,8 +33,19 @@ class ProductItemSellingPointBuild extends StatelessWidget {
           );
         }
       },
-      child: InkWell(
-        onTap: () => SellingPointProductCubit.get(context).addProduct(product),
+
+      builder: (context, state)=>InkWell(
+        onTap: () {
+          if((product.productUnits?.length??0)>1 ){
+
+            CustomDialog.showDialogHelper(context, contentWidget: CustomProductUnitDialog(product: product));
+          }
+          else{
+
+            SellingPointProductCubit.get(context).addProduct(product: product,productUnit:product.productUnits?.firstOrNull );
+
+          }
+        },
         child: Container(
           width: 150,
           padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
@@ -101,8 +115,8 @@ class ProductItemSellingPointBuild extends StatelessWidget {
               //   overflow: TextOverflow.ellipsis,
               //   textAlign: TextAlign.center,
               // ),
-              Text(
-                "${product.priceAfterTax?.toDouble() ?? 0.0}",
+              Text("${product.salePriceWithTaxForBaseUnit?? 0.0}",
+
                 style: AppFontStyle.itemssmallTitle(
                   fontWeight: FontWeight.w400,
                   color: Colors.black,

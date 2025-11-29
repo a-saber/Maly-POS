@@ -84,10 +84,7 @@ class SellingPointRepo {
         // ApiKeys.customerid: customer.id,
         ApiKeys.ordertype: typeOfTakeOrder?.apiKey,
         ApiKeys.products: products
-            .map((e) => {
-                  ApiKeys.productid: e.product.id,
-                  ApiKeys.quantity: e.count,
-                })
+            .map((e) => e.toJson())
             .toList(),
       };
       if (discount != null) {

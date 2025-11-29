@@ -18,8 +18,7 @@ Future<bool?> showDeleteCategoryConfirmDialog(
     title: S.of(context).deleteCategory,
     content: category.name ?? '',
     deleteButtonBuilder: (ctx, button, loading) => BlocProvider(
-      create: (context) =>
-          DeleteCategoryCubit(MyServiceLocator.getSingleton<CategoryRepo>()),
+      create: (context) => DeleteCategoryCubit(MyServiceLocator.getSingleton<CategoryRepo>()),
       child: BlocConsumer<DeleteCategoryCubit, DeleteCategoryState>(
         listener: (context, state) {
           if (state is DeleteCategorySuccess) {

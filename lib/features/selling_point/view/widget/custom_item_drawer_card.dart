@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
@@ -5,18 +7,38 @@ import 'package:pos_app/core/widget/custom_cach_network_image.dart';
 import 'package:pos_app/features/selling_point/data/model/product_selling_model.dart';
 import 'package:pos_app/generated/l10n.dart';
 
-class CustomItemDrawerCard extends StatelessWidget {
+import '../../../../core/helper/my_form_validators.dart';
+import '../../../../core/widget/custom_btn.dart';
+import '../../../../core/widget/custom_form_field.dart';
+
+class CustomItemDrawerCard extends StatefulWidget {
   const CustomItemDrawerCard({
     super.key,
     this.onTapAdd,
     this.onTapRemove,
     this.onTapDelete,
-    required this.product,
+    required this.product, this.onChangePrice,
+    this.onToggleShowEditPrice,
   });
   final ProductSellingModel product;
   final void Function()? onTapAdd;
   final void Function()? onTapRemove;
   final void Function()? onTapDelete;
+  final VoidCallback? onChangePrice;
+  final VoidCallback? onToggleShowEditPrice;
+
+  @override
+  State<CustomItemDrawerCard> createState() => _CustomItemDrawerCardState();
+}
+
+class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
+  Timer? _debounce;
+   @override
+  void dispose() {
+
+     _debounce?.cancel();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -28,7 +50,7 @@ class CustomItemDrawerCard extends StatelessWidget {
               child: Row(
                 children: [
                   CustomCachedNetworkImage(
-                    imageUrl: product.product.imageUrl,
+                    imageUrl: widget.product.product.imageUrl,
                     borderRadius: BorderRadius.circular(15),
                     imageBuilder: (imageProvider) => Container(
                       decoration: BoxDecoration(
@@ -46,7 +68,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          product.product.name ?? S.of(context).noName,
+                          '${widget.product.product.name ?? S.of(context).noName} ${widget.product.productUnit?.unit?.name ?? ''}',
                           style: AppFontStyle.itemsSubTitle(
                             context: context,
                             color: AppColors.black,
@@ -55,14 +77,40 @@ class CustomItemDrawerCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                         ),
-                        Text(
-                          "${product.product.priceAfterTax?.toDouble() ?? 0.0}",
-                          style: AppFontStyle.s12(
-                            context: context,
-                            color: AppColors.black,
-                            fontWeight: FontWeight.w300,
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        SizedBox(
+
+                          width: 200,
+                          child: Form(
+                            key: widget.product.formKey,
+                            child: CustomFormField(
+                                controller: widget.product.priceController,
+                                keyboardType: TextInputType.number,
+                                validator: (value) => MyFormValidators.validateDoublePrice(
+                                  value,
+                                  context: context,
+                                  haveMin: true,
+                                  min: widget.product.minPrice,
+                                ),
+                                onChanged: (value){
+                                  if (_debounce?.isActive ?? false) _debounce!.cancel();
+
+                                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                                    widget.onChangePrice?.call();
+                                  });
+
+                                  // Future.delayed(Duration(milliseconds: 500)).then((value){
+                                  //
+                                  //
+                                  // });
+                                }
+
+                            ),
                           ),
                         ),
+
                       ],
                     ),
                   ),
@@ -87,7 +135,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Center(
                         child: Text(
-                          product.count.toString(),
+                          widget.product.count.toString(),
                           style: AppFontStyle.itemsSubTitle(
                             context: context,
                             color: AppColors.white,
@@ -105,7 +153,7 @@ class CustomItemDrawerCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                '${(product.product.priceAfterTax?.toDouble() ?? 0.0) * product.count}',
+                (widget.product.currentPrice * widget.product.count).toStringAsFixed(2),
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,
@@ -127,7 +175,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                   spacing: 20,
                   children: [
                     InkWell(
-                      onTap: onTapAdd,
+                      onTap: widget.onTapAdd,
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -142,7 +190,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                       ),
                     ),
                     InkWell(
-                      onTap: onTapRemove,
+                      onTap: widget.onTapRemove,
                       child: Container(
                         padding: EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -162,7 +210,7 @@ class CustomItemDrawerCard extends StatelessWidget {
                 child: Align(
               alignment: AlignmentDirectional.center,
               child: InkWell(
-                onTap: onTapDelete,
+                onTap: widget.onTapDelete,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   width: 35,
@@ -180,6 +228,92 @@ class CustomItemDrawerCard extends StatelessWidget {
             ))
           ],
         ),
+       /* if(product.showEditPrice)...
+        [
+        const SizedBox(
+          height: 10,
+        ),
+        Row(
+
+          children: [
+            Expanded(
+              flex: 3,
+
+
+              child: LayoutBuilder(
+                  builder: (context, constraints) {
+                  return Form(
+                  //  key: product.formKey,
+                    child: CustomFormField(
+                      controller: product.priceController,
+                      keyboardType: TextInputType.number,
+                      validator: (value) => MyFormValidators.validateDoublePrice(
+                        value,
+                        context: context,
+                        haveMin: true,
+                        min: product.minPrice,
+                      ),
+                    ),
+                  );
+                }
+              ),
+            ),
+            // CustomTextBtn(
+            //   text: "Save",
+            //   textColor: AppColors.primary,
+            //   onPressed: (){
+            //
+            //       // Defer setState to after the current frame
+            //       WidgetsBinding.instance.addPostFrameCallback((_) {
+            //
+            //           onChangePrice!();
+            //
+            //       });
+            //
+            //   },
+            // ),
+           const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              flex: 1,
+              child: GestureDetector(
+                onTap: (){
+
+                  // Defer setState to after the current frame
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+
+                    onChangePrice!();
+
+                  });
+
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    color: AppColors.success,
+                    border:
+                    Border.all(color: AppColors.success, width: 1.5),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Text(
+                    S.of(context).save,
+                    textAlign: TextAlign.center,
+                    style: AppFontStyle.itemsSubTitle(
+                      context: context,
+                      color: AppColors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            )
+          ],
+        )
+        ],*/
+
+
       ],
     );
   }
