@@ -185,7 +185,6 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
                       controller: ScidGenerationCubit.get(context).serialNumberController,
                       hintText: S.of(context).serialNumber,
                       labelText: S.of(context).serialNumber,
-
                       enabled: false,
 
                       validator: (value) => MyFormValidators.validateInteger(value, context: context, validate: false),
