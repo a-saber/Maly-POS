@@ -72,228 +72,231 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
   final ScidGenerationState state;
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: ScidGenerationCubit.get(context).formKey,
-      autovalidateMode: ScidGenerationCubit.get(context).autovalidateMode,
-      child: Column(
-        spacing: 20,
-        children: [
+    return Transform.scale(
+      scale: !isMobile(context: context)  ? 0.8 : 1.0,
+      child: Form(
+        key: ScidGenerationCubit.get(context).formKey,
+        autovalidateMode: ScidGenerationCubit.get(context).autovalidateMode,
+        child: Column(
+          spacing: 20,
+          children: [
 
-          Flex(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
-            spacing: 20,
-            mainAxisSize: MainAxisSize.min,
-            children: [
+            Flex(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
+              spacing: 20,
+              mainAxisSize: MainAxisSize.min,
+              children: [
 
-              Flexible(
-                flex: 2,
-               // fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                child: CustomFormField(
-                  controller: ScidGenerationCubit.get(context).otpController,
-                  validator: (value) => MyFormValidators.validateRequired(
-                    value,
-                    context: context,
-                    fieldName: S.of(context).otp,
-                  ),
-                  hintText: S.of(context).otp,
-                  labelText: S.of(context).otp,
-                  keyboardType: TextInputType.number,
-                ),
-              ),
-              Flexible(
-                flex: 1,
-
-                //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                child: CsidTypeWidget(title: S.of(context).production ,
-                  isSelect: ScidGenerationCubit.get(context).csidType==CsidType.production,
-                  onTap: (){
-                    ScidGenerationCubit.get(context).changeCsidType(type: CsidType.production);
-                  },
-
-                ),
-              ),
-              Flexible(
-                flex: 1,
-
-                //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                child: CsidTypeWidget(title: S.of(context).simulation ,
-                  isSelect: ScidGenerationCubit.get(context).csidType==CsidType.simulation,
-                  onTap: (){
-                    ScidGenerationCubit.get(context).changeCsidType(type: CsidType.simulation);
-                  },
-                ),
-              ),
-              Flexible(
-                flex: 1,
-
-                //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                child: CsidTypeWidget(title: S.of(context).developer ,
-                  isSelect:ScidGenerationCubit.get(context).csidType==CsidType.development,
-                    onTap: (){
-                      ScidGenerationCubit.get(context).changeCsidType(type: CsidType.development);
-                    },
-                ),
-              ),
-
-
-            ],
-          ),
-
-          Flex(
-            direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
-            spacing: 20,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                flex: 1,
-                // fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                child:  CustomFormField(
-                  controller: ScidGenerationCubit.get(context).commonNameController,
-                  hintText: S.of(context).commonName,
-                  labelText: S.of(context).commonName,
-                  validator: (value) => MyFormValidators.validateInteger(value,
-                      context: context, validate: false),
-                  keyboardType: TextInputType.text,
-                ),
-              ),
-              Flexible(
-                flex: 1,
-
-                //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                child: CustomDropdown<String>(
-                  // hint: S.of(context).selectpapersize ,
-                  hint: S.of(context).userName,
-                  value:ScidGenerationCubit.get(context).userName,
-                  items: ScidGenerationCubit.get(context).userNames,
-                  onChanged: (value) => ScidGenerationCubit.get(context).changePaperSize(value),
-                  builder: (item) => Text(
-                    item ?? '',
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  validator: (value) =>
-                      MyFormValidators.validateRequired(value, context: context),
-                ),
-              ),
-            ],
-          ),
-          Stack(
-                  alignment: Alignment.centerRight,
-
-                  children: [
-                    CustomFormField(
-                      controller: ScidGenerationCubit.get(context).serialNumberController,
-                      hintText: S.of(context).serialNumber,
-                      labelText: S.of(context).serialNumber,
-                      enabled: false,
-
-                      validator: (value) => MyFormValidators.validateInteger(value, context: context, validate: false),
-                      keyboardType: TextInputType.number,
+                Flexible(
+                  flex: 2,
+                 // fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                  child: CustomFormField(
+                    controller: ScidGenerationCubit.get(context).otpController,
+                    validator: (value) => MyFormValidators.validateRequired(
+                      value,
+                      context: context,
+                      fieldName: S.of(context).otp,
                     ),
-                    PositionedDirectional(
-                      end: 10,
-                        child: IconButton(onPressed: () {
-                          ScidGenerationCubit.get(context).onTapGenerate();
-                        },icon: Icon(Icons.refresh)))
-                  ],
+                    hintText: S.of(context).otp,
+                    labelText: S.of(context).otp,
+                    keyboardType: TextInputType.number,
+                  ),
                 ),
-          CustomFormField(
-            controller: ScidGenerationCubit.get(context).taxNoController,
-            hintText: S.of(context).taxNo,
-            labelText: S.of(context).taxNo,
-            validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
-            keyboardType: TextInputType.text,
-          ),
-          CustomFormField(
-            controller: ScidGenerationCubit.get(context).organizationNameController,
-            hintText: S.of(context).organizationName,
-            labelText: S.of(context).organizationName,
-            validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
-            keyboardType: TextInputType.text,
-          ),
-          CustomFormField(
-            controller: ScidGenerationCubit.get(context).organizationUnitNameController,
-            hintText: S.of(context).organizationUnitName,
-            labelText: S.of(context).organizationUnitName,
-            validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
-            keyboardType: TextInputType.text,
-          ),
-          CustomFormField(
-            controller: ScidGenerationCubit.get(context).countryNameController,
-            hintText: S.of(context).countryName,
-            labelText: S.of(context).countryName,
-            validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
-            keyboardType: TextInputType.text,
-          ),
-          CustomDropdown<String>(
+                Flexible(
+                  flex: 1,
 
-            hint: S.of(context).invoiceType,
-            value:ScidGenerationCubit.get(context).invoiceType,
-            items: ScidGenerationCubit.get(context).invoiceTypes,
-            onChanged: (value) => ScidGenerationCubit.get(context).changeInvoiceType(value),
-            builder: (item) => Text(
-              item ?? '',
-              style: const TextStyle(fontSize: 16),
+                  //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                  child: CsidTypeWidget(title: S.of(context).production ,
+                    isSelect: ScidGenerationCubit.get(context).csidType==CsidType.production,
+                    onTap: (){
+                      ScidGenerationCubit.get(context).changeCsidType(type: CsidType.production);
+                    },
+
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+
+                  //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                  child: CsidTypeWidget(title: S.of(context).simulation ,
+                    isSelect: ScidGenerationCubit.get(context).csidType==CsidType.simulation,
+                    onTap: (){
+                      ScidGenerationCubit.get(context).changeCsidType(type: CsidType.simulation);
+                    },
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+
+                  //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                  child: CsidTypeWidget(title: S.of(context).developer ,
+                    isSelect:ScidGenerationCubit.get(context).csidType==CsidType.development,
+                      onTap: (){
+                        ScidGenerationCubit.get(context).changeCsidType(type: CsidType.development);
+                      },
+                  ),
+                ),
+
+
+              ],
             ),
-            validator: (value) =>
-                MyFormValidators.validateRequired(value, context: context),
-          ),
-          CustomFormField(
-            controller: ScidGenerationCubit.get(context).locationController,
-            hintText: S.of(context).location,
-            labelText: S.of(context).location,
-            validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
-            keyboardType: TextInputType.text,
-          ),
-          CustomFormField(
-            controller: ScidGenerationCubit.get(context).industryController,
-            hintText: S.of(context).industry,
-            labelText: S.of(context).industry,
-            validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
-            keyboardType: TextInputType.text,
-          ),
-          Container(
-            width: 400,
-            padding: EdgeInsets.symmetric(vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.success,
-              border:
-              Border.all(color: AppColors.success, width: 1.5),
-              borderRadius: BorderRadius.circular(5),
+
+            Flex(
+              direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
+              spacing: 20,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  flex: 1,
+                  // fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                  child:  CustomFormField(
+                    controller: ScidGenerationCubit.get(context).commonNameController,
+                    hintText: S.of(context).commonName,
+                    labelText: S.of(context).commonName,
+                    validator: (value) => MyFormValidators.validateInteger(value,
+                        context: context, validate: false),
+                    keyboardType: TextInputType.text,
+                  ),
+                ),
+                Flexible(
+                  flex: 1,
+
+                  //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                  child: CustomDropdown<String>(
+                    // hint: S.of(context).selectpapersize ,
+                    hint: S.of(context).userName,
+                    value:ScidGenerationCubit.get(context).userName,
+                    items: ScidGenerationCubit.get(context).userNames,
+                    onChanged: (value) => ScidGenerationCubit.get(context).changePaperSize(value),
+                    builder: (item) => Text(
+                      item ?? '',
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    validator: (value) =>
+                        MyFormValidators.validateRequired(value, context: context),
+                  ),
+                ),
+              ],
             ),
-            child: Text(
-              S.of(context).createCsid,
-              textAlign: TextAlign.center,
-              style: AppFontStyle.itemsSubTitle(
-                context: context,
-                color: AppColors.white,
+            Stack(
+                    alignment: Alignment.centerRight,
+
+                    children: [
+                      CustomFormField(
+                        controller: ScidGenerationCubit.get(context).serialNumberController,
+                        hintText: S.of(context).serialNumber,
+                        labelText: S.of(context).serialNumber,
+                        enabled: false,
+
+                        validator: (value) => MyFormValidators.validateInteger(value, context: context, validate: false),
+                        keyboardType: TextInputType.number,
+                      ),
+                      PositionedDirectional(
+                        end: 10,
+                          child: IconButton(onPressed: () {
+                            ScidGenerationCubit.get(context).onTapGenerate();
+                          },icon: Icon(Icons.refresh)))
+                    ],
+                  ),
+            CustomFormField(
+              controller: ScidGenerationCubit.get(context).taxNoController,
+              hintText: S.of(context).taxNo,
+              labelText: S.of(context).taxNo,
+              validator: (value) => MyFormValidators.validateInteger(value,
+                  context: context, validate: false),
+              keyboardType: TextInputType.text,
+            ),
+            CustomFormField(
+              controller: ScidGenerationCubit.get(context).organizationNameController,
+              hintText: S.of(context).organizationName,
+              labelText: S.of(context).organizationName,
+              validator: (value) => MyFormValidators.validateInteger(value,
+                  context: context, validate: false),
+              keyboardType: TextInputType.text,
+            ),
+            CustomFormField(
+              controller: ScidGenerationCubit.get(context).organizationUnitNameController,
+              hintText: S.of(context).organizationUnitName,
+              labelText: S.of(context).organizationUnitName,
+              validator: (value) => MyFormValidators.validateInteger(value,
+                  context: context, validate: false),
+              keyboardType: TextInputType.text,
+            ),
+            CustomFormField(
+              controller: ScidGenerationCubit.get(context).countryNameController,
+              hintText: S.of(context).countryName,
+              labelText: S.of(context).countryName,
+              validator: (value) => MyFormValidators.validateInteger(value,
+                  context: context, validate: false),
+              keyboardType: TextInputType.text,
+            ),
+            CustomDropdown<String>(
+
+              hint: S.of(context).invoiceType,
+              value:ScidGenerationCubit.get(context).invoiceType,
+              items: ScidGenerationCubit.get(context).invoiceTypes,
+              onChanged: (value) => ScidGenerationCubit.get(context).changeInvoiceType(value),
+              builder: (item) => Text(
+                item ?? '',
+                style: const TextStyle(fontSize: 16),
               ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              validator: (value) =>
+                  MyFormValidators.validateRequired(value, context: context),
             ),
-          ),
-          CopyItemWidget(
-            hint:S.of(context).csr ,
-          ) ,
-          CopyItemWidget(
-            hint:S.of(context).privateKey ,
-          ) ,
-          CopyItemWidget(
-            hint:S.of(context).publicKey ,
-          ) ,
-          CopyItemWidget(
-            hint:S.of(context).secretKey ,
-          ) ,
-          SizedBox(
-            height: 20,
-          ),
-        ],
+            CustomFormField(
+              controller: ScidGenerationCubit.get(context).locationController,
+              hintText: S.of(context).location,
+              labelText: S.of(context).location,
+              validator: (value) => MyFormValidators.validateInteger(value,
+                  context: context, validate: false),
+              keyboardType: TextInputType.text,
+            ),
+            CustomFormField(
+              controller: ScidGenerationCubit.get(context).industryController,
+              hintText: S.of(context).industry,
+              labelText: S.of(context).industry,
+              validator: (value) => MyFormValidators.validateInteger(value,
+                  context: context, validate: false),
+              keyboardType: TextInputType.text,
+            ),
+            Container(
+              width: 400,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.success,
+                border:
+                Border.all(color: AppColors.success, width: 1.5),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                S.of(context).createCsid,
+                textAlign: TextAlign.center,
+                style: AppFontStyle.itemsSubTitle(
+                  context: context,
+                  color: AppColors.white,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            CopyItemWidget(
+              hint:S.of(context).csr ,
+            ) ,
+            CopyItemWidget(
+              hint:S.of(context).privateKey ,
+            ) ,
+            CopyItemWidget(
+              hint:S.of(context).publicKey ,
+            ) ,
+            CopyItemWidget(
+              hint:S.of(context).secretKey ,
+            ) ,
+            SizedBox(
+              height: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
