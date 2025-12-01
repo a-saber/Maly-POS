@@ -10,13 +10,13 @@ import 'package:pos_app/features/units/manager/get_all_units_cubit/get_all_units
 import 'package:pos_app/generated/l10n.dart';
 
 Future<bool?> showDeleteUnitConfirmDialog(
-    {required BuildContext context,
+    {required BuildContext contextDelete,
     required UnitModel unit,
     bool goBack = false}) async {
   return await showDeleteConfirmationDialog(
-      context: context,
-      title: S.of(context).deleteUnit,
-      content: unit.name ?? S.of(context).noName,
+      context: contextDelete,
+      title: S.of(contextDelete).deleteUnit,
+      content: unit.name ?? S.of(contextDelete).noName,
       deleteButtonBuilder: (ctx, button, loading) => BlocProvider(
             create: (context) =>
                 DeleteUnitCubit(MyServiceLocator.getSingleton<UnitsRepo>()),
@@ -30,9 +30,10 @@ Future<bool?> showDeleteUnitConfirmDialog(
                     Navigator.of(context).pop();
                   }
                 } else if (state is DeleteUnitFailing) {
-                  if (context.mounted) {
-                    deleteConfirmationDialogError(
-                        ctx, mapStatusCodeToMessage(context, state.errMessage));
+                  if (contextDelete.mounted) {
+                 final error=   mapStatusCodeToMessage(context, state.errMessage)=="Cannot delete unit because there are products associated with it."?S.of(contextDelete).deleteUnitError:mapStatusCodeToMessage(context, state.errMessage);
+
+                    deleteConfirmationDialogError(ctx,error);
                   }
                 }
               },

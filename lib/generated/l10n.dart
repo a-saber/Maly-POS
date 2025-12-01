@@ -2555,6 +2555,15 @@ class S {
       args: [],
     );
   }
+  /// `Copy`
+  String get deleteUnitError {
+    return Intl.message(
+      "Cannot delete unit because there are products associated with it.",
+      name: "Cannot delete unit because there are products associated with it.",
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -475,5 +475,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "privateKey": MessageLookupByLibrary.simpleMessage("المفتاح الخاص"),
     "publicKey": MessageLookupByLibrary.simpleMessage("المفتاح العام"),
     "secretKey": MessageLookupByLibrary.simpleMessage("المفتاح السري"),
+    "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الوحدة لأن هناك منتجات مرتبطة بها."),
+
   };
 }

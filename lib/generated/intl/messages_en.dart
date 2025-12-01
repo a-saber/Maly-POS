@@ -478,6 +478,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "userName": MessageLookupByLibrary.simpleMessage("User Name"),
     "copy": MessageLookupByLibrary.simpleMessage("Copy"),
     "ZakatAndTaxAuthority": MessageLookupByLibrary.simpleMessage("Zakat and Tax Authority"),
+    "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete unit because there are products associated with it."),
 
   };
 }

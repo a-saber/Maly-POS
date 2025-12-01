@@ -113,6 +113,7 @@ class ApiHelper {
       return ApiResponse.errorResonse(
         statusCode: ApiStatusCode.unknown,
         "Unknown error",
+
       );
     }
   }

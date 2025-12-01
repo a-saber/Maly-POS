@@ -14,7 +14,6 @@ import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 import 'package:pos_app/features/units/data/repo/units_repo.dart';
-
 part 'edit_product_state.dart';
 
 class EditProductCubit extends Cubit<EditProductState> {
@@ -54,8 +53,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   }) async {
     if (product.categoryId == null) return;
 
-    var result =
-        await categoryRepo.getSpecificCategory(id: product.categoryId!);
+    var result = await categoryRepo.getSpecificCategory(id: product.categoryId!);
 
     result.fold((l) => null, (r) {
       category = r;

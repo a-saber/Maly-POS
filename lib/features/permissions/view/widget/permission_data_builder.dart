@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pos_app/core/helper/my_form_validators.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
@@ -75,7 +76,12 @@ class PermissionDataBuilder extends StatelessWidget {
                   itemCount: permissionItems.length,
                   itemBuilder: (context, index) {
                     return CustomCheckbox(
-                        title: permissionItems[index].name ?? '-',
+                        title:   Intl.message(
+                          permissionItems[index].name ?? '-',
+                          name: permissionItems[index].name ?? '-',
+                          desc: '',
+                          args: [],
+                        )                             ,
                         value: permissionItems[index].isSelected,
                         onChanged: (bool? value) {
                           if (value != null) {

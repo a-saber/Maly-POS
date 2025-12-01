@@ -142,7 +142,7 @@ ApiResponse _handleServerError(Response? response) {
 
   if (response.data is Map<String, dynamic>) {
     return ApiResponse.errorResonse(
-      response.data[ApiKeys.message] ?? "An error occurred",
+      response.data['error']??response.data[ApiKeys.message] ?? "An error occurred",
       errorResponse: response.data[ApiKeys.errors],
       statusCode: ApiStatusCode.badResponse,
       shiftError: response.data[ApiKeys.shifterror],

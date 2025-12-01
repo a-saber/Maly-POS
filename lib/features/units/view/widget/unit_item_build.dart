@@ -24,7 +24,7 @@ class UnitItemBuild extends StatelessWidget {
         onDismissed: (direction) {},
         confirmDismiss: (direction) async {
           return await showDeleteUnitConfirmDialog(
-              context: context, unit: unit);
+              contextDelete: context, unit: unit);
         },
         key: UniqueKey(),
         child: Container(
