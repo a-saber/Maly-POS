@@ -18,6 +18,29 @@ class CsidTypeWidget extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
+          Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+
+                border: Border.all(color:isSelect? AppColors.primary:AppColors.grey, width: 1.5),
+                shape: BoxShape.circle
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(2),
+              child:isSelect?  Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      border: Border.all(color: AppColors.primary, width: 1.5),
+                      shape: BoxShape.circle
+                  )):null,
+            ),
+          ),
+          const SizedBox(
+            width: 10,
+          ),
           Text(
            title??'',
             textAlign: TextAlign.start,
@@ -28,29 +51,8 @@ class CsidTypeWidget extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(
-            width: 10,
-          ),
-      Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
 
-          border: Border.all(color:isSelect? AppColors.primary:AppColors.grey, width: 1.5),
-          shape: BoxShape.circle
-      ),
-        child: Padding(
-          padding: const EdgeInsets.all(2),
-          child:isSelect?  Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  border: Border.all(color: AppColors.primary, width: 1.5),
-                  shape: BoxShape.circle
-              )):null,
-        ),
-      )
+
         ],
       ),
     );

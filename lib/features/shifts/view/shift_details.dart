@@ -82,7 +82,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                         widget.shiftId.toString()),
                                     _row(
                                         S.of(context).openingQuantity,
-                                        (shift.openingQuantity ?? 0)
+                                        (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0')
                                             .toString()),
                                     _row(S.of(context).ordersCount,
                                         (shift.ordersCount ?? 0).toString()),

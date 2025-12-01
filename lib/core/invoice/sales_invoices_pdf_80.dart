@@ -146,7 +146,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                         height: 50, // fixed size
                         child: pw.Image(
                           pw.MemoryImage(imageResponse.bodyBytes),
-                          fit: pw.BoxFit.cover,
+                          fit: pw.BoxFit.fill,
                         ),
                       ),
                     ),

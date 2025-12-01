@@ -88,6 +88,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                             child: CustomFormField(
                                 controller: widget.product.priceController,
                                 keyboardType: TextInputType.number,
+
                                 validator: (value) => MyFormValidators.validateDoublePrice(
                                   value,
                                   context: context,
@@ -97,7 +98,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                                 onChanged: (value){
                                   if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-                                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                                  _debounce = Timer(const Duration(milliseconds: 600), () {
                                     widget.onChangePrice?.call();
                                   });
 
