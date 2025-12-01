@@ -1,156 +1,383 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
+import 'package:pos_app/core/helper/my_form_validators.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
-import 'package:pos_app/core/widget/custom_app_bar.dart';
+import 'package:pos_app/core/utils/app_colors.dart';
+import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
-import 'package:pos_app/core/widget/custom_pop_up.dart';
-import 'package:pos_app/core/widget/cutsom_layout_builder.dart';
-import 'package:pos_app/core/widget/my_custom_scroll_view.dart';
+import 'package:pos_app/core/widget/custom_drop_down.dart';
+import 'package:pos_app/core/widget/custom_form_field.dart';
+import 'package:pos_app/core/widget/custom_loading.dart';
+import 'package:pos_app/core/widget/custom_reset_drop_down_button.dart';
+import 'package:pos_app/core/widget/image_manager_view.dart';
 import 'package:pos_app/features/categories/data/repo/category_repo.dart';
+import 'package:pos_app/features/categories/view/widget/custom_drop_down_category.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
+import 'package:pos_app/features/products/data/model/product_type.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/products/manager/edit_product_cubit/edit_product_cubit.dart';
-import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
-import 'package:pos_app/features/products/view/widget/product_data_builder.dart';
-import 'package:pos_app/features/products/view/widget/show_delete_product_confirm_dialog.dart';
-import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
+import 'package:pos_app/features/taxes/view/widget/custom_drop_down_taxes.dart';
 import 'package:pos_app/features/units/data/repo/units_repo.dart';
+import 'package:pos_app/features/units/view/widget/custom_drop_down_unit.dart';
+import 'package:pos_app/core/widget/custom_app_bar.dart';
+import 'package:pos_app/core/widget/custom_pop_up.dart';
+import 'package:pos_app/core/widget/my_custom_scroll_view.dart';
+import 'package:pos_app/core/widget/cutsom_layout_builder.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class EditProductView extends StatelessWidget {
-  const EditProductView({super.key, required this.product});
   final ProductModel product;
+  const EditProductView({super.key, required this.product});
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => EditProductCubit(
+        repo: MyServiceLocator.getSingleton<ProductsRepo>(),
         unitsRepo: MyServiceLocator.getSingleton<UnitsRepo>(),
         categoryRepo: MyServiceLocator.getSingleton<CategoryRepo>(),
-        repo: MyServiceLocator.getSingleton<ProductsRepo>(),
-        // context: context,
         product: product,
       ),
-      child: Builder(builder: (context) {
-        return Scaffold(
-          appBar: CustomAppBar(
-            title: S.of(context).editProduct,
-            actions: [
-              CustomTextBtn(
-                  text: S.of(context).delete,
-                  onPressed: () async {
-                    await showDeleteProductConfirmDialog(
-                        context: context, product: product, goBack: true);
-                  })
-            ],
-          ),
-          body: BlocConsumer<EditProductCubit, EditProductState>(
-            listener: (context, state) {
-              if (state is EditProductSuccess) {
-                GetAllProductsCubit.get(context).updateProduct(state.product);
-                MyServiceLocator.getSingleton<SellingPointCubit>()
-                    .updateProduct(state.product,
-                        context: context, oldCayegoryId: product.categoryId);
+      child: Scaffold(
+        appBar: CustomAppBar(title: S.of(context).editProduct),
+        body: BlocConsumer<EditProductCubit, EditProductState>(
+          listener: (context, state) {
+            if (state is EditProductSuccess) {
+              CustomPopUp.callMyToast(
+                  context: context,
+                  massage: S.of(context).updatedSuccess,
+                  state: PopUpState.SUCCESS);
+              Navigator.pop(context);
+            } else if (state is EditProductFailing) {
+              if (context.mounted) {
                 CustomPopUp.callMyToast(
                     context: context,
-                    massage: S.of(context).updatedSuccess,
-                    state: PopUpState.SUCCESS);
-                Navigator.pop(context);
-              } else if (state is EditProductFailing) {
-                if (context.mounted) {
-                  CustomPopUp.callMyToast(
-                      context: context,
-                      massage:
-                          mapStatusCodeToMessage(context, state.errMessage),
-                      state: PopUpState.ERROR);
-                }
+                    massage: state.errMessage,
+                    state: PopUpState.ERROR);
               }
-            },
-            builder: (context, state) {
-              return CustomLayoutBuilder(
-                mobile: MyCustomScrollView(
-                  child: EditProductMobileBody(
-                    state: state,
-                  ),
-                ),
-                tablet: MyCustomScrollView(
-                  child: EditProductTabletAndDesktopBody(
-                    state: state,
-                  ),
-                ),
-                desktop: MyCustomScrollView(
-                  child: EditProductTabletAndDesktopBody(
-                    state: state,
-                  ),
-                ),
+            } else if (state is UpdateProductUnitsCostWarning) {
+              showDialog(
+                context: context,
+                builder: (ctx) {
+                  return AlertDialog(
+                    title: Text(
+                        "The New Cost Of Simple Unit is ${state.myCost / state.factory}"),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(S.of(context).cancel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: Text(S.of(context).done),
+                      ),
+                    ],
+                  );
+                },
               );
-            },
-          ),
-        );
-      }),
+            }
+          },
+          builder: (context, state) {
+            return CustomLayoutBuilder(
+              mobile: MyCustomScrollView(
+                  child: EditProductMobileBody(state: state)),
+              tablet: MyCustomScrollView(
+                  child: EditProductTabletAndDesktopBody(state: state)),
+              desktop: MyCustomScrollView(
+                  child: EditProductTabletAndDesktopBody(state: state)),
+            );
+          },
+        ),
+      ),
     );
   }
 }
 
 class EditProductMobileBody extends StatelessWidget {
-  const EditProductMobileBody({
-    super.key,
-    required this.state,
-  });
   final EditProductState state;
+  const EditProductMobileBody({super.key, required this.state});
+
   @override
   Widget build(BuildContext context) {
-    return ProductDataBuilder(
-      callInInit: () => EditProductCubit.get(context).init(context: context),
-      onSelectedImage: (image) => EditProductCubit.get(context).image = image,
-      formKey: EditProductCubit.get(context).formKey,
-      autovalidateMode: EditProductCubit.get(context).autovalidateMode,
-      nameController: EditProductCubit.get(context).nameController,
-      descriptionController:
-          EditProductCubit.get(context).descriptionController,
-      pricePerUnitController:
-          EditProductCubit.get(context).pricePerUnitController,
-      openingQuantityController:
-          EditProductCubit.get(context).openingQuantityController,
-      barCodeController: EditProductCubit.get(context).barCodeController,
-      brandController: EditProductCubit.get(context).brandController,
-      isLoading: state is EditProductLoading,
-      onPressed: () => EditProductCubit.get(context).editProduct(),
-      onChangedCategory: (category) =>
-          EditProductCubit.get(context).onChangeCategory(category),
-      category: EditProductCubit.get(context).category,
-      onChangedUnit: (unit) => EditProductCubit.get(context).onChangeUnit(unit),
-      unit: EditProductCubit.get(context).unit,
-      onChangedBranch: (branch) =>
-          EditProductCubit.get(context).onChangeBranch(branch),
-      branch: EditProductCubit.get(context).branch,
-      onInitialQuntitySubmit:
-          EditProductCubit.get(context).onSubmitInitalQunatity,
-      taxes: EditProductCubit.get(context).taxes,
-      onChangedTaxes: EditProductCubit.get(context).onChangeTaxes,
-      productType: EditProductCubit.get(context).productType,
-      onChangedProductType: EditProductCubit.get(context).onChangeProductType,
-      isEdit: true,
-      imageUrl: EditProductCubit.get(context).product.imageUrl,
-    );
+    return EditProductDataView();
   }
 }
 
 class EditProductTabletAndDesktopBody extends StatelessWidget {
-  const EditProductTabletAndDesktopBody({super.key, required this.state});
   final EditProductState state;
+  const EditProductTabletAndDesktopBody({super.key, required this.state});
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(child: SizedBox()),
-        Expanded(
-          flex: AppConstant.formExpandedTableandMobile,
-          child: EditProductMobileBody(state: state),
-        ),
-        const Expanded(child: SizedBox()),
-      ],
+    return EditProductMobileBody(state: state);
+  }
+}
+
+class EditProductDataView extends StatefulWidget {
+  const EditProductDataView({super.key});
+
+  @override
+  State<EditProductDataView> createState() => _EditProductDataViewState();
+}
+
+class _EditProductDataViewState extends State<EditProductDataView> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      EditProductCubit.get(context).init(context: context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<EditProductCubit, EditProductState>(
+      builder: (context, state) {
+        final cubit = EditProductCubit.get(context);
+        if (state is EditProductInitializing) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        return SingleChildScrollView(
+          padding: AppPaddings.defaultView,
+          child: Form(
+            key: cubit.formKey,
+            autovalidateMode: cubit.autovalidateMode,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ImageManagerView(
+                  onSelected: (image) => cubit.image = image,
+                  imageUrl: cubit.product.imageUrl,
+                ),
+                const SizedBox(height: 10),
+                CustomFormField(
+                  controller: cubit.nameController,
+                  labelText: S.of(context).name,
+                  validator: (value) =>
+                      value == null || value.isEmpty ? "Required" : null,
+                ),
+                const SizedBox(height: 20),
+                CustomFormField(
+                  controller: cubit.descriptionController,
+                  labelText: S.of(context).description,
+                ),
+                const SizedBox(height: 20),
+                CustomDropDownCategory(
+                  value: cubit.category,
+                  onChangedCategory: (category) =>
+                      cubit.onChangeCategory(category),
+                ),
+                const SizedBox(height: 20),
+                CustomDropdown<ProductType>(
+                  search: true,
+                  hint: S.of(context).selectProductType,
+                  value: cubit.productType,
+                  items: AppConstant.producttype(context),
+                  compareFn: (item1, item2) =>
+                      item1.name
+                          .toLowerCase()
+                          .contains(item2.name.toLowerCase()) ||
+                      item2.name
+                          .toLowerCase()
+                          .contains(item1.name.toLowerCase()),
+                  onChanged: (value) => cubit.onChangeProductType(value),
+                  builder: (productType) => productType != null
+                      ? Text(productType.name,
+                          style: AppFontStyle.formText(context: context))
+                      : const SizedBox(),
+                ),
+                const SizedBox(height: 20),
+                CustomFormField(
+                  controller: cubit.brandController,
+                  labelText: S.of(context).brand,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomDropDownTaxes(
+                        value: cubit.taxes,
+                        onChange: cubit.onChangeTaxes,
+                      ),
+                    ),
+                    CustomResetDropDownButton(
+                        onPressed: () => cubit.onChangeTaxes(null)),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('الوحدات',
+                        style: AppFontStyle.formText(context: context)),
+                    CustomTextBtn(
+                      text: "اضافة",
+                      textColor: AppColors.primary,
+                      onPressed: cubit.addProductUnits,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                _buildUnitsTable(cubit),
+                const SizedBox(height: 20),
+                if (cubit.state is EditProductLoading)
+                  const CustomLoading()
+                else
+                  CustomFilledBtn(
+                    text: S.of(context).update,
+                    onPressed: cubit.editProduct,
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
+
+  Widget _buildUnitsTable(EditProductCubit cubit) {
+    final controller = ScrollController();
+    return Scrollbar(
+      controller: controller,
+      thumbVisibility: true,
+      trackVisibility: true,
+      child: SingleChildScrollView(
+        controller: controller,
+        scrollDirection: Axis.horizontal,
+        child: DataTable(
+          dataRowHeight: 80,
+          border: TableBorder.all(color: Colors.grey),
+          columns: const [
+            DataColumn(label: Text('الوحدة')),
+            DataColumn(label: Text('المعامل')),
+            DataColumn(label: Text('سعر التكلفة')),
+            DataColumn(label: Text('اقل سعر بيع')),
+            DataColumn(label: Text('اقل سعر بيع بالضريبة')),
+            DataColumn(label: Text('سعر البيع')),
+            DataColumn(label: Text('سعر البيع بالضريبة')),
+            DataColumn(label: Text('الباركود')),
+            DataColumn(label: Text('باركود الميزان')),
+            DataColumn(label: Text('الكميات الافتتاحية')),
+            DataColumn(label: Text('حذف')),
+          ],
+          rows: List.generate(cubit.productUnits.length, (index) {
+            final unit = cubit.productUnits[index];
+            final isExistingUnit = unit.isExistingUnit;
+
+            return DataRow(cells: [
+              DataCell(
+                SizedBox(
+                  width: 150,
+                  child: CustomDropDownUnit(
+                    value: unit.unit,
+                    onChanged: isExistingUnit
+                        ? null
+                        : (value) {
+                            if (value != null) {
+                              cubit.onUnitChangedd(
+                                  unitModel: value, index: index);
+                            }
+                          },
+                  ),
+                ),
+              ),
+              DataCell(_customTextFormFieldTable(
+                hintText: "المعامل",
+                enabled: !isExistingUnit,
+                validator: (value) => null,
+                controller: unit.factoryController,
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "سعر التكلفة",
+                enabled: !isExistingUnit,
+                validator: (value) =>
+                    MyFormValidators.validateDouble(value, context: context),
+                controller: unit.costPriceController,
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "اقل سعر بيع",
+                enabled: true,
+                validator: (value) => MyFormValidators.validateDouble(value, context: context),
+                controller: unit.minPriceWithoutTaxController,
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "اقل سعر بيع بالضريبة",
+                enabled: true,
+                validator: (value) => MyFormValidators.validateDouble(value, context: context),
+                controller: unit.minPriceWithTaxController,
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "سعر البيع",
+                enabled: true,
+                validator: (value) =>
+                    MyFormValidators.validateDouble(value, context: context),
+                controller: unit.salePriceWithoutTaxController,
+                onChanged: (value) =>
+                    cubit.onChangeSalePrice(index: index, newValue: value),
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "سعر البيع بالضريبة",
+                enabled: true,
+                validator: (value) =>
+                    MyFormValidators.validateDouble(value, context: context),
+                controller: unit.salePriceWithTaxController,
+                onChanged: (value) => cubit.onChangeSalePriceWithTax(
+                    index: index, newValue: value),
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "الباركود",
+                enabled: false,
+                validator: (value) => null,
+                controller: unit.barCodeController,
+              )),
+              DataCell(_customTextFormFieldTable(
+                hintText: "باركود الميزان",
+                enabled: false,
+                validator: (value) => null,
+                controller: unit.scaleBarcodeController,
+              )),
+              DataCell(
+                CustomTextBtn(
+                  text: "اضافة كمية",
+                  onPressed: null,
+                ),
+              ),
+              DataCell(IconButton(
+                icon: Icon(Icons.delete),
+                color: Colors.red,
+                disabledColor: Colors.grey,
+                onPressed:
+                    isExistingUnit ? null : () => cubit.removeNewUnit(index),
+              )),
+            ]);
+          }),
+        ),
+      ),
+    );
+  }
+}
+
+Padding _customTextFormFieldTable({
+  required String hintText,
+  required TextEditingController? controller,
+  required String? Function(String?)? validator,
+  void Function(String)? onChanged,
+  bool enabled = true,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 3),
+    child: SizedBox(
+      width: 150,
+      child: CustomFormField(
+        controller: controller,
+        hintText: hintText,
+        enabled: enabled,
+        onChanged: enabled ? onChanged : null,
+      ),
+    ),
+  );
 }

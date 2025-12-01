@@ -5,6 +5,7 @@ import 'package:pos_app/core/helper/upload_image_to_api.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
 import 'package:pos_app/features/products/data/model/product_unit_model.dart';
+import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 import 'package:collection/collection.dart';
@@ -29,8 +30,11 @@ class ProductModel {
   final TaxesModel? tax;
   final int? quantity;
   final List<ProductUnit>? productUnits;
+  final CategoryModel? category;
 
-  ProductModel({
+  ProductModel(   {
+    this.productUnits,
+    required this.category,
     required this.id,
     required this.name,
     required this.categoryId,
@@ -49,7 +53,6 @@ class ProductModel {
     required this.priceAfterTax,
     required this.type,
     required this.quantity,
-    this.productUnits,
   });
 
   double? get salePriceWithTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithTax?? "").toString());
@@ -76,6 +79,7 @@ class ProductModel {
       type: '',
       quantity: 0,
       productUnits: null,
+     category: null,
     );
   }
 
@@ -110,7 +114,12 @@ class ProductModel {
           .map((item) => ProductUnit.fromJson(item as Map<String, dynamic>))
           .toList()
           : null ,
-    );
+
+         category: json[ApiKeys.category] != null
+        ? CategoryModel.fromJson(json[ApiKeys.category])
+        : null,
+
+  );
   }
   factory ProductModel.copyWith(UnitModel? unit, ProductModel product) {
     return ProductModel(
@@ -132,6 +141,7 @@ class ProductModel {
       taxId: product.taxId,
       type: product.type,
       quantity: product.quantity,
+       category: product.category,
       productUnits: product.productUnits,
     );
   }
@@ -148,6 +158,7 @@ class ProductModel {
     required TaxesModel? tax,
     required String? type,
     int? id,
+
   }) {
     return ProductModel(
       id: id,
@@ -168,6 +179,7 @@ class ProductModel {
       taxId: tax?.id,
       type: type,
       quantity: null,
+      category: category,
     );
   }
 
