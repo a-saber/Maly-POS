@@ -1,3 +1,5 @@
+import 'package:pos_app/features/products/data/model/update_product_model.dart';
+
 import '../../../units/data/model/unit_model.dart';
 
 class ProductUnit {
@@ -12,8 +14,11 @@ class ProductUnit {
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final String? minPriceWithoutTax;
+  final String? minPriceWithTax;
   final String? salePriceWithTax;
   final UnitModel? unit;
+  /// this will be add later
+  final List<BranchQuantity> branchQty;
 
   ProductUnit({
     this.id,
@@ -28,7 +33,10 @@ class ProductUnit {
     this.updatedAt,
     this.minPriceWithoutTax,
     this.salePriceWithTax,
+    this.minPriceWithTax,
     this.unit,
+    /// this will be add later
+    this.branchQty = const [],
   });
 
   factory ProductUnit.fromJson(Map<String, dynamic> json) {
@@ -48,10 +56,13 @@ class ProductUnit {
           ? DateTime.parse(json['updated_at'] as String)
           : null,
       minPriceWithoutTax: json['min_price_without_tax'] as String?,
+      minPriceWithTax: json['min_price_with_tax'] as String?,
       salePriceWithTax: json['sale_price_with_tax'] as String?,
       unit: json['unit'] != null
           ? UnitModel.fromJson(json['unit'] as Map<String, dynamic>)
           : null,
+        /// this will be add later
+      branchQty: []
     );
   }
 
@@ -68,6 +79,7 @@ class ProductUnit {
       'created_at': createdAt?.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
       'min_price_without_tax': minPriceWithoutTax,
+      'min_price_with_tax': minPriceWithTax,
       'sale_price_with_tax': salePriceWithTax,
       'unit': unit?.toJson(),
     };

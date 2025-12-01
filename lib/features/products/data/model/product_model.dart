@@ -13,6 +13,7 @@ import 'package:collection/collection.dart';
 class ProductModel {
   final int? id;
   final String? name;
+
   final int? categoryId;
   final String? type;
   final int? baseUnitId;
@@ -118,6 +119,7 @@ class ProductModel {
          category: json[ApiKeys.category] != null
         ? CategoryModel.fromJson(json[ApiKeys.category])
         : null,
+
 
   );
   }

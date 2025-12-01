@@ -83,7 +83,7 @@ class EditProductCubit extends Cubit<EditProductState> {
       category = product.category;
     }
 
-    if (product.unitId != null && product.unitId! > 0) {
+    if (product.baseUnitId != null && product.baseUnitId! > 0) {
       await getUnits(context: context);
     } else {
       unit = product.unit;
@@ -118,7 +118,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   }
 
   Future<void> getUnits({required BuildContext context}) async {
-    final unitIdToFetch = product.unitId ?? product.unit?.id;
+    final unitIdToFetch = product.baseUnitId ?? product.unit?.id;
 
     if (unitIdToFetch == null) {
       return;
@@ -206,8 +206,8 @@ class EditProductCubit extends Cubit<EditProductState> {
           id: productFromApi.id,
           name: productFromApi.name,
           categoryId: productFromApi.categoryId,
-          category: category, 
-          unitId: productFromApi.unitId,
+          category: category,
+          baseUnitId: productFromApi.baseUnitId,
           unit: unit, 
           description: productFromApi.description,
           imagePath: productFromApi.imagePath,
@@ -398,7 +398,7 @@ void removeNewUnit(int index) {
       final baseUnit = ProductUnits.empty();
 
       baseUnit.unit = unit;
-      baseUnit.unitId = unit?.id ?? product.unitId;
+      baseUnit.unitId = unit?.id ?? product.baseUnitId;
       baseUnit.conversionFactor = "1";
       baseUnit.factoryController?.text = "1";
 

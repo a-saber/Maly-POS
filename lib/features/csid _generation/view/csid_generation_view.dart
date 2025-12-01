@@ -80,7 +80,9 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
         child: Column(
           spacing: 20,
           children: [
-
+            SizedBox(
+              height: 20,
+            ),
             Flex(
               crossAxisAlignment: CrossAxisAlignment.start,
               direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
@@ -141,7 +143,6 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
 
               ],
             ),
-
             Flex(
               direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
               spacing: 20,
