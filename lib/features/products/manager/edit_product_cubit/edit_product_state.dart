@@ -59,3 +59,4 @@ class EditChangeProductType extends EditProductState {}
 class EditProductInitializing extends EditProductState {}
 class EditProductInitialized extends EditProductState {}
 class EditProductAssignBranchQty extends EditProductState {}
+class EditProductUnitsUpdated extends EditProductState {}

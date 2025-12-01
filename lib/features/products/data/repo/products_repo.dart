@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
@@ -94,6 +93,7 @@ class ProductsRepo {
 
   Future<Either<ApiResponse, ProductModel?>> addUpdateProduct({
     required UpdateProductModel updateProduct,
+    bool isUpdate = false,
   }) async {
     // try {
     for (int i = 0; i < updateProduct.productUnits!.length; i++) {
@@ -122,7 +122,8 @@ class ProductsRepo {
         " -----------------------------------\n\n ${updateProduct.toJson()}\n\n-----------------------------------\n\n");
 
     var response = await api.post(
-        url: url,
+       
+        url:isUpdate? "$url/${updateProduct.id}":url,
         data: updateProduct.toJson(),
         isFormData: true);
     if (response.status) {
@@ -217,7 +218,7 @@ class ProductsRepo {
       );
     }
   }
-
+ 
   Future<Either<ApiResponse, List<ProductModel>>> searchProducts({
     required String query,
     bool isfresh = false,

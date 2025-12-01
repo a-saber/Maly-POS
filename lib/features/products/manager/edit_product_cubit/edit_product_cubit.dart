@@ -194,6 +194,7 @@ class EditProductCubit extends Cubit<EditProductState> {
 
   final response = await repo.addUpdateProduct(
     updateProduct: updateProductModel,
+    isUpdate: true
   );
 
   response.fold(
@@ -230,7 +231,8 @@ class EditProductCubit extends Cubit<EditProductState> {
       }
     },
   );
-}
+} 
+
   // ======= UNIT & PRICE LOGIC LIKE ADDPRODUCTCUBIT =======
   void addProductUnits() {
     productUnits.add(ProductUnits.empty());
@@ -245,6 +247,12 @@ class EditProductCubit extends Cubit<EditProductState> {
     }
   }
 
+void removeNewUnit(int index) {
+  if (productUnits[index].id == null) {
+    productUnits.removeAt(index);
+    emit(EditProductUnitsUpdated());
+  }
+}
   void onUnitChangedd({required UnitModel unitModel, required int index}) {
     productUnits[index].unit = unitModel;
     if (index != 0) updateUnitPrices(index);

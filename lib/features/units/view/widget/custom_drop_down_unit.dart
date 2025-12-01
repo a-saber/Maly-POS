@@ -18,7 +18,8 @@ class CustomDropDownUnit extends StatelessWidget {
   });
 
   final UnitModel? value;
-  final Function(UnitModel? unit) onChanged;
+  final void Function(UnitModel?)? onChanged;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -70,7 +71,7 @@ class CustomDropDownUnit extends StatelessWidget {
                     name: value?.name ?? '',
                     child: p1,
                     onTap: (p0) {
-                      onChanged(p0);
+                      onChanged?.call(p0);
                       Navigator.of(context).pop();
                     },
                   ),
