@@ -155,6 +155,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     // }
   }
 
+
   String decimalToStringForUI(Decimal value, {int fraction = 2}) {
     final str = value.toString();
     if (!str.contains('.')) {
@@ -415,7 +416,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
     emit(UpdateProductUnitsSalesPrice());
   }
-
+  
   @override
   Future<void> close() {
     nameController.dispose();

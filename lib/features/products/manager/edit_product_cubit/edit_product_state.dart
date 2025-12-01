@@ -1,38 +1,61 @@
 part of 'edit_product_cubit.dart';
 
 @immutable
-sealed class EditProductState {}
+abstract class EditProductState {}
 
-final class EditProductInitial extends EditProductState {}
+class EditProductInitial extends EditProductState {}
 
-final class EditProductLoading extends EditProductState {}
+class EditProductLoading extends EditProductState {}
 
-final class EditProductSuccess extends EditProductState {
+class EditProductSuccess extends EditProductState {
   final ProductModel product;
   EditProductSuccess({required this.product});
 }
 
-final class EditProductFailing extends EditProductState {
-  final ApiResponse errMessage;
+class EditProductFailing extends EditProductState {
+  final String errMessage;
   EditProductFailing({required this.errMessage});
 }
 
-final class EditProductUnValid extends EditProductState {}
+class EditProductUnValid extends EditProductState {}
 
-final class EditProductAddInitialQunantity extends EditProductState {}
+class GetCategorySuccess extends EditProductState {}
 
-final class GetCategorySuccess extends EditProductState {}
+class GetUnitsSuccess extends EditProductState {}
 
-final class GetTaxesTypeSuccess extends EditProductState {}
+// ===== UNIT LOGIC =====
+class EditProductAddUnit extends EditProductState {}
 
-final class GetUnitsSuccess extends EditProductState {}
+class EditProductRemoveUnit extends EditProductState {}
 
-final class EditChangeCategory extends EditProductState {}
+class EditProductChangeUnit extends EditProductState {}
 
-final class EditChangeUnit extends EditProductState {}
+class UpdateProductUnitsCost extends EditProductState {}
 
-final class EditChangeBranch extends EditProductState {}
+class UpdateProductUnitsCostWarning extends EditProductState {
+  final int index;
+  final int factory;
+  final double myCost;
 
-final class EditChangeTaxes extends EditProductState {}
+  UpdateProductUnitsCostWarning({
+    required this.index,
+    required this.factory,
+    required this.myCost,
+  });
+}
 
-final class EditChangeProductType extends EditProductState {}
+class EditProductOnPriceChange extends EditProductState {}
+
+// ===== CATEGORY / UNIT / TAXES / PRODUCT TYPE CHANGES =====
+class EditChangeCategory extends EditProductState {}
+
+class EditChangeUnit extends EditProductState {}
+
+class EditChangeBranch extends EditProductState {}
+
+class EditChangeTaxes extends EditProductState {}
+
+class EditChangeProductType extends EditProductState {}
+class EditProductInitializing extends EditProductState {}
+class EditProductInitialized extends EditProductState {}
+class EditProductAssignBranchQty extends EditProductState {}

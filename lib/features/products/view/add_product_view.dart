@@ -523,7 +523,7 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                                   MyFormValidators
                                                                       .validateInteger(
                                                                           value,
-                                                                          context:
+                                                                          context:  
                                                                               context),
                                                               onChanged:
                                                                   (p0) {},

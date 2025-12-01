@@ -13,10 +13,12 @@ class CustomDropDownTaxes extends StatelessWidget {
   const CustomDropDownTaxes({
     super.key,
     this.value,
+    this.taxesList,
     required this.onChange,
   });
 
   final TaxesModel? value;
+  final List<TaxesModel>? taxesList;
   final Function(TaxesModel?) onChange;
 
   @override
@@ -28,8 +30,8 @@ class CustomDropDownTaxes extends StatelessWidget {
           // search: true,
           hint: S.of(context).selectTax,
           compareFn: (item1, item2) {
-            if (item1.title == null ||
-                item2.title == null ||
+            if (item1.id == null ||
+                item2.id == null ||
                 item1.title!.isEmpty ||
                 item2.title!.isEmpty) {
               return false;

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_keys.dart';
-import 'package:pos_app/core/helper/calc_helper.dart';
 import 'package:pos_app/core/helper/upload_image_to_api.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
@@ -151,7 +150,7 @@ class UpdateProductModel {
     data[ApiKeys.name] = name;
     data[ApiKeys.categoryId] = categoryId;
     if (productUnits?.isNotEmpty ?? false) {
-      data[ApiKeys.baseUnitId] = productUnits?.first.unitId;
+      data[ApiKeys.baseUnitId] = productUnits![0].unitId;
     }
 
     data[ApiKeys.description] = description;
@@ -163,20 +162,19 @@ class UpdateProductModel {
     data[ApiKeys.updatedat] = updatedAt;
     data[ApiKeys.imageurl] = imageUrl;
     // data[ApiKeys.unit] = unit;
-    data[ApiKeys.tax] = tax;
+    data[ApiKeys.taxid] = tax?.id;
     // data[ApiKeys.priceAfterTax] = priceAfterTax;
     data[ApiKeys.type] = type;
     // data[ApiKeys.quantity] = quantity;
 
     if (productUnits != null) {
       for (int i = 0; i < productUnits!.length; i++) {
-        if(productUnits![i].branchQty.isNotEmpty){
+        if (productUnits![i].branchQty.isNotEmpty) {
           data.addAll(productUnits![i].toJson(
             index: i,
             branches: productUnits![i].branchQty,
           ));
-        }
-        else{
+        } else {
           data.addAll(productUnits![i].toJson(
             index: i,
             branches: [],
@@ -228,13 +226,12 @@ class UpdateProductModel {
 
     if (productUnits != null) {
       for (int i = 0; i < productUnits!.length; i++) {
-        if(productUnits![i].branchQty.isNotEmpty){
+        if (productUnits![i].branchQty.isNotEmpty) {
           data.addAll(productUnits![i].toJson(
             index: i,
             branches: productUnits![i].branchQty,
           ));
-        }
-        else{
+        } else {
           data.addAll(productUnits![i].toJson(
             index: i,
             branches: [],
@@ -284,9 +281,9 @@ class ProductUnits {
   String? salePriceWithTax;
   TextEditingController? salePriceWithTaxController;
   UnitModel? unit;
-  List<BranchQuantity> branchQty =[];
-  Decimal? minPriceWithoutTaxValue;
-  Decimal? minPriceWithTaxValue;
+  List<BranchQuantity> branchQty = [];
+  TextEditingController? minPriceWithoutTaxValue;
+  String? minPriceWithTax;
 
   ProductUnits({
     this.id,
@@ -309,8 +306,8 @@ class ProductUnits {
     this.minPriceWithoutTaxController,
     this.salePriceWithoutTaxController,
     this.salePriceWithTaxController,
+    this.minPriceWithTax,
     this.minPriceWithTaxController,
-
   });
 
   factory ProductUnits.empty() {
@@ -383,12 +380,38 @@ class ProductUnits {
     updatedAt = json['updated_at'];
     minPriceWithoutTax = json['min_price_without_tax'];
     salePriceWithTax = json['sale_price_with_tax'];
+    factoryController = TextEditingController(text: conversionFactor ?? "");
+    costPriceController = TextEditingController(text: costPrice ?? "");
+    salePriceWithoutTaxController =
+        TextEditingController(text: salePriceWithoutTax ?? "");
+    minPriceWithoutTaxController =
+        TextEditingController(text: minPriceWithoutTax ?? "");
+    salePriceWithTaxController =
+        TextEditingController(text: salePriceWithTax ?? "");
+    barCodeController = TextEditingController(text: barcode ?? "");
+    scaleBarcodeController = TextEditingController(text: scaleBarcode ?? "");
+
     unit = json['unit'] != null ? UnitModel.fromJson(json['unit']) : null;
+
+    branchQty = [];
+
+    if (json['opening_stocks'] != null && json['opening_stocks'] is List) {
+      branchQty = (json['opening_stocks'] as List).map((stock) {
+        return BranchQuantity(
+          branch: stock['branch'] != null
+              ? BrancheModel.fromJson(stock['branch'])
+              : null,
+          branchId: stock['branch_id'],
+          qunantity: stock['quantity'] ?? 0,
+          quantityController:
+              TextEditingController(text: (stock['quantity'] ?? '').toString()),
+        );
+      }).toList();
+    }
   }
 
   Map<String, dynamic> toJson(
-      {required int index, required List<BranchQuantity> branches})
-  {
+      {required int index, required List<BranchQuantity> branches}) {
     final Map<String, dynamic> data = <String, dynamic>{};
 
     /// units[0][unit_id] ,
@@ -438,13 +461,13 @@ class BranchQuantity {
       required this.qunantity,
       required this.quantityController});
 
-
   static BranchQuantity from(BranchQuantity branchQuantity) {
     return BranchQuantity(
       branch: branchQuantity.branch,
       branchId: branchQuantity.branchId,
       qunantity: branchQuantity.qunantity,
-      quantityController: TextEditingController.fromValue( branchQuantity.quantityController.value),
+      quantityController: TextEditingController.fromValue(
+          branchQuantity.quantityController.value),
     );
   }
 

@@ -4,11 +4,13 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/helper/upload_image_to_api.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
+import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
 class ProductModel {
   final int? id;
+  final List<ProductUnits>? productUnits;
   final String? name;
   final int? categoryId;
   final String? type;
@@ -26,8 +28,11 @@ class ProductModel {
   final UnitModel? unit;
   final TaxesModel? tax;
   final int? quantity;
+  final CategoryModel? category;
 
-  ProductModel({
+  ProductModel(   {
+    this.productUnits,
+    required this.category,
     required this.id,
     required this.name,
     required this.categoryId,
@@ -50,6 +55,7 @@ class ProductModel {
 
   factory ProductModel.empty() {
     return ProductModel(
+      
       id: 0,
       name: '',
       categoryId: 0,
@@ -68,15 +74,23 @@ class ProductModel {
       priceAfterTax: 0,
       type: '',
       quantity: 0,
+     category: null,
     );
   }
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    List<ProductUnits>? units;
+  if (json['product_units'] != null) {
+    units = (json['product_units'] as List)
+        .map((u) => ProductUnits.fromJson(u))
+        .toList();
+  }
     return ProductModel(
       id: json[ApiKeys.id],
+      productUnits: units,
       name: json[ApiKeys.name],
       categoryId: json[ApiKeys.categoryId],
-      unitId: json[ApiKeys.unitId],
+     unitId: json['base_unit_id'],
       description: json[ApiKeys.description],
       imagePath: json[ApiKeys.imagepath],
       barcode: json[ApiKeys.barcode],
@@ -85,9 +99,9 @@ class ProductModel {
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
       imageUrl: json[ApiKeys.imageurl],
-      unit: json[ApiKeys.unit] != null
-          ? UnitModel.fromJson(json[ApiKeys.unit])
-          : null,
+     unit: json['base_unit'] != null 
+        ? UnitModel.fromJson(json['base_unit'])
+        : null,
       tax: json[ApiKeys.tax] != null
           ? TaxesModel.fromJson(json[ApiKeys.tax])
           : null,
@@ -97,7 +111,11 @@ class ProductModel {
       taxId: json[ApiKeys.taxid],
       type: json[ApiKeys.type],
       quantity: json[ApiKeys.quantity],
-    );
+         category: json[ApiKeys.category] != null
+        ? CategoryModel.fromJson(json[ApiKeys.category])
+        : null, 
+       
+  );
   }
   factory ProductModel.copyWith(UnitModel? unit, ProductModel product) {
     return ProductModel(
@@ -119,6 +137,7 @@ class ProductModel {
       taxId: product.taxId,
       type: product.type,
       quantity: product.quantity,
+       category: product.category,
     );
   }
 
@@ -134,6 +153,7 @@ class ProductModel {
     required TaxesModel? tax,
     required String? type,
     int? id,
+
   }) {
     return ProductModel(
       id: id,
@@ -154,6 +174,7 @@ class ProductModel {
       taxId: tax?.id,
       type: type,
       quantity: null,
+      category: category,
     );
   }
 

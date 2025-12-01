@@ -39,6 +39,7 @@ class ProductsView extends StatelessWidget {
             },
             productsBuild: (context, products) {
               return CustomGridViewCard(
+
                 controller: GetAllProductsCubit.get(context).scrollController,
                 canLaoding: GetAllProductsCubit.get(context).canLoading(),
                 heightOfCard: MediaQuery.of(context).textScaler.scale(110),

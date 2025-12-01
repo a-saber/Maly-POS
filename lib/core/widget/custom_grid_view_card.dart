@@ -23,7 +23,7 @@ class CustomGridViewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       controller: controller,
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(), 
       slivers: [
         SliverGrid.builder(
           // shrinkWrap: true,

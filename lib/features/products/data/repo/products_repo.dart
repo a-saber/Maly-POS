@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
@@ -33,6 +34,7 @@ class ProductsRepo {
       }
       var response = await api.get(
         url: url,
+        queryParameters: {'with_category': '1'},
       );
       if (response.status) {
         getProductsModel = GetProductsModel.fromJson(response.data);
@@ -189,6 +191,7 @@ class ProductsRepo {
       var response = await api.post(
         url: "$url/${product.id}",
         data: data,
+        isFormData: true,
       );
       if (response.status) {
         AddOrUpdateProduct addOrUpdateProduct =
@@ -226,7 +229,7 @@ class ProductsRepo {
         url = await ApiEndPoints.getProducts();
         apiResponse = await api.get(
           url: url,
-          queryParameters: {ApiKeys.search: query},
+          queryParameters: {ApiKeys.search: query, 'with_category': '1'},
         );
       } else {
         if (searchProductsModel?.data?.nextPageUrl == null) {
