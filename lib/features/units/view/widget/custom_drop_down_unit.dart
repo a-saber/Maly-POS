@@ -22,7 +22,7 @@ class CustomDropDownUnit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: MyServiceLocator.getSingleton<SearchUnitCubit>(),
+      value: MyServiceLocator.getSingleton<SearchUnitCubit>()..getSearchUnits(search: ''),
       child: Builder(builder: (context) {
         return CustomDropdown<UnitModel>(
           // search: true,
@@ -52,6 +52,7 @@ class CustomDropDownUnit extends StatelessWidget {
           },
           containerBuilder: (p0, p1) {
             return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),

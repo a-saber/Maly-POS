@@ -10,10 +10,13 @@ import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
+import '../../../units/data/model/get_unit_model.dart';
+
 class ProductsRepo {
   final ApiHelper api;
   GetProductsModel? getProductsModel;
   GetProductsModel? searchProductsModel;
+  GetUnitModel? getUnitModel;
 
   ProductsRepo({required this.api});
 
@@ -276,4 +279,6 @@ class ProductsRepo {
     searchProductsModel = null;
     getProductsModel = null;
   }
+
+
 }

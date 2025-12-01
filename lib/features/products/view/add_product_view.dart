@@ -649,8 +649,7 @@ class AddProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AddProductCubit(MyServiceLocator.getSingleton<ProductsRepo>()),
+      create: (context) => AddProductCubit(MyServiceLocator.getSingleton<ProductsRepo>()),
       child: Scaffold(
         appBar: CustomAppBar(title: S.of(context).addProduct),
         body: BlocConsumer<AddProductCubit, AddProductState>(
