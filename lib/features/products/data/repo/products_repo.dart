@@ -60,7 +60,8 @@ class ProductsRepo {
 
         if (productSavingDataModel?.getProductsSearchModel==null ||
             productSavingDataModel?.query!=query||
-            (categoryId!=null && productSavingDataModel?.id!=categoryId)) {
+            (categoryId!=null && productSavingDataModel?.id!=categoryId)||(categoryId==null&&query.isNotEmpty)
+        ) {
           url = await ApiEndPoints.getProducts();
         } else {
           if (productSavingDataModel!.getProductsSearchModel!.data?.nextPageUrl == null) {

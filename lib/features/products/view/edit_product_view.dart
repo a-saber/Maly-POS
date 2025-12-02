@@ -232,7 +232,9 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 else
                   CustomFilledBtn(
                     text: S.of(context).update,
-                    onPressed: cubit.editProduct,
+                    onPressed: (){
+                      cubit.editProduct(context);
+                    },
                   ),
               ],
             ),

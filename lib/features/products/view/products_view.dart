@@ -82,7 +82,6 @@ class _ProductsViewState extends State<ProductsView> {
                            value: GetAllProductsCubit.get(context).category,
                            onChangedCategory: (category) => GetAllProductsCubit.get(context).onChangeCategory(category),
                            onClear:  GetAllProductsCubit.get(context).clearCategory,
-
                          ),
 
                        ],

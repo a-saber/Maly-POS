@@ -15,6 +15,8 @@ import 'package:pos_app/features/units/data/model/unit_model.dart';
 import 'package:pos_app/features/units/data/repo/units_repo.dart';
 import 'package:pos_app/features/categories/data/repo/category_repo.dart';
 
+import '../get_all_products_cubit/get_all_products_cubit.dart';
+
 part 'edit_product_state.dart';
 
 class EditProductCubit extends Cubit<EditProductState> {
@@ -158,7 +160,7 @@ class EditProductCubit extends Cubit<EditProductState> {
     });
   }
 
-  Future<void> editProduct() async {
+  Future<void> editProduct(BuildContext context) async {
     emit(EditProductLoading());
 
     if (formKey.currentState?.validate() != true) {
@@ -229,6 +231,36 @@ class EditProductCubit extends Cubit<EditProductState> {
             quantity: productFromApi.quantity,
             productUnits: productFromApi.productUnits,
           );
+        /* int index = GetAllProductsCubit.get(context).products.indexWhere((product)=>productFromApi.id==product.id);
+         if(index!=-1){
+
+           GetAllProductsCubit.get(context).products[index]=  GetAllProductsCubit.get(context).products[index].copyWith(
+             id: productFromApi.id,
+             name: productFromApi.name,
+             categoryId: productFromApi.categoryId,
+             category: category,
+             baseUnitId: productFromApi.baseUnitId,
+             unit: unit,
+             description: productFromApi.description,
+             imagePath: productFromApi.imagePath,
+             barcode: productFromApi.barcode,
+             brand: productFromApi.brand,
+             price: productFromApi.price,
+             createdAt: productFromApi.createdAt,
+             updatedAt: productFromApi.updatedAt,
+             imageUrl: productFromApi.imageUrl,
+             tax: taxes,
+             taxId: productFromApi.taxId,
+             priceAfterTax: productFromApi.priceAfterTax,
+             type: productFromApi.type,
+             quantity: productFromApi.quantity,
+             productUnits: productFromApi.productUnits,
+
+           );
+
+         }*/
+          GetAllProductsCubit.get(context).updateProduct(updatedProduct);
+
 
           emit(EditProductSuccess(product: updatedProduct));
         } else {

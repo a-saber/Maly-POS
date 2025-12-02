@@ -83,6 +83,51 @@ class ProductModel {
      category: null,
     );
   }
+  ProductModel copyWith({
+    int? id,
+    String? name,
+    int? categoryId,
+    String? type,
+    int? baseUnitId,
+    String? description,
+    String? imagePath,
+    String? barcode,
+    String? brand,
+    String? price,
+    int? taxId,
+    String? createdAt,
+    String? updatedAt,
+    String? imageUrl,
+    num? priceAfterTax,
+    UnitModel? unit,
+    TaxesModel? tax,
+    int? quantity,
+    List<ProductUnit>? productUnits,
+    CategoryModel? category,
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      categoryId: categoryId ?? this.categoryId,
+      type: type ?? this.type,
+      baseUnitId: baseUnitId ?? this.baseUnitId,
+      description: description ?? this.description,
+      imagePath: imagePath ?? this.imagePath,
+      barcode: barcode ?? this.barcode,
+      brand: brand ?? this.brand,
+      price: price ?? this.price,
+      taxId: taxId ?? this.taxId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      imageUrl: imageUrl ?? this.imageUrl,
+      priceAfterTax: priceAfterTax ?? this.priceAfterTax,
+      unit: unit ?? this.unit,
+      tax: tax ?? this.tax,
+      quantity: quantity ?? this.quantity,
+      productUnits: productUnits ?? this.productUnits,
+      category: category ?? this.category,
+    );
+  }
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     return ProductModel(

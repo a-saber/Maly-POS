@@ -52,7 +52,7 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
     });
 
   }
-  bool isSearch()=>query.isNotEmpty||category!=null;
+  bool isSearch()=>searchController.text.isNotEmpty||category!=null;
   void getSearchUnit(BuildContext context) {
      context.read<SearchUnitCubit>().getSearchUnits(search: '');
 
@@ -70,8 +70,11 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
   void clearCategory() {
     category = null;
     emit(ChangeCategory());
+    print('clearCategory ${isSearch()  }   ${query.isNotEmpty}');
+    if(isSearch()){
 
-
+      getProducts();
+    }
   }
   Timer? _debounce;
   void onSearchChanged(
@@ -85,6 +88,7 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
         getProducts();
       } else {
         emit(GetAllProductsSearchProduct());
+        if(isSearch())getProducts();
       }
 
 
@@ -94,6 +98,7 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
     searchController.clear();
     query = '';
     emit(GetAllProductsSearchProduct());
+    if(isSearch())getProducts();
   }
   bool ifScrollNotFillScreen() {
     if (!scrollController.hasClients) return false;
@@ -161,8 +166,7 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
     emit(GetAllProductsSuccess());
   }
   void updateProduct(ProductModel product) {
-    products[products.indexWhere((element) => element.id == product.id)] =
-        product;
+    products[products.indexWhere((element) => element.id == product.id)] = product;
     emit(GetAllProductsSuccess());
   }
 
