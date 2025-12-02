@@ -23,7 +23,7 @@ class CustomDropDownUnit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: MyServiceLocator.getSingleton<SearchUnitCubit>()..getSearchUnits(search: ''),
+      value: MyServiceLocator.getSingleton<SearchUnitCubit>(),
       child: Builder(builder: (context) {
         return CustomDropdown<UnitModel>(
           // search: true,

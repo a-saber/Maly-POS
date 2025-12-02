@@ -105,8 +105,9 @@ class ProductCardLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
-      width: double.infinity,
+    //  width: double.infinity,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -122,8 +123,8 @@ class ProductCardLoading extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 75,
-            height: 75,
+            width: 45,
+            height: 45,
             color: Colors.grey,
           ).redacted(
             context: context,
@@ -135,42 +136,45 @@ class ProductCardLoading extends StatelessWidget {
           const SizedBox(
             width: 10,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "user.name",
-                style: AppFontStyle.itemsTitle(context: context),
-              ).redacted(
-                context: context,
-                redact: true,
-                configuration: RedactedConfiguration(
-                  animationDuration:
-                      const Duration(milliseconds: 800), //default
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "user.name",
+                  style: AppFontStyle.itemsTitle(context: context),
+                ).redacted(
+                  context: context,
+                  redact: true,
+                  configuration: RedactedConfiguration(
+                    animationDuration:
+                        const Duration(milliseconds: 800), //default
+                  ),
                 ),
-              ),
-              Text(
-                "descriptiondescription",
-              ).redacted(
-                context: context,
-                redact: true,
-                configuration: RedactedConfiguration(
-                  animationDuration:
-                      const Duration(milliseconds: 800), //default
+                Text(
+                  "descriptiondescription",
+                ).redacted(
+                  context: context,
+                  redact: true,
+                  configuration: RedactedConfiguration(
+                    animationDuration:
+                        const Duration(milliseconds: 800), //default
+                  ),
                 ),
-              ),
-              Text(
-                "Category",
-              ).redacted(
-                context: context,
-                redact: true,
-                configuration: RedactedConfiguration(
-                  animationDuration:
-                      const Duration(milliseconds: 800), //default
+                Text(
+                  "Category",
+                ).redacted(
+                  context: context,
+                  redact: true,
+
+                  configuration: RedactedConfiguration(
+                    animationDuration:
+                        const Duration(milliseconds: 800), //default
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

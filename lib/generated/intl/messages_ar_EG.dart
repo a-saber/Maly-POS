@@ -475,6 +475,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "privateKey": MessageLookupByLibrary.simpleMessage("المفتاح الخاص"),
     "publicKey": MessageLookupByLibrary.simpleMessage("المفتاح العام"),
     "secretKey": MessageLookupByLibrary.simpleMessage("المفتاح السري"),
+    "printers": MessageLookupByLibrary.simpleMessage("الطابعات"),
+    "stock": MessageLookupByLibrary.simpleMessage("المخزون"),
+    "roles": MessageLookupByLibrary.simpleMessage("الأدوار"),
+    "customers": MessageLookupByLibrary.simpleMessage("العملاء"),
+    "expenses": MessageLookupByLibrary.simpleMessage("المصروفات"),
+    "sale_return": MessageLookupByLibrary.simpleMessage("مرتجعات المبيعات"),
+    "expense_categories": MessageLookupByLibrary.simpleMessage("فئات المصروفات"),
+    "purchase_return": MessageLookupByLibrary.simpleMessage("مرتجعات المشتريات"),
     "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الوحدة لأن هناك منتجات مرتبطة بها."),
 
   };

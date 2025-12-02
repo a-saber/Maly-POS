@@ -11,26 +11,32 @@ import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
 import '../../../units/data/model/get_unit_model.dart';
+import '../model/product_saving_data_model.dart';
 
 class ProductsRepo {
   final ApiHelper api;
   GetProductsModel? getProductsModel;
   GetProductsModel? searchProductsModel;
   GetUnitModel? getUnitModel;
+  ProductSavingDataModel? productSavingDataModel;
 
   ProductsRepo({required this.api});
 
   Future<Either<ApiResponse, List<ProductModel>>> getProducts({
     bool isfresh = false,
+     String query='',
+
   }) async {
     try {
       String? url;
+      if(query.isEmpty){
       if (getProductsModel == null || isfresh) {
         url = await ApiEndPoints.getProducts();
       } else {
-        if (getProductsModel!.data?.nextPageUrl == null) {
+        if (getProductsModel!.data?.nextPageUrl == null ) {
           return Right([]);
-        } else {
+        }
+        else {
           url = getProductsModel!.data!.nextPageUrl!;
         }
       }
@@ -45,6 +51,40 @@ class ProductsRepo {
         return Left(
           response,
         );
+      }
+      }
+      else{
+
+        if (productSavingDataModel?.getProductsSearchModel==null || productSavingDataModel?.query!=query) {
+          url = await ApiEndPoints.getProducts();
+        } else {
+          if (productSavingDataModel!.getProductsSearchModel!.data?.nextPageUrl == null) {
+            return Right([]);
+          } else {
+            url = productSavingDataModel!.getProductsSearchModel!.data!.nextPageUrl!;
+          }
+        }
+        var response = await api.get(
+          url: url,
+
+          queryParameters: {
+            'with_category': '1',
+           ApiKeys.search: query,
+          },
+        );
+        if (response.status) {
+          productSavingDataModel =  ProductSavingDataModel(
+             getProductsSearchModel:  GetProductsModel.fromJson(response.data),
+            query: query
+
+          );
+          return Right(productSavingDataModel!.getProductsSearchModel!.data!.data!);
+        } else {
+          return Left(
+            response,
+          );
+        }
+
       }
     } catch (e) {
       debugPrint(e.toString());

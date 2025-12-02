@@ -478,6 +478,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "userName": MessageLookupByLibrary.simpleMessage("User Name"),
     "copy": MessageLookupByLibrary.simpleMessage("Copy"),
     "ZakatAndTaxAuthority": MessageLookupByLibrary.simpleMessage("Zakat and Tax Authority"),
+    "printers": MessageLookupByLibrary.simpleMessage("Printers"),
+    "stock": MessageLookupByLibrary.simpleMessage("Stock"),
+    "roles": MessageLookupByLibrary.simpleMessage("Roles"),
+    "customers": MessageLookupByLibrary.simpleMessage("Customers"),
+    "expenses": MessageLookupByLibrary.simpleMessage("Expenses"),
+    "sale_return": MessageLookupByLibrary.simpleMessage("Sale Return"),
+    "expense_categories": MessageLookupByLibrary.simpleMessage("Expense Categories"),
+    "purchase_return": MessageLookupByLibrary.simpleMessage("Purchase Return"),
     "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete unit because there are products associated with it."),
 
   };

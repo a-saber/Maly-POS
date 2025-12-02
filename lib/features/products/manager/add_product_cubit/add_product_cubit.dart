@@ -64,6 +64,7 @@ class AddProductCubit extends Cubit<AddProductState> {
           UpdateProductModel.createWithoutId(
         unit: null,
         productUnits: productUnits,
+
         name: nameController.text,
         description: descriptionController.text,
         category: category,

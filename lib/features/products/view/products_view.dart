@@ -7,13 +7,30 @@ import 'package:pos_app/core/widget/custom_floating_action_btn.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
 import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
+import 'package:pos_app/features/products/view/widget/custom_drop_down_product.dart';
 import 'package:pos_app/features/products/view/widget/product_cubit_build.dart';
 import 'package:pos_app/features/products/view/widget/product_item_builder.dart';
 import 'package:pos_app/generated/l10n.dart';
 
-class ProductsView extends StatelessWidget {
+import '../../../core/widget/custom_form_field.dart';
+
+
+class ProductsView extends StatefulWidget {
   const ProductsView({super.key});
 
+  @override
+  State<ProductsView> createState() => _ProductsViewState();
+}
+
+
+class _ProductsViewState extends State<ProductsView> {
+  @override
+  void initState() {
+   Future.delayed(Duration.zero, () {
+      GetAllProductsCubit.get(context).getSearchUnit(context);
+    });
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,28 +44,45 @@ class ProductsView extends StatelessWidget {
         },
         child: Padding(
           padding: AppPaddings.defaultView,
-          child: ProductCubitBuild(
-            productsLoading: (context) {
-              return CustomGridViewCard(
-                heightOfCard: MediaQuery.of(context).textScaler.scale(110),
-                itemBuilder: (context, index) {
-                  return ProductCardLoading();
-                },
-                itemCount: AppConstant.numberOfCardLoading,
-              );
-            },
-            productsBuild: (context, products) {
-              return CustomGridViewCard(
+          child: Column(
+            children: [
+              CustomFormField(
+                    suffixIcon: Icon(Icons.search),
+                    controller:GetAllProductsCubit.get(context).searchController,
+                    labelText: S.of(context).search,
+                     onChanged: GetAllProductsCubit.get(context).onSearchChanged
 
-                controller: GetAllProductsCubit.get(context).scrollController,
-                canLaoding: GetAllProductsCubit.get(context).canLoading(),
-                heightOfCard: MediaQuery.of(context).textScaler.scale(110),
-                itemBuilder: (BuildContext context, int index) {
-                  return ProductItemBuilder(product: products[index]);
-                },
-                itemCount: products.length,
-              );
-            },
+              ),
+
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: ProductCubitBuild(
+                  productsLoading: (context) {
+                    return CustomGridViewCard(
+                      heightOfCard: MediaQuery.of(context).textScaler.scale(110),
+                      itemBuilder: (context, index) {
+                        return ProductCardLoading();
+                      },
+                      itemCount: AppConstant.numberOfCardLoading,
+                    );
+                  },
+                  productsBuild: (context, products) {
+                    return CustomGridViewCard(
+
+                      controller: GetAllProductsCubit.get(context).scrollController,
+                      canLaoding: GetAllProductsCubit.get(context).canLoading(),
+                      heightOfCard: MediaQuery.of(context).textScaler.scale(110),
+                      itemBuilder: (BuildContext context, int index) {
+                        return ProductItemBuilder(product: products[index]);
+                      },
+                      itemCount: products.length,
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

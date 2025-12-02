@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -7,6 +8,8 @@ import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 
+import '../../../units/manager/search_unit_cubit/search_unit_cubit.dart';
+
 part 'get_all_products_state.dart';
 
 class GetAllProductsCubit extends Cubit<GetAllProductsState> {
@@ -15,26 +18,62 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
   final ProductsRepo repo;
 
   ScrollController scrollController = ScrollController();
+  late TextEditingController searchController ;
   List<ProductModel> products = [];
+  List<ProductModel> searchProducts = [];
+  String query = '';
 
-  bool canLoading() => repo.getProductsModel?.data?.nextPageUrl != null;
+  bool canLoading() =>  query.isEmpty?repo.getProductsModel?.data?.nextPageUrl != null:repo.productSavingDataModel?.getProductsSearchModel?.data?.nextPageUrl != null;
   bool isFirtsTime() => repo.getProductsModel == null;
 
-  void init() {
+  List<ProductModel> getProductsAll(){
+   return query.isEmpty?products:searchProducts;
+  }
+
+  void init( ) {
+    searchController = TextEditingController();
+     query = '';
+
     if (isFirtsTime()) {
       getProducts();
+
     }
 
     scrollController.addListener(() {
-      if (scrollController.position.maxScrollExtent ==
-          scrollController.offset) {
+
+      if (scrollController.position.maxScrollExtent == scrollController.offset) {
         if (canLoading()) {
           getProductsPagination();
         }
       }
     });
+
+  }
+  void getSearchUnit(BuildContext context) {
+     context.read<SearchUnitCubit>().getSearchUnits(search: '');
+
+
+
   }
 
+  Timer? _debounce;
+  void onSearchChanged(
+      String query,
+      ) {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      this.query = query;
+
+      if(query.isNotEmpty) {
+        getProducts();
+      } else {
+        emit(GetAllProductsSearchProduct());
+      }
+
+
+    });
+  }
   bool ifScrollNotFillScreen() {
     if (!scrollController.hasClients) return false;
     return scrollController.position.maxScrollExtent == 0;
@@ -61,11 +100,15 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
     // await Future.delayed(const Duration(seconds: 10));
     final result = await repo.getProducts(
       isfresh: true,
+      query: query,
+
     );
     result.fold(
         (errMessage) => emit(GetAllProductsFailing(errMessage: errMessage)),
         (products) {
-      this.products = products;
+
+     query.isEmpty? this.products = products: searchProducts = repo.productSavingDataModel?.getProductsSearchModel?.data?.data??[];
+
       ifNotFillScreen();
       emit(GetAllProductsSuccess());
     });
@@ -75,12 +118,13 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
   Future<void> getProductsPagination() async {
     if (getPgination) return;
     getPgination = true;
-    final result = await repo.getProducts();
+    final result = await repo.getProducts(query: query);
     result.fold(
         (errMessage) =>
             emit(GetAllProductsPaginationFailing(errMessage: errMessage)),
         (products) {
-      this.products.addAll(products);
+      //this.products.addAll(products);
+      query.isEmpty?  this.products.addAll(products): searchProducts.addAll(products);
       getPgination = false;
       ifNotFillScreen();
 
@@ -116,6 +160,7 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
   @override
   Future<void> close() {
     scrollController.dispose();
+    searchController.dispose();
     return super.close();
   }
 
