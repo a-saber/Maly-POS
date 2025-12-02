@@ -12,10 +12,13 @@ import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/core/widget/custom_loading.dart';
 import 'package:pos_app/core/widget/custom_reset_drop_down_button.dart';
 import 'package:pos_app/core/widget/image_manager_view.dart';
+import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
+import 'package:pos_app/features/branch/view/widget/custom_drop_down_branch.dart';
 import 'package:pos_app/features/categories/data/repo/category_repo.dart';
 import 'package:pos_app/features/categories/view/widget/custom_drop_down_category.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/data/model/product_type.dart';
+import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/products/manager/edit_product_cubit/edit_product_cubit.dart';
 import 'package:pos_app/features/taxes/view/widget/custom_drop_down_taxes.dart';
@@ -49,7 +52,7 @@ class EditProductView extends StatelessWidget {
                   context: context,
                   massage: S.of(context).updatedSuccess,
                   state: PopUpState.SUCCESS);
-              Navigator.pop(context);
+              Navigator.pop(context, state.product);
             } else if (state is EditProductFailing) {
               if (context.mounted) {
                 CustomPopUp.callMyToast(
@@ -272,43 +275,62 @@ class _EditProductDataViewState extends State<EditProductDataView> {
               DataCell(
                 SizedBox(
                   width: 150,
-                  child: CustomDropDownUnit(
-                    value: unit.unit,
-                    onChanged: isExistingUnit
-                        ? null
-                        : (value) {
+                  child: isExistingUnit
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Text(
+                            unit.unit?.name ?? "",
+                            style: AppFontStyle.formText(context: context),
+                          ),
+                        )
+                      : CustomDropDownUnit(
+                          value: unit.unit,
+                          onChanged: (value) {
                             if (value != null) {
                               cubit.onUnitChangedd(
                                   unitModel: value, index: index);
                             }
                           },
-                  ),
+                        ),
                 ),
               ),
               DataCell(_customTextFormFieldTable(
-                hintText: "المعامل",
-                enabled: !isExistingUnit,
-                validator: (value) => null,
-                controller: unit.factoryController,
-              )),
+                  hintText: "المعامل",
+                  enabled: !isExistingUnit,
+                  validator: (value) => null,
+                  controller: unit.factoryController,
+                  onChanged: (value) => cubit.updateUnitPrices(index))),
               DataCell(_customTextFormFieldTable(
                 hintText: "سعر التكلفة",
-                enabled: !isExistingUnit,
+                enabled: true,
                 validator: (value) =>
                     MyFormValidators.validateDouble(value, context: context),
                 controller: unit.costPriceController,
+                onChanged: (value) => cubit.onChangeCost(index),
               )),
               DataCell(_customTextFormFieldTable(
                 hintText: "اقل سعر بيع",
                 enabled: true,
-                validator: (value) => MyFormValidators.validateDouble(value, context: context),
+                validator: (value) =>
+                    MyFormValidators.validateDouble(value, context: context),
                 controller: unit.minPriceWithoutTaxController,
+                onChanged: (value) => cubit.onChangeMinPriceWithoutTax(
+                    index: index, newValue: value),
               )),
               DataCell(_customTextFormFieldTable(
                 hintText: "اقل سعر بيع بالضريبة",
                 enabled: true,
-                validator: (value) => MyFormValidators.validateDouble(value, context: context),
+                validator: (value) =>
+                    MyFormValidators.validateDouble(value, context: context),
                 controller: unit.minPriceWithTaxController,
+                onChanged: (value) => cubit.onChangeMinPriceWithTax(
+                    index: index, newValue: value),
               )),
               DataCell(_customTextFormFieldTable(
                 hintText: "سعر البيع",
@@ -330,7 +352,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
               )),
               DataCell(_customTextFormFieldTable(
                 hintText: "الباركود",
-                enabled: false,
+                enabled: true,
                 validator: (value) => null,
                 controller: unit.barCodeController,
               )),
@@ -341,10 +363,32 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 controller: unit.scaleBarcodeController,
               )),
               DataCell(
-                CustomTextBtn(
-                  text: "اضافة كمية",
-                  onPressed: null,
-                ),
+                isExistingUnit
+                    ? Tooltip(
+                        message: 'لا يمكن تعديل الوحدات الموجودة مسبقاً',
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            'لا يمكن التعديل',
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      )
+                    : CustomTextBtn(
+                        text: "اضافة كمية",
+                        textColor: AppColors.primary,
+                        onPressed: () {
+                          _showAddQuantityDialog(context, cubit, index);
+                        },
+                      ),
               ),
               DataCell(IconButton(
                 icon: Icon(Icons.delete),
@@ -357,6 +401,225 @@ class _EditProductDataViewState extends State<EditProductDataView> {
           }),
         ),
       ),
+    );
+  }
+
+  void _showAddQuantityDialog(
+      BuildContext context, EditProductCubit cubit, int index) {
+    // تحقق مرة أخرى أن الوحدة جديدة
+    if (cubit.productUnits[index].isExistingUnit) {
+      CustomPopUp.callMyToast(
+        context: context,
+        massage: 'لا يمكن إضافة كميات للوحدات الموجودة مسبقاً',
+        state: PopUpState.ERROR,
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        List<BranchQuantity> tempBranchQuantities = [];
+        
+        // نسخ الكميات الموجودة
+        for (int i = 0; i < cubit.productUnits[index].branchQty.length; i++) {
+          tempBranchQuantities
+              .add(BranchQuantity.from(cubit.productUnits[index].branchQty[i]));
+        }
+
+        return StatefulBuilder(
+          builder: (ctx, setState) => AlertDialog(
+            title: Column(
+              spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "اضافة كمية افتتاحية",
+                  style: AppFontStyle.formText(context: context).copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CustomTextBtn(
+                      text: "اضافة",
+                      textColor: AppColors.primary,
+                      onPressed: () {
+                        setState(() {
+                          tempBranchQuantities.add(
+                            BranchQuantity(
+                              branchId: null,
+                              branch: null,
+                              qunantity: 0,
+                              quantityController: TextEditingController(),
+                            ),
+                          );
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (tempBranchQuantities.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'لا توجد كميات. اضغط على "اضافة" لإضافة كمية جديدة',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 14,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+                    else
+                      ...List.generate(
+                        tempBranchQuantities.length,
+                        (branchIndex) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Card(
+                              elevation: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: CustomDropDownBranch(
+                                        value: tempBranchQuantities[branchIndex]
+                                            .branch,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            if (value != null) {
+                                              tempBranchQuantities[branchIndex]
+                                                  .branch = BrancheModel.from(value);
+                                              tempBranchQuantities[branchIndex]
+                                                  .branchId = value.id;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: CustomFormField(
+                                        hintText: "الكمية",
+                                        controller: tempBranchQuantities[branchIndex]
+                                            .quantityController,
+                                        validator: (value) =>
+                                            MyFormValidators.validateInteger(
+                                                value,
+                                                context: context),
+                                        onChanged: (value) {
+                                          tempBranchQuantities[branchIndex]
+                                                  .qunantity =
+                                              int.tryParse(value) ?? 0;
+                                        },
+                                      ),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          tempBranchQuantities.removeAt(branchIndex);
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.cancel_outlined,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CustomTextBtn(
+                    text: "اغلاق",
+                    textColor: Colors.grey.shade700,
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                  const SizedBox(width: 10),
+                  CustomTextBtn(
+                    text: "حفظ",
+                    textColor: AppColors.primary,
+                    onPressed: () {
+                      // التحقق من البيانات قبل الحفظ
+                      bool isValid = true;
+                      Set<int?> branchIds = {};
+                      
+                      for (var bq in tempBranchQuantities) {
+                        // تحقق من وجود فرع وكمية
+                        if (bq.branch == null || 
+                            bq.quantityController.text.isEmpty) {
+                          isValid = false;
+                          CustomPopUp.callMyToast(
+                            context: context,
+                            massage: 'الرجاء اختيار الفرع وإدخال الكمية لجميع الصفوف',
+                            state: PopUpState.ERROR,
+                          );
+                          break;
+                        }
+                        
+                        // تحقق من عدم تكرار الفرع
+                        if (branchIds.contains(bq.branch?.id)) {
+                          isValid = false;
+                          CustomPopUp.callMyToast(
+                            context: context,
+                            massage: 'لا يمكن تكرار نفس الفرع',
+                            state: PopUpState.ERROR,
+                          );
+                          break;
+                        }
+                        branchIds.add(bq.branch?.id);
+                      }
+
+                      if (isValid) {
+                        // تحديث الكميات من الـ controllers
+                        for (var bq in tempBranchQuantities) {
+                          bq.qunantity =
+                              int.tryParse(bq.quantityController.text) ?? 0;
+                          bq.branchId = bq.branch?.id;
+                        }
+
+                        cubit.assignBranchQty(
+                            index: index,
+                            branchQuantities: tempBranchQuantities);
+                        Navigator.pop(ctx);
+                        
+                        CustomPopUp.callMyToast(
+                          context: context,
+                          massage: 'تم حفظ الكميات بنجاح',
+                          state: PopUpState.SUCCESS,
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

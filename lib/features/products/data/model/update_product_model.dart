@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/helper/upload_image_to_api.dart';
@@ -13,7 +12,7 @@ class UpdateProductModel {
   final String? name;
   final int? categoryId;
   final String? type;
-  final int? baseUnitId;
+  late int? baseUnitId;
   final String? description;
   final String? imagePath;
   final String? brand;
@@ -92,6 +91,7 @@ class UpdateProductModel {
       productUnits: myProductUnits,
     );
   }
+
   factory UpdateProductModel.copyWith(UpdateProductModel product) {
     return UpdateProductModel(
       id: product.id,
@@ -121,10 +121,11 @@ class UpdateProductModel {
     required String? price,
     required String? brand,
     required TaxesModel? tax,
-    required String? type,
+     String? type,
     required List<ProductUnits>? productUnits,
     int? id,
-  }) {
+  })
+   {
     return UpdateProductModel(
       id: id,
       name: name,
@@ -141,81 +142,97 @@ class UpdateProductModel {
       productUnits: productUnits,
       taxId: tax?.id,
       type: type,
+      
     );
+    
   }
 
   Map<String, dynamic> toJson() {
   final Map<String, dynamic> data = <String, dynamic>{};
+
   data[ApiKeys.id] = id;
   data[ApiKeys.name] = name;
   data[ApiKeys.categoryId] = categoryId;
-  
-
   data[ApiKeys.description] = description;
-  data[ApiKeys.imagepath] = imagePath;
   data[ApiKeys.brand] = brand;
-  data[ApiKeys.createdat] = createdAt;
-  data[ApiKeys.updatedat] = updatedAt;
-  data[ApiKeys.imageurl] = imageUrl;
-  data[ApiKeys.taxid] = tax?.id;
+  data[ApiKeys.taxid] = taxId;
+   data[ApiKeys.type] = type;
 
+  data[ApiKeys.baseUnitId] = baseUnitId;
+
+  if (imagePath != null && imagePath!.isNotEmpty) {
+    data[ApiKeys.image] = imagePath;
+  }
 
   if (productUnits != null) {
-    for (int i = 0; i < productUnits!.length; i++) {
-      if (productUnits![i].branchQty.isNotEmpty) {
-        data.addAll(productUnits![i].toJson(
-          index: i,
-          branches: productUnits![i].branchQty,
-          isUpdate: true,
-        ));
-      } else {
-        data.addAll(productUnits![i].toJson(
-          index: i,
-          branches: [],
-          isUpdate: true,
-        ));
+    int index = 0;
+
+    for (final unit in productUnits!) {
+   
+      data["units[$index][unit_id]"] = unit.unitId ?? unit.unit?.id;
+      
+    
+      data["units[$index][conversion_factor]"] = unit.conversionFactor ?? unit.factoryController?.text ?? "1";
+      
+     
+      if (unit.id != null) {
+        data["units[$index][id]"] = unit.id;
       }
+      
+   
+      data["units[$index][cost_price]"] = unit.costPrice ?? unit.costPriceController?.text;
+      data["units[$index][sale_price_without_tax]"] = unit.salePriceWithoutTax ?? unit.salePriceWithoutTaxController?.text;
+      data["units[$index][sale_price_with_tax]"] = unit.salePriceWithTax ?? unit.salePriceWithTaxController?.text;
+      data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ?? unit.minPriceWithoutTaxController?.text;
+      data["units[$index][min_price_with_tax]"] = unit.minPriceWithTax ?? unit.minPriceWithTaxController?.text;
+      data["units[$index][barcode]"] = unit.barcode ?? unit.barCodeController?.text;
+      data["units[$index][scale_barcode]"] = unit.scaleBarcode ?? unit.scaleBarcodeController?.text;
+      for (int i = 0; i < unit.branchQty.length; i++) {
+        final branchQuantity = unit.branchQty[i];
+        data["units[$index][opening_stocks][$i][branch_id]"] = branchQuantity.branch?.id ?? branchQuantity.branchId;
+        data["units[$index][opening_stocks][$i][quantity]"] = branchQuantity.quantityController.text;
+      }
+    
+
+      index++;
     }
   }
 
   return data;
 }
+  Future<Map<String, dynamic>> toJsonWithoutId({
+    required List<List<BranchQuantity>> branchQuantities,
+  }) async {
+    final Map<String, dynamic> data = <String, dynamic>{};
 
- Future<Map<String, dynamic>> toJsonWithoutId({
-  required List<List<BranchQuantity>> branchQuantities,
-}) async {
-  final Map<String, dynamic> data = <String, dynamic>{};
+    data[ApiKeys.name] = name;
+    data[ApiKeys.description] = description;
 
-  data[ApiKeys.name] = name;
-  data[ApiKeys.description] = description;
+    if (imagePath != null) {
+      data[ApiKeys.image] = await uploadImageToApi(image: File(imagePath!));
+    }
 
-  if (imagePath != null) {
-    data[ApiKeys.image] = await uploadImageToApi(image: File(imagePath!));
+    data[ApiKeys.taxid] = tax?.id;
+    data[ApiKeys.categoryId] = categoryId;
+    data[ApiKeys.brand] = brand;
+
+    if (productUnits != null) {
+      for (int i = 0; i < productUnits!.length; i++) {
+        final unit = productUnits![i];
+        final isExisting = unit.id != null;
+        
+        data.addAll(unit.toJson(
+          index: i,
+          branches: unit.branchQty,
+          isUpdate: isExisting,
+        ));
+      }
+    }
+
+    return data;
   }
-
-  data[ApiKeys.taxid] = tax?.id;
-  data[ApiKeys.categoryId] = categoryId;
-  data[ApiKeys.brand] = brand;
-
-  // **لا تضيف type أو baseUnitId هنا**
-  // data[ApiKeys.type] = type;
-  // data[ApiKeys.baseUnitId] = baseUnitId;
-
- if (productUnits != null) {
-  final existingUnits = productUnits!.where((u) => u.id != null).toList();
-  for (int i = 0; i < existingUnits.length; i++) {
-    data.addAll(existingUnits[i].toJson(
-      index: i,
-      branches: existingUnits[i].branchQty,
-      isUpdate: true,
-    ));
-  }
 }
 
-
-  return data;
-}
-}
 class ProductUnits {
   int? id;
   int? productId;
@@ -242,6 +259,7 @@ class ProductUnits {
   TextEditingController? minPriceWithoutTaxValue;
   String? minPriceWithTax;
   bool isExistingUnit = false;
+
   ProductUnits({
     this.id,
     this.productId,
@@ -265,6 +283,7 @@ class ProductUnits {
     this.salePriceWithTaxController,
     this.minPriceWithTax,
     this.minPriceWithTaxController,
+    this.isExistingUnit = false,
   });
 
   factory ProductUnits.empty() {
@@ -277,6 +296,7 @@ class ProductUnits {
       salePriceWithoutTaxController: TextEditingController(),
       salePriceWithTaxController: TextEditingController(),
       minPriceWithTaxController: TextEditingController(),
+      isExistingUnit: false,
     );
   }
 
@@ -337,6 +357,8 @@ class ProductUnits {
     updatedAt = json['updated_at'];
     minPriceWithoutTax = json['min_price_without_tax'];
     salePriceWithTax = json['sale_price_with_tax'];
+    minPriceWithTax = json['min_price_with_tax'];
+    
     factoryController = TextEditingController(text: conversionFactor ?? "");
     costPriceController = TextEditingController(text: costPrice ?? "");
     salePriceWithoutTaxController =
@@ -345,6 +367,8 @@ class ProductUnits {
         TextEditingController(text: minPriceWithoutTax ?? "");
     salePriceWithTaxController =
         TextEditingController(text: salePriceWithTax ?? "");
+    minPriceWithTaxController =
+        TextEditingController(text: minPriceWithTax ?? "");
     barCodeController = TextEditingController(text: barcode ?? "");
     scaleBarcodeController = TextEditingController(text: scaleBarcode ?? "");
 
@@ -367,30 +391,40 @@ class ProductUnits {
     }
   }
 
+
  Map<String, dynamic> toJson({
   required int index,
   required List<BranchQuantity> branches,
   bool isUpdate = false,
 }) {
   final Map<String, dynamic> data = <String, dynamic>{};
-  if (isUpdate && id == null) return {};
 
-  if (!isUpdate) {
+  if (isUpdate && id != null) {
+    data["units[$index][id]"] = id;
+  } else {
     data["units[$index][unit_id]"] = unitId;
     data["units[$index][conversion_factor]"] = conversionFactor;
   }
 
   data["units[$index][cost_price]"] = costPrice;
   data["units[$index][min_price_without_tax]"] = minPriceWithoutTax;
+  data["units[$index][min_price_with_tax]"] = minPriceWithTax;
   data["units[$index][sale_price_without_tax]"] = salePriceWithoutTax;
+  data["units[$index][sale_price_with_tax]"] = salePriceWithTax;
   data["units[$index][barcode]"] = barcode;
   data["units[$index][scale_barcode]"] = scaleBarcode;
 
   for (int i = 0; i < branches.length; i++) {
-    data["units[$index][opening_stocks][$i][branch_id]"] =
-        branches[i].branch?.id;
-    data["units[$index][opening_stocks][$i][quantity]"] =
-        branches[i].quantityController.text;
+    data["units[$index][opening_stocks][$i][branch_id]"] = branches[i].branch?.id;
+    data["units[$index][opening_stocks][$i][quantity]"] = branches[i].quantityController.text;
+  }
+    if (!isExistingUnit) {
+    for (int i = 0; i < branches.length; i++) {
+      data["units[$index][opening_stocks][$i][branch_id]"] =
+          branches[i].branchId;
+      data["units[$index][opening_stocks][$i][quantity]"] =
+          branches[i].quantityController.text;
+    }
   }
 
   return data;
@@ -401,11 +435,13 @@ class BranchQuantity {
   int? branchId;
   int? qunantity;
   TextEditingController quantityController;
-  BranchQuantity(
-      {required this.branch,
-      required this.branchId,
-      required this.qunantity,
-      required this.quantityController});
+
+  BranchQuantity({
+    required this.branch,
+    required this.branchId,
+    required this.qunantity,
+    required this.quantityController,
+  });
 
   static BranchQuantity from(BranchQuantity branchQuantity) {
     return BranchQuantity(

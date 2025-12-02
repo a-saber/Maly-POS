@@ -236,9 +236,10 @@ class ProductsRepo {
         openingquantity: openingquantity,
         branch: branch,
       );
-      // print(
-      //   "\n ****************** product data : $data ****************** ]n",
-      // );
+
+        print(
+          "\n ****************** product data : $data ****************** ]n",
+        );
       var response = await api.post(
         url: "$url/${product.id}",
         data: data,
