@@ -9,6 +9,7 @@ final class GetAllProductsLoading extends GetAllProductsState {}
 
 final class GetAllProductsSuccess extends GetAllProductsState {}
 final class GetAllProductsSearchProduct extends GetAllProductsState {}
+final class ChangeCategory extends GetAllProductsState {}
 
 final class GetAllProductsFailing extends GetAllProductsState {
   final ApiResponse errMessage;

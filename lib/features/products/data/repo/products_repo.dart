@@ -25,12 +25,15 @@ class ProductsRepo {
   Future<Either<ApiResponse, List<ProductModel>>> getProducts({
     bool isfresh = false,
      String query='',
+    int? categoryId,
 
   }) async {
     try {
       String? url;
-      if(query.isEmpty){
+      if(query.isEmpty&&categoryId==null){
       if (getProductsModel == null || isfresh) {
+        productSavingDataModel=null;
+
         url = await ApiEndPoints.getProducts();
       } else {
         if (getProductsModel!.data?.nextPageUrl == null ) {
@@ -55,7 +58,9 @@ class ProductsRepo {
       }
       else{
 
-        if (productSavingDataModel?.getProductsSearchModel==null || productSavingDataModel?.query!=query) {
+        if (productSavingDataModel?.getProductsSearchModel==null ||
+            productSavingDataModel?.query!=query||
+            (categoryId!=null && productSavingDataModel?.id!=categoryId)) {
           url = await ApiEndPoints.getProducts();
         } else {
           if (productSavingDataModel!.getProductsSearchModel!.data?.nextPageUrl == null) {
@@ -68,13 +73,15 @@ class ProductsRepo {
           url: url,
 
           queryParameters: {
-            'with_category': '1',
+          if(  categoryId==null)  'with_category': '1',
            ApiKeys.search: query,
+            if(categoryId!=null) 'category_id':categoryId,
           },
         );
         if (response.status) {
           productSavingDataModel =  ProductSavingDataModel(
              getProductsSearchModel:  GetProductsModel.fromJson(response.data),
+            id: categoryId,
             query: query
 
           );

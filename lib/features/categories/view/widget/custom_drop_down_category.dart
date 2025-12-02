@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_form_validators.dart';
@@ -14,11 +15,14 @@ class CustomDropDownCategory extends StatelessWidget {
   const CustomDropDownCategory({
     super.key,
     this.value,
-    required this.onChangedCategory,
+    required this.onChangedCategory, this.onClear,
+
   });
 
   final CategoryModel? value;
   final Function(CategoryModel?) onChangedCategory;
+  final VoidCallback? onClear;
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +60,7 @@ class CustomDropDownCategory extends StatelessWidget {
           },
           containerBuilder: (p0, p1) {
             return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -84,11 +89,19 @@ class CustomDropDownCategory extends StatelessWidget {
           },
           builder: (CategoryModel? category) {
             if (category != null) {
-              return Text(
-                category.name ?? '-',
-                style: AppFontStyle.formText(
-                  context: context,
-                ),
+              return Row(
+                children: [
+                value!=null?  IconButton(onPressed: (){
+                  onClear?.call();
+                }, icon: Icon(CupertinoIcons.xmark)):SizedBox(),
+
+                  Text(
+                    category.name ?? '-',
+                    style: AppFontStyle.formText(
+                      context: context,
+                    ),
+                  ),
+                ],
               );
             } else {
               return SizedBox();

@@ -114,8 +114,7 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                   ),
                   CustomDropDownCategory(
                     value: cubit.category,
-                    onChangedCategory: (category) =>
-                        AddProductCubit.get(context).onChangeCategory(category),
+                    onChangedCategory: (category) => AddProductCubit.get(context).onChangeCategory(category),
                   ),
                   SizedBox(
                     height: 20,
