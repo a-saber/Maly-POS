@@ -183,7 +183,7 @@ class ProductModel {
     data[ApiKeys.id] = id;
     data[ApiKeys.name] = name;
     data[ApiKeys.categoryId] = categoryId;
-    data[ApiKeys.unitId] = unitId;
+    data['base_unit_id'] = unit?.id;
     data[ApiKeys.description] = description;
     data[ApiKeys.imagepath] = imagePath;
     data[ApiKeys.barcode] = barcode;
@@ -210,7 +210,7 @@ class ProductModel {
 
     data[ApiKeys.name] = name;
     data[ApiKeys.categoryId] = categoryId;
-    data[ApiKeys.unitId] = unitId;
+    data['base_unit_id'] = unit?.id;
     data[ApiKeys.description] = description;
     if (imagePath != null) {
       data[ApiKeys.image] = await uploadImageToApi(image: File(imagePath!));
