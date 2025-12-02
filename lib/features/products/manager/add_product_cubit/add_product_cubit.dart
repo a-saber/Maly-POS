@@ -59,10 +59,14 @@ class AddProductCubit extends Cubit<AddProductState> {
         unit.unitId ??= unit.unit?.id;
         unit.conversionFactor ??= unit.conversionFactor ?? "1";
       }
-
+       if (productUnits.isEmpty || productUnits[0].unit == null) {
+      autovalidateMode = AutovalidateMode.always;
+      emit(AddProductUnValidate());
+      return;
+    }
       UpdateProductModel updateProductModel =
           UpdateProductModel.createWithoutId(
-        unit: null,
+        unit: productUnits[0].unit,
         productUnits: productUnits,
 
         name: nameController.text,

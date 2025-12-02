@@ -207,7 +207,9 @@ class UpdateProductModel {
 
     data[ApiKeys.name] = name;
     data[ApiKeys.description] = description;
-
+    if (productUnits != null && productUnits!.isNotEmpty) {
+    data[ApiKeys.baseUnitId] = productUnits![0].unitId ?? productUnits![0].unit?.id;
+  }
     if (imagePath != null) {
       data[ApiKeys.image] = await uploadImageToApi(image: File(imagePath!));
     }
