@@ -80,7 +80,7 @@ class Data {
 
 class ShiftData {
   int? id;
-  int? openingQuantity;
+  String? openingQuantity;
   String? createdAt;
   String? updatedAt;
   int? userId;
