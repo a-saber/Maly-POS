@@ -53,7 +53,8 @@ class AddProductCubit extends Cubit<AddProductState> {
       for (var unit in productUnits) {
         unit.costPrice = unit.costPriceController?.text;
         unit.minPriceWithoutTax = unit.minPriceWithoutTaxController?.text;
-        unit.salePriceWithoutTax = unit.salePriceWithoutTaxController?.text;
+        print('test 0001 ${unit.salePriceWithoutTax}');
+        // unit.salePriceWithoutTax = unit.salePriceWithoutTaxController?.text;
         unit.barcode = unit.barCodeController?.text;
         unit.scaleBarcode = unit.scaleBarcodeController?.text;
         unit.unitId ??= unit.unit?.id;
@@ -281,9 +282,11 @@ class AddProductCubit extends Cubit<AddProductState> {
 
     double newCost = baseCost * factor;
     double newMinWithoutTax = baseMinPriceWithoutTax * factor;
-    double newSaleWithoutTax = baseSalePriceWithoutTax * factor;
-    double newMinWithTax = newMinWithoutTax * factor;
-    double newSaleWithTax = newSaleWithoutTax * factor;
+    // double newSaleWithoutTax = baseSalePriceWithoutTax * factor;
+    double newSaleWithoutTax = (double.tryParse(productUnits.first.salePriceWithoutTax??'0')??0) * factor;
+    print('new 053 ${newSaleWithoutTax}');
+    double newMinWithTax = newMinWithoutTax ;
+    double newSaleWithTax = newSaleWithoutTax ;
 
     if (taxes != null) {
       double percentage = double.tryParse(taxes!.percentage ?? '') ?? 0;
@@ -303,6 +306,8 @@ class AddProductCubit extends Cubit<AddProductState> {
         newMinWithTax.toStringAsFixed(2);
     productUnits[index].salePriceWithoutTaxController?.text =
         newSaleWithoutTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithoutTax =
+        newSaleWithoutTax.toStringAsFixed(10);
     productUnits[index].salePriceWithTaxController?.text =
         newSaleWithTax.toStringAsFixed(2);
 
@@ -413,6 +418,9 @@ class AddProductCubit extends Cubit<AddProductState> {
           double valueWithoutTax = (value / (1 + (taxesPercentage / 100)));
           productUnits.salePriceWithoutTaxController?.text =
               valueWithoutTax.toStringAsFixed(2);
+          productUnits.salePriceWithoutTax =
+              valueWithoutTax.toStringAsFixed(10);
+
         }
       }
     } else {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 
@@ -30,6 +31,33 @@ class PrinterHelper {
   Map<String, DiscoveredPrinter> get discoveredDevices => _devices;
 
   /// --- DEVICE SCANNING SECTION ---
+  Future<bool> ensureBluetoothPermissions() async {
+    if (!await Permission.bluetoothScan.isGranted) {
+      await Permission.bluetoothScan.request();
+    }
+
+    if (!await Permission.bluetoothConnect.isGranted) {
+      await Permission.bluetoothConnect.request();
+    }
+
+    // LOCATION REQUIRED for BLE scanning in Android
+    if (!await Permission.location.isGranted) {
+      await Permission.location.request();
+    }
+
+    final locationService = await Permission.location.serviceStatus;
+    if (!locationService.isEnabled) {
+      return false;
+    }
+
+    final scanStatus = await Permission.bluetoothScan.status;
+    final connectStatus = await Permission.bluetoothConnect.status;
+    final locationStatus = await Permission.location.status;
+
+    return scanStatus.isGranted &&
+        connectStatus.isGranted &&
+        locationStatus.isGranted;
+  }
 
   Future<void> startScan({VoidCallback? onUpdate}) async {
     _devices.clear();
