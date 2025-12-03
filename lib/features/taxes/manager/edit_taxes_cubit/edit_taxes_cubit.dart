@@ -9,7 +9,7 @@ part 'edit_taxes_state.dart';
 class EditTaxesCubit extends Cubit<EditTaxesState> {
   EditTaxesCubit(this.repo, this.tax) : super(EditTaxesInitial()) {
     titleController = TextEditingController(text: tax.title);
-    percentageController = TextEditingController(text: tax.percentage);
+    percentageController = TextEditingController(text: (double.tryParse(tax.percentage??'0') ?? 0).toStringAsFixed(1));
   }
 
   static EditTaxesCubit get(context) => BlocProvider.of(context);

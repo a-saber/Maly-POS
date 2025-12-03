@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/features/shifts/data/model/getshift.dart';
 import 'package:pos_app/generated/l10n.dart';
@@ -32,15 +33,15 @@ class OrderDetailsView extends StatelessWidget {
                           _row(S.of(context).orderId,
                               order.id?.toString() ?? "-"),
                           _row(S.of(context).subTotal,
-                              order.subtotal?.toString() ?? "-"),
+                              order.subtotal?.toAmount() ?? "-"),
                           _row(S.of(context).discount,
-                              order.discountTotal?.toString() ?? "-"),
+                              order.discountTotal?.toAmount() ?? "-"),
                           _row(S.of(context).totalAfterDiscount,
-                              order.totalAfterDiscount?.toString() ?? "-"),
+                              order.totalAfterDiscount?.toAmount() ?? "-"),
                           _row(S.of(context).tax,
-                              order.taxTotal?.toString() ?? "-"),
+                              order.taxTotal?.toAmount() ?? "-"),
                           _row(S.of(context).totalAfterTax,
-                              order.totalAfterTax?.toString() ?? "-"),
+                              order.totalAfterTax?.toAmount() ?? "-"),
                           _row(S.of(context).paymentmethod,
                               order.paymentMethod ?? "-"),
                           _row(S.of(context).orderType, order.orderType ?? "-"),
@@ -175,7 +176,7 @@ class OrderDetailsView extends StatelessWidget {
                             Expanded(
                               child: _row(
                                 S.of(context).price,
-                                order.saleProducts?[index].product?.price
+                                order.saleProducts?[index].product?.price.toAmount()
                                         ?.toString() ??
                                     '-',
                               ),
@@ -185,7 +186,7 @@ class OrderDetailsView extends StatelessWidget {
                                 S.of(context).priceAfterTax,
                                 order.saleProducts?[index].product
                                         ?.priceAfterTax
-                                        ?.toString() ??
+                                        ?.toString().toAmount() ??
                                     '-',
                               ),
                             ),

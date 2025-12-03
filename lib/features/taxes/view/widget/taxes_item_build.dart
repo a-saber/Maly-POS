@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/taxes/view/widget/show_delete_taxes_confirm_dialog.dart';
 import 'package:pos_app/generated/l10n.dart';
@@ -56,8 +57,9 @@ class TaxesItemBuild extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
+
                 Text(
-                  "${taxes.percentage ?? 0} %",
+                  "${(taxes.percentage).toAmount() ?? 0} %",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -29,84 +29,88 @@ class CustomDropDownCategory extends StatelessWidget {
     return BlocProvider.value(
       value: MyServiceLocator.getSingleton<SearchCategoryCubit>(),
       child: Builder(builder: (context) {
-        return CustomDropdown<CategoryModel>(
-          // search: true,
-          hint: S.of(context).selectCategory,
-          compareFn: (item1, item2) {
-            if (item1.name == null || item2.name == null) {
-              return false;
-            } else {
-              return (item1.name!
-                      .toLowerCase()
-                      .contains(item2.name!.toLowerCase()) ||
-                  item2.name!
-                      .toLowerCase()
-                      .contains(item1.name!.toLowerCase()));
-            }
-          },
-          validator: (value) =>
-              MyFormValidators.validateTypeRequired<CategoryModel>(value,
-                  context: context),
-          value: value,
-          items: SearchCategoryCubit.get(context).categories,
-          filterFn: (item, filter) {
-            return item.name?.toLowerCase().contains(filter.toLowerCase()) ??
-                false;
-          },
-          onChanged: (CategoryModel? category) {
-            // if (category != null) {
-            //   widget.onChangedGroup(category);
-            // }
-          },
-          containerBuilder: (p0, p1) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomFormField(
-                    hintText: S.of(context).searchCategory,
-                    controller: TextEditingController(
-                        text: SearchCategoryCubit.get(context).query),
-                    onChanged: (value) =>
-                        SearchCategoryCubit.get(context).onChangeSearch(
-                      query: value,
+        return  BlocBuilder<SearchCategoryCubit, SearchCategoryState>(
+            builder: (context, state) {
+            return CustomDropdown<CategoryModel>(
+              // search: true,
+              hint: S.of(context).selectCategory,
+              compareFn: (item1, item2) {
+                if (item1.name == null || item2.name == null) {
+                  return false;
+                } else {
+                  return (item1.name!
+                          .toLowerCase()
+                          .contains(item2.name!.toLowerCase()) ||
+                      item2.name!
+                          .toLowerCase()
+                          .contains(item1.name!.toLowerCase()));
+                }
+              },
+              validator: (value) =>
+                  MyFormValidators.validateTypeRequired<CategoryModel>(value,
+                      context: context),
+              value: value,
+              items: SearchCategoryCubit.get(context).categories,
+              filterFn: (item, filter) {
+                return item.name?.toLowerCase().contains(filter.toLowerCase()) ??
+                    false;
+              },
+              onChanged: (CategoryModel? category) {
+                // if (category != null) {
+                //   widget.onChangedGroup(category);
+                // }
+              },
+              containerBuilder: (p0, p1) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomFormField(
+                        hintText: S.of(context).searchCategory,
+                        controller: TextEditingController(
+                            text: SearchCategoryCubit.get(context).query),
+                        onChanged: (value) =>
+                            SearchCategoryCubit.get(context).onChangeSearch(
+                          query: value,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: SearchCategoryBuild(
-                    name: value?.name ?? '',
-                    child: p1,
-                    onTap: (p0) {
-                      onChangedCategory(p0);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-              ],
-            );
-          },
-          builder: (CategoryModel? category) {
-            if (category != null) {
-              return Row(
-                children: [
-                value!=null?  IconButton(onPressed: (){
-                  onClear?.call();
-                }, icon: Icon(CupertinoIcons.xmark)):SizedBox(),
+                    Expanded(
+                      child: SearchCategoryBuild(
+                        name: value?.name ?? '',
+                        child: p1,
+                        onTap: (p0) {
+                          onChangedCategory(p0);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+              builder: (CategoryModel? category) {
+                if (category != null) {
+                  return Row(
+                    children: [
+                    value!=null?  IconButton(onPressed: (){
+                      onClear?.call();
+                    }, icon: Icon(CupertinoIcons.xmark)):SizedBox(),
 
-                  Text(
-                    category.name ?? '-',
-                    style: AppFontStyle.formText(
-                      context: context,
-                    ),
-                  ),
-                ],
-              );
-            } else {
-              return SizedBox();
-            }
-          },
+                      Text(
+                        category.name ?? '-',
+                        style: AppFontStyle.formText(
+                          context: context,
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return SizedBox();
+                }
+              },
+            );
+          }
         );
       }),
     );

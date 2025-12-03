@@ -93,6 +93,7 @@ class GetCategoryCubit extends Cubit<GetCategoryState> {
     }
   }
 
+
   void deleteCategory(int id) {
     categories.removeWhere((element) => element.id == id);
     emit(GetCategorySuccess());

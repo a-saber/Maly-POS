@@ -15,6 +15,8 @@ import 'package:pos_app/features/categories/view/widget/edit_category_body.dart'
 import 'package:pos_app/features/categories/view/widget/show_delete_category_confirm_dialog.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../manager/search_category/search_category_cubit.dart';
+
 class EditCategoryView extends StatelessWidget {
   const EditCategoryView({super.key, required this.category});
   final CategoryModel category;
@@ -43,6 +45,7 @@ class EditCategoryView extends StatelessWidget {
               GetCategoryCubit.get(context).updateCategory(
                 state.category,
               );
+              MyServiceLocator.getSingleton<SearchCategoryCubit>().updateCategory(category: state.category);
 
               CustomPopUp.callMyToast(
                   context: context,

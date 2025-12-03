@@ -16,14 +16,22 @@ import 'package:pos_app/features/taxes/view/widget/show_delete_taxes_confirm_dia
 import 'package:pos_app/features/taxes/view/widget/taxes_data_build.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../manager/search_taxes/search_taxes_cubit.dart';
+
 class EditTaxesView extends StatelessWidget {
   const EditTaxesView({super.key, required this.taxes});
   final TaxesModel taxes;
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          EditTaxesCubit(MyServiceLocator.getSingleton<TaxesRepo>(), taxes),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+            create: (context) =>
+                EditTaxesCubit(MyServiceLocator.getSingleton<TaxesRepo>(), taxes)),
+        BlocProvider.value(
+          value:  MyServiceLocator.getSingleton<SearchTaxesCubit>(),
+        ),
+      ],
       child: Scaffold(
         appBar: CustomAppBar(
           title: S.of(context).editTax,
@@ -42,6 +50,8 @@ class EditTaxesView extends StatelessWidget {
               GetAllTaxesCubit.get(context).updateTaxes(
                 taxes: state.tax,
               );
+              SearchTaxesCubit.get(context).updateTaxes(taxes: state.tax,);
+
               CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).updatedSuccess,

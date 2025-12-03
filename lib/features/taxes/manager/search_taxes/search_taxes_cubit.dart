@@ -29,6 +29,7 @@ class SearchTaxesCubit extends Cubit<SearchTaxesState> {
       getSearchTaxes();
     }
 
+
     scrollController.addListener(
       () {
         if (scrollController.position.maxScrollExtent ==
@@ -79,11 +80,13 @@ class SearchTaxesCubit extends Cubit<SearchTaxesState> {
     response.fold((errMessage) {
       emit(SearchTaxesFailing(errMessage: errMessage));
     }, (taxes) {
+
       searchTaxes = taxes;
       ifNotFillScreen();
       emit(SearchTaxesSuccess());
     });
   }
+
 
   bool _canLoadingPagination = false;
 
@@ -104,6 +107,21 @@ class SearchTaxesCubit extends Cubit<SearchTaxesState> {
 
       emit(SearchTaxesSuccess());
     });
+  }
+  void addTaxes({required TaxesModel taxes}) {
+    if (!canLoading()) {
+      searchTaxes.add(taxes);
+      emit(SearchTaxesSuccess());
+    }
+  }
+  void updateTaxes({required TaxesModel taxes}) {
+    searchTaxes[searchTaxes.indexWhere((element) => element.id == taxes.id)] =
+        taxes;
+    emit(SearchTaxesSuccess());
+  }
+  void deleteTaxes({required int id}) {
+    searchTaxes.removeWhere((element) => element.id == id);
+    emit(SearchTaxesSuccess());
   }
 
   void reset() {
