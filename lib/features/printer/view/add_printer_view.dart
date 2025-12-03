@@ -123,8 +123,8 @@ class EditPrinterView extends StatelessWidget {
                         text: S.of(context).testPrint,
                         onPressed: () async {
                           if (printerModel.discoveredPrinter != null) {
-                            await PrinterHelper()
-                                .printTest(printerModel.discoveredPrinter!);
+                                await PrinterHelper()
+                                    .printTest(printerModel.discoveredPrinter!);
                           }
                         })
                   ],

@@ -23,7 +23,7 @@ class CustomGridViewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return CustomScrollView(
       controller: controller,
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics: const AlwaysScrollableScrollPhysics(), 
       slivers: [
         SliverGrid.builder(
           // shrinkWrap: true,
@@ -35,8 +35,8 @@ class CustomGridViewCard extends StatelessWidget {
                     .clamp(1, 5),
             crossAxisSpacing: 10,
             mainAxisSpacing: 0,
-            mainAxisExtent:
-                heightOfCard ?? MediaQuery.of(context).textScaler.scale(100),
+
+            mainAxisExtent: heightOfCard ?? MediaQuery.of(context).textScaler.scale(100),
             // childAspectRatio: (widthOfCard ?? 250) /
             //     (heightOfCard ?? MediaQuery.of(context).textScaler.scale(100)),
           ),

@@ -97,6 +97,7 @@ import 'package:pos_app/features/users/view/user_view.dart';
 
 import '../../features/csid _generation/manager/cubit/csid_generation_setting_cubit.dart';
 import '../../features/csid _generation/view/csid_generation_view.dart';
+import '../../features/units/manager/search_unit_cubit/search_unit_cubit.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -488,8 +489,13 @@ class AppRoutes {
           );
         case products:
           return customGetPageRouteBuilder(
-            page: BlocProvider.value(
-              value: MyServiceLocator.getIt<GetAllProductsCubit>()..init(),
+            page: MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: MyServiceLocator.getIt<GetAllProductsCubit>()..init()),
+                BlocProvider.value(value:  MyServiceLocator.getIt<SearchUnitCubit>(),)
+
+
+              ],
               child: ProductsView(),
             ),
           );

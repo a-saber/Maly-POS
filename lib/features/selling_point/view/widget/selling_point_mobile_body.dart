@@ -101,8 +101,7 @@ class _SellingPointMobileBodyState extends State<SellingPointMobileBody> {
                 //   height: 20,
                 // ),
                 BlocProvider.value(
-                  value: MyServiceLocator.getSingleton<GetCategoryCubit>()
-                    ..init(),
+                  value: MyServiceLocator.getSingleton<GetCategoryCubit>()..init(),
                   child: SizedBox(
                     height: MediaQuery.of(context).textScaler.scale(80),
                     child: CategoryCubitBuilder(

@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
 import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_font_style.dart';
-import '../../../../generated/l10n.dart';
 
 class CsidTypeWidget extends StatelessWidget {
   const CsidTypeWidget({super.key,  this.isSelect =false, this.onTap, this.title});

@@ -27,11 +27,11 @@ class AddProductCubit extends Cubit<AddProductState> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController pricePerUnitController = TextEditingController();
-double baseCost = 0;
-double baseMinPriceWithoutTax = 0;
-double baseMinPriceWithTax = 0;
-double baseSalePriceWithoutTax = 0;
-double baseSalePriceWithTax = 0;
+  double baseCost = 0;
+  double baseMinPriceWithoutTax = 0;
+  double baseMinPriceWithTax = 0;
+  double baseSalePriceWithoutTax = 0;
+  double baseSalePriceWithTax = 0;
 
   XFile? image;
   CategoryModel? category;
@@ -50,10 +50,25 @@ double baseSalePriceWithTax = 0;
     emit(AddProductLoading());
 
     if (formKey.currentState?.validate() == true) {
+      for (var unit in productUnits) {
+        unit.costPrice = unit.costPriceController?.text;
+        unit.minPriceWithoutTax = unit.minPriceWithoutTaxController?.text;
+        unit.salePriceWithoutTax = unit.salePriceWithoutTaxController?.text;
+        unit.barcode = unit.barCodeController?.text;
+        unit.scaleBarcode = unit.scaleBarcodeController?.text;
+        unit.unitId ??= unit.unit?.id;
+        unit.conversionFactor ??= unit.conversionFactor ?? "1";
+      }
+       if (productUnits.isEmpty || productUnits[0].unit == null) {
+      autovalidateMode = AutovalidateMode.always;
+      emit(AddProductUnValidate());
+      return;
+    }
       UpdateProductModel updateProductModel =
           UpdateProductModel.createWithoutId(
-        unit: null,
+        unit: productUnits[0].unit,
         productUnits: productUnits,
+
         name: nameController.text,
         description: descriptionController.text,
         category: category,
@@ -63,53 +78,27 @@ double baseSalePriceWithTax = 0;
         tax: taxes,
         type: productType?.value,
       );
+      Map<String, dynamic> jsonToSend =
+          await updateProductModel.toJsonWithoutId(
+        branchQuantities: productUnits.map((u) => u.branchQty).toList(),
+      );
+      print("=============== JSON TO SEND ===============");
+      print(jsonToSend);
+      print("=============== END JSON ===============");
       var response = await repo.addUpdateProduct(
         updateProduct: updateProductModel,
       );
+      Map<String, dynamic> jsonafterSend =
+          await updateProductModel.toJsonWithoutId(
+        branchQuantities: productUnits.map((u) => u.branchQty).toList(),
+      );
+      print("=============== JSON TO SEND ===============");
+      print(jsonToSend);
+      print("=============== END JSON ===============");
+
       response.fold(
         (error) => emit(AddProductFailing(errMessage: error)),
-        (r) => emit(AddProductSuccess(
-          product: r,
-        )),
-      );
-      print("=============== PRODUCT UNITS TO SEND ===============");
-for (int i = 0; i < productUnits.length; i++) {
-  final unit = productUnits[i];
-  print("----- Unit #$i -----");
-  print("Unit ID: ${unit.unit?.id}");
-  print("Factory: ${unit.factoryController?.text}");
-  print("Cost: ${unit.costPriceController?.text}");
-  print("Min Price Without Tax: ${unit.minPriceWithoutTaxController?.text}");
-  print("Min Price With Tax: ${unit.minPriceWithTaxController?.text}");
-  print("Sale Price Without Tax: ${unit.salePriceWithoutTaxController?.text}");
-  print("Sale Price With Tax: ${unit.salePriceWithTaxController?.text}");
-  print("----------------------------------------");
-}
-print("=============== END UNITS ===============");
-
-      // TODO : Add Product
-      var reponse = await repo.addProduct(
-        unit: unit!,
-        openingquantity: openingQuantityController.text.trim(),
-        branch: branch,
-        product: ProductModel.createWithoutId(
-          name: nameController.text,
-          description: descriptionController.text,
-          category: category,
-          unit: unit,
-          image: image == null ? null : File(image!.path),
-          price: pricePerUnitController.text,
-          barcode: barCodeController.text,
-          brand: brandController.text,
-          tax: taxes,
-          type: productType?.value,
-        ),
-      );
-      reponse.fold(
-        (error) => emit(AddProductFailing(errMessage: error)),
-        (r) => emit(AddProductSuccess(
-          product: r,
-        )),
+        (r) => emit(AddProductSuccess(product: r)),
       );
     } else {
       autovalidateMode = AutovalidateMode.always;
@@ -172,7 +161,6 @@ print("=============== END UNITS ===============");
   }
 
 
-
   String decimalToStringForUI(Decimal value, {int fraction = 2}) {
     final str = value.toString();
     if (!str.contains('.')) {
@@ -211,105 +199,115 @@ print("=============== END UNITS ===============");
   }
 
   void onChangeMinPriceWithTax({required int index, required String newValue}) {
-    if (newValue.isEmpty) {
-      productUnits[index].minPriceWithoutTaxController?.text = "0";
-      emit(AddProductOnPriceChange());
-      return;
-    }
-
-    try {
-      Decimal valueWithTax = Decimal.parse(newValue);
-      String percentageStr = taxes?.percentage ?? "0";
-      Decimal percentageDecimal = Decimal.parse(percentageStr);
-
-      Decimal percentFraction =
-          DecimalHelper.divide(percentageDecimal.toString(), "100");
-
-      Decimal onePlusFraction =
-          DecimalHelper.add("1", percentFraction.toString());
-
-      Decimal beforeTax = DecimalHelper.divide(
-          valueWithTax.toString(), onePlusFraction.toString());
-
-      productUnits[index].minPriceWithTaxController?.text =
-          decimalToStringForUI(beforeTax);
-    } catch (_) {
-      productUnits[index].minPriceWithoutTaxController?.text = "0";
-    }
-
+  if (newValue.isEmpty) {
+    productUnits[index].minPriceWithoutTaxController?.text = "0";
     emit(AddProductOnPriceChange());
+    return;
   }
+
+  try {
+    Decimal valueWithTax = Decimal.parse(newValue);
+    String percentageStr = taxes?.percentage ?? "0";
+    Decimal percentageDecimal = Decimal.parse(percentageStr);
+
+    Decimal percentFraction = DecimalHelper.divide(percentageDecimal.toString(), "100");
+    Decimal onePlusFraction = DecimalHelper.add("1", percentFraction.toString());
+
+    Decimal beforeTax = DecimalHelper.divide(valueWithTax.toString(), onePlusFraction.toString());
+
+   
+    productUnits[index].minPriceWithoutTaxController?.text =
+        decimalToStringForUI(beforeTax);
+  } catch (_) {
+    productUnits[index].minPriceWithoutTaxController?.text = "0";
+  }
+
+  emit(AddProductOnPriceChange());
+}
+
 
   void onUnitChangedd({required UnitModel unitModel, required int index}) {
-  productUnits[index].unit = unitModel;
+    productUnits[index].unit = unitModel;
 
-  if (index != 0) {
-    updateUnitPrices(index);
-  }
-
-  emit(AddProductChangeUnit());
-}
-
-void onChangeCost(int index) {
-  if (productUnits.isEmpty) return;
-
-  if (index == 0) {
-   
-    baseCost = double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
-    baseMinPriceWithoutTax = double.tryParse(productUnits[0].minPriceWithoutTaxController?.text ?? '') ?? baseCost;
-    baseMinPriceWithTax = double.tryParse(productUnits[0].minPriceWithTaxController?.text ?? '') ?? baseMinPriceWithoutTax;
-    baseSalePriceWithoutTax =
-    double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
-
-baseSalePriceWithTax =
-    double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ?? 0;
-
-
-   
-    for (int i = 1; i < productUnits.length; i++) {
-      updateUnitPrices(i);
+    if (index != 0) {
+      updateUnitPrices(index);
     }
-  } else {
-    emit(UpdateProductUnitsCostWarning(
-      index: index,
-      factory: int.tryParse(productUnits[index].factoryController?.text ?? '0') ?? 0,
-      myCost: double.tryParse(productUnits[index].costPriceController?.text ?? '0') ?? 0,
-    ));
+
+    emit(AddProductChangeUnit());
   }
 
-  emit(UpdateProductUnitsCost());
-}
+  void onChangeCost(int index) {
+    if (productUnits.isEmpty) return;
 
+    if (index == 0) {
+      baseCost =
+          double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
+              0;
+      baseMinPriceWithoutTax = double.tryParse(
+              productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
+          baseCost;
+      baseMinPriceWithTax = double.tryParse(
+              productUnits[0].minPriceWithTaxController?.text ?? '') ??
+          baseMinPriceWithoutTax;
+      baseSalePriceWithoutTax = double.tryParse(
+              productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
+          0;
 
+      baseSalePriceWithTax = double.tryParse(
+              productUnits[0].salePriceWithTaxController?.text ?? '0') ??
+          0;
 
-void updateUnitPrices(int index) {
-  int factor = int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
-
-  double newCost = baseCost * factor;
-  double newMinWithoutTax = baseMinPriceWithoutTax * factor;
-  double newSaleWithoutTax = baseSalePriceWithoutTax * factor;
-  double newMinWithTax = newMinWithoutTax*factor;
-  double newSaleWithTax = newSaleWithoutTax*factor;
-
-  if (taxes != null) {
-    double percentage = double.tryParse(taxes!.percentage ?? '') ?? 0;
-
-    if (percentage > 0) {
-      newMinWithTax = newMinWithoutTax + (newMinWithoutTax * percentage / 100);
-      newSaleWithTax = newSaleWithoutTax + (newSaleWithoutTax * percentage / 100);
+      for (int i = 1; i < productUnits.length; i++) {
+        updateUnitPrices(i);
+      }
+    } else {
+      emit(UpdateProductUnitsCostWarning(
+        index: index,
+        factory:
+            int.tryParse(productUnits[index].factoryController?.text ?? '0') ??
+                0,
+        myCost: double.tryParse(
+                productUnits[index].costPriceController?.text ?? '0') ??
+            0,
+      ));
     }
+
+    emit(UpdateProductUnitsCost());
   }
 
+  void updateUnitPrices(int index) {
+    int factor =
+        int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
 
-  productUnits[index].costPriceController?.text = newCost.toStringAsFixed(2);
-  productUnits[index].minPriceWithoutTaxController?.text = newMinWithoutTax.toStringAsFixed(2);
-  productUnits[index].minPriceWithTaxController?.text = newMinWithTax.toStringAsFixed(2);
-  productUnits[index].salePriceWithoutTaxController?.text = newSaleWithoutTax.toStringAsFixed(2);
-  productUnits[index].salePriceWithTaxController?.text = newSaleWithTax.toStringAsFixed(2);
+    double newCost = baseCost * factor;
+    double newMinWithoutTax = baseMinPriceWithoutTax * factor;
+    double newSaleWithoutTax = baseSalePriceWithoutTax * factor;
+    double newMinWithTax = newMinWithoutTax * factor;
+    double newSaleWithTax = newSaleWithoutTax * factor;
 
-  emit(AddProductChangeUnit());
-}
+    if (taxes != null) {
+      double percentage = double.tryParse(taxes!.percentage ?? '') ?? 0;
 
+      if (percentage > 0) {
+        newMinWithTax =
+            newMinWithoutTax + (newMinWithoutTax * percentage / 100);
+        newSaleWithTax =
+            newSaleWithoutTax + (newSaleWithoutTax * percentage / 100);
+      }
+    }
+
+    productUnits[index].costPriceController?.text = newCost.toStringAsFixed(2);
+    productUnits[index].minPriceWithoutTaxController?.text =
+        newMinWithoutTax.toStringAsFixed(2);
+    productUnits[index].minPriceWithTaxController?.text =
+        newMinWithTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithoutTaxController?.text =
+        newSaleWithoutTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithTaxController?.text =
+        newSaleWithTax.toStringAsFixed(2);
+
+    emit(AddProductChangeUnit());
+  }
 
   void _changeMinAndCostWithTaxes() {
     for (int i = 0; i < productUnits.length; i++) {
@@ -423,7 +421,7 @@ void updateUnitPrices(int index) {
     }
     emit(UpdateProductUnitsSalesPrice());
   }
-
+  
   @override
   Future<void> close() {
     nameController.dispose();

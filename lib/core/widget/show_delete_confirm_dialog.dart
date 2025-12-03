@@ -58,8 +58,8 @@ void deleteConfirmationDialogSuccess(
 }
 
 void deleteConfirmationDialogError(BuildContext ctx, String error) {
-  CustomPopUp.callMyToast(
-      context: ctx, massage: error, state: PopUpState.ERROR);
+
+  CustomPopUp.callMyToast(context: ctx, massage: error, state: PopUpState.ERROR);
 }
 
 Widget deleteConfirmationDialogLoading() => CustomLoading();

@@ -10,29 +10,42 @@ import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
+import '../../../units/data/model/get_unit_model.dart';
+import '../model/product_saving_data_model.dart';
+
 class ProductsRepo {
   final ApiHelper api;
   GetProductsModel? getProductsModel;
   GetProductsModel? searchProductsModel;
+  GetUnitModel? getUnitModel;
+  ProductSavingDataModel? productSavingDataModel;
 
   ProductsRepo({required this.api});
 
   Future<Either<ApiResponse, List<ProductModel>>> getProducts({
     bool isfresh = false,
+     String query='',
+    int? categoryId,
+
   }) async {
     try {
       String? url;
+      if(query.isEmpty&&categoryId==null){
       if (getProductsModel == null || isfresh) {
+        productSavingDataModel=null;
+
         url = await ApiEndPoints.getProducts();
       } else {
-        if (getProductsModel!.data?.nextPageUrl == null) {
+        if (getProductsModel!.data?.nextPageUrl == null ) {
           return Right([]);
-        } else {
+        }
+        else {
           url = getProductsModel!.data!.nextPageUrl!;
         }
       }
       var response = await api.get(
         url: url,
+        queryParameters: {'with_category': '1'},
       );
       if (response.status) {
         getProductsModel = GetProductsModel.fromJson(response.data);
@@ -41,6 +54,45 @@ class ProductsRepo {
         return Left(
           response,
         );
+      }
+      }
+      else{
+
+        if (productSavingDataModel?.getProductsSearchModel==null ||
+            productSavingDataModel?.query!=query||
+            (categoryId!=null && productSavingDataModel?.id!=categoryId)||(categoryId==null&&query.isNotEmpty)
+        ) {
+          url = await ApiEndPoints.getProducts();
+        } else {
+          if (productSavingDataModel!.getProductsSearchModel!.data?.nextPageUrl == null) {
+            return Right([]);
+          } else {
+            url = productSavingDataModel!.getProductsSearchModel!.data!.nextPageUrl!;
+          }
+        }
+        var response = await api.get(
+          url: url,
+
+          queryParameters: {
+          if(  categoryId==null)  'with_category': '1',
+           ApiKeys.search: query,
+            if(categoryId!=null) 'category_id':categoryId,
+          },
+        );
+        if (response.status) {
+          productSavingDataModel =  ProductSavingDataModel(
+             getProductsSearchModel:  GetProductsModel.fromJson(response.data),
+            id: categoryId,
+            query: query
+
+          );
+          return Right(productSavingDataModel!.getProductsSearchModel!.data!.data!);
+        } else {
+          return Left(
+            response,
+          );
+        }
+
       }
     } catch (e) {
       debugPrint(e.toString());
@@ -62,38 +114,25 @@ class ProductsRepo {
         openingquantity: openingquantity,
         branch: branch,
       );
-         if (data['product_units'] != null) {
-      for (var unitData in data['product_units']) {
-        debugPrint("وحدة: ${unitData['unit']['name']}, "
-            "سعر التكلفة: ${unitData['cost_price']}, "
-            "سعر البيع بدون الضريبة: ${unitData['sale_price_without_tax']}, "
-            "اقل سعر بيع: ${unitData['min_price_without_tax']}, "
-            "سعر البيع بالضريبة: ${unitData['sale_price_with_tax']}");
-      }
-    }
       var response = await api.post(
         url: url,
         data: data,
       );
-      if (response.status) {
-        AddOrUpdateProduct addOrUpdateProduct =
-            AddOrUpdateProduct.fromJson(response.data);
-        // if (addOrUpdateProduct.status ?? false) {
-         ProductModel product =
-              ProductModel.fromJson(addOrUpdateProduct.product! .toJson());
-    debugPrint("تم الإرسال للـ API بنجاح!");
-    return Right(product);
-        // } 
-  //       else 
-  //       {
-  //   debugPrint("فشل في إضافة المنتج: ${addOrUpdateProduct.message}");
-  //   return Left(addOrUpdateProduct);
-  // }
-
-  } else {
-    debugPrint("حدث خطأ في الاستجابة: ${response.message}");
-    return Left(response);
+     if (response.status) {
+      AddOrUpdateProduct addOrUpdateProduct =
+          AddOrUpdateProduct.fromJson(response.data);
+      if (addOrUpdateProduct.status ?? false) {
+        return Right(ProductModel.copyWith(unit, addOrUpdateProduct.product!));
+      }
+      else {
+        return Left(
+          response,
+        );
+      }
   }
+   else {
+        return Left(response);
+      }
 
     } catch (e) {
       debugPrint(e.toString());
@@ -105,6 +144,7 @@ class ProductsRepo {
 
   Future<Either<ApiResponse, ProductModel?>> addUpdateProduct({
     required UpdateProductModel updateProduct,
+    bool isUpdate = false,
   }) async {
     // try {
     for (int i = 0; i < updateProduct.productUnits!.length; i++) {
@@ -133,7 +173,8 @@ class ProductsRepo {
         " -----------------------------------\n\n ${updateProduct.toJson()}\n\n-----------------------------------\n\n");
 
     var response = await api.post(
-        url: url,
+       
+        url:isUpdate? "$url/${updateProduct.id}":url,
         data: updateProduct.toJson(),
         isFormData: true);
     if (response.status) {
@@ -196,12 +237,14 @@ class ProductsRepo {
         openingquantity: openingquantity,
         branch: branch,
       );
-      // print(
-      //   "\n ****************** product data : $data ****************** ]n",
-      // );
+
+        print(
+          "\n ****************** product data : $data ****************** ]n",
+        );
       var response = await api.post(
         url: "$url/${product.id}",
         data: data,
+        isFormData: true,
       );
       if (response.status) {
         AddOrUpdateProduct addOrUpdateProduct =
@@ -227,7 +270,7 @@ class ProductsRepo {
       );
     }
   }
-
+ 
   Future<Either<ApiResponse, List<ProductModel>>> searchProducts({
     required String query,
     bool isfresh = false,
@@ -239,7 +282,7 @@ class ProductsRepo {
         url = await ApiEndPoints.getProducts();
         apiResponse = await api.get(
           url: url,
-          queryParameters: {ApiKeys.search: query},
+          queryParameters: {ApiKeys.search: query, 'with_category': '1'},
         );
       } else {
         if (searchProductsModel?.data?.nextPageUrl == null) {
@@ -276,4 +319,6 @@ class ProductsRepo {
     searchProductsModel = null;
     getProductsModel = null;
   }
+
+
 }

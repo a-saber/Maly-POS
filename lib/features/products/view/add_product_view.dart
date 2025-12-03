@@ -114,8 +114,7 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                   ),
                   CustomDropDownCategory(
                     value: cubit.category,
-                    onChangedCategory: (category) =>
-                        AddProductCubit.get(context).onChangeCategory(category),
+                    onChangedCategory: (category) => AddProductCubit.get(context).onChangeCategory(category),
                   ),
                   SizedBox(
                     height: 20,
@@ -523,7 +522,7 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                                   MyFormValidators
                                                                       .validateInteger(
                                                                           value,
-                                                                          context:
+                                                                          context:  
                                                                               context),
                                                               onChanged:
                                                                   (p0) {},
@@ -649,8 +648,7 @@ class AddProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AddProductCubit(MyServiceLocator.getSingleton<ProductsRepo>()),
+      create: (context) => AddProductCubit(MyServiceLocator.getSingleton<ProductsRepo>()),
       child: Scaffold(
         appBar: CustomAppBar(title: S.of(context).addProduct),
         body: BlocConsumer<AddProductCubit, AddProductState>(
