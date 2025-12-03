@@ -214,6 +214,7 @@ class EditProductCubit extends Cubit<EditProductState> {
             name: productFromApi.name,
             categoryId: productFromApi.categoryId,
             category: category,
+
             baseUnitId: productFromApi.baseUnitId,
             unit: unit,
             description: productFromApi.description,
@@ -225,6 +226,8 @@ class EditProductCubit extends Cubit<EditProductState> {
             updatedAt: productFromApi.updatedAt,
             imageUrl: productFromApi.imageUrl,
             tax: taxes,
+
+
             taxId: productFromApi.taxId,
             priceAfterTax: productFromApi.priceAfterTax,
             type: productFromApi.type,

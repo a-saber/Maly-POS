@@ -53,6 +53,7 @@ class ProductModel {
     required this.taxId,
     required this.priceAfterTax,
     required this.type,
+
     required this.quantity,
   });
 
@@ -81,6 +82,7 @@ class ProductModel {
       quantity: 0,
       productUnits: null,
      category: null,
+
     );
   }
   ProductModel copyWith({
@@ -104,6 +106,7 @@ class ProductModel {
     int? quantity,
     List<ProductUnit>? productUnits,
     CategoryModel? category,
+
   }) {
     return ProductModel(
       id: id ?? this.id,
