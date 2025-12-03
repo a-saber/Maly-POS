@@ -2,6 +2,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
@@ -14,9 +15,76 @@ import 'package:pos_app/features/printer/widget/print_item.dart';
 import 'package:pos_app/generated/l10n.dart';
 import '../manager/scan_local_printers_cubit/scan_local_printers_cubit.dart';
 
-class ScanPrintersView extends StatelessWidget {
+class ScanPrintersView extends StatefulWidget {
   const ScanPrintersView({super.key});
 
+  @override
+  State<ScanPrintersView> createState() => _ScanPrintersViewState();
+}
+
+class _ScanPrintersViewState extends State<ScanPrintersView> {
+   @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+Future<void> _requestPermissions() async {
+  if (!kIsWeb && Platform.isAndroid) {
+
+    await Permission.bluetoothScan.request();
+    await Permission.bluetoothConnect.request();
+    await Permission.location.request();
+
+   
+    final serviceStatus = await Permission.location.serviceStatus;
+    final isLocationOn = serviceStatus == ServiceStatus.enabled;
+
+    if (!isLocationOn) {
+
+      _showPermissionDialog();
+      return;
+    }
+
+
+    final scanStatus = await Permission.bluetoothScan.status;
+    final connectStatus = await Permission.bluetoothConnect.status;
+    final locStatus = await Permission.location.status;
+
+    if (!scanStatus.isGranted ||
+        !connectStatus.isGranted ||
+        !locStatus.isGranted) {
+      _showPermissionDialog();
+      return;
+    }
+  }
+}
+
+   void _showPermissionDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Bluetooth Permission Required'),
+        content: const Text(
+          'This app needs Bluetooth permissions to scan for printers.\n\n'
+          'Please enable Bluetooth permissions in app settings.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              openAppSettings();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -28,7 +96,7 @@ class ScanPrintersView extends StatelessWidget {
 
 class _AddPrinterViewBody extends StatelessWidget {
   const _AddPrinterViewBody();
-
+  
   @override
   Widget build(BuildContext context) {
     final cubit = ScanLocalPrintersCubit.get(context);

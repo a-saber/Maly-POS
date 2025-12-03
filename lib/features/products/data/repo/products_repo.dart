@@ -147,6 +147,7 @@ class ProductsRepo {
     bool isUpdate = false,
   }) async {
     // try {
+
     for (int i = 0; i < updateProduct.productUnits!.length; i++) {
       updateProduct.productUnits![i].unitId =
           updateProduct.productUnits![i].unit!.id;
@@ -156,6 +157,8 @@ class ProductsRepo {
           updateProduct.productUnits![i].factoryController!.text;
       debugPrint(
           " \n ******* conversionFactor : ${updateProduct.productUnits![i].conversionFactor} *************** \n");
+      debugPrint(
+          " \n ******* minPriceWithoutTax $i : ${updateProduct.productUnits![i].salePriceWithoutTax} *************** \n");
       updateProduct.productUnits![i].barcode =
           updateProduct.productUnits![i].barCodeController!.text;
       updateProduct.productUnits![i].scaleBarcode =
@@ -164,13 +167,13 @@ class ProductsRepo {
           updateProduct.productUnits![i].minPriceWithoutTaxController!.text;
       updateProduct.productUnits![i].salePriceWithTax =
           updateProduct.productUnits![i].salePriceWithTaxController!.text;
-      updateProduct.productUnits![i].salePriceWithoutTax =
-          updateProduct.productUnits![i].salePriceWithoutTaxController!.text;
+      // updateProduct.productUnits![i].salePriceWithoutTax =
+      //     updateProduct.productUnits![i].salePriceWithoutTaxController!.text;
     }
     String url = await ApiEndPoints.getProducts();
 
     debugPrint(
-        " -----------------------------------\n\n ${updateProduct.toJson()}\n\n-----------------------------------\n\n");
+        " 12-----------------------------------\n\n ${updateProduct.toJson()}\n\n-----------------------------------\n\n12");
 
     var response = await api.post(
        

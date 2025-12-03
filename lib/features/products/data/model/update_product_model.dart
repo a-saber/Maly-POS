@@ -183,7 +183,8 @@ class UpdateProductModel {
       data["units[$index][cost_price]"] = unit.costPrice ?? unit.costPriceController?.text;
       data["units[$index][sale_price_without_tax]"] = unit.salePriceWithoutTax ?? unit.salePriceWithoutTaxController?.text;
       data["units[$index][sale_price_with_tax]"] = unit.salePriceWithTax ?? unit.salePriceWithTaxController?.text;
-      data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ?? unit.minPriceWithoutTaxController?.text;
+      // data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ?? unit.minPriceWithoutTaxController?.text;
+      data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ;
       data["units[$index][min_price_with_tax]"] = unit.minPriceWithTax ?? unit.minPriceWithTaxController?.text;
       data["units[$index][barcode]"] = unit.barcode ?? unit.barCodeController?.text;
       data["units[$index][scale_barcode]"] = unit.scaleBarcode ?? unit.scaleBarcodeController?.text;
