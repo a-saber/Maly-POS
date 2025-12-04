@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_form_validators.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/core/widget/custom_drop_down.dart';
 import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
@@ -66,14 +67,21 @@ class CustomDropDownCategory extends StatelessWidget {
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: CustomFormField(
-                        hintText: S.of(context).searchCategory,
-                        controller: TextEditingController(
-                            text: SearchCategoryCubit.get(context).query),
-                        onChanged: (value) =>
-                            SearchCategoryCubit.get(context).onChangeSearch(
-                          query: value,
-                        ),
+                      child: Row(
+                        children: [
+                          CustomFormField(
+                            hintText: S.of(context).searchCategory,
+                            controller: TextEditingController(
+                                text: SearchCategoryCubit.get(context).query),
+                            onChanged: (value) =>
+                                SearchCategoryCubit.get(context).onChangeSearch(
+                              query: value,
+                            ),
+                          ).expand,
+                          IconButton(onPressed: (){
+                            SearchCategoryCubit.get(context).getSearchCategories(search: '');
+                          }, icon: Icon(Icons.refresh))
+                        ],
                       ),
                     ),
                     Expanded(

@@ -2527,6 +2527,14 @@ class S {
       desc: '',
       args: [],
     );
+  } /// `Create CSID`
+  String get rememberMe {
+    return Intl.message(
+      'Remember Me',
+      name: 'rememberMe',
+      desc: '',
+      args: [],
+    );
   }
   /// `Create CSID`
   String get userName {

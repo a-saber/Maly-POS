@@ -49,8 +49,7 @@ Future<bool?> showDeleteTaxesConfirmDialog(
                 }
                 return button(
                     context: context,
-                    onPressed: () =>
-                        DeleteTaxesCubit.get(context).deleteTax(tax: taxes));
+                    onPressed: () => DeleteTaxesCubit.get(context).deleteTax(tax: taxes));
               },
             ),
           ));

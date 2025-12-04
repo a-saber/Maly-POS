@@ -40,7 +40,7 @@ class LoginMobileBody extends StatelessWidget {
             BlocBuilder<LoginCubit, LoginState>(
               buildWhen: (previous, current) {
                 return current is LoginUnvalidTextField ||
-                    current is ChangeObscureTextState;
+                    current is ChangeObscureTextState ||current is ChangeRememberMeState;
               },
               builder: (context, state) {
                 return Form(
@@ -48,11 +48,14 @@ class LoginMobileBody extends StatelessWidget {
                   autovalidateMode: LoginCubit.get(context).autovalidateMode,
                   child: AutofillGroup(
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       spacing: 20,
                       children: [
                         CustomFormField(
                           controller: LoginCubit.get(context).emailController,
                           onTap: (){
+
+                            LoginCubit.get(context).onTapEmail(context);
 
                           },
 
@@ -77,7 +80,14 @@ class LoginMobileBody extends StatelessWidget {
                           ),
                           obscureText: LoginCubit.get(context).obscureText,
                         ),
-                        Checkbox(value: true, onChanged: (value){})
+                        Row(
+                          children: [
+                            Checkbox(
+                                value: LoginCubit.get(context).rememberMe, onChanged: LoginCubit.get(context).onRememberMeChanged
+                            ),
+                            Text(S.of(context).rememberMe)
+                          ],
+                        )
                       ],
                     ),
                   ),
