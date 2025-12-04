@@ -26,75 +26,79 @@ class CustomDropDownTaxes extends StatelessWidget {
     return BlocProvider.value(
       value: MyServiceLocator.getSingleton<SearchTaxesCubit>(),
       child: Builder(builder: (context) {
-        return CustomDropdown<TaxesModel>(
-          // search: true,
-          hint: S.of(context).selectTax,
-          compareFn: (item1, item2) {
-            if (item1.id == null ||
-                item2.id == null ||
-                item1.title!.isEmpty ||
-                item2.title!.isEmpty) {
-              return false;
-            } else {
-              return (item1.title!
-                      .toLowerCase()
-                      .contains(item2.title!.toLowerCase()) ||
-                  item2.title!
-                      .toLowerCase()
-                      .contains(item1.title!.toLowerCase()));
-            }
-          },
-          // validator: (value) =>
-          //     MyFormValidators.validateTypeRequired<TaxesModel>(value,
-          //         context: context),
-          value: value,
-          items: SearchTaxesCubit.get(context).searchTaxes,
-          filterFn: (item, filter) {
-            return item.title!.toLowerCase().contains(filter.toLowerCase());
-          },
-          onChanged: (TaxesModel? tax) {
-            onChange(tax);
-          },
-          containerBuilder: (p0, p1) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: CustomFormField(
-                    hintText: S.of(context).searchTaxes,
-                    controller: TextEditingController(
-                        text: SearchTaxesCubit.get(context).query),
-                    onChanged: (value) =>
-                        SearchTaxesCubit.get(context).onSearchChanged(
-                      value,
+        return BlocBuilder<SearchTaxesCubit, SearchTaxesState>(
+            builder: (context, state) {
+            return CustomDropdown<TaxesModel>(
+              // search: true,
+              hint: S.of(context).selectTax,
+              compareFn: (item1, item2) {
+                if (item1.id == null ||
+                    item2.id == null ||
+                    item1.title!.isEmpty ||
+                    item2.title!.isEmpty) {
+                  return false;
+                } else {
+                  return (item1.title!
+                          .toLowerCase()
+                          .contains(item2.title!.toLowerCase()) ||
+                      item2.title!
+                          .toLowerCase()
+                          .contains(item1.title!.toLowerCase()));
+                }
+              },
+              // validator: (value) =>
+              //     MyFormValidators.validateTypeRequired<TaxesModel>(value,
+              //         context: context),
+              value: value,
+              items: SearchTaxesCubit.get(context).searchTaxes,
+              filterFn: (item, filter) {
+                return item.title!.toLowerCase().contains(filter.toLowerCase());
+              },
+              onChanged: (TaxesModel? tax) {
+                onChange(tax);
+              },
+              containerBuilder: (p0, p1) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CustomFormField(
+                        hintText: S.of(context).searchTaxes,
+                        controller: TextEditingController(
+                            text: SearchTaxesCubit.get(context).query),
+                        onChanged: (value) =>
+                            SearchTaxesCubit.get(context).onSearchChanged(
+                          value,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  child: SearchTaxesBuild(
-                    name: value?.title ?? '',
-                    child: p1,
-                    onTap: (p0) {
-                      onChange(p0);
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ),
-              ],
+                    Expanded(
+                      child: SearchTaxesBuild(
+                        name: value?.title ?? '',
+                        child: p1,
+                        onTap: (p0) {
+                          onChange(p0);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+              builder: (TaxesModel? tax) {
+                if (tax != null) {
+                  return Text(
+                    tax.title ?? '',
+                    style: AppFontStyle.formText(
+                      context: context,
+                    ),
+                  );
+                } else {
+                  return SizedBox();
+                }
+              },
             );
-          },
-          builder: (TaxesModel? tax) {
-            if (tax != null) {
-              return Text(
-                tax.title ?? '',
-                style: AppFontStyle.formText(
-                  context: context,
-                ),
-              );
-            } else {
-              return SizedBox();
-            }
-          },
+          }
         );
       }),
     );

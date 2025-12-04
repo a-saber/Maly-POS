@@ -14,14 +14,23 @@ import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
+import '../../../../core/constant/constant.dart';
+import '../../../../main.dart';
+import '../../../categories/data/repo/category_repo.dart';
+import '../../../units/data/repo/units_repo.dart';
+
 part 'add_product_state.dart';
 
 class AddProductCubit extends Cubit<AddProductState> {
-  AddProductCubit(this.repo) : super(AddProductInitial()) {
+  AddProductCubit(this.repo,{ this.unitsRepo, this.categoryRepo}) : super(AddProductInitial()) {
     addProductUnits();
+
+
   }
   static AddProductCubit get(context) => BlocProvider.of(context);
   final ProductsRepo repo;
+  final UnitsRepo? unitsRepo;
+  final CategoryRepo? categoryRepo;
   GlobalKey<FormState> formKey = GlobalKey();
   AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
   final TextEditingController nameController = TextEditingController();
@@ -32,13 +41,13 @@ class AddProductCubit extends Cubit<AddProductState> {
   double baseMinPriceWithTax = 0;
   double baseSalePriceWithoutTax = 0;
   double baseSalePriceWithTax = 0;
-
   XFile? image;
   CategoryModel? category;
   UnitModel? unit;
   BrancheModel? branch;
   TaxesModel? taxes;
-  ProductType? productType;
+  ProductType? productType=AppConstant.producttype(MyApp.context)?.lastOrNull;
+
 
   final TextEditingController barCodeController = TextEditingController();
   final TextEditingController brandController = TextEditingController();
@@ -131,11 +140,12 @@ class AddProductCubit extends Cubit<AddProductState> {
 
   void addProductUnits() {
     productUnits.add(
-      ProductUnits.empty(),
+      ProductUnits.empty(unit: unitsRepo?.getUnitSearchModel?.data?.firstOrNull),
     );
 
     if (productUnits.length == 1) {
       productUnits[0].factoryController!.text = '1';
+
     }
 
     emit(AddProductAddUnit());

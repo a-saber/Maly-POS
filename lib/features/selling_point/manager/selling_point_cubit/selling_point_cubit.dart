@@ -62,11 +62,15 @@ class SellingPointCubit extends Cubit<SellingPointState> {
     // if (firstTime()) {
     //   getCategoryProduct(context: context);
     // }
+    scrollController = ScrollController();
+    query = '';
+
+    getCategoryProduct(
+      newData: true,
+    );
     if (isFirstTime) {
-      scrollController = ScrollController();
-      query = '';
-      categorySavingDataModels = [];
       categoryId = -2;
+      categorySavingDataModels = [];
       isFirstTime = false;
     }
 

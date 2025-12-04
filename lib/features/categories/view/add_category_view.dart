@@ -12,25 +12,27 @@ import 'package:pos_app/features/categories/manager/get_category/get_category_cu
 import 'package:pos_app/features/categories/view/widget/add_category_body.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../manager/search_category/search_category_cubit.dart';
+
 class AddCategoryView extends StatelessWidget {
   const AddCategoryView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          AddCategoryCubit(MyServiceLocator.getSingleton<CategoryRepo>()),
+      create: (context) => AddCategoryCubit(MyServiceLocator.getSingleton<CategoryRepo>()),
       child: Scaffold(
         appBar: CustomAppBar(title: S.of(context).addCategory),
         body: BlocConsumer<AddCategoryCubit, AddCategoryState>(
           listener: (context, state) {
             if (state is AddCategorySuccess) {
               GetCategoryCubit.get(context).addCategory(state.category);
+              MyServiceLocator.getSingleton<SearchCategoryCubit>().addCategory(category: state.category);
               CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,
                   state: PopUpState.SUCCESS);
-              Navigator.pop(context);
+            //  Navigator.pop(context);
             } else if (state is AddCategoryFailing) {
               if (context.mounted) {
                 CustomPopUp.callMyPopUp(

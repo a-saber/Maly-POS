@@ -152,8 +152,7 @@ class EditProductCubit extends Cubit<EditProductState> {
       return;
     }
 
-    final result =
-        await categoryRepo.getSpecificCategory(id: product.categoryId!);
+    final result = await categoryRepo.getSpecificCategory(id: product.categoryId!);
 
     result.fold((l) {}, (r) {
       category = r;
@@ -262,10 +261,11 @@ class EditProductCubit extends Cubit<EditProductState> {
            );
 
          }*/
-          GetAllProductsCubit.get(context).updateProduct(updatedProduct);
+
 
 
           emit(EditProductSuccess(product: updatedProduct));
+          GetAllProductsCubit.get(context).updateProduct(updatedProduct);
         } else {
           emit(EditProductFailing(errMessage: "فشل تحديث المنتج"));
         }

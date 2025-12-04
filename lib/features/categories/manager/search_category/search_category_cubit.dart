@@ -113,6 +113,21 @@ class SearchCategoryCubit extends Cubit<SearchCategoryState> {
       },
     );
   }
+  void addCategory({required CategoryModel category}) {
+    if (!canLoading()) {
+      categories.add(category);
+      emit(SearchCategorySuccess());
+    }
+  }
+  void updateCategory({required CategoryModel category}) {
+    categories[categories.indexWhere((element) => element.id == category.id)] =
+        category;
+    emit(SearchCategorySuccess());
+  }
+  void deleteCategory({required int id}) {
+    categories.removeWhere((element) => element.id == id);
+    emit(SearchCategorySuccess());
+  }
 
   void reset() {
     // categories = [];
