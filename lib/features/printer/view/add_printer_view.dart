@@ -123,8 +123,10 @@ class EditPrinterView extends StatelessWidget {
                         text: S.of(context).testPrint,
                         onPressed: () async {
                           if (printerModel.discoveredPrinter != null) {
-                                await PrinterHelper()
-                                    .printTest(printerModel.discoveredPrinter!);
+                            await PrinterHelper().printTest(
+                              printerModel.discoveredPrinter!,
+                              paperSize: printerModel.paperSize,
+                            );
                           }
                         })
                   ],
@@ -236,8 +238,10 @@ class AddPrinterView extends StatelessWidget {
                     ),
                     CustomFilledBtn(
                         text: S.of(context).testPrint,
-                        onPressed: () async =>
-                            await PrinterHelper().printTest(discoveredPrinter))
+                        onPressed: () async => await PrinterHelper().printTest(
+                              discoveredPrinter,
+                              paperSize: cubit.paperSize,
+                            ))
                   ],
                 ),
               ),

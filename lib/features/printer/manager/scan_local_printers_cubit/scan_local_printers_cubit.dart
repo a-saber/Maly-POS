@@ -14,6 +14,15 @@ class ScanLocalPrintersCubit extends Cubit<ScanLocalPrintersState> {
     emit(ScanLocalPrintersLoading());
     
     try {
+        final hasPermissions = await _helper.ensureBluetoothPermissions();
+      
+      if (!hasPermissions) {
+        emit(ScanLocalPrintersFailure(
+          'Bluetooth permissions are required.\n'
+          'Please enable Bluetooth and Location permissions in app settings.'
+        ));
+        return;
+      }
       await _helper.startScan(
         onUpdate: () {
           final printers = _helper.discoveredDevices.values.toList();

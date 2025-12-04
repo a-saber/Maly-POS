@@ -117,64 +117,105 @@ class PrinterHelper {
 
   /// --- PRINTING SECTION ---
 
-  Future<void> printTest(DiscoveredPrinter printer) async {
-    final bytes = await _buildTestBytes(printer);
-    await _printBytes(printer, bytes);
+  Future<void> printTest(DiscoveredPrinter printer,{String? paperSize}) async {
+   try {
+      final bytes = await _buildTestBytes(printer, paperSize: paperSize);
+      await _printBytes(printer, bytes);
+    } catch (e) {
+      debugPrint('Print Test Error: $e');
+      rethrow;
+    }
   }
 
   Future<void> printInvoice(
-      DiscoveredPrinter printer, Map<String, dynamic> invoice) async {
-    final bytes = await _buildInvoiceBytes(printer, invoice);
-    await _printBytes(printer, bytes);
+      DiscoveredPrinter printer, Map<String, dynamic> invoice,
+      {String? paperSize, bool openCashDrawer = false}) async {
+    try {
+      final bytes = await _buildInvoiceBytes(
+        printer,
+        invoice,
+        paperSize: paperSize,
+        openCashDrawer: openCashDrawer,
+      );
+      await _printBytes(printer, bytes);
+    } catch (e) {
+      debugPrint(' Print Invoice Error: $e');
+      rethrow;
+    }
   }
 
-  Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes) async {
+ Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes) async {
     final type = printer.type;
     final device = printer.device;
 
     try {
-      switch (type) {
-        case PrinterType.usb:
-          await _manager.connect(
-            type: PrinterType.usb,
-            model: UsbPrinterInput(
-              name: device.name,
-              vendorId: device.vendorId,
-              productId: device.productId,
-            ),
-          );
-          break;
-        case PrinterType.bluetooth:
-          if (device.address == null) {
-            throw Exception('Bluetooth printer missing address');
-          }
-          await _manager.connect(
-            type: PrinterType.bluetooth,
-            model: BluetoothPrinterInput(
-              name: device.name,
-              address: device.address!,
-              isBle: printer.isBle,
-              autoConnect: false,
-            ),
-          );
-          break;
-        case PrinterType.network:
-          if (device.address == null) {
-            throw Exception('Network printer missing IP');
-          }
-          await _manager.connect(
-            type: PrinterType.network,
-            model: TcpPrinterInput(ipAddress: device.address!),
-          );
-          break;
-      }
+   
+      await _connectWithTimeout(type, device, printer.isBle);
+      
 
       _manager.send(type: type, bytes: bytes);
-      await Future.delayed(const Duration(milliseconds: 300));
+      
+     
+      await Future.delayed(Duration(milliseconds: 500 + (bytes.length ~/ 10)));
+      
       await _manager.disconnect(type: type);
+      
     } catch (e) {
+      debugPrint(' Print error: $e');
       await _safeDisconnect(type);
       rethrow;
+    }
+  }
+
+ 
+  Future<void> _connectWithTimeout(
+    PrinterType type,
+    PrinterDevice device,
+    bool isBle,
+  ) async {
+    await Future.any([
+      _connect(type, device, isBle),
+      Future.delayed(const Duration(seconds: 10), () {
+        throw TimeoutException('Connection timeout after 10 seconds');
+      }),
+    ]);
+  }
+
+  Future<void> _connect(PrinterType type, PrinterDevice device, bool isBle) async {
+    switch (type) {
+      case PrinterType.usb:
+        await _manager.connect(
+          type: PrinterType.usb,
+          model: UsbPrinterInput(
+            name: device.name,
+            vendorId: device.vendorId,
+            productId: device.productId,
+          ),
+        );
+        break;
+      case PrinterType.bluetooth:
+        if (device.address == null) {
+          throw Exception('Bluetooth printer missing address');
+        }
+        await _manager.connect(
+          type: PrinterType.bluetooth,
+          model: BluetoothPrinterInput(
+            name: device.name,
+            address: device.address!,
+            isBle: isBle,
+            autoConnect: false,
+          ),
+        );
+        break;
+      case PrinterType.network:
+        if (device.address == null) {
+          throw Exception('Network printer missing IP');
+        }
+        await _manager.connect(
+          type: PrinterType.network,
+          model: TcpPrinterInput(ipAddress: device.address!),
+        );
+        break;
     }
   }
 
@@ -184,11 +225,24 @@ class PrinterHelper {
     } catch (_) {}
   }
 
+  PaperSize _getPaperSize(String? paperSize) {
+    switch (paperSize?.toLowerCase()) {
+      case '80mm':
+        return PaperSize.mm80;
+      case '72mm':
+        return PaperSize.mm72;
+      case '58mm':
+        return PaperSize.mm58;
+      default:
+        return PaperSize.mm80; // Default to 80mm
+    }
+  }
   /// --- CONTENT GENERATORS ---
 
-  Future<List<int>> _buildTestBytes(DiscoveredPrinter p) async {
+  Future<List<int>> _buildTestBytes(DiscoveredPrinter p, {String? paperSize}) async {
     final profile = await CapabilityProfile.load();
-    final generator = Generator(PaperSize.mm58, profile);
+     final size = _getPaperSize(paperSize);
+    final generator = Generator(size, profile);
 
     return [
       ...generator.setGlobalCodeTable('CP437'),
@@ -208,9 +262,13 @@ class PrinterHelper {
   }
 
   Future<List<int>> _buildInvoiceBytes(
-      DiscoveredPrinter p, Map<String, dynamic> invoice) async {
+      DiscoveredPrinter p, Map<String, dynamic> invoice,
+      {
+    String? paperSize, required bool openCashDrawer,
+  }) async {
     final profile = await CapabilityProfile.load();
-    final generator = Generator(PaperSize.mm80, profile);
+    final size = _getPaperSize(paperSize);
+    final generator = Generator(size, profile);
 
     final items = (invoice['items'] as List<dynamic>? ?? [])
         .map((item) =>
@@ -218,6 +276,7 @@ class PrinterHelper {
         .toList();
 
     return [
+      if (openCashDrawer) ...generator.drawer(),
       ...generator.text('*************** INVOICE ***************',
           styles: PosStyles(align: PosAlign.center, bold: true)),
       ...generator.text('Date: ${invoice['date'] ?? ''}'),
@@ -232,10 +291,11 @@ class PrinterHelper {
     ];
   }
 
-  Future<void> printTestByIp(String ip, {int port = 9100}) async {
+  Future<void> printTestByIp(String ip, {int port = 9100, String? paperSize}) async {
     try {
       final profile = await CapabilityProfile.load();
-      final generator = Generator(PaperSize.mm80, profile);
+      final size = _getPaperSize(paperSize);
+      final generator = Generator(size, profile);
 
       List<int> bytes = [];
       bytes += generator.text(
