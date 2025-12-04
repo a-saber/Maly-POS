@@ -79,535 +79,538 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
       },
       builder: (context, state) {
         var cubit = AddProductCubit.get(context);
-        return Form(
-            key: cubit.formKey,
-            autovalidateMode: cubit.autovalidateMode,
-            child: Padding(
-              padding: AppPaddings.defaultView,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ImageManagerView(
-                    onSelected: (image) =>
-                        AddProductCubit.get(context).image = image,
-                    imageUrl: null,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  CustomFormField(
-                    controller: cubit.nameController,
-                    labelText: S.of(context).name,
-                    validator: (value) => MyFormValidators.validateRequired(
-                        value,
-                        context: context),
-                    keyboardType: TextInputType.name,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CustomFormField(
-                    controller: cubit.descriptionController,
-                    labelText: S.of(context).description,
-                    keyboardType: TextInputType.text,
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CustomDropDownCategory(
-                    value: cubit.category,
-                    onChangedCategory: (category) => AddProductCubit.get(context).onChangeCategory(category),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CustomDropdown<ProductType>(
-                    search: true,
-                    hint: S.of(context).selectProductType,
-                    compareFn: (item1, item2) {
-                      if (item1.name.isEmpty || item2.name.isEmpty) {
-                        return false;
-                      } else {
-                        return (item1.name
-                                .toLowerCase()
-                                .contains(item2.name.toLowerCase()) ||
-                            item2.name
-                                .toLowerCase()
-                                .contains(item1.name.toLowerCase()));
-                      }
-                    },
-                    value: cubit.productType,
-                    items: AppConstant.producttype(context),
-                    validator: (value) =>
-                        MyFormValidators.validateTypeRequired<ProductType>(
-                      value,
-                      context: context,
-                    ),
-                    onChanged: (value) {
-                      cubit.onChangeProductType(value);
-                    },
-                    builder: (ProductType? tax) {
-                      if (tax != null) {
-                        return Text(
-                          tax.name,
-                          style: AppFontStyle.formText(
-                            context: context,
-                          ),
-                        );
-                      } else {
-                        return SizedBox();
-                      }
-                    },
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  CustomFormField(
-                    controller: cubit.brandController,
-                    labelText: S.of(context).brand,
-                    keyboardType: TextInputType.text,
-                    // validator: (value) =>
-                    //     MyFormValidators.validateRequired(value, context: context),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomDropDownTaxes(
-                          value: cubit.taxes,
-                          onChange: cubit.onChangeTaxes,
-                        ),
-                      ),
-                      CustomResetDropDownButton(
-                        onPressed: () {
-                          cubit.onChangeTaxes(null);
-                        },
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'الوحدات',
-                        style: AppFontStyle.formText(context: context),
-                      ),
-                      CustomTextBtn(
-                        text: "اضافة",
-                        textColor: AppColors.primary,
-                        onPressed: cubit.addProductUnits,
-                      ),
-                    ],
-                  ),
-                  Builder(builder: (context) {
-                    final ScrollController controller = ScrollController();
+        return SafeArea(
 
-                    return Scrollbar(
-                      controller: controller,
-                      thumbVisibility: true,
-                      trackVisibility: true,
-                      child: SingleChildScrollView(
+          child: Form(
+              key: cubit.formKey,
+              autovalidateMode: cubit.autovalidateMode,
+              child: Padding(
+                padding: AppPaddings.defaultView,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ImageManagerView(
+                      onSelected: (image) =>
+                          AddProductCubit.get(context).image = image,
+                      imageUrl: null,
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    CustomFormField(
+                      controller: cubit.nameController,
+                      labelText: S.of(context).name,
+                      validator: (value) => MyFormValidators.validateRequired(
+                          value,
+                          context: context),
+                      keyboardType: TextInputType.name,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CustomFormField(
+                      controller: cubit.descriptionController,
+                      labelText: S.of(context).description,
+                      keyboardType: TextInputType.text,
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CustomDropDownCategory(
+                      value: cubit.category,
+                      onChangedCategory: (category) => AddProductCubit.get(context).onChangeCategory(category),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CustomDropdown<ProductType>(
+                      search: true,
+                      hint: S.of(context).selectProductType,
+                      compareFn: (item1, item2) {
+                        if (item1.name.isEmpty || item2.name.isEmpty) {
+                          return false;
+                        } else {
+                          return (item1.name
+                                  .toLowerCase()
+                                  .contains(item2.name.toLowerCase()) ||
+                              item2.name
+                                  .toLowerCase()
+                                  .contains(item1.name.toLowerCase()));
+                        }
+                      },
+                      value: cubit.productType,
+                      items: AppConstant.producttype(context),
+                      validator: (value) =>
+                          MyFormValidators.validateTypeRequired<ProductType>(
+                        value,
+                        context: context,
+                      ),
+                      onChanged: (value) {
+                        cubit.onChangeProductType(value);
+                      },
+                      builder: (ProductType? tax) {
+                        if (tax != null) {
+                          return Text(
+                            tax.name,
+                            style: AppFontStyle.formText(
+                              context: context,
+                            ),
+                          );
+                        } else {
+                          return SizedBox();
+                        }
+                      },
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    CustomFormField(
+                      controller: cubit.brandController,
+                      labelText: S.of(context).brand,
+                      keyboardType: TextInputType.text,
+                      // validator: (value) =>
+                      //     MyFormValidators.validateRequired(value, context: context),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomDropDownTaxes(
+                            value: cubit.taxes,
+                            onChange: cubit.onChangeTaxes,
+                          ),
+                        ),
+                        CustomResetDropDownButton(
+                          onPressed: () {
+                            cubit.onChangeTaxes(null);
+                          },
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'الوحدات',
+                          style: AppFontStyle.formText(context: context),
+                        ),
+                        CustomTextBtn(
+                          text: "اضافة",
+                          textColor: AppColors.primary,
+                          onPressed: cubit.addProductUnits,
+                        ),
+                      ],
+                    ),
+                    Builder(builder: (context) {
+                      final ScrollController controller = ScrollController();
+
+                      return Scrollbar(
                         controller: controller,
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          dataRowHeight: 80,
-                          border: TableBorder.all(color: Colors.grey),
-                          // decoration: const BoxDecoration(color: Colors.black12),
-                          columns: const [
-                            DataColumn(label: Text('الوحدة')),
-                            DataColumn(label: Text('المعامل')),
-                            DataColumn(label: Text('سعر التكلفة')),
-                            DataColumn(label: Text('اقل سعر بيع')),
-                            DataColumn(label: Text('اقل سعر بيع بالضريبة')),
-                            DataColumn(label: Text('سعر البيع')),
-                            DataColumn(label: Text('سعر البيع بالضريبة')),
-                            DataColumn(label: Text('الباركود')),
-                            DataColumn(label: Text('باركود الميزان')),
-                            DataColumn(label: Text('الكميات الافتتاحية')),
-                            DataColumn(label: Text('حذف')),
-                          ],
-                          rows:
-                              List.generate(cubit.productUnits.length, (index) {
-                            return DataRow(
-                              cells: [
-                                // unit
-                                DataCell(
-                                  Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 3),
-                                      child: SizedBox(
-                                        width: 150,
-                                        child: CustomDropDownUnit(
-                                          value: cubit.productUnits[index].unit,
-                                          onChanged: (unit) {
-                                            if (unit != null) {
-                                              cubit.onUnitChanged(unitModel: unit, index: index);
-                                            }
-                                          },
+                        thumbVisibility: true,
+                        trackVisibility: true,
+                        child: SingleChildScrollView(
+                          controller: controller,
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            dataRowHeight: 80,
+                            border: TableBorder.all(color: Colors.grey),
+                            // decoration: const BoxDecoration(color: Colors.black12),
+                            columns: const [
+                              DataColumn(label: Text('الوحدة')),
+                              DataColumn(label: Text('المعامل')),
+                              DataColumn(label: Text('سعر التكلفة')),
+                              DataColumn(label: Text('اقل سعر بيع')),
+                              DataColumn(label: Text('اقل سعر بيع بالضريبة')),
+                              DataColumn(label: Text('سعر البيع')),
+                              DataColumn(label: Text('سعر البيع بالضريبة')),
+                              DataColumn(label: Text('الباركود')),
+                              DataColumn(label: Text('باركود الميزان')),
+                              DataColumn(label: Text('الكميات الافتتاحية')),
+                              DataColumn(label: Text('حذف')),
+                            ],
+                            rows:
+                                List.generate(cubit.productUnits.length, (index) {
+                              return DataRow(
+                                cells: [
+                                  // unit
+                                  DataCell(
+                                    Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 3),
+                                        child: SizedBox(
+                                          width: 150,
+                                          child: CustomDropDownUnit(
+                                            value: cubit.productUnits[index].unit,
+                                            onChanged: (unit) {
+                                              if (unit != null) {
+                                                cubit.onUnitChanged(unitModel: unit, index: index);
+                                              }
+                                            },
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                //factor
-                                DataCell(customTextFormFieldTable(
-                                  hintText: "المعامل",
-                                  enabled: index != 0,
-                                  validator: (value) =>
-                                      MyFormValidators.validateInteger(value,
-                                          context: context, validate: true),
-                                  controller: cubit
-                                      .productUnits[index].factoryController,
-                                  onChanged: (value) {
-                                    cubit.updateUnitPrices(index);
-                                  },
-                                )),
-                                DataCell(customTextFormFieldTable(
-                                    hintText: "سعر التكلفة",
+                                  //factor
+                                  DataCell(customTextFormFieldTable(
+                                    hintText: "المعامل",
+                                    enabled: index != 0,
                                     validator: (value) =>
-                                        MyFormValidators.validateDoublePrice(
-                                            value,
-                                            context: context,
-                                            validateEmpty: true),
-                                    controller: cubit.productUnits[index]
-                                        .costPriceController,
+                                        MyFormValidators.validateInteger(value,
+                                            context: context, validate: true),
+                                    controller: cubit
+                                        .productUnits[index].factoryController,
                                     onChanged: (value) {
-                                      if (index == 0) {
-                                        cubit.onChangeCost(0);
-                                      }
-                                    })),
-
-                                DataCell(
-                                  customTextFormFieldTable(
-                                    hintText: "اقل سعر بيع",
-                                    controller: cubit.productUnits[index]
-                                        .minPriceWithoutTaxController,
-                                    validator: (value) =>
-                                        MyFormValidators.validateDoublePrice(
-                                      value,
-                                      context: context,
-                                      haveMin: true,
-                                      min: double.tryParse(cubit
-                                              .productUnits[index]
-                                              .costPriceController
-                                              ?.text ??
-                                          ''),
-                                    ),
-                                    onChanged: (newValue) {
-                                      cubit.onChangeMinPriceWithoutTax(
-                                          index: index, newValue: newValue);
-                                      if (index == 0) {
-                                        cubit.onChangeCost(0);
-                                      }
+                                      cubit.updateUnitPrices(index);
                                     },
-                                  ),
-                                ),
+                                  )),
+                                  DataCell(customTextFormFieldTable(
+                                      hintText: "سعر التكلفة",
+                                      validator: (value) =>
+                                          MyFormValidators.validateDoublePrice(
+                                              value,
+                                              context: context,
+                                              validateEmpty: true),
+                                      controller: cubit.productUnits[index]
+                                          .costPriceController,
+                                      onChanged: (value) {
+                                        if (index == 0) {
+                                          cubit.onChangeCost(0);
+                                        }
+                                      })),
 
-                                DataCell(
-                                  customTextFormFieldTable(
-                                    hintText: "اقل سعر بيع بالضريبة",
-                                    controller: cubit.productUnits[index]
-                                        .minPriceWithTaxController,
-                                    validator: (value) =>
-                                        MyFormValidators.validateDoublePrice(
-                                      value,
-                                      context: context,
-                                      haveMin: true,
-                                      min: double.tryParse(cubit
-                                              .productUnits[index]
-                                              .minPriceWithoutTaxController
-                                              ?.text ??
-                                          ''),
+                                  DataCell(
+                                    customTextFormFieldTable(
+                                      hintText: "اقل سعر بيع",
+                                      controller: cubit.productUnits[index]
+                                          .minPriceWithoutTaxController,
+                                      validator: (value) =>
+                                          MyFormValidators.validateDoublePrice(
+                                        value,
+                                        context: context,
+                                        haveMin: true,
+                                        min: double.tryParse(cubit
+                                                .productUnits[index]
+                                                .costPriceController
+                                                ?.text ??
+                                            ''),
+                                      ),
+                                      onChanged: (newValue) {
+                                        cubit.onChangeMinPriceWithoutTax(
+                                            index: index, newValue: newValue);
+                                        if (index == 0) {
+                                          cubit.onChangeCost(0);
+                                        }
+                                      },
                                     ),
-                                    onChanged: (newValue) {
-                                      if (cubit
+                                  ),
+
+                                  DataCell(
+                                    customTextFormFieldTable(
+                                      hintText: "اقل سعر بيع بالضريبة",
+                                      controller: cubit.productUnits[index]
+                                          .minPriceWithTaxController,
+                                      validator: (value) =>
+                                          MyFormValidators.validateDoublePrice(
+                                        value,
+                                        context: context,
+                                        haveMin: true,
+                                        min: double.tryParse(cubit
+                                                .productUnits[index]
+                                                .minPriceWithoutTaxController
+                                                ?.text ??
+                                            ''),
+                                      ),
+                                      onChanged: (newValue) {
+                                        if (cubit
+                                                .productUnits[index]
+                                                .minPriceWithTaxController!
+                                                .text !=
+                                            newValue) {
+                                          cubit
                                               .productUnits[index]
                                               .minPriceWithTaxController!
-                                              .text !=
-                                          newValue) {
-                                        cubit
-                                            .productUnits[index]
-                                            .minPriceWithTaxController!
-                                            .text = newValue;
-                                      }
-                                      cubit.onChangeMinPriceWithTax(
-                                          index: index, newValue: newValue);
-                                      if (index == 0) {
-                                        cubit.onChangeCost(0);
-                                      }
-                                    },
-                                  ),
-                                ),
-
-                                // سعر البيع بدون الضريبة
-                                DataCell(
-                                  customTextFormFieldTable(
-                                    hintText: "سعر البيع",
-                                    controller: cubit.productUnits[index]
-                                        .salePriceWithoutTaxController,
-                                    validator: (value) =>
-                                        MyFormValidators.validateDoublePrice(
-                                      value,
-                                      context: context,
-                                      haveMin: true,
-                                      min: double.tryParse(cubit
-                                              .productUnits[index]
-                                              .minPriceWithoutTaxController
-                                              ?.text ??
-                                          ''),
+                                              .text = newValue;
+                                        }
+                                        cubit.onChangeMinPriceWithTax(
+                                            index: index, newValue: newValue);
+                                        if (index == 0) {
+                                          cubit.onChangeCost(0);
+                                        }
+                                      },
                                     ),
-                                    onChanged: (newValue) {
-                                      if (cubit
+                                  ),
+
+                                  // سعر البيع بدون الضريبة
+                                  DataCell(
+                                    customTextFormFieldTable(
+                                      hintText: "سعر البيع",
+                                      controller: cubit.productUnits[index]
+                                          .salePriceWithoutTaxController,
+                                      validator: (value) =>
+                                          MyFormValidators.validateDoublePrice(
+                                        value,
+                                        context: context,
+                                        haveMin: true,
+                                        min: double.tryParse(cubit
+                                                .productUnits[index]
+                                                .minPriceWithoutTaxController
+                                                ?.text ??
+                                            ''),
+                                      ),
+                                      onChanged: (newValue) {
+                                        if (cubit
+                                                .productUnits[index]
+                                                .salePriceWithoutTaxController!
+                                                .text !=
+                                            newValue) {
+                                          cubit
                                               .productUnits[index]
                                               .salePriceWithoutTaxController!
-                                              .text !=
-                                          newValue) {
-                                        cubit
-                                            .productUnits[index]
-                                            .salePriceWithoutTaxController!
-                                            .text = newValue;
-                                      }
-                                      cubit.changeSalePriceWithoutTax(
-                                          cubit.productUnits[index]);
-                                      if (index == 0) {
-                                        cubit.onChangeCost(0);
-                                      }
-                                    },
-                                  ),
-                                ),
-
-                                DataCell(
-                                  customTextFormFieldTable(
-                                    hintText: "سعر البيع بالضريبة",
-                                    controller: cubit.productUnits[index]
-                                        .salePriceWithTaxController,
-                                    validator: (value) =>
-                                        MyFormValidators.validateDoublePrice(
-                                      value,
-                                      context: context,
-                                      haveMin: true,
-                                      min: double.tryParse(cubit
-                                              .productUnits[index]
-                                              .salePriceWithoutTaxController
-                                              ?.text ??
-                                          ''),
+                                              .text = newValue;
+                                        }
+                                        cubit.changeSalePriceWithoutTax(
+                                            cubit.productUnits[index]);
+                                        if (index == 0) {
+                                          cubit.onChangeCost(0);
+                                        }
+                                      },
                                     ),
-                                    onChanged: (newValue) {
-                                      if (cubit
+                                  ),
+
+                                  DataCell(
+                                    customTextFormFieldTable(
+                                      hintText: "سعر البيع بالضريبة",
+                                      controller: cubit.productUnits[index]
+                                          .salePriceWithTaxController,
+                                      validator: (value) =>
+                                          MyFormValidators.validateDoublePrice(
+                                        value,
+                                        context: context,
+                                        haveMin: true,
+                                        min: double.tryParse(cubit
+                                                .productUnits[index]
+                                                .salePriceWithoutTaxController
+                                                ?.text ??
+                                            ''),
+                                      ),
+                                      onChanged: (newValue) {
+                                        if (cubit
+                                                .productUnits[index]
+                                                .salePriceWithTaxController!
+                                                .text !=
+                                            newValue) {
+                                          cubit
                                               .productUnits[index]
                                               .salePriceWithTaxController!
-                                              .text !=
-                                          newValue) {
-                                        cubit
-                                            .productUnits[index]
-                                            .salePriceWithTaxController!
-                                            .text = newValue;
-                                      }
-                                      cubit.changeSalePriceWithTax(
-                                          cubit.productUnits[index]);
-                                      if (index == 0) {
-                                        cubit.onChangeCost(0);
-                                      }
-                                    },
+                                              .text = newValue;
+                                        }
+                                        cubit.changeSalePriceWithTax(
+                                            cubit.productUnits[index]);
+                                        if (index == 0) {
+                                          cubit.onChangeCost(0);
+                                        }
+                                      },
+                                    ),
                                   ),
-                                ),
 
-                                DataCell(customTextFormFieldTable(
-                                  hintText: "الباركود",
-                                  validator: null,
-                                  controller: cubit
-                                      .productUnits[index].barCodeController,
-                                  onChanged: (p0) {},
-                                )),
-                                DataCell(customTextFormFieldTable(
-                                  hintText: "باركود الميزان",
-                                  validator: null,
-                                  controller: cubit.productUnits[index]
-                                      .scaleBarcodeController,
-                                  onChanged: (p0) {},
-                                )),
-                                DataCell(
-                                  CustomTextBtn(
-                                    text: "اضافة كمية",
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (ctx) {
-                                          List<BranchQuantity>
-                                              tempBranchQuantities = [];
-                                          for (int i = 0;
-                                              i <
-                                                  cubit.productUnits[index]
-                                                      .branchQty.length;
-                                              i++) {
-                                            tempBranchQuantities.add(
-                                                BranchQuantity.from(cubit
-                                                    .productUnits[index]
-                                                    .branchQty[i]));
-                                          }
+                                  DataCell(customTextFormFieldTable(
+                                    hintText: "الباركود",
+                                    validator: null,
+                                    controller: cubit
+                                        .productUnits[index].barCodeController,
+                                    onChanged: (p0) {},
+                                  )),
+                                  DataCell(customTextFormFieldTable(
+                                    hintText: "باركود الميزان",
+                                    validator: null,
+                                    controller: cubit.productUnits[index]
+                                        .scaleBarcodeController,
+                                    onChanged: (p0) {},
+                                  )),
+                                  DataCell(
+                                    CustomTextBtn(
+                                      text: "اضافة كمية",
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (ctx) {
+                                            List<BranchQuantity>
+                                                tempBranchQuantities = [];
+                                            for (int i = 0;
+                                                i <
+                                                    cubit.productUnits[index]
+                                                        .branchQty.length;
+                                                i++) {
+                                              tempBranchQuantities.add(
+                                                  BranchQuantity.from(cubit
+                                                      .productUnits[index]
+                                                      .branchQty[i]));
+                                            }
 
-                                          return StatefulBuilder(
-                                            builder: (ctx, setState) =>
-                                                AlertDialog(
-                                              title: Column(
-                                                spacing: 10,
-                                                children: [
-                                                  Text("اضافة كمية افتتاحية"),
+                                            return StatefulBuilder(
+                                              builder: (ctx, setState) =>
+                                                  AlertDialog(
+                                                title: Column(
+                                                  spacing: 10,
+                                                  children: [
+                                                    Text("اضافة كمية افتتاحية"),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment.end,
+                                                      children: [
+                                                        CustomTextBtn(
+                                                          text: "اضافة",
+                                                          textColor:
+                                                              AppColors.primary,
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              tempBranchQuantities
+                                                                  .add(
+                                                                BranchQuantity(
+                                                                  branchId: null,
+                                                                  branch: null,
+                                                                  qunantity: 0,
+                                                                  quantityController:
+                                                                      TextEditingController(),
+                                                                ),
+                                                              );
+                                                            });
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    ...List.generate(
+                                                      tempBranchQuantities.length,
+                                                      (index) {
+                                                        return Row(
+                                                          spacing: 5,
+                                                          children: [
+                                                            Expanded(
+                                                              flex: 2,
+                                                              child:
+                                                                  CustomDropDownBranch(
+                                                                      value: tempBranchQuantities[
+                                                                              index]
+                                                                          .branch,
+                                                                      onChanged:
+                                                                          (value) {
+                                                                        setState(
+                                                                            () {
+                                                                          if (value !=
+                                                                              null) {
+                                                                            tempBranchQuantities[index].branch =
+                                                                                BrancheModel.from(value);
+                                                                          }
+                                                                        });
+                                                                      }),
+                                                            ),
+                                                            Expanded(
+                                                              child:
+                                                                  CustomFormField(
+                                                                hintText:
+                                                                    "الكمية",
+                                                                controller:
+                                                                    tempBranchQuantities[
+                                                                            index]
+                                                                        .quantityController,
+                                                                validator: (value) =>
+                                                                    MyFormValidators
+                                                                        .validateInteger(
+                                                                            value,
+                                                                            context:
+                                                                                context),
+                                                                onChanged:
+                                                                    (p0) {},
+                                                              ),
+                                                            ),
+                                                            IconButton(
+                                                                onPressed: () {
+                                                                  setState(() {
+                                                                    tempBranchQuantities
+                                                                        .removeAt(
+                                                                            index);
+                                                                  });
+                                                                },
+                                                                icon: Icon(Icons
+                                                                    .cancel_outlined))
+                                                          ],
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                                actions: [
                                                   Row(
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.end,
                                                     children: [
                                                       CustomTextBtn(
-                                                        text: "اضافة",
+                                                        text: "اغلاق",
+                                                        textColor:
+                                                            AppColors.primary,
+                                                        onPressed: () =>
+                                                            Navigator.pop(ctx),
+                                                      ),
+                                                      CustomTextBtn(
+                                                        text: "حفظ",
                                                         textColor:
                                                             AppColors.primary,
                                                         onPressed: () {
-                                                          setState(() {
-                                                            tempBranchQuantities
-                                                                .add(
-                                                              BranchQuantity(
-                                                                branchId: null,
-                                                                branch: null,
-                                                                qunantity: 0,
-                                                                quantityController:
-                                                                    TextEditingController(),
-                                                              ),
-                                                            );
-                                                          });
+                                                          cubit.assignBranchQty(
+                                                              index: index,
+                                                              branchQuantities:
+                                                                  tempBranchQuantities);
+                                                          Navigator.pop(ctx);
                                                         },
                                                       ),
                                                     ],
                                                   ),
-                                                  ...List.generate(
-                                                    tempBranchQuantities.length,
-                                                    (index) {
-                                                      return Row(
-                                                        spacing: 5,
-                                                        children: [
-                                                          Expanded(
-                                                            flex: 2,
-                                                            child:
-                                                                CustomDropDownBranch(
-                                                                    value: tempBranchQuantities[
-                                                                            index]
-                                                                        .branch,
-                                                                    onChanged:
-                                                                        (value) {
-                                                                      setState(
-                                                                          () {
-                                                                        if (value !=
-                                                                            null) {
-                                                                          tempBranchQuantities[index].branch =
-                                                                              BrancheModel.from(value);
-                                                                        }
-                                                                      });
-                                                                    }),
-                                                          ),
-                                                          Expanded(
-                                                            child:
-                                                                CustomFormField(
-                                                              hintText:
-                                                                  "الكمية",
-                                                              controller:
-                                                                  tempBranchQuantities[
-                                                                          index]
-                                                                      .quantityController,
-                                                              validator: (value) =>
-                                                                  MyFormValidators
-                                                                      .validateInteger(
-                                                                          value,
-                                                                          context:  
-                                                                              context),
-                                                              onChanged:
-                                                                  (p0) {},
-                                                            ),
-                                                          ),
-                                                          IconButton(
-                                                              onPressed: () {
-                                                                setState(() {
-                                                                  tempBranchQuantities
-                                                                      .removeAt(
-                                                                          index);
-                                                                });
-                                                              },
-                                                              icon: Icon(Icons
-                                                                  .cancel_outlined))
-                                                        ],
-                                                      );
-                                                    },
-                                                  ),
                                                 ],
                                               ),
-                                              actions: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    CustomTextBtn(
-                                                      text: "اغلاق",
-                                                      textColor:
-                                                          AppColors.primary,
-                                                      onPressed: () =>
-                                                          Navigator.pop(ctx),
-                                                    ),
-                                                    CustomTextBtn(
-                                                      text: "حفظ",
-                                                      textColor:
-                                                          AppColors.primary,
-                                                      onPressed: () {
-                                                        cubit.assignBranchQty(
-                                                            index: index,
-                                                            branchQuantities:
-                                                                tempBranchQuantities);
-                                                        Navigator.pop(ctx);
-                                                      },
-                                                    ),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      );
-                                    },
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
                                   ),
-                                ),
-                                DataCell(
-                                  IconButton(
-                                    icon: Icon(Icons.delete,
-                                        color: AppColors.error),
-                                    onPressed: index == 0
-                                        ? null
-                                        : () => cubit.removeProductUnit(
-                                            index: index),
+                                  DataCell(
+                                    IconButton(
+                                      icon: Icon(Icons.delete,
+                                          color: AppColors.error),
+                                      onPressed: index == 0
+                                          ? null
+                                          : () => cubit.removeProductUnit(
+                                              index: index),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }),
+                                ],
+                              );
+                            }),
+                          ),
                         ),
-                      ),
-                    );
-                  }),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Builder(builder: (context) {
-                    if (state is AddProductLoading) {
-                      return const CustomLoading();
-                    }
-                    return CustomFilledBtn(
-                        text: S.of(context).add, onPressed: cubit.addProduct);
-                  }),
-                ],
-              ),
-            ));
+                      );
+                    }),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Builder(builder: (context) {
+                      if (state is AddProductLoading) {
+                        return const CustomLoading();
+                      }
+                      return CustomFilledBtn(
+                          text: S.of(context).add, onPressed: cubit.addProduct);
+                    }),
+                  ],
+                ),
+              )),
+        );
       },
     );
   }
