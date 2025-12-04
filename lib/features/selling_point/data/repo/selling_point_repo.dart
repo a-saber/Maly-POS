@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
+import 'package:pos_app/core/helper/payment_helper.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
@@ -96,7 +97,10 @@ class SellingPointRepo {
       if (customer != null) {
         data[ApiKeys.customerid] = customer.id;
       }
-
+      if(paymentType?.apiKey == ApiKeys.mada){
+        String? madauid=await PaymentHelper.addTransaction(amount: totalaftertax);
+        data["nearpay_transaction_uuid"]=madauid;
+      }
       var response = await api.post(
         url: url,
         data: data,

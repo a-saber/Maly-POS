@@ -74,6 +74,14 @@ class S {
       args: [],
     );
   }
+  String get mada {
+    return Intl.message(
+      'mada',
+      name: 'mada',
+      desc: '',
+      args: [],
+    );
+  }
 
   /// `Phone number is required`
   String get phonenumberisrequired {

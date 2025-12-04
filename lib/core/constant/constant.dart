@@ -241,6 +241,12 @@ class AppConstant {
           icon: Icons.language,
           apiKey: ApiKeys.online,
         ),
+        PaymentMethodModel(
+          id: 2,
+          name: S.of(context).mada,
+          icon: Icons.card_giftcard_outlined,
+          apiKey: ApiKeys.mada,
+        ),
       ];
   static List<ProductType> producttype(context) => [
         ProductType(

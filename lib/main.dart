@@ -9,6 +9,7 @@ import 'package:pos_app/core/cache/custom_secure_storage.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/core/helper/hive_register_adapter.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/helper/payment_helper.dart';
 import 'package:pos_app/core/invoice/pdf_font_loader.dart';
 import 'package:pos_app/core/manager/language_control/language_control_cubit.dart';
 import 'package:pos_app/core/router/app_route.dart';
@@ -24,6 +25,7 @@ void main() async {
   await Future.wait<void>([
     CacheHelper.init(),
     Hive.initFlutter(),
+    
     // GetLocation.getParameterOfLocation(),
   ]);
 
@@ -31,6 +33,7 @@ void main() async {
   await CustomUserHiveBox.init();
   MyServiceLocator.init();
   CustomSecureStorage.init();
+  await PaymentHelper.initialize();
   runApp(const MyApp());
 }
 
