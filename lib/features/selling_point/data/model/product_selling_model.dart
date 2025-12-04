@@ -51,7 +51,7 @@ class ProductSellingModel {
   }
 
   ProductSellingModel({required this.product, required this.count, this.productUnit}){
-    final initialPrice =double.tryParse(productUnit?.salePriceWithoutTax ?? '0')?.toStringAsFixed(2) ;
+    final initialPrice =double.tryParse(productUnit?.salePriceWithoutTax ?? '0')?.toString() ;
     minPrice = double.tryParse(productUnit?.minPriceWithoutTax ?? '0') ?? 0;
 
     priceController = TextEditingController(text: initialPrice);
@@ -65,7 +65,7 @@ class ProductSellingModel {
 
  void   validatePrice() {
     if(currentPrice < minPrice){
-      priceController.text = double.tryParse(productUnit?.salePriceWithTax ?? '0')!.toStringAsFixed(2);
+      priceController.text = double.tryParse(productUnit?.salePriceWithTax ?? '0')!.toString();
     }
 
   }
