@@ -261,12 +261,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  // void changeTaxes(TaxesModel? taxes) {
-  //   if (taxes?.id != this.taxes?.id) {
-  //     this.taxes = taxes;
-  //     emit(SellingPointProductChangeTaxes());
-  //   }
-  // }
+
 
   void onChangeBranche(BrancheModel? branche) {
     if (branche?.id != repo.branch?.id) {

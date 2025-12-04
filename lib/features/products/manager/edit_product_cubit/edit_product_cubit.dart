@@ -586,12 +586,10 @@ class EditProductCubit extends Cubit<EditProductState> {
       double value = double.parse(newValue);
       if (taxes != null) {
         double taxPercent = double.tryParse(taxes!.percentage ?? "0") ?? 0;
-        double afterTax = value + (value * taxPercent / 100);
-        productUnits[index].salePriceWithTaxController?.text =
-            afterTax.toStringAsFixed(2);
+        double afterTax = value + (value * (taxPercent / 100));
+        productUnits[index].salePriceWithTaxController?.text = afterTax.toString();
       } else {
-        productUnits[index].salePriceWithTaxController?.text =
-            value.toStringAsFixed(2);
+        productUnits[index].salePriceWithTaxController?.text = value.toString();
       }
     } catch (_) {
       productUnits[index].salePriceWithTaxController?.text = "0";
@@ -609,12 +607,12 @@ class EditProductCubit extends Cubit<EditProductState> {
       double value = double.parse(newValue);
       if (taxes != null) {
         double taxPercent = double.tryParse(taxes!.percentage ?? "0") ?? 0;
-        double beforeTax = value / (1 + taxPercent / 100);
+        double beforeTax = value / (1 + (taxPercent / 100));
         productUnits[index].salePriceWithoutTaxController?.text =
-            beforeTax.toStringAsFixed(2);
+            beforeTax.toString();
       } else {
         productUnits[index].salePriceWithoutTaxController?.text =
-            value.toStringAsFixed(2);
+            value.toString();
       }
     } catch (_) {
       productUnits[index].salePriceWithoutTaxController?.text = "0";
