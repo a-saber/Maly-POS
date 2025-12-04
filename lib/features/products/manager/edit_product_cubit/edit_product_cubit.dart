@@ -61,7 +61,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   double baseMinPriceWithoutTax = 0;
   double baseMinPriceWithTax = 0;
   double baseSalePriceWithoutTax = 0;
-  double baseSalePriceWithTax = 0;
+ double baseSalePriceWithTax = 0;
 
   void _initControllers() {
     nameController = TextEditingController(text: product.name);
@@ -329,10 +329,8 @@ class EditProductCubit extends Cubit<EditProductState> {
               productUnits[0].minPriceWithoutTaxController?.text ?? '') ?? baseCost;
       baseMinPriceWithTax = double.tryParse(
               productUnits[0].minPriceWithTaxController?.text ?? '') ?? baseMinPriceWithoutTax;
-      baseSalePriceWithoutTax = double.tryParse(
-              productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
-      baseSalePriceWithTax = double.tryParse(
-              productUnits[0].salePriceWithTaxController?.text ?? '0') ?? 0;
+      baseSalePriceWithoutTax = double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
+      baseSalePriceWithTax = double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ?? 0;
 
      
       for (int i = 1; i < productUnits.length; i++) {
@@ -390,24 +388,18 @@ class EditProductCubit extends Cubit<EditProductState> {
             factor % 1 == 0 ? factor.toStringAsFixed(0) : factor.toString();
 
         double costPrice = double.tryParse(apiUnit.costPrice ?? '0') ?? 0;
-        double minPriceWithoutTax =
-            double.tryParse(apiUnit.minPriceWithoutTax ?? '0') ?? 0;
-        double minPriceWithTax =
-            double.tryParse(apiUnit.minPriceWithTax ?? '0') ?? 0;
+        double minPriceWithoutTax = double.tryParse(apiUnit.minPriceWithoutTax ?? '0') ?? 0;
+        double minPriceWithTax = double.tryParse(apiUnit.minPriceWithTax ?? '0') ?? 0;
         double salePriceWithoutTax =
             double.tryParse(apiUnit.salePriceWithoutTax ?? '0') ?? 0;
         double salePriceWithTax =
             double.tryParse(apiUnit.salePriceWithTax ?? '0') ?? 0;
 
-        productUnit.costPriceController?.text = costPrice.toStringAsFixed(2);
-        productUnit.minPriceWithoutTaxController?.text =
-            minPriceWithoutTax.toStringAsFixed(2);
-        productUnit.minPriceWithTaxController?.text =
-            minPriceWithTax.toStringAsFixed(2);
-        productUnit.salePriceWithoutTaxController?.text =
-            salePriceWithoutTax.toStringAsFixed(2);
-        productUnit.salePriceWithTaxController?.text =
-            salePriceWithTax.toStringAsFixed(2);
+        productUnit.costPriceController?.text = costPrice.toStringAsFixed(1);
+        productUnit.minPriceWithoutTaxController?.text = minPriceWithoutTax.toStringAsFixed(1);
+        productUnit.minPriceWithTaxController?.text = minPriceWithTax.toStringAsFixed(1);
+        productUnit.salePriceWithoutTaxController?.text = salePriceWithoutTax.toStringAsFixed(1);
+        productUnit.salePriceWithTaxController?.text = salePriceWithTax.toStringAsFixed(1);
 
         productUnit.barCodeController?.text = apiUnit.barcode ?? "";
         productUnit.scaleBarcodeController?.text = apiUnit.scaleBarcode ?? "";
@@ -431,14 +423,10 @@ class EditProductCubit extends Cubit<EditProductState> {
       if (productUnits.isNotEmpty) {
         baseCost =
             double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
-        baseMinPriceWithoutTax = double.tryParse(
-                productUnits[0].minPriceWithoutTaxController?.text ?? '0') ?? 0;
-        baseMinPriceWithTax = double.tryParse(
-                productUnits[0].minPriceWithTaxController?.text ?? '0') ?? 0;
-        baseSalePriceWithoutTax = double.tryParse(
-                productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
-        baseSalePriceWithTax = double.tryParse(
-                productUnits[0].salePriceWithTaxController?.text ?? '0') ?? 0;
+        baseMinPriceWithoutTax = double.tryParse(productUnits[0].minPriceWithoutTaxController?.text ?? '0') ?? 0;
+        baseMinPriceWithTax = double.tryParse(productUnits[0].minPriceWithTaxController?.text ?? '0') ?? 0;
+        baseSalePriceWithoutTax = double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
+        baseSalePriceWithTax = double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ?? 0;
       }
     } else {
       final baseUnit = ProductUnits.empty();

@@ -63,7 +63,7 @@ dependencies:
   sunmi_printer_plus: null
   thermal_printer:
   esc_pos_utils_plus:
-  permission_handler: ^10.4.0
+  permission_handler: ^12.0.1
 
   # timezone:
   # geolocator:

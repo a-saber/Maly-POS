@@ -51,7 +51,7 @@ class ProductSellingModel {
   }
 
   ProductSellingModel({required this.product, required this.count, this.productUnit}){
-    final initialPrice =double.tryParse(productUnit?.salePriceWithTax ?? '0')?.toStringAsFixed(2) ;
+    final initialPrice =double.tryParse(productUnit?.salePriceWithoutTax ?? '0')?.toStringAsFixed(2) ;
     minPrice = double.tryParse(productUnit?.minPriceWithoutTax ?? '0') ?? 0;
 
     priceController = TextEditingController(text: initialPrice);
@@ -72,11 +72,12 @@ class ProductSellingModel {
 
 
   Map<String, dynamic> toJson() {
+
     return {
       ApiKeys.productid: product.id,
       ApiKeys.quantity: count,
       ApiKeys.unitId: productUnit?.unitId,
-      ApiKeys.pricePerUnitWithTax: currentPrice,
+      ApiKeys.pricePerUnitWithTax: (currentPrice + (((double.tryParse((product.tax?.percentage ?? '0')) ?? 0)/100) * currentPrice)) ,
 
     };
   }

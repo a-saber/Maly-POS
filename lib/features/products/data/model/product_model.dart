@@ -57,7 +57,7 @@ class ProductModel {
     required this.quantity,
   });
 
-  double? get salePriceWithTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithTax?? "").toString());
+  double? get salePriceWithOutTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithoutTax?? "").toString());
 
 
   factory ProductModel.empty() {

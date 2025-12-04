@@ -162,6 +162,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         if (taxes != null) {
           total += (priceOfProductAfterDicount(element) * (taxes / 100.0));
         }
+
       }
     }
 

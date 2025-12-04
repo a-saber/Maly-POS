@@ -42,87 +42,92 @@ class _ProductsViewState extends State<ProductsView> {
         Navigator.pushNamed(context, AppRoutes.addProduct);
       }),
       appBar: CustomAppBar(title: S.of(context).products),
-      body: CustomRefreshIndicator(
-        onRefresh: () {
-          return GetAllProductsCubit.get(context).getProducts();
-        },
-        child: Padding(
-          padding: AppPaddings.defaultView,
-          child: BlocConsumer<GetAllProductsCubit,GetAllProductsState>(
-            listener: (context,state){},
-         builder: (context,state){
-           return Column(
-             children: [
-               Flex(
-                 direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
-                 spacing: 20,
-                 mainAxisSize: MainAxisSize.min,
-                 children: [
-                   Flexible(
-                     flex: 1,
-                     // fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                     child:  CustomFormField(
-                         suffixIcon: Icon(Icons.search),
-                         controller:GetAllProductsCubit.get(context).searchController,
-                         labelText: S.of(context).search,
-                         onChanged: GetAllProductsCubit.get(context).onSearchChanged,
-                       prefixIcon:  GetAllProductsCubit.get(context).searchController.text.isNotEmpty?
-                       IconButton(onPressed: GetAllProductsCubit.get(context).clearSearch
-                           , icon: Icon(CupertinoIcons.xmark)):null
+      
+      body: SafeArea(
 
+        child: CustomRefreshIndicator(
+          onRefresh: () {
+            return GetAllProductsCubit.get(context).getProducts();
+          },
+          child: Padding(
+            padding: AppPaddings.defaultView,
+            child: BlocConsumer<GetAllProductsCubit,GetAllProductsState>(
+              listener: (context,state){},
+           builder: (context,state){
+             return Column(
+               children: [
+                 Flex(
+                   direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
+                   spacing: 20,
+                   mainAxisSize: MainAxisSize.min,
+                   children: [
+                     Flexible(
+                       flex: 1,
+                       // fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                       child:  CustomFormField(
+                           suffixIcon: Icon(Icons.search),
+                           controller:GetAllProductsCubit.get(context).searchController,
+                           labelText: S.of(context).search,
+                           onChanged: GetAllProductsCubit.get(context).onSearchChanged,
+                         prefixIcon:  GetAllProductsCubit.get(context).searchController.text.isNotEmpty?
+                         IconButton(onPressed: GetAllProductsCubit.get(context).clearSearch
+                             , icon: Icon(CupertinoIcons.xmark)):null
+        
+                       ),
                      ),
-                   ),
-                   Flexible(
-                     flex: 1,
-
-                     //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
-                     child:  Stack(
-                       children: [
-                         CustomDropDownCategory(
-                           value: GetAllProductsCubit.get(context).category,
-                           onChangedCategory: (category) => GetAllProductsCubit.get(context).onChangeCategory(category),
-                           onClear:  GetAllProductsCubit.get(context).clearCategory,
-                         ),
-
-                       ],
+                     Flexible(
+                       flex: 1,
+        
+                       //   fit: isMobile(context: context) ? FlexFit.loose : FlexFit.tight,
+                       child:  Stack(
+                         children: [
+                           CustomDropDownCategory(
+                             value: GetAllProductsCubit.get(context).category,
+                             onChangedCategory: (category) => GetAllProductsCubit.get(context).onChangeCategory(category),
+                             onClear:  GetAllProductsCubit.get(context).clearCategory,
+                           ),
+        
+                         ],
+                       ),
                      ),
-                   ),
-                 ],
-               ),
-
-
-
-               const SizedBox(
-                 height: 10,
-               ),
-               Expanded(
-                 child: ProductCubitBuild(
-                   productsLoading: (context) {
-                     return CustomGridViewCard(
-                       heightOfCard: MediaQuery.of(context).textScaler.scale(110),
-                       itemBuilder: (context, index) {
-                         return ProductCardLoading();
-                       },
-                       itemCount: AppConstant.numberOfCardLoading,
-                     );
-                   },
-                   productsBuild: (context, products) {
-                     return CustomGridViewCard(
-
-                       controller: GetAllProductsCubit.get(context).scrollController,
-                       canLaoding: GetAllProductsCubit.get(context).canLoading(),
-                       heightOfCard: MediaQuery.of(context).textScaler.scale(110),
-                       itemBuilder: (BuildContext context, int index) {
-                         return ProductItemBuilder(product: products[index]);
-                       },
-                       itemCount: products.length,
-                     );
-                   },
+                   ],
                  ),
-               ),
-             ],
-           );
-         },
+        
+        
+        
+                 const SizedBox(
+                   height: 10,
+                 ),
+                 Expanded(
+                   child: ProductCubitBuild(
+                     productsLoading: (context) {
+                       return CustomGridViewCard(
+                         heightOfCard: MediaQuery.of(context).textScaler.scale(110),
+                         itemBuilder: (context, index) {
+                           return ProductCardLoading();
+                         },
+                         itemCount: AppConstant.numberOfCardLoading,
+                       );
+                     },
+                     productsBuild: (context, products) {
+                       return CustomGridViewCard(
+        
+                         controller: GetAllProductsCubit.get(context).scrollController,
+                         canLaoding: GetAllProductsCubit.get(context).canLoading(),
+                         heightOfCard: MediaQuery.of(context).textScaler.scale(110),
+                         itemBuilder: (BuildContext context, int index) {
+                           return ProductItemBuilder(product: products[index]);
+                         },
+                         itemCount: products.length,
+                       );
+                     },
+                   ),
+                 ),
+
+               ],
+             );
+           },
+            ),
           ),
         ),
       ),
