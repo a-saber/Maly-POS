@@ -15,6 +15,7 @@ class CustomFormField extends StatelessWidget {
   final String? hintText;
   final void Function(String)? onChanged;
   final bool? enabled;
+  final VoidCallback?onTap;
 
   final String? initialValue;
   final List<TextInputFormatter>?inputFormatters;
@@ -35,7 +36,7 @@ class CustomFormField extends StatelessWidget {
     this.enabled,
     this.initialValue,
     this.inputFormatters,
-    this.autofillHints
+    this.autofillHints, this.onTap
 
   });
 
@@ -52,6 +53,7 @@ class CustomFormField extends StatelessWidget {
       autofillHints:autofillHints ,
       onFieldSubmitted: onFieldSubmitted,
       inputFormatters: inputFormatters,
+      onTap:onTap ,
       onChanged: onChanged,
       style: AppFontStyle.formText(
         context: context,

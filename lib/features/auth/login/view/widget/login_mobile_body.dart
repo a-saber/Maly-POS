@@ -52,6 +52,10 @@ class LoginMobileBody extends StatelessWidget {
                       children: [
                         CustomFormField(
                           controller: LoginCubit.get(context).emailController,
+                          onTap: (){
+
+                          },
+
                           validator: (value) => MyFormValidators.validateEmail(
                               value,
                               context: context),
@@ -73,6 +77,7 @@ class LoginMobileBody extends StatelessWidget {
                           ),
                           obscureText: LoginCubit.get(context).obscureText,
                         ),
+                        Checkbox(value: true, onChanged: (value){})
                       ],
                     ),
                   ),

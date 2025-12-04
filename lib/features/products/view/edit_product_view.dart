@@ -52,6 +52,7 @@ class EditProductView extends StatelessWidget {
                   context: context,
                   massage: S.of(context).updatedSuccess,
                   state: PopUpState.SUCCESS);
+
               Navigator.pop(context, state.product);
             } else if (state is EditProductFailing) {
               if (context.mounted) {

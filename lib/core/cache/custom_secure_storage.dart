@@ -20,6 +20,7 @@ abstract class CustomSecureStorage {
   static Future<Map<String, String>?> readAll() => _storage.readAll();
   static Future<void> delete({required String key}) =>
       _storage.delete(key: key);
+
   static Future<void> write({required String key, required String value}) =>
       _storage.write(key: key, value: value);
 

@@ -24,8 +24,10 @@ import '../../../core/widget/custom_loading.dart';
 import '../../../core/widget/custom_reset_drop_down_button.dart';
 import '../../../core/widget/image_manager_view.dart';
 import '../../branch/view/widget/custom_drop_down_branch.dart';
+import '../../categories/data/repo/category_repo.dart';
 import '../../categories/view/widget/custom_drop_down_category.dart';
 import '../../taxes/view/widget/custom_drop_down_taxes.dart';
+import '../../units/data/repo/units_repo.dart';
 import '../data/model/product_type.dart';
 
 class AddProductDataView2 extends StatefulWidget {
@@ -245,9 +247,7 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                           value: cubit.productUnits[index].unit,
                                           onChanged: (unit) {
                                             if (unit != null) {
-                                              cubit.onUnitChanged(
-                                                  unitModel: unit,
-                                                  index: index);
+                                              cubit.onUnitChanged(unitModel: unit, index: index);
                                             }
                                           },
                                         ),
@@ -648,7 +648,11 @@ class AddProductView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AddProductCubit(MyServiceLocator.getSingleton<ProductsRepo>()),
+      create: (context) => AddProductCubit(
+          MyServiceLocator.getSingleton<ProductsRepo>(),
+        unitsRepo: MyServiceLocator.getSingleton<UnitsRepo>(),
+        categoryRepo: MyServiceLocator.getSingleton<CategoryRepo>(),
+      ),
       child: Scaffold(
         appBar: CustomAppBar(title: S.of(context).addProduct),
         body: BlocConsumer<AddProductCubit, AddProductState>(

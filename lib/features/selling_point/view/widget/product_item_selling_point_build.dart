@@ -115,7 +115,7 @@ class ProductItemSellingPointBuild extends StatelessWidget {
               //   overflow: TextOverflow.ellipsis,
               //   textAlign: TextAlign.center,
               // ),
-              Text("${product.salePriceWithTaxForBaseUnit?? 0.0}",
+              Text((product.salePriceWithTaxForBaseUnit?? 0.0).toStringAsFixed(2),
 
                 style: AppFontStyle.itemssmallTitle(
                   fontWeight: FontWeight.w400,
