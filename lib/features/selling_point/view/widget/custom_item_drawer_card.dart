@@ -154,7 +154,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
             ),
             Expanded(
               child: Text(
-                (widget.product.currentPrice * widget.product.count).toStringAsFixed(2),
+                (widget.product.currentPriceWithTax).toStringAsFixed(2),
                 style: AppFontStyle.itemsSubTitle(
                   context: context,
                   color: AppColors.black,

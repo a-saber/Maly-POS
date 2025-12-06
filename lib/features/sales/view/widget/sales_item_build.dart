@@ -5,6 +5,7 @@ import 'package:pos_app/core/helper/formate_date_time.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/features/sales/data/model/sales_model.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:redacted/redacted.dart';
@@ -148,7 +149,7 @@ class SalesItemBuild extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      "${salesModel.totalAfterTax ?? S.of(context).unknown} ",
+                      "${(salesModel.totalAfterTax).toAmount() } ",
                       style: AppFontStyle.itemsTitle(
                         context: context,
                         color: AppColors.black,
@@ -173,7 +174,7 @@ class SalesItemBuild extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        "${salesModel.discountTotal ?? S.of(context).unknown} ",
+                        "${salesModel.discountTotal?.toAmount()} ",
                         style: AppFontStyle.itemsTitle(
                           context: context,
                           color: AppColors.black,
