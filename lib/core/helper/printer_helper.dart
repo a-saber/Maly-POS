@@ -225,18 +225,21 @@ class PrinterHelper {
     } catch (_) {}
   }
 
-  PaperSize _getPaperSize(String? paperSize) {
-    switch (paperSize?.toLowerCase()) {
-      case '80mm':
-        return PaperSize.mm80;
-      case '72mm':
-        return PaperSize.mm72;
-      case '58mm':
-        return PaperSize.mm58;
-      default:
-        return PaperSize.mm80; // Default to 80mm
-    }
+PaperSize _getPaperSize(String? paperSize) {
+  if (paperSize == null) return PaperSize.mm80;
+  final cleanSize = paperSize.toLowerCase().replaceAll('mm', '');  
+  print('Parsed paper size: $cleanSize.');
+  switch (cleanSize) {
+    case '80':
+      return PaperSize.mm80;
+    case '72':
+      return PaperSize.mm72;
+    case '58':
+      return PaperSize.mm58;
+    default:
+      return PaperSize.mm80;
   }
+}
   /// --- CONTENT GENERATORS ---
 
   Future<List<int>> _buildTestBytes(DiscoveredPrinter p, {String? paperSize}) async {
