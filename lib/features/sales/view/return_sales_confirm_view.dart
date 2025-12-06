@@ -47,18 +47,21 @@ class ReturnSalesConfirmView extends StatelessWidget {
           builder: (context, state) {
             return Padding(
               padding: AppPaddings.defaultView,
-              child: CustomLayoutBuilder(
-                mobile: ReturnSalesConfirmMobileBody(
-                  salesModel: salesModel,
-                  state: state,
-                ),
-                tablet: ReturnSalesConfirmTabletAndDesktopeBody(
-                  salesModel: salesModel,
-                  state: state,
-                ),
-                desktop: ReturnSalesConfirmTabletAndDesktopeBody(
-                  salesModel: salesModel,
-                  state: state,
+              child: SafeArea(
+                child: CustomLayoutBuilder(
+
+                  mobile: ReturnSalesConfirmMobileBody(
+                    salesModel: salesModel,
+                    state: state,
+                  ),
+                  tablet: ReturnSalesConfirmTabletAndDesktopeBody(
+                    salesModel: salesModel,
+                    state: state,
+                  ),
+                  desktop: ReturnSalesConfirmTabletAndDesktopeBody(
+                    salesModel: salesModel,
+                    state: state,
+                  ),
                 ),
               ),
             );

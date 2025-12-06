@@ -39,8 +39,12 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
+  static final navigatorKey = GlobalKey<NavigatorState>();
+  static BuildContext? get context => navigatorKey.currentContext;
   @override
   Widget build(BuildContext context) {
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -53,6 +57,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Maly',
+            navigatorKey: navigatorKey,
             theme: ThemeData(
                 useMaterial3: true,
                 colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),

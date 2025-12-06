@@ -59,6 +59,7 @@ class UpdateProductModel {
       baseUnitId: null,
       baseUnit: null,
       productUnits: [],
+
     );
   }
 
@@ -289,7 +290,8 @@ class ProductUnits {
     this.isExistingUnit = false,
   });
 
-  factory ProductUnits.empty() {
+  factory ProductUnits.empty({UnitModel? unit}) {
+
     return ProductUnits(
       factoryController: TextEditingController(),
       costPriceController: TextEditingController(),
@@ -300,7 +302,10 @@ class ProductUnits {
       salePriceWithTaxController: TextEditingController(),
       minPriceWithTaxController: TextEditingController(),
       isExistingUnit: false,
+      unit: unit
+
     );
+
   }
 
   factory ProductUnits.copyWith({

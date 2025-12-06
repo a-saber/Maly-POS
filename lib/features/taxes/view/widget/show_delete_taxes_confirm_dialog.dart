@@ -9,6 +9,8 @@ import 'package:pos_app/features/taxes/manager/delete_taxes_cubit/delete_taxes_c
 import 'package:pos_app/features/taxes/manager/get_all_taxes_cubit/get_all_taxes_cubit.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../../manager/search_taxes/search_taxes_cubit.dart';
+
 Future<bool?> showDeleteTaxesConfirmDialog(
     {required BuildContext context,
     required TaxesModel taxes,
@@ -18,15 +20,19 @@ Future<bool?> showDeleteTaxesConfirmDialog(
       title: S.of(context).deleteTax,
       content: taxes.title ?? S.of(context).noName,
       deleteButtonBuilder: (ctx, button, loading) => BlocProvider(
-            create: (context) =>
-                DeleteTaxesCubit(MyServiceLocator.getSingleton<TaxesRepo>()),
+            create: (context) => DeleteTaxesCubit(MyServiceLocator.getSingleton<TaxesRepo>()),
             child: BlocConsumer<DeleteTaxesCubit, DeleteTaxesState>(
+
               listener: (context, state) {
                 if (state is DeleteTaxesSuccess) {
                   deleteConfirmationDialogSuccess(ctx);
                   MyServiceLocator.getSingleton<GetAllTaxesCubit>().deleteTaxes(
                     id: state.id,
                   );
+                  MyServiceLocator.getSingleton<SearchTaxesCubit>().deleteTaxes(
+                    id: state.id,
+                  );
+
                   if (goBack) {
                     Navigator.of(context).pop();
                   }
@@ -43,8 +49,7 @@ Future<bool?> showDeleteTaxesConfirmDialog(
                 }
                 return button(
                     context: context,
-                    onPressed: () =>
-                        DeleteTaxesCubit.get(context).deleteTax(tax: taxes));
+                    onPressed: () => DeleteTaxesCubit.get(context).deleteTax(tax: taxes));
               },
             ),
           ));

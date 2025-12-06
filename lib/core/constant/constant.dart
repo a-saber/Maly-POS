@@ -158,6 +158,14 @@ class AppConstant {
         canAccess: user.role?.shifts ?? false,
         // canAccess: true,
       ),
+      HomeViewItemModel(
+        color: Color(0xffffa700),
+        icon: Icons.volunteer_activism,
+        pageRoute: AppRoutes.scidGenerationView,
+        title: S.of(context).ZakatAndTaxAuthority,
+        canAccess: true,
+        // canAccess: true,
+      ),
     ];
 
     List<HomeViewItemBuilder> homeViewItemBuilders = [];

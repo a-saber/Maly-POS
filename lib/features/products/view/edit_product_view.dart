@@ -52,6 +52,7 @@ class EditProductView extends StatelessWidget {
                   context: context,
                   massage: S.of(context).updatedSuccess,
                   state: PopUpState.SUCCESS);
+
               Navigator.pop(context, state.product);
             } else if (state is EditProductFailing) {
               if (context.mounted) {
@@ -232,7 +233,9 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 else
                   CustomFilledBtn(
                     text: S.of(context).update,
-                    onPressed: cubit.editProduct,
+                    onPressed: (){
+                      cubit.editProduct(context);
+                    },
                   ),
               ],
             ),

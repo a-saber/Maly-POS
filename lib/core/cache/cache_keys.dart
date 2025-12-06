@@ -3,4 +3,5 @@ class CacheKeys {
   static const String accessToken = 'accessToken';
   static const String domain = 'domain';
   static const String isLogin = 'isLogin';
+  static const String credential= 'credential';
 }

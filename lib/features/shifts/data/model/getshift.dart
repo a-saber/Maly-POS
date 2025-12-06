@@ -45,7 +45,7 @@ class GetShift {
 
 class Shift {
   int? id;
-  int? openingQuantity;
+  String? openingQuantity;
   String? createdAt;
   String? updatedAt;
   int? userId;

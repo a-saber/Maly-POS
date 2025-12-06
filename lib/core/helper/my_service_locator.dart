@@ -53,6 +53,8 @@ import 'package:pos_app/features/users/data/repo/users_repo.dart';
 import 'package:pos_app/features/users/manager/get_users/get_users_cubit.dart';
 import 'package:pos_app/features/users/manager/search_user/search_user_cubit.dart';
 
+import '../../features/csid _generation/data/repo/csid_generation_repo.dart';
+import '../../features/csid _generation/manager/cubit/csid_generation_setting_cubit.dart';
 import '../../features/products/manager/search_product_cubit/search_product_cubit.dart';
 
 class MyServiceLocator {
@@ -126,6 +128,9 @@ class MyServiceLocator {
       api: getIt(),
     ));
     registerSingleton<ShopSettingRepo>(ShopSettingRepo(
+      getIt(),
+    ));
+    registerSingleton<ScidGenerationRepo>(ScidGenerationRepo(
       getIt(),
     ));
     registerSingleton<GetCategoryCubit>(GetCategoryCubit(
@@ -216,6 +221,9 @@ class MyServiceLocator {
       getIt(),
     ));
     registerSingleton<ShiftCubit>(ShiftCubit(
+      getIt(),
+    ));
+    registerSingleton<ScidGenerationCubit>(ScidGenerationCubit(
       getIt(),
     ));
   }

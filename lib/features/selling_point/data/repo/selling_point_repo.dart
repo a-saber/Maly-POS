@@ -85,10 +85,7 @@ class SellingPointRepo {
         // ApiKeys.customerid: customer.id,
         ApiKeys.ordertype: typeOfTakeOrder?.apiKey,
         ApiKeys.products: products
-            .map((e) => {
-                  ApiKeys.productid: e.product.id,
-                  ApiKeys.quantity: e.count,
-                })
+            .map((e) => e.toJson())
             .toList(),
       };
       if (discount != null) {
@@ -142,6 +139,7 @@ class SellingPointRepo {
     String search = '',
     bool refreshCurrentCategory = false,
     int perpage = 10,
+    bool fromHome=false
   }) async {
     try {
       if (refreshAllData) {
@@ -240,8 +238,7 @@ class SellingPointRepo {
             }
           }
         } else {
-          if (search != categorySavingDataModels[index].query ||
-              categorySavingDataModels[index].getProductsSearchModel == null) {
+          if (search != categorySavingDataModels[index].query || categorySavingDataModels[index].getProductsSearchModel == null) {
             String url = await ApiEndPoints.getProducts();
             final response = await api.get(
               url: url,
@@ -277,8 +274,7 @@ class SellingPointRepo {
                 url: categorySavingDataModels[index]
                         .getProductsSearchModel
                         ?.data
-                        ?.nextPageUrl ??
-                    '');
+                        ?.nextPageUrl ?? '');
             if (response.status) {
               GetProductsModel getProductsModel =
                   GetProductsModel.fromJson(response.data);

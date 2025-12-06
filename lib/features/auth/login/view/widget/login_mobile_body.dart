@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/device_size.dart';
@@ -39,36 +40,56 @@ class LoginMobileBody extends StatelessWidget {
             BlocBuilder<LoginCubit, LoginState>(
               buildWhen: (previous, current) {
                 return current is LoginUnvalidTextField ||
-                    current is ChangeObscureTextState;
+                    current is ChangeObscureTextState ||current is ChangeRememberMeState;
               },
               builder: (context, state) {
                 return Form(
                   key: LoginCubit.get(context).formKey,
                   autovalidateMode: LoginCubit.get(context).autovalidateMode,
-                  child: Column(
-                    spacing: 20,
-                    children: [
-                      CustomFormField(
-                        controller: LoginCubit.get(context).emailController,
-                        validator: (value) => MyFormValidators.validateEmail(
-                            value,
-                            context: context),
-                        labelText: S.of(context).email,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      CustomFormField(
-                        controller: LoginCubit.get(context).passwordController,
-                        validator: (value) => MyFormValidators.validatePassword(
-                            value,
-                            context: context),
-                        labelText: S.of(context).password,
-                        suffixIcon: CustomObscureSuffixIcon(
-                          onPressed: LoginCubit.get(context).changeObscureText,
-                          isObscure: LoginCubit.get(context).obscureText,
+                  child: AutofillGroup(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 20,
+                      children: [
+                        CustomFormField(
+                          controller: LoginCubit.get(context).emailController,
+                          onTap: (){
+
+                            LoginCubit.get(context).onTapEmail(context);
+
+                          },
+
+                          validator: (value) => MyFormValidators.validateEmail(
+                              value,
+                              context: context),
+                          labelText: S.of(context).email,
+                          autofillHints: [AutofillHints.email],
+
+                          keyboardType: TextInputType.emailAddress,
                         ),
-                        obscureText: LoginCubit.get(context).obscureText,
-                      ),
-                    ],
+                        CustomFormField(
+                          controller: LoginCubit.get(context).passwordController,
+                          validator: (value) => MyFormValidators.validatePassword(
+                              value,
+                              context: context),
+                          labelText: S.of(context).password,
+                          autofillHints: [AutofillHints.password],
+                          suffixIcon: CustomObscureSuffixIcon(
+                            onPressed: LoginCubit.get(context).changeObscureText,
+                            isObscure: LoginCubit.get(context).obscureText,
+                          ),
+                          obscureText: LoginCubit.get(context).obscureText,
+                        ),
+                        Row(
+                          children: [
+                            Checkbox(
+                                value: LoginCubit.get(context).rememberMe, onChanged: LoginCubit.get(context).onRememberMeChanged
+                            ),
+                            Text(S.of(context).rememberMe)
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 );
               },
@@ -79,11 +100,11 @@ class LoginMobileBody extends StatelessWidget {
             BlocConsumer<LoginCubit, LoginState>(
               listener: (context, state) {
                 if (state is LoginSuccess) {
+                  TextInput.finishAutofillContext(shouldSave: true);
                   if (context.mounted) {
                     CustomPopUp.callMyToast(
                       context: context,
-                      massage:
-                          state.message.message ?? S.of(context).loginSuccess,
+                      massage: S.of(context).loginSuccess,
                       state: PopUpState.SUCCESS,
                     );
                   }

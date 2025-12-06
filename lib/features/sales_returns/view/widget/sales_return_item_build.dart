@@ -5,6 +5,7 @@ import 'package:pos_app/core/helper/formate_date_time.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/features/sales_returns/data/model/sales_return_model.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:redacted/redacted.dart';
@@ -147,7 +148,7 @@ class SalesReturnItemBuild extends StatelessWidget {
                   ),
                   Expanded(
                     child: Text(
-                      "${salesReturnModel.sale?.totalAfterTax ?? S.of(context).unknown} ",
+                      "${salesReturnModel.sale?.totalAfterTax .toAmount()?? S.of(context).unknown} ",
                       style: AppFontStyle.itemsTitle(
                         context: context,
                         color: AppColors.black,

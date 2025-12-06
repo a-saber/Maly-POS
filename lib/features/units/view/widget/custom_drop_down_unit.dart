@@ -53,6 +53,7 @@ class CustomDropDownUnit extends StatelessWidget {
           },
           containerBuilder: (p0, p1) {
             return Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),

@@ -47,16 +47,10 @@ class SellingPointCubit extends Cubit<SellingPointState> {
       return false;
     }
 
-    if (query.isEmpty &&
-        repo.categorySavingDataModels[index].getProductsModel?.data
-                ?.nextPageUrl ==
-            null) {
+    if (query.isEmpty && repo.categorySavingDataModels[index].getProductsModel?.data?.nextPageUrl == null) {
       return false;
     }
-    if (query.isNotEmpty &&
-        repo.categorySavingDataModels[index].getProductsSearchModel?.data
-                ?.nextPageUrl ==
-            null) {
+    if (query.isNotEmpty && repo.categorySavingDataModels[index].getProductsSearchModel?.data?.nextPageUrl == null) {
       return false;
     }
     return true;
@@ -68,17 +62,20 @@ class SellingPointCubit extends Cubit<SellingPointState> {
     // if (firstTime()) {
     //   getCategoryProduct(context: context);
     // }
-    if (isFirstTime) {
-      scrollController = ScrollController();
+    scrollController = ScrollController();
+    query = '';
 
-      query = '';
-      categorySavingDataModels = [];
+    getCategoryProduct(
+      newData: true,
+    );
+    if (isFirstTime) {
       categoryId = -2;
+      categorySavingDataModels = [];
       isFirstTime = false;
     }
+
     scrollController.addListener(() {
-      if (scrollController.position.maxScrollExtent ==
-              scrollController.offset &&
+      if ( scrollController.offset >= scrollController.position.maxScrollExtent &&
           (canLoading())) {
         getPaginationProduct();
       }
@@ -111,8 +108,7 @@ class SellingPointCubit extends Cubit<SellingPointState> {
       perpage: 20,
     );
     result.fold(
-        (errMessage) =>
-            emit(SellingPointInitialGetProductFailing(errMessage: errMessage)),
+        (errMessage) => emit(SellingPointInitialGetProductFailing(errMessage: errMessage)),
         (saving) {
       categorySavingDataModels = List.from(saving);
       ifNotFillScreen();

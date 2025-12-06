@@ -59,7 +59,7 @@ Future<void> showDialogForShiftEnd(BuildContext context,
               ),
             ),
             Text(
-              "${S.of(context).openingQuantity}: ${(shift.shift?.openingQuantity?.toString() ?? '-')}",
+              "${S.of(context).openingQuantity}: ${(double.tryParse(shift.shift?.openingQuantity??'0')?.toStringAsFixed(1) ?? '-')}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,

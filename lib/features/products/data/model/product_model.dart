@@ -4,17 +4,19 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/helper/upload_image_to_api.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
+import 'package:pos_app/features/products/data/model/product_unit_model.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
+import 'package:collection/collection.dart';
 
 class ProductModel {
   final int? id;
-  final List<ProductUnits>? productUnits;
   final String? name;
+
   final int? categoryId;
   final String? type;
-  final int? unitId;
+  final int? baseUnitId;
   final String? description;
   final String? imagePath;
   final String? barcode;
@@ -28,6 +30,7 @@ class ProductModel {
   final UnitModel? unit;
   final TaxesModel? tax;
   final int? quantity;
+  final List<ProductUnit>? productUnits;
   final CategoryModel? category;
 
   ProductModel(   {
@@ -36,7 +39,7 @@ class ProductModel {
     required this.id,
     required this.name,
     required this.categoryId,
-    required this.unitId,
+    required this.baseUnitId,
     required this.description,
     required this.imagePath,
     required this.barcode,
@@ -50,16 +53,19 @@ class ProductModel {
     required this.taxId,
     required this.priceAfterTax,
     required this.type,
+
     required this.quantity,
   });
 
+  double? get salePriceWithTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithTax?? "").toString());
+
+
   factory ProductModel.empty() {
     return ProductModel(
-      
       id: 0,
       name: '',
       categoryId: 0,
-      unitId: 0,
+      baseUnitId: 0,
       description: '',
       imagePath: '',
       barcode: '',
@@ -74,23 +80,64 @@ class ProductModel {
       priceAfterTax: 0,
       type: '',
       quantity: 0,
+      productUnits: null,
      category: null,
+
+    );
+  }
+  ProductModel copyWith({
+    int? id,
+    String? name,
+    int? categoryId,
+    String? type,
+    int? baseUnitId,
+    String? description,
+    String? imagePath,
+    String? barcode,
+    String? brand,
+    String? price,
+    int? taxId,
+    String? createdAt,
+    String? updatedAt,
+    String? imageUrl,
+    num? priceAfterTax,
+    UnitModel? unit,
+    TaxesModel? tax,
+    int? quantity,
+    List<ProductUnit>? productUnits,
+    CategoryModel? category,
+
+  }) {
+    return ProductModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      categoryId: categoryId ?? this.categoryId,
+      type: type ?? this.type,
+      baseUnitId: baseUnitId ?? this.baseUnitId,
+      description: description ?? this.description,
+      imagePath: imagePath ?? this.imagePath,
+      barcode: barcode ?? this.barcode,
+      brand: brand ?? this.brand,
+      price: price ?? this.price,
+      taxId: taxId ?? this.taxId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      imageUrl: imageUrl ?? this.imageUrl,
+      priceAfterTax: priceAfterTax ?? this.priceAfterTax,
+      unit: unit ?? this.unit,
+      tax: tax ?? this.tax,
+      quantity: quantity ?? this.quantity,
+      productUnits: productUnits ?? this.productUnits,
+      category: category ?? this.category,
     );
   }
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
-    List<ProductUnits>? units;
-  if (json['product_units'] != null) {
-    units = (json['product_units'] as List)
-        .map((u) => ProductUnits.fromJson(u))
-        .toList();
-  }
     return ProductModel(
       id: json[ApiKeys.id],
-      productUnits: units,
       name: json[ApiKeys.name],
       categoryId: json[ApiKeys.categoryId],
-     unitId: json['base_unit_id'],
+      baseUnitId: json[ApiKeys.baseUnitId],
       description: json[ApiKeys.description],
       imagePath: json[ApiKeys.imagepath],
       barcode: json[ApiKeys.barcode],
@@ -99,9 +146,9 @@ class ProductModel {
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
       imageUrl: json[ApiKeys.imageurl],
-     unit: json['base_unit'] != null 
-        ? UnitModel.fromJson(json['base_unit'])
-        : null,
+      unit: json[ApiKeys.unit] != null
+          ? UnitModel.fromJson(json[ApiKeys.unit])
+          : null,
       tax: json[ApiKeys.tax] != null
           ? TaxesModel.fromJson(json[ApiKeys.tax])
           : null,
@@ -111,10 +158,17 @@ class ProductModel {
       taxId: json[ApiKeys.taxid],
       type: json[ApiKeys.type],
       quantity: json[ApiKeys.quantity],
+      productUnits:json[ApiKeys.productUnits] != null
+          ? (json[ApiKeys.productUnits] as List)
+          .map((item) => ProductUnit.fromJson(item as Map<String, dynamic>))
+          .toList()
+          : null ,
+
          category: json[ApiKeys.category] != null
         ? CategoryModel.fromJson(json[ApiKeys.category])
-        : null, 
-       
+        : null,
+
+
   );
   }
   factory ProductModel.copyWith(UnitModel? unit, ProductModel product) {
@@ -122,7 +176,7 @@ class ProductModel {
       id: product.id,
       name: product.name,
       categoryId: product.categoryId,
-      unitId: unit?.id,
+      baseUnitId: unit?.id,
       description: product.description,
       imagePath: product.imagePath,
       barcode: product.barcode,
@@ -138,6 +192,7 @@ class ProductModel {
       type: product.type,
       quantity: product.quantity,
        category: product.category,
+      productUnits: product.productUnits,
     );
   }
 
@@ -159,7 +214,7 @@ class ProductModel {
       id: id,
       name: name,
       categoryId: category?.id,
-      unitId: unit?.id,
+      baseUnitId: unit?.id,
       description: description,
       imagePath: image?.path,
       brand: brand,
@@ -197,6 +252,7 @@ class ProductModel {
     data[ApiKeys.priceAfterTax] = priceAfterTax;
     data[ApiKeys.type] = type;
     data[ApiKeys.quantity] = quantity;
+    data[ApiKeys.productUnits]=productUnits;
 
     return data;
   }

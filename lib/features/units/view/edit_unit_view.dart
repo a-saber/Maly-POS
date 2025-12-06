@@ -22,8 +22,7 @@ class EditUnitView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          EditUnitCubit(MyServiceLocator.getSingleton<UnitsRepo>(), unit),
+      create: (context) => EditUnitCubit(MyServiceLocator.getSingleton<UnitsRepo>(), unit),
       child: Scaffold(
         appBar: CustomAppBar(
           title: S.of(context).editUnit,
@@ -32,7 +31,7 @@ class EditUnitView extends StatelessWidget {
                 text: S.of(context).delete,
                 onPressed: () async {
                   await showDeleteUnitConfirmDialog(
-                      context: context, unit: unit, goBack: true);
+                      contextDelete: context, unit: unit, goBack: true);
                 }),
           ],
         ),

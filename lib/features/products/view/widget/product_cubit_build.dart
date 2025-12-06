@@ -42,13 +42,12 @@ class ProductCubitBuild extends StatelessWidget {
         } else if (state is GetAllProductsLoading) {
           return productsLoading(context);
         }
-        if (GetAllProductsCubit.get(context).products.isEmpty) {
+        if (GetAllProductsCubit.get(context).getProductsAll().isEmpty) {
           return CustomEmptyView(
             onPressed: () => GetAllProductsCubit.get(context).getProducts(),
           );
         }
-        return productsBuild(
-            context, GetAllProductsCubit.get(context).products);
+        return productsBuild(context, GetAllProductsCubit.get(context).getProductsAll());
       },
     );
   }

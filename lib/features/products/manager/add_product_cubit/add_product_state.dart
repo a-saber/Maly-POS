@@ -49,3 +49,8 @@ final class UpdateProductUnitsCostWarning extends AddProductState {
 final class UpdateProductUnitsMinPrice extends AddProductState {}
 
 final class UpdateProductUnitsSalesPrice extends AddProductState {}
+final class GetAllUnitsSuccess extends AddProductState {}
+final class GetAllUnitsFailing extends AddProductState {
+  final ApiResponse errMessage;
+  GetAllUnitsFailing({required this.errMessage});
+}

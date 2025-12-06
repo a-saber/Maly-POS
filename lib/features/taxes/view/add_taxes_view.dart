@@ -13,22 +13,30 @@ import 'package:pos_app/features/taxes/manager/get_all_taxes_cubit/get_all_taxes
 import 'package:pos_app/features/taxes/view/widget/taxes_data_build.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../manager/search_taxes/search_taxes_cubit.dart';
+
 class AddTaxesView extends StatelessWidget {
   const AddTaxesView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          AddTaxesCubit(MyServiceLocator.getSingleton<TaxesRepo>()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              AddTaxesCubit(MyServiceLocator.getSingleton<TaxesRepo>()),
+        ),
+        BlocProvider.value(
+         value:  MyServiceLocator.getSingleton<SearchTaxesCubit>(),
+        ),
+      ],
       child: Scaffold(
         appBar: CustomAppBar(title: S.of(context).addTax),
         body: BlocConsumer<AddTaxesCubit, AddTaxesState>(
           listener: (context, state) {
             if (state is AddTaxesSuccess) {
-              GetAllTaxesCubit.get(context).addTaxes(
-                taxes: state.taxes,
-              );
+              GetAllTaxesCubit.get(context).addTaxes(taxes: state.taxes,);
+              SearchTaxesCubit.get(context).addTaxes(taxes: state.taxes,);
               CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,

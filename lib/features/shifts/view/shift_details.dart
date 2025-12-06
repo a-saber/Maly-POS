@@ -5,6 +5,7 @@ import 'package:pos_app/core/helper/formate_date_time.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
@@ -82,7 +83,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                         widget.shiftId.toString()),
                                     _row(
                                         S.of(context).openingQuantity,
-                                        (shift.openingQuantity ?? 0)
+                                        (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0')
                                             .toString()),
                                     _row(S.of(context).ordersCount,
                                         (shift.ordersCount ?? 0).toString()),
@@ -162,31 +163,31 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                   children: [
                                     _row(
                                       S.of(context).subTotal,
-                                      summary?.subtotal ?? '-',
+                                      summary?.subtotal.toAmount() ?? '-',
                                     ),
                                     _row(
                                       S.of(context).discountTotal,
-                                      summary?.discountTotal ?? '-',
+                                      summary?.discountTotal.toAmount() ?? '-',
                                     ),
                                     _row(
                                       S.of(context).totalAfterDiscount,
-                                      summary?.totalAfterDiscount ?? '-',
+                                      summary?.totalAfterDiscount.toAmount() ?? '-',
                                     ),
                                     _row(
                                       S.of(context).taxestotal,
-                                      summary?.taxTotal ?? '-',
+                                      summary?.taxTotal.toAmount() ?? '-',
                                     ),
                                     _row(
                                       S.of(context).totalAfterTax,
-                                      summary?.totalAfterTax ?? '-',
+                                      summary?.totalAfterTax.toAmount() ?? '-',
                                     ),
                                     _row(
                                       S.of(context).cashTotal,
-                                      summary?.cashTotal ?? '-',
+                                      summary?.cashTotal.toAmount() ?? '-',
                                     ),
                                     _row(
                                       S.of(context).onlineTotal,
-                                      summary?.onlineTotal ?? '-',
+                                      summary?.onlineTotal.toAmount() ?? '-',
                                     ),
                                   ],
                                 ),
@@ -328,7 +329,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                                           context)
                                                       .orderData[index]
                                                       .totalAfterTax
-                                                      ?.toString() ??
+                                                      ?.toString().toAmount() ??
                                                   '-',
                                             ),
                                           ),
