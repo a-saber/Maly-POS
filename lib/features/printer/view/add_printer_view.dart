@@ -125,7 +125,7 @@ class EditPrinterView extends StatelessWidget {
                           if (printerModel.discoveredPrinter != null) {
                             await PrinterHelper().printTest(
                               printerModel.discoveredPrinter!,
-                              paperSize: printerModel.paperSize,
+                              paperSize: cubit.paperSize,
                             );
                           }
                         })
