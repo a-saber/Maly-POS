@@ -13,6 +13,7 @@ class ProductSellingModel {
   late final double minPrice;
   late final   GlobalKey<FormState> formKey;
    bool showEditPrice=false;
+  late final double initialPriceWithoutTax;
 
 
 
@@ -22,7 +23,7 @@ class ProductSellingModel {
     return currentPrice * count;
   }
   double get currentPrice {
-    double? price = double.tryParse(priceController.text);
+    double? price = initialPriceWithoutTax.toStringAsFixed(2)==priceController.text?initialPriceWithoutTax: double.tryParse(priceController.text);
     return price ?? 0;
   }
 
@@ -51,10 +52,11 @@ class ProductSellingModel {
   }
 
   ProductSellingModel({required this.product, required this.count, this.productUnit}){
-    final initialPrice =double.tryParse(productUnit?.salePriceWithoutTax ?? '0')?.toString() ;
+    initialPriceWithoutTax =double.tryParse(productUnit?.salePriceWithoutTax ?? '0')??0 ;
     minPrice = double.tryParse(productUnit?.minPriceWithoutTax ?? '0') ?? 0;
 
-    priceController = TextEditingController(text: initialPrice);
+    priceController = TextEditingController(text: initialPriceWithoutTax.toStringAsFixed(2));
+
     formKey=GlobalKey<FormState>();
     showEditPrice=false;
    }
@@ -65,10 +67,13 @@ class ProductSellingModel {
 
  void   validatePrice() {
     if(currentPrice < minPrice){
-      priceController.text = double.tryParse(productUnit?.salePriceWithTax ?? '0')!.toString();
+      priceController.text = double.tryParse(productUnit?.salePriceWithoutTax ?? '0')!.toString();
     }
 
   }
+  double get currentPriceWithTax => (currentPrice + (((double.tryParse((product.tax?.percentage ?? '0')) ?? 0)/100) * currentPrice))*count;
+
+
 
 
   Map<String, dynamic> toJson() {

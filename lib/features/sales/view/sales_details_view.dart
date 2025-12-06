@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pos_app/core/helper/formate_date_time.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/core/utils/extensions.dart';
+import 'package:pos_app/core/utils/extensions.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_build_section_details_view.dart';
@@ -81,27 +84,27 @@ class SalesDetailsView extends StatelessWidget {
                   CustomInfoRowDetailsView(
                     label: S.of(context).subTotal,
                     value:
-                        "${salesModel.subtotal?.toString() ?? S.of(context).unKnownPrice} ",
+                        "${salesModel.subtotal?.toAmount() ?? S.of(context).unKnownPrice} ",
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).discountTotal,
                     value:
-                        "${salesModel.discountTotal?.toString() ?? S.of(context).unKnownPrice} ",
+                        "${salesModel.discountTotal?.toAmount() ?? S.of(context).unKnownPrice} ",
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).totalAfterDiscount,
                     value:
-                        "${salesModel.totalAfterDiscount?.toString() ?? S.of(context).unKnownPrice} ",
+                        "${salesModel.totalAfterDiscount?.toAmount() ?? S.of(context).unKnownPrice} ",
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).taxestotal,
                     value:
-                        "${salesModel.taxTotal?.toString() ?? S.of(context).unKnownPrice} ",
+                        "${salesModel.taxTotal?.toAmount()?? S.of(context).unKnownPrice} ",
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).totalAfterTax,
                     value:
-                        "${salesModel.totalAfterTax?.toString() ?? S.of(context).unKnownPrice} ",
+                        "${salesModel.totalAfterTax?.toAmount()?? S.of(context).unKnownPrice} ",
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).paymentmethod,
