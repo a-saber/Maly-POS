@@ -120,9 +120,11 @@ class SearchCategoryCubit extends Cubit<SearchCategoryState> {
     }
   }
   void updateCategory({required CategoryModel category}) {
-    categories[categories.indexWhere((element) => element.id == category.id)] =
-        category;
+    final index=categories.indexWhere((element) => element.id == category.id);
+    if(index!=-1){
+    categories[index] = category;
     emit(SearchCategorySuccess());
+    }
   }
   void deleteCategory({required int id}) {
     categories.removeWhere((element) => element.id == id);
