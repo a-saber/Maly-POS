@@ -176,7 +176,7 @@ class PrinterHelper {
     await Future.any([
       _connect(type, device, isBle),
       Future.delayed(const Duration(seconds: 10), () {
-        throw TimeoutException('Connection timeout after 10 seconds');
+        // throw TimeoutException('Connection timeout after 10 seconds');
       }),
     ]);
   }
@@ -226,19 +226,43 @@ class PrinterHelper {
   }
 
 PaperSize _getPaperSize(String? paperSize) {
-  if (paperSize == null) return PaperSize.mm80;
-  final cleanSize = paperSize.toLowerCase().replaceAll('mm', '');  
-  print('Parsed paper size: $cleanSize.');
+  debugPrint('');
+  debugPrint('==================== DEBUG PAPER SIZE ====================');
+  debugPrint(' Input paperSize: "$paperSize"');
+  debugPrint(' paperSize type: ${paperSize.runtimeType}');
+  
+  if (paperSize == null) {
+    debugPrint(' paperSize is NULL - Using default 80mm');
+    debugPrint('==========================================================');
+    return PaperSize.mm80;
+  }
+  
+  final cleanSize = paperSize.toLowerCase().replaceAll('mm', '').trim();
+  debugPrint(' Clean size after removing "mm": "$cleanSize"');
+  
+  PaperSize result;
   switch (cleanSize) {
     case '80':
-      return PaperSize.mm80;
+      result = PaperSize.mm80;
+      debugPrint(' Selected: 80mm');
+      break;
     case '72':
-      return PaperSize.mm72;
+      result = PaperSize.mm72;
+      debugPrint(' Selected: 72mm');
+      break;
     case '58':
-      return PaperSize.mm58;
+      result = PaperSize.mm58;
+      debugPrint(' Selected: 58mm');
+      break;
     default:
-      return PaperSize.mm80;
+      result = PaperSize.mm80;
+      debugPrint(' Unknown size "$cleanSize" - Using default 80mm');
+      break;
   }
+  
+  debugPrint('==========================================================');
+  debugPrint('');
+  return result;
 }
   /// --- CONTENT GENERATORS ---
 

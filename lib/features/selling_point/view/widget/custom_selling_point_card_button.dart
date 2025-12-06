@@ -70,11 +70,30 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                 }
 
                 try {
-                  final printers =
+                  final allAutomaticPrinters =
                       MyServiceLocator.getSingleton<GetPrintersCubit>()
                           .printers
                           .where((p) => p.automatic == true)
                           .toList();
+
+                  debugPrint('');
+                  debugPrint(
+                      ' ==================== SALE SUCCESS ====================');
+                  debugPrint(
+                      ' Total Automatic Printers: ${allAutomaticPrinters.length}');
+
+                  for (int i = 0; i < allAutomaticPrinters.length; i++) {
+                    final p = allAutomaticPrinters[i];
+                    debugPrint('');
+                    debugPrint(' Printer ${i + 1}:');
+                    debugPrint('   - Name: ${p.printerName}');
+                    debugPrint('   - Paper Size: "${p.paperSize}"');
+                    debugPrint('   - Type: ${p.communicationType}');
+                  } 
+                  debugPrint(
+                      '========================================================');
+                  debugPrint('');
+
                   final invoiceData = {
                     'date': DateTime.now().toString(),
                     'id': state.printModel.apiResponse.data['sale']['id']
@@ -97,21 +116,45 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                             ?.toString() ??
                         '0',
                   };
-                  for (final printer in printers) {
+
+                  int successCount = 0;
+                  int failCount = 0;
+
+                  for (final printer in allAutomaticPrinters) {
                     if (printer.discoveredPrinter != null) {
                       try {
+                        debugPrint('');
+                        debugPrint(' Printing to: ${printer.printerName}');
+                        debugPrint(
+                            ' Using paper size: "${printer.paperSize}"');
+
                         await PrinterHelper().printInvoice(
                           printer.discoveredPrinter!,
                           invoiceData,
                           paperSize: printer.paperSize,
                           openCashDrawer: true,
                         );
+
+                        successCount++;
+                        debugPrint(' SUCCESS: ${printer.printerName}');
                       } catch (e) {
+                        failCount++;
                         debugPrint(
-                            'فشل الطباعة على: ${printer.printerName} - $e');
+                            ' FAILED: ${printer.printerName} - Error: $e');
                       }
                     }
                   }
+
+                  debugPrint('');
+                  debugPrint(
+                      '📊 ==================== SUMMARY ====================');
+                  debugPrint(
+                      '📊 Total Printers: ${allAutomaticPrinters.length}');
+                  debugPrint(' Successful: $successCount');
+                  debugPrint(' Failed: $failCount');
+                  debugPrint(
+                      '===================================================');
+                  debugPrint('');
 
                   if (!Platform.isAndroid) {
                     throw 'not android';
@@ -125,6 +168,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   await SunmiPrinter.lineWrap(4);
                   await SunmiPrinter.cutPaper();
                 } catch (e) {
+                  debugPrint(' Sunmi print failed or not Android: $e');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -145,13 +189,10 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   );
                 }
 
-                // ignore: use_build_context_synchronously
                 SellingPointCubit.get(context).getCategoryProduct();
 
                 CustomPopUp.callMyToast(
-                  // ignore: use_build_context_synchronously
                   context: context,
-                  // ignore: use_build_context_synchronously
                   massage: S.of(context).confirmPaymentSuccess,
                   state: PopUpState.SUCCESS,
                 );
