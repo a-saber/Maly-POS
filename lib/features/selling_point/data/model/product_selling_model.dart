@@ -10,6 +10,7 @@ class ProductSellingModel {
   final ProductUnit? productUnit;
   int count;
   late final TextEditingController priceController;
+  late final TextEditingController qtyController;
   late final double minPrice;
   late final   GlobalKey<FormState> formKey;
    bool showEditPrice=false;
@@ -56,9 +57,11 @@ class ProductSellingModel {
     minPrice = double.tryParse(productUnit?.minPriceWithoutTax ?? '0') ?? 0;
 
     priceController = TextEditingController(text: initialPriceWithoutTax.toStringAsFixed(2));
+    qtyController = TextEditingController(text: count.toString());
 
     formKey=GlobalKey<FormState>();
     showEditPrice=false;
+
    }
    void toggleShowEditPrice(){
     showEditPrice=!showEditPrice;
