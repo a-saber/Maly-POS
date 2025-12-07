@@ -5,11 +5,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/helper/is_mobile.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/core/invoice/sales_invoices_pdf_80.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_branches_cubit.dart';
+import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_cubit.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
@@ -64,13 +66,100 @@ class CustomSellingPointCardButtons extends StatelessWidget {
             listener: (context, state) async {
               if (state is SellingPointProductSuccess) {
                 if (isMobile(context: context)) {
-                  // ignore: use_build_context_synchronously
                   Navigator.pop(context);
                 }
+
                 try {
+                  final allAutomaticPrinters =
+                      MyServiceLocator.getSingleton<GetPrintersCubit>()
+                          .printers
+                          .where((p) => p.automatic == true)
+                          .toList();
+
+                  debugPrint('');
+                  debugPrint(
+                      ' ==================== SALE SUCCESS ====================');
+                  debugPrint(
+                      ' Total Automatic Printers: ${allAutomaticPrinters.length}');
+
+                  for (int i = 0; i < allAutomaticPrinters.length; i++) {
+                    final p = allAutomaticPrinters[i];
+                    debugPrint('');
+                    debugPrint(' Printer ${i + 1}:');
+                    debugPrint('   - Name: ${p.printerName}');
+                    debugPrint('   - Paper Size: "${p.paperSize}"');
+                    debugPrint('   - Type: ${p.communicationType}');
+                  } 
+                  debugPrint(
+                      '========================================================');
+                  debugPrint('');
+
+                  final invoiceData = {
+                    'date': DateTime.now().toString(),
+                    'id': state.printModel.apiResponse.data['sale']['id']
+                            ?.toString() ??
+                        '',
+                    'items': (state.printModel.apiResponse.data['sale']
+                                ['sale_products'] as List?)
+                            ?.map((p) => {
+                                  'name': p['product']?['name'] ?? '',
+                                  'qty': p['quantity']?.toString() ?? '0',
+                                  'price': p['price']?.toString() ?? '0',
+                                  'total': p['line_total_after_discount']
+                                          ?.toString() ??
+                                      '0',
+                                })
+                            .toList() ??
+                        [],
+                    'total': state.printModel.apiResponse
+                            .data['sale']['total_after_tax']
+                            ?.toString() ??
+                        '0',
+                  };
+
+                  int successCount = 0;
+                  int failCount = 0;
+
+                  for (final printer in allAutomaticPrinters) {
+                    if (printer.discoveredPrinter != null) {
+                      try {
+                        debugPrint('');
+                        debugPrint(' Printing to: ${printer.printerName}');
+                        debugPrint(
+                            ' Using paper size: "${printer.paperSize}"');
+
+                        await PrinterHelper().printInvoice(
+                          printer.discoveredPrinter!,
+                          invoiceData,
+                          paperSize: printer.paperSize,
+                          openCashDrawer: true,
+                        );
+
+                        successCount++;
+                        debugPrint(' SUCCESS: ${printer.printerName}');
+                      } catch (e) {
+                        failCount++;
+                        debugPrint(
+                            ' FAILED: ${printer.printerName} - Error: $e');
+                      }
+                    }
+                  }
+
+                  debugPrint('');
+                  debugPrint(
+                      '📊 ==================== SUMMARY ====================');
+                  debugPrint(
+                      '📊 Total Printers: ${allAutomaticPrinters.length}');
+                  debugPrint(' Successful: $successCount');
+                  debugPrint(' Failed: $failCount');
+                  debugPrint(
+                      '===================================================');
+                  debugPrint('');
+
                   if (!Platform.isAndroid) {
                     throw 'not android';
                   }
+
                   await printSunmiPDF(await salesInvoicesPdf80(
                     state.printModel.apiResponse.data as Map<String, dynamic>,
                     branchName: state.printModel.branchName,
@@ -79,8 +168,8 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   await SunmiPrinter.lineWrap(4);
                   await SunmiPrinter.cutPaper();
                 } catch (e) {
+                  debugPrint(' Sunmi print failed or not Android: $e');
                   Navigator.push(
-                    // ignore: use_build_context_synchronously
                     context,
                     MaterialPageRoute(
                       builder: (_) {
@@ -100,13 +189,10 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   );
                 }
 
-                // ignore: use_build_context_synchronously
                 SellingPointCubit.get(context).getCategoryProduct();
 
                 CustomPopUp.callMyToast(
-                  // ignore: use_build_context_synchronously
                   context: context,
-                  // ignore: use_build_context_synchronously
                   massage: S.of(context).confirmPaymentSuccess,
                   state: PopUpState.SUCCESS,
                 );

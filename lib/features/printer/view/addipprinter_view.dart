@@ -93,8 +93,10 @@ class AddIpPrinterView extends StatelessWidget {
                     const SizedBox(height: 30),
                     CustomFilledBtn(
                       text: S.of(context).testPrint,
-                      onPressed: () async => PrinterHelper()
-                          .printTestByIp(cubit.ipController.text),
+                      onPressed: () async => PrinterHelper().printTestByIp(
+                        cubit.ipController.text,
+                        paperSize: cubit.paperSize.replaceAll('mm', ''),
+                      ),
                     ),
                   ],
                 ),

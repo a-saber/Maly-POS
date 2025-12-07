@@ -120,15 +120,81 @@ class EditPrinterView extends StatelessWidget {
                       height: 30,
                     ),
                     CustomFilledBtn(
-                        text: S.of(context).testPrint,
-                        onPressed: () async {
-                          if (printerModel.discoveredPrinter != null) {
+                      text: S.of(context).testPrint,
+                      onPressed: () async {
+                        debugPrint('');
+                        debugPrint(
+                            '🧪 ==================== TEST PRINT START ====================');
+                        debugPrint('🧪 Cubit Paper Size: "${cubit.paperSize}"');
+                        debugPrint(
+                            '🧪 Printer Model Paper Size: "${printerModel?.paperSize}"');
+                        debugPrint(
+                            '🧪 Discovered Printer: ${printerModel?.discoveredPrinter != null}');
+
+                        if (printerModel?.discoveredPrinter != null) {
+                          debugPrint(
+                              '🧪 Printer Name: ${printerModel!.discoveredPrinter!.device.name}');
+                          debugPrint(
+                              '🧪 Printer Type: ${printerModel!.discoveredPrinter!.type}');
+                        }
+                        debugPrint(
+                            '============================================================');
+                        debugPrint('');
+
+                        if (printerModel?.discoveredPrinter != null) {
+                          try {
                             await PrinterHelper().printTest(
-                              printerModel.discoveredPrinter!,
-                              paperSize: printerModel.paperSize,
+                              printerModel!.discoveredPrinter!,
+                              paperSize: cubit.paperSize,
+                            );
+
+                            debugPrint('');
+                            debugPrint(
+                                '✅ ==================== TEST PRINT SUCCESS ====================');
+                            debugPrint(
+                                '✅ Printed with paper size: "${cubit.paperSize}"');
+                            debugPrint(
+                                '===============================================================');
+                            debugPrint('');
+
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'Test print successful with ${cubit.paperSize}!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } catch (e) {
+                            debugPrint('');
+                            debugPrint(
+                                ' ==================== TEST PRINT FAILED ====================');
+                            debugPrint(' Error: $e');
+                            debugPrint(
+                                '==============================================================');
+                            debugPrint('');
+
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Test print failed: $e'),
+                                backgroundColor: Colors.red,
+                              ),
                             );
                           }
-                        })
+                        } else {
+                          debugPrint(
+                              ' Cannot print: discoveredPrinter is null');
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Cannot print: Printer not found'),
+                              backgroundColor: Colors.orange,
+                            ),
+                          );
+                        }
+                      },
+                    )
                   ],
                 ),
               ),
@@ -237,11 +303,68 @@ class AddPrinterView extends StatelessWidget {
                       height: 30,
                     ),
                     CustomFilledBtn(
-                        text: S.of(context).testPrint,
-                        onPressed: () async => await PrinterHelper().printTest(
-                              discoveredPrinter,
-                              paperSize: cubit.paperSize,
-                            ))
+                      text: S.of(context).testPrint,
+                      onPressed: () async {
+                      
+                        debugPrint('');
+                        debugPrint(
+                            ' ==================== TEST PRINT START ====================');
+                        debugPrint(' Cubit Paper Size: "${cubit.paperSize}"');
+                        debugPrint(
+                            ' Discovered Printer: ${discoveredPrinter != null}');
+
+                        if (discoveredPrinter != null) {
+                          debugPrint(
+                              ' Printer Name: ${discoveredPrinter.device.name}');
+                          debugPrint(
+                              ' Printer Type: ${discoveredPrinter.type}');
+                        }
+                        debugPrint(
+                            '============================================================');
+                        debugPrint('');
+
+                        try {
+                          await PrinterHelper().printTest(
+                            discoveredPrinter,
+                            paperSize: cubit.paperSize,
+                          );
+
+                          debugPrint('');
+                          debugPrint(
+                              ' ==================== TEST PRINT SUCCESS ====================');
+                          debugPrint(
+                              ' Printed with paper size: "${cubit.paperSize}"');
+                          debugPrint(
+                              '===============================================================');
+                          debugPrint('');
+
+                          // ignore: use_build_context_synchronously
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  'Test print successful with ${cubit.paperSize}!'),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } catch (e) {
+                          debugPrint('');
+                          debugPrint(
+                              ' ==================== TEST PRINT FAILED ====================');
+                          debugPrint(' Error: $e');
+                          debugPrint(
+                              '==============================================================');
+                          debugPrint('');
+
+                          // ignore: use_build_context_synchronously
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Test print failed: $e'),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        }
+                      },
+                    )
                   ],
                 ),
               ),
