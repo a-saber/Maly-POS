@@ -81,16 +81,10 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                   children: [
                                     _row(S.of(context).shiftNumber,
                                         widget.shiftId.toString()),
-                                    _row(
-                                        S.of(context).openingQuantity,
-                                        (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0')
-                                            .toString()),
-                                    _row(S.of(context).ordersCount,
-                                        (shift.ordersCount ?? 0).toString()),
-                                    _row(S.of(context).startAt,
-                                        (shift.startAt ?? '-').toString()),
-                                    _row(
-                                        S.of(context).endAt, shift.endAt ?? '-')
+                                    _row(S.of(context).openingQuantity, (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0').toString()),
+                                    _row(S.of(context).ordersCount, (shift.ordersCount ?? 0).toString()),
+                                    _row(S.of(context).startAt, getLocalTimeFormate(shift?.startAt ?? '-')),
+                                    _row(S.of(context).endAt, getLocalTimeFormate(shift?.endAt ?? '-'))
                                   ],
                                 ),
                               ),

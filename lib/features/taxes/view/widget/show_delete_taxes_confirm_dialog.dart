@@ -37,9 +37,10 @@ Future<bool?> showDeleteTaxesConfirmDialog(
                     Navigator.of(context).pop();
                   }
                 } else if (state is DeleteTaxesFailing) {
+
                   if (context.mounted) {
-                    deleteConfirmationDialogError(
-                        ctx, mapStatusCodeToMessage(context, state.errMessage));
+                    final error=   mapStatusCodeToMessage(context, state.errMessage)=="Cannot delete tax because there are sales associated with it."?S.of(context).deleteTaxError:mapStatusCodeToMessage(context, state.errMessage);
+                    deleteConfirmationDialogError(ctx,error);
                   }
                 }
               },

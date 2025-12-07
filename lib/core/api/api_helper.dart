@@ -37,8 +37,7 @@ class ApiHelper {
           queryParameters: queryParameters,
           cancelToken: cancelToken,
           options: options);
-      return ApiResponse.successResonse(
-          message: response.data[ApiKeys.message], data: response.data);
+      return ApiResponse.successResonse(message: response.data[ApiKeys.message], data: response.data);
     } on DioException catch (e) {
       return handleDioError(
         e,

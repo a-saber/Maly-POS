@@ -66,7 +66,7 @@ class SellingPointCubit extends Cubit<SellingPointState> {
     query = '';
 
     getCategoryProduct(
-      newData: true,
+    //  newData: true,
     );
     if (isFirstTime) {
       categoryId = -2;

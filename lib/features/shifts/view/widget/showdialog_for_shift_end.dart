@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pos_app/core/helper/formate_date_time.dart';
 import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/shifts/data/model/end_shift_model.dart';
@@ -66,35 +67,35 @@ Future<void> showDialogForShiftEnd(BuildContext context,
               ),
             ),
             Text(
-              "${S.of(context).discountTotal}: ${(shift.summary?.discountTotal ?? '-')}",
+              "${S.of(context).discountTotal}: ${(shift.shift?.discountTotal ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
               ),
             ),
             Text(
-              "${S.of(context).taxestotal}: ${(shift.summary?.taxTotal ?? '-')}",
+              "${S.of(context).taxestotal}: ${(shift.shift?.taxTotal ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
               ),
             ),
             Text(
-              "${S.of(context).cashTotal}: ${(shift.summary?.cashTotal ?? '-')}",
+              "${S.of(context).cashTotal}: ${(shift.shift?.cashTotal ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
               ),
             ),
             Text(
-              "${S.of(context).onlineTotal}: ${(shift.summary?.onlineTotal ?? '-')}",
+              "${S.of(context).onlineTotal}: ${(shift.shift?.onlineTotal ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
               ),
             ),
             Text(
-              "${S.of(context).total}: ${(shift.summary?.totalAfterTax ?? '-')}",
+              "${S.of(context).total}: ${(shift.shift?.totalAfterTax ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,

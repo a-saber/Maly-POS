@@ -9,12 +9,13 @@ import 'package:uuid/uuid.dart';
 
 class PaymentHelper {
   static late final Nearpay nearpay;
-  static const String authEmail = "engazat.@gmail.com"; // Change if needed
+  static const String authEmail = "Engazat.mobtakara@gmail.com"; // Change if needed
 
   // Initialize NearPay authentication
   static Future<void> initialize() async {
     print("^^^^^^^^^^^^ init");
     nearpay = Nearpay(
+
       authType: AuthenticationType.email,
       authValue: authEmail,
       env: Environments.sandbox, // Change to Environments.production when going live
