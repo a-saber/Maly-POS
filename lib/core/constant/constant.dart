@@ -207,6 +207,7 @@ class AppConstant {
         PermissionItemModel(name: ApiKeys.stock, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.printers, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.shifts, isSelected: asAdmin),
+        PermissionItemModel(name: ApiKeys.restaurant, isSelected: asAdmin),
       ];
   static List<PermissionItemModel> getUserPermissions(RoleModel role) {
     return role.permissions.entries

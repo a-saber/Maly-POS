@@ -23,7 +23,6 @@ class PaymentHelper {
 
     try {
       var response = await nearpay.initialize();
-      nearpay.setup();
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialized Successfully\n${response.toString()}");
     } catch (e) {
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialization Failed: $e");
@@ -34,13 +33,11 @@ class PaymentHelper {
   static Future<String> addTransaction({ required double amount}) async
   {
     try {
-
       var response = await nearpay.purchase(
         amount: (amount * 100).round(), // 14.55 SAR (amount in cents)
         transactionId: const Uuid().v4(), // Unique transaction ID
         //customerReferenceNumber: transactionId, // Custom reference number
         enableReceiptUi: true,
-
         enableReversalUi: true,
         enableUiDismiss: true,
         finishTimeout: 60,
@@ -67,7 +64,7 @@ class PaymentHelper {
       } else {
         errorMSG ="Unexpected Error: $error";
       }
-      print(" error Payment Catch ${errorMSG}");
+      print(errorMSG);
      return errorMSG;
     }
   }

@@ -157,6 +157,7 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
   }
   void addProduct(ProductModel product) {
     if (!canLoading()) {
+
       products.add(product);
       emit(GetAllProductsSuccess());
     }

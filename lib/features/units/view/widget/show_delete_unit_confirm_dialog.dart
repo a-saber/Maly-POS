@@ -31,6 +31,7 @@ Future<bool?> showDeleteUnitConfirmDialog(
                   }
                 } else if (state is DeleteUnitFailing) {
                   if (contextDelete.mounted) {
+
                  final error=   mapStatusCodeToMessage(context, state.errMessage)=="Cannot delete unit because there are products associated with it."?S.of(contextDelete).deleteUnitError:mapStatusCodeToMessage(context, state.errMessage);
 
                     deleteConfirmationDialogError(ctx,error);

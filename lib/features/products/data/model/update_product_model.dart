@@ -465,7 +465,8 @@ class ProductUnits {
 
   if (isUpdate && id != null) {
     data["units[$index][id]"] = id;
-  } else {
+  }
+  else {
     data["units[$index][unit_id]"] = unitId;
     data["units[$index][conversion_factor]"] = conversionFactor;
   }
