@@ -154,7 +154,7 @@ class SellingPointRepo {
           url: url,
           queryParameters: {
             ApiKeys.search: search,
-            if (categortyId != -1) ApiKeys.categoryId: categortyId,
+            if (categortyId > 0) ApiKeys.categoryId: categortyId,
             ApiKeys.branchid: branch?.id,
             ApiKeys.perPage: perpage,
           },
@@ -194,7 +194,7 @@ class SellingPointRepo {
               url: url,
               queryParameters: {
                 ApiKeys.search: search,
-                if (categortyId != -1) ApiKeys.categoryId: categortyId,
+                if (categortyId > 0) ApiKeys.categoryId: categortyId,
                 ApiKeys.branchid: branch?.id,
                 ApiKeys.perPage: perpage,
               },

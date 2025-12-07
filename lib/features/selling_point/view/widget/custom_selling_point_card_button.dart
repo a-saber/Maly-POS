@@ -127,6 +127,11 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(
                             ' Using paper size: "${printer.paperSize}"');
+                        var invoiceBytesUint8List = await salesInvoicesPdf80(
+                          state.printModel.apiResponse.data as Map<String, dynamic>,
+                          branchName: state.printModel.branchName,
+                          paid: state.printModel.paid,
+                        );
 
                         await PrinterHelper().printInvoice(
                           printer.discoveredPrinter!,
