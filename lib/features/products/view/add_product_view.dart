@@ -26,9 +26,11 @@ import '../../../core/widget/image_manager_view.dart';
 import '../../branch/view/widget/custom_drop_down_branch.dart';
 import '../../categories/data/repo/category_repo.dart';
 import '../../categories/view/widget/custom_drop_down_category.dart';
+import '../../selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import '../../taxes/view/widget/custom_drop_down_taxes.dart';
 import '../../units/data/repo/units_repo.dart';
 import '../data/model/product_type.dart';
+import '../manager/get_all_products_cubit/get_all_products_cubit.dart';
 
 class AddProductDataView2 extends StatefulWidget {
   const AddProductDataView2({super.key});
@@ -662,10 +664,10 @@ class AddProductView extends StatelessWidget {
           listener: (context, state) {
             if (state is AddProductSuccess) {
               //  TODO : Will Add Update Product Moel Selling Point
-              // GetAllProductsCubit.get(context).addProduct(state.product);
+               GetAllProductsCubit.get(context).addProduct(state.product!);
               // TODO : Will Give Update Product Model Selling Point
-              // MyServiceLocator.getSingleton<SellingPointCubit>()
-              //     .addProduct(state.product);
+               MyServiceLocator.getSingleton<SellingPointCubit>()
+                  .addProduct(state.product!);
               CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,
