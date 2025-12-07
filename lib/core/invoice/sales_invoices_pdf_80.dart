@@ -693,3 +693,4 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     return emptyPdf.save();
   }
 }
+
