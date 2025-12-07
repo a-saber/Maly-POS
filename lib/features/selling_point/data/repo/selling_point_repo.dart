@@ -96,6 +96,7 @@ class SellingPointRepo {
       }
       if(paymentType?.apiKey == ApiKeys.mada){
         String? madauid=await PaymentHelper.addTransaction(amount: totalaftertax);
+
         data["nearpay_transaction_uuid"]=madauid;
       }
       var response = await api.post(

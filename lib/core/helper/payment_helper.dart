@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 class PaymentHelper {
   static late final Nearpay nearpay;
-  static const String authEmail = "engazat.@gmail.com"; // Change if needed
+  static const String authEmail = "engazat.mobtakara@gmail.com"; // Change if needed
 
   // Initialize NearPay authentication
   static Future<void> initialize() async {
@@ -23,6 +23,7 @@ class PaymentHelper {
 
     try {
       var response = await nearpay.initialize();
+      nearpay.setup();
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialized Successfully\n${response.toString()}");
     } catch (e) {
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialization Failed: $e");
@@ -33,15 +34,19 @@ class PaymentHelper {
   static Future<String> addTransaction({ required double amount}) async
   {
     try {
+
       var response = await nearpay.purchase(
         amount: (amount * 100).round(), // 14.55 SAR (amount in cents)
         transactionId: const Uuid().v4(), // Unique transaction ID
         //customerReferenceNumber: transactionId, // Custom reference number
         enableReceiptUi: true,
+
         enableReversalUi: true,
         enableUiDismiss: true,
         finishTimeout: 60,
-      );
+      ).catchError((onError){
+        print(" error Payment ${onError} ");
+      });
 
       print("^^^^^^^^^^^^^^^^^^^ Transaction Successful: ${response.toJson()}");
       print(response.receipts!.first.transaction_uuid);
@@ -62,7 +67,7 @@ class PaymentHelper {
       } else {
         errorMSG ="Unexpected Error: $error";
       }
-      print(errorMSG);
+      print(" error Payment Catch ${errorMSG}");
      return errorMSG;
     }
   }
