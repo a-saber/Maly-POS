@@ -223,6 +223,210 @@ Future<List<int>> buildInvoiceBytesEscPos(
     return err;
   }
 }
+Future<List<int>> buildInvoiceBytesEscPosForArabic(
+    Map<String, dynamic> response, {
+      required double paid,
+      String? branchName,
+      bool openCashDrawer = false,
+      bool useRasterForArabic = true,
+      String paperSize = '80mm',
+    }) async {
+  final CapabilityProfile profile = await CapabilityProfile.load();
+  final PaperSize size = (paperSize == '58mm') ? PaperSize.mm58 : PaperSize.mm80;
+  final Generator generator = Generator(size, profile);
+
+  final List<int> bytes = [];
+
+  // دالة مساعدة لطباعة نص عربي (أو أي نص) كصورة
+  Future<void> addTextRaster(String text, {bool bold = false, PosAlign align = PosAlign.right}) async {
+    if (!useRasterForArabic) {
+      bytes.addAll(generator.text(text, styles: PosStyles(bold: bold, align: align)));
+      return;
+    }
+    final ui.Image? raster = await _rasterizeTextLine(text, size.width);
+    if (raster != null) {
+      final img.Image? printableImage = await _convertUiImageToImage(raster);
+      if (printableImage != null) {
+        bytes.addAll(generator.image(printableImage));
+      } else {
+        // fallback text
+        bytes.addAll(generator.text(text, styles: PosStyles(bold: bold, align: align)));
+      }
+    } else {
+      // fallback text
+      bytes.addAll(generator.text(text, styles: PosStyles(bold: bold, align: align)));
+    }
+  }
+
+  try {
+    final sale = response['sale'] ?? {};
+    final setting = response['settings'] ?? {};
+    final products = (sale['saleproducts'] as List<dynamic>?) ?? [];
+
+    // parse date/time
+    String dateStr = '';
+    String timeStr = '';
+    final createdAt = sale['created_at']?.toString() ?? sale['createdat']?.toString() ?? '';
+    if (createdAt.isNotEmpty) {
+      final parsed = DateTime.tryParse(createdAt)?.toLocal();
+      if (parsed != null) {
+        dateStr = DateFormat('yyyy-MM-dd').format(parsed);
+        timeStr = DateFormat('HH:mm:ss').format(parsed);
+      }
+    }
+
+    // optional: fetch logo image bytes
+    Uint8List? logoBytes;
+    final logoUrl = setting['imageurl'] as String? ?? '';
+    if (logoUrl.isNotEmpty) {
+      try {
+        final resp = await http.get(Uri.parse(logoUrl));
+        if (resp.statusCode == 200) logoBytes = resp.bodyBytes;
+      } catch (_) {
+        logoBytes = null;
+      }
+    }
+
+    // helper format number
+    String fmt(dynamic v) {
+      try {
+        final d = double.tryParse(v?.toString() ?? '') ?? 0.0;
+        return d.toStringAsFixed(2);
+      } catch (e) {
+        return '0.00';
+      }
+    }
+
+    // helper to build product line: name | qty | price | total
+    String productLine(Map p) {
+      final name = p['product']?['name']?.toString() ?? p['name']?.toString() ?? '';
+      final qty = p['quantity']?.toString() ?? p['qty']?.toString() ?? '';
+      final price = fmt(p['price'] ?? p['unitprice']);
+      final total = fmt(p['linetotalafterdiscount'] ?? p['total']);
+      final nameMax = 18;
+      final shortName = name.length > nameMax ? name.substring(0, nameMax - 1) + '…' : name;
+      final qtyCol = qty.padLeft(3);
+      final priceCol = price.padLeft(8);
+      final totalCol = total.padLeft(9);
+      return shortName.padRight(nameMax) + ' ' + qtyCol + ' ' + priceCol + ' ' + totalCol;
+    }
+
+    if (openCashDrawer) {
+      bytes.addAll(generator.drawer());
+    }
+
+    // طباعة التاريخ والوقت كصورة
+    if (dateStr.isNotEmpty || timeStr.isNotEmpty) {
+      final header = '${timeStr.isNotEmpty ? timeStr : ''} ${dateStr.isNotEmpty ? dateStr : ''}'.trim();
+      await addTextRaster(header, align: PosAlign.center);
+    }
+
+    // Title
+    await addTextRaster('*** ${response['settings']?['shopname'] ?? 'فاتورة'} ***',
+        bold: true, align: PosAlign.center);
+
+    // Logo (if exists) - print as image
+    if (logoBytes != null && logoBytes.isNotEmpty) {
+      try {
+        final img.Image? decodedImage = img.decodeImage(logoBytes);
+        if (decodedImage != null) {
+          bytes.addAll(generator.image(decodedImage));
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    // Shop info
+    if (setting['shopname'] != null) {
+      await addTextRaster(setting['shopname'].toString(), align: PosAlign.center);
+    }
+    if (setting['phone'] != null) {
+      await addTextRaster('Tel: ${setting['phone']}', align: PosAlign.center);
+    }
+    if (setting['commercialno'] != null) {
+      await addTextRaster('Reg#: ${setting['commercialno']}', align: PosAlign.center);
+    }
+
+    bytes.addAll(generator.hr());
+
+    // Sale info: id, order type, payment method
+    if (sale['id'] != null) await addTextRaster('Invoice #: ${sale['id']}');
+    if (sale['ordertype'] != null) await addTextRaster('Order Type: ${sale['ordertype']}');
+    if (sale['payment_method'] != null || sale['paymentmethod'] != null) {
+      final pm = sale['payment_method'] ?? sale['paymentmethod'];
+      await addTextRaster('Payment: $pm');
+    }
+
+    bytes.addAll(generator.hr());
+
+    // Header row for products
+    await addTextRaster('Item'.padRight(18) + ' QTY  Price     Total', bold: true);
+
+    // Products lines
+    for (final p in products) {
+      final line = productLine(p);
+      await addTextRaster(line);
+    }
+
+    bytes.addAll(generator.hr());
+
+    final subtotal = fmt(sale['subtotal']);
+    final discount = fmt(sale['discounttotal'] ?? sale['discount']);
+    final totalAfterDiscount = fmt(sale['totalafterdiscount']);
+    final tax = fmt(sale['taxtotal']);
+    final totalAfterTax = fmt(sale['totalaftertax'] ?? sale['total']);
+    final remain = (double.tryParse(totalAfterTax) ?? 0.0) - paid;
+
+    // طباعة الكي والفاليو
+    Future<void> printKeyValue(String key, String val, {bool bold = false}) async {
+      final line = key.padRight(24) + val.padLeft(12);
+      await addTextRaster(line, bold: bold);
+    }
+
+    if ((sale['subtotal'] ?? sale['sub_total']) != null) await printKeyValue('Subtotal', subtotal);
+    if ((sale['discounttotal'] ?? sale['discount']) != null) await printKeyValue('Discount', discount);
+    if ((sale['totalafterdiscount']) != null) await printKeyValue('After Discount', totalAfterDiscount);
+    if ((sale['taxtotal']) != null) await printKeyValue('Tax', tax);
+    if ((sale['totalaftertax'] ?? sale['total']) != null) await printKeyValue('Total', totalAfterTax, bold: true);
+
+    await printKeyValue('Paid', paid.toStringAsFixed(2), bold: true);
+    await printKeyValue('Remain', remain.toStringAsFixed(2));
+
+    bytes.addAll(generator.hr());
+
+    // QR code ZATCA
+    if (sale['zatcaQrcode'] != null && sale['zatcaQrcode'].toString().isNotEmpty) {
+      bytes.addAll(generator.qrcode(sale['zatcaQrcode'].toString(),
+          size: QRSize.size8, align: PosAlign.center));
+    }
+
+    // Thanks / address / employee / branch
+    await addTextRaster(response['settings']?['thanks'] ?? 'شكرا لزيارتك', align: PosAlign.center);
+    if (response['settings']?['address'] != null) {
+      await addTextRaster(response['settings']?['address'], align: PosAlign.center);
+    }
+    final employeeName = (response['user']?['name'] ?? response['employee'] ?? '')?.toString();
+    if (employeeName != null && employeeName.isNotEmpty) {
+      await addTextRaster('Employee: $employeeName', align: PosAlign.center);
+    }
+    if (branchName != null && branchName.isNotEmpty) {
+      await addTextRaster('Branch: $branchName', align: PosAlign.center);
+    }
+
+    bytes.addAll(generator.feed(3));
+    bytes.addAll(generator.cut());
+
+    return bytes;
+  } catch (e) {
+    final Generator gen = generator;
+    final List<int> err = [];
+    err.addAll(gen.text('Error building invoice: $e', styles: PosStyles(align: PosAlign.center)));
+    err.addAll(gen.feed(2));
+    err.addAll(gen.cut());
+    return err;
+  }
+}
 
 /// Helper: rasterize a single text line into a ui.Image (for printing Arabic correctly).
 /// widthPx should be generator.paperWidth in pixels, but we approximate using PaperSize.
