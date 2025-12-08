@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thermal_printer/thermal_printer.dart';
@@ -50,6 +51,7 @@ class PrinterHelper {
       return false;
     }
 
+
     final scanStatus = await Permission.bluetoothScan.status;
     final connectStatus = await Permission.bluetoothConnect.status;
     final locationStatus = await Permission.location.status;
@@ -57,6 +59,22 @@ class PrinterHelper {
     return scanStatus.isGranted &&
         connectStatus.isGranted &&
         locationStatus.isGranted;
+  }
+  Future<bool>  isSunmiDevice() async {
+    try {
+      if (!kIsWeb) {
+        final deviceInfo = DeviceInfoPlugin();
+        final androidInfo = await deviceInfo.androidInfo;
+        final manufacturer = androidInfo.manufacturer.toLowerCase();
+        final brand = androidInfo.brand.toLowerCase();
+
+        return manufacturer.contains('sunmi') || brand.contains('sunmi');
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Error checking if Sunmi device: $e');
+      return false;
+    }
   }
 
   Future<void> startScan({VoidCallback? onUpdate}) async {

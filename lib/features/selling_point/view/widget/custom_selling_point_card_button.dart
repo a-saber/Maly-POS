@@ -70,13 +70,13 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   Navigator.pop(context);
                 }
 
-
+               final bool isSunmi=await PrinterHelper().isSunmiDevice();
                 try {
-                  if (state.printModel.madaReceipt != null) {
+                /* /// todo ahmed saber if (state.printModel.madaReceipt != null) {
                     await printSunmiPDF(state.printModel.madaReceipt!);
                     await SunmiPrinter.lineWrap(4);
                     await SunmiPrinter.cutPaper();
-                  }
+                  }*/
                   final allAutomaticPrinters =
                       MyServiceLocator.getSingleton<GetPrintersCubit>()
                           .printers
@@ -129,8 +129,20 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   int failCount = 0;
 
                   for (final printer in allAutomaticPrinters) {
-                    if (printer.discoveredPrinter != null) {
+                    /// new
+                    if (state.printModel.madaReceipt != null|| isSunmi || printer.printerType.toString().toLowerCase().contains('sunmi')) {
+
+                      await printSunmiPDF(state.printModel.madaReceipt!,printer.paperSize??'58');
+                      await SunmiPrinter.lineWrap(4);
+                      await SunmiPrinter.cutPaper();
+                    }
+                    else
+                    {
+
+                    if (printer.discoveredPrinter != null && (printer.automatic??false)) {
+
                       try {
+
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
@@ -156,6 +168,8 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                             ' FAILED: ${printer.printerName} - Error: $e');
                       }
                     }
+
+                    }
                   }
 
                   debugPrint('');
@@ -168,6 +182,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   debugPrint(
                       '===================================================');
                   debugPrint('');
+
 
                   // if (!Platform.isAndroid) {
                   //   throw 'not android';

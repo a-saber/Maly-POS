@@ -1,3 +1,5 @@
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
@@ -270,6 +272,7 @@ class AppConstant {
           name: S.of(context).service,
         ),
       ];
+
 
   // 'purchase', 'sale', 'sale_return', 'purchase_return', 'wastage'
   static List<TypeOfMovementModel> typeOfMovements(context) => [

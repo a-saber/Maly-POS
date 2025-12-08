@@ -128,14 +128,11 @@ class EditPrinterView extends StatelessWidget {
                         debugPrint('🧪 Cubit Paper Size: "${cubit.paperSize}"');
                         debugPrint(
                             '🧪 Printer Model Paper Size: "${printerModel?.paperSize}"');
-                        debugPrint(
-                            '🧪 Discovered Printer: ${printerModel?.discoveredPrinter != null}');
+                        debugPrint('🧪 Discovered Printer: ${printerModel?.discoveredPrinter != null}');
 
                         if (printerModel?.discoveredPrinter != null) {
-                          debugPrint(
-                              '🧪 Printer Name: ${printerModel!.discoveredPrinter!.device.name}');
-                          debugPrint(
-                              '🧪 Printer Type: ${printerModel!.discoveredPrinter!.type}');
+                          debugPrint('🧪 Printer Name: ${printerModel!.discoveredPrinter!.device.name}');
+                          debugPrint('🧪 Printer Type: ${printerModel!.discoveredPrinter!.type}');
                         }
                         debugPrint(
                             '============================================================');
