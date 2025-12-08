@@ -70,7 +70,13 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   Navigator.pop(context);
                 }
 
+
                 try {
+                  if (state.printModel.madaReceipt != null) {
+                    await printSunmiPDF(state.printModel.madaReceipt!);
+                    await SunmiPrinter.lineWrap(4);
+                    await SunmiPrinter.cutPaper();
+                  }
                   final allAutomaticPrinters =
                       MyServiceLocator.getSingleton<GetPrintersCubit>()
                           .printers

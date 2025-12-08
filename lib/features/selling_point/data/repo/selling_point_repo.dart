@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_helper.dart';
@@ -36,6 +38,7 @@ class SellingPointRepo {
     required List<ProductSellingModel> products,
     required double paid,
   }) async {
+    String? payResponseId;
     try {
       String url = await ApiEndPoints.getSales();
       /*
@@ -94,10 +97,17 @@ class SellingPointRepo {
       if (customer != null) {
         data[ApiKeys.customerid] = customer.id;
       }
+      Uint8List? madaReceipt;
       if(paymentType?.apiKey == ApiKeys.mada){
-        String? madauid=await PaymentHelper.addTransaction(amount: totalaftertax);
-
-        data["nearpay_transaction_uuid"]=madauid;
+        var madaResponse =await PaymentHelper.addTransaction(amount: totalaftertax);
+        madaResponse.fold(
+          (String error)=> throw NearPayException(error),
+            (receipt)async{
+              payResponseId = receipt.transaction_uuid;
+              data["nearpay_transaction_uuid"]=receipt.transaction_uuid;
+              madaReceipt = await PaymentHelper.toImage(receipt: receipt);
+            }
+        );
       }
       var response = await api.post(
         url: url,
@@ -113,13 +123,25 @@ class SellingPointRepo {
         return Right(PrintModel(
             apiResponse: response,
             branchName: branch?.name ?? 'مش معروف',
-            paid: paid));
+            paid: paid,
+          madaReceipt: madaReceipt
+        ));
       } else {
+        if(payResponseId != null) {
+          await PaymentHelper.reverseTransaction(originalTransactionUUID: payResponseId!);
+        }
         return Left(
           response,
         );
       }
-    } catch (e) {
+    }
+    on NearPayException catch (e) {
+      return Left(ApiResponse.fromErrorMSG(e.message));
+    }
+    catch (e) {
+      if(payResponseId != null) {
+        await PaymentHelper.reverseTransaction(originalTransactionUUID: payResponseId!);
+      }
       debugPrint(e.toString());
       // ignore: use_build_context_synchronously
       return Left(ApiResponse.unKnownError());

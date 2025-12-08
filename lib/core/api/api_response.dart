@@ -36,6 +36,13 @@ class ApiResponse {
         statusCode: ApiStatusCode.unknown,
       );
 
+  factory ApiResponse.fromErrorMSG(String msg) => ApiResponse(
+        status: false,
+        message: msg,
+        data: null,
+        error: null,
+        statusCode: ApiStatusCode.unknown,
+  );
   factory ApiResponse.errorResonse(String error,
       {dynamic errorResponse, required int? statusCode, bool? shiftError}) {
     debugPrint(errorResponse.toString());
