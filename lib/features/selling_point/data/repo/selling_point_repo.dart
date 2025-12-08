@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:nearpay_flutter_sdk/models/transaction_receipt/transaction_receipt.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
@@ -100,19 +101,19 @@ class SellingPointRepo {
       Uint8List? madaReceipt;
       if(paymentType?.apiKey == ApiKeys.mada){
         print('MADA 01 ****** ');
-        var madaResponse =await PaymentHelper.addTransaction(amount: totalaftertax);
+        TransactionReceipt? madaResponse =await PaymentHelper.addTransaction(amount: totalaftertax);
         print('MADA 02 ****** success');
-        madaResponse.fold(
-          (String error)=> throw NearPayException(error),
-            (receipt)async{
-              print('MADA 03 ****** success');
+        if(madaResponse == null) {
+          throw NearPayException('Error in MADA');
+        }
+        else{
+          print('MADA 03 ****** success');
 
-              payResponseId = receipt.transaction_uuid;
-              data["nearpay_transaction_uuid"]=receipt.transaction_uuid;
-              madaReceipt = await PaymentHelper.toImage(receipt: receipt);
-            }
-        );
-      }
+          payResponseId = madaResponse.transaction_uuid;
+          data["nearpay_transaction_uuid"]=madaResponse.transaction_uuid;
+          madaReceipt = await PaymentHelper.toImage(receipt: madaResponse);
+        }
+        }
       var response = await api.post(
         url: url,
         data: data,
