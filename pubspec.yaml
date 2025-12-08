@@ -70,6 +70,7 @@ dependencies:
       url: https://github.com/nearpayio/nearpay-flutter-sdk.git
       ref: v1-google
   connectivity_plus: ^4.0.2
+  device_info_plus: ^10.1.2
 
   # timezone:
   # geolocator:
