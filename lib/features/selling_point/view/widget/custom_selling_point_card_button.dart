@@ -74,8 +74,9 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   final allAutomaticPrinters =
                       MyServiceLocator.getSingleton<GetPrintersCubit>()
                           .printers
-                          .where((p) => p.automatic == true)
-                          .toList();
+                          // .where((p) => p.automatic == true)
+                          // .toList()
+                  ;
 
                   debugPrint('');
                   debugPrint(
