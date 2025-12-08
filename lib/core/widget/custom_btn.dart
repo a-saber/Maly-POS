@@ -23,20 +23,21 @@ class CustomFilledBtn extends StatelessWidget {
       width: expandWidth ? double.infinity : null,
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
             backgroundColor: backgroundColor,
-            padding:
-                const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+            padding: const EdgeInsets.symmetric(vertical: 2.0, horizontal: 10.0),
           ),
           onPressed: onPressed,
+
           child: icon == null
-              ? Text(
-                  text,
-                  style: AppFontStyle.btnText(context: context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
+              ? Center(
+                child: Text(
+                    text,
+                    style: AppFontStyle.btnText(context: context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

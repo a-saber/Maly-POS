@@ -71,7 +71,7 @@ class AppFontStyle {
           {Color color = AppColors.white, required BuildContext context}) =>
       TextStyle(
         fontWeight: FontWeights.medium,
-        fontSize: getResponsiveSize(context, size: 20),
+        fontSize: getResponsiveSize(context, size: 18),
         color: color,
       );
 
