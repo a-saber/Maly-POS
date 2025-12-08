@@ -246,7 +246,6 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   3: pw.FlexColumnWidth(2),
                 },
                 children: [
-                  // ✅ Header row
                   pw.TableRow(
                     decoration:
                         pw.BoxDecoration(color: PdfColors.grey300), // gray bg
