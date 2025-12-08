@@ -126,16 +126,6 @@ class _PrinterOptions extends StatelessWidget {
           validator: (value) =>
               MyFormValidators.validateRequired(value, context: context),
         ),
-        CustomDropdown<String>(
-          value: cubit.paperSize,
-          items: cubit.paperSizes,
-          onChanged: cubit.changePaperSize,
-          builder: (item) =>
-              Text(item ?? '', style: const TextStyle(fontSize: 16)),
-          validator: (value) =>
-              MyFormValidators.validateRequired(value, context: context),
-        ),
-
         const SizedBox(height: 16),
         CustomFormField(
           controller: cubit.printReceiptController,
