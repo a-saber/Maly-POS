@@ -81,6 +81,12 @@ class Data {
 class ShiftData {
   int? id;
   String? openingQuantity;
+  String? closingQuantity;
+  String? cashTotal;
+  String? onlineTotal;
+  String? discountTotal;
+  String? taxTotal;
+  String? totalAfterTax;
   String? createdAt;
   String? updatedAt;
   int? userId;
@@ -103,11 +109,26 @@ class ShiftData {
     this.ordersCount,
     this.user,
     this.branch,
+    this.closingQuantity,
+    this.cashTotal,
+    this.onlineTotal,
+    this.discountTotal,
+    this.taxTotal,
+    this.totalAfterTax,
+
   });
 
   ShiftData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     openingQuantity = json['opening_quantity'];
+    closingQuantity = json['closing_quantity'];
+    cashTotal = json['cash_total'];
+    onlineTotal = json['online_total'];
+    discountTotal = json['discount_total'];
+    taxTotal = json['tax_total'];
+    totalAfterTax = json['total_after_tax'];
+
+
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
     userId = json['user_id'];

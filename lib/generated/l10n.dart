@@ -2580,6 +2580,15 @@ class S {
       args: [],
     );
   }
+  /// `Copy`
+  String get deleteTaxError {
+    return Intl.message(
+      "Cannot delete tax because there are sales associated with it.",
+      name: "Cannot delete tax because there are sales associated with it.",
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
