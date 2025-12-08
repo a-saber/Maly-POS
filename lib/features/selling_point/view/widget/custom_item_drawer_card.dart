@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:input_quantity/input_quantity.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_cach_network_image.dart';
@@ -82,7 +83,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         ),
                         SizedBox(
 
-                          width: 200,
+                          width: 150,
                           child: Form(
                             key: widget.product.formKey,
                             child: CustomFormField(
@@ -111,6 +112,54 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                             ),
                           ),
                         ),
+                       /* InputQty.int(
+                           initVal: 1,
+                            qtyFormProps: QtyFormProps(
+                              controller: widget.product.qtyController,),
+                            onQtyChanged: (value){
+                              widget.product.count=value;
+                            },
+                            decoration: QtyDecorationProps(
+                              borderShape: BorderShapeBtn.circle,
+                              btnColor: Colors.blue,
+                              contentPadding: EdgeInsets.all(8),
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none),
+                              fillColor: Colors.grey[200],
+
+                              plusBtn:   InkWell(
+                                onTap: widget.onTapAdd,
+                                child: Container(
+                                  padding: EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.green,
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                ),
+                              ) ,
+                              minusBtn: InkWell(
+                                onTap: widget.onTapRemove,
+                                child: Container(
+                                  padding: EdgeInsets.all(2),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.red,
+                                  ),
+                                  child: Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                    size: 15,
+                                  ),
+                                ),
+                              ) ,
+                              isBordered: true
+                          ),
+                        )*/
 
                       ],
                     ),

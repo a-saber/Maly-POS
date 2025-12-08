@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/cache/cache_keys.dart';
@@ -45,7 +46,7 @@ Dio getDio() {
   dio.options.connectTimeout = const Duration(seconds: 30); // connect to server
   dio.options.receiveTimeout =
       const Duration(seconds: 45); // wait for server response
-  dio.options.sendTimeout = const Duration(seconds: 30); // send data (upload)
+  dio.options.sendTimeout =  kIsWeb ? null : const Duration(seconds: 30);// send data (upload)
   dio.options.headers[ApiKeys.contentType] = "application/json";
   dio.options.headers[ApiKeys.accept] = "application/json";
   dio.interceptors.add(CustomInterceptor());

@@ -202,6 +202,62 @@ class UpdateProductModel {
 
   return data;
 }
+  Future<Map<String, dynamic>> updateProduct() async {
+  final Map<String, dynamic> data = <String, dynamic>{};
+
+  data[ApiKeys.id] = id;
+  data[ApiKeys.name] = name;
+  data[ApiKeys.categoryId] = categoryId;
+  data[ApiKeys.description] = description;
+  data[ApiKeys.brand] = brand;
+  data[ApiKeys.taxid] = taxId;
+   data[ApiKeys.type] = type;
+
+  data[ApiKeys.baseUnitId] = baseUnitId;
+
+  if (imagePath != null && imagePath!.isNotEmpty) {
+    data[ApiKeys.image] = await uploadImageToApi(image: File(imagePath!));
+
+  }
+
+  if (productUnits != null) {
+    int index = 0;
+
+    for (final unit in productUnits!) {
+
+      data["units[$index][unit_id]"] = unit.unitId ?? unit.unit?.id;
+
+
+      data["units[$index][conversion_factor]"] = unit.conversionFactor ?? unit.factoryController?.text ?? "1";
+
+
+      if (unit.id != null) {
+        data["units[$index][id]"] = unit.id;
+      }
+
+
+      data["units[$index][cost_price]"] = unit.costPrice ?? unit.costPriceController?.text;
+      data["units[$index][sale_price_without_tax]"] = unit.salePriceWithoutTax ?? unit.salePriceWithoutTaxController?.text;
+      data["units[$index][sale_price_with_tax]"] = unit.salePriceWithTax ?? unit.salePriceWithTaxController?.text;
+      // data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ?? unit.minPriceWithoutTaxController?.text;
+      data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ;
+      data["units[$index][min_price_with_tax]"] = unit.minPriceWithTax ?? unit.minPriceWithTaxController?.text;
+      data["units[$index][barcode]"] = unit.barcode ?? unit.barCodeController?.text;
+      data["units[$index][scale_barcode]"] = unit.scaleBarcode ?? unit.scaleBarcodeController?.text;
+      for (int i = 0; i < unit.branchQty.length; i++) {
+        final branchQuantity = unit.branchQty[i];
+        data["units[$index][opening_stocks][$i][branch_id]"] = branchQuantity.branch?.id ?? branchQuantity.branchId;
+        data["units[$index][opening_stocks][$i][quantity]"] = branchQuantity.quantityController.text;
+      }
+
+
+      index++;
+    }
+  }
+
+  return data;
+}
+
   Future<Map<String, dynamic>> toJsonWithoutId({
     required List<List<BranchQuantity>> branchQuantities,
   }) async {
@@ -409,7 +465,8 @@ class ProductUnits {
 
   if (isUpdate && id != null) {
     data["units[$index][id]"] = id;
-  } else {
+  }
+  else {
     data["units[$index][unit_id]"] = unitId;
     data["units[$index][conversion_factor]"] = conversionFactor;
   }

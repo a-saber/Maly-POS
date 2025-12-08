@@ -174,11 +174,11 @@ class ProductsRepo {
 
     debugPrint(
         " 12-----------------------------------\n\n ${updateProduct.toJson()}\n\n-----------------------------------\n\n12");
-
+    var data = await updateProduct.updateProduct();
     var response = await api.post(
        
         url:isUpdate? "$url/${updateProduct.id}":url,
-        data: updateProduct.toJson(),
+        data: data,
         isFormData: true);
     if (response.status) {
       AddOrUpdateProduct addOrUpdateProduct =

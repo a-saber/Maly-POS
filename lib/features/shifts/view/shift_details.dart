@@ -62,505 +62,494 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                   dataforshift: state.shiftDetails.data!,
                   orderData: state.shiftDetails.data!.data ?? [],
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            customCardTitle(context,
-                                title: S.of(context).shiftDetails),
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(paddingCard),
-                                child: Column(
-                                  spacing: spacingBetweenRowInCard,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _row(S.of(context).shiftNumber,
-                                        widget.shiftId.toString()),
-                                    _row(
-                                        S.of(context).openingQuantity,
-                                        (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0')
-                                            .toString()),
-                                    _row(S.of(context).ordersCount,
-                                        (shift.ordersCount ?? 0).toString()),
-                                    _row(S.of(context).startAt,
-                                        (shift.startAt ?? '-').toString()),
-                                    _row(
-                                        S.of(context).endAt, shift.endAt ?? '-')
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: spacingBetweenCard,
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Column(
-                          spacing: spacingBetweenRowInCard,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            customCardTitle(context,
-                                title: S.of(context).userInfo),
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(paddingCard),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _row(
-                                      S.of(context).name,
-                                      shift.user?.name ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).branch,
-                                      shift.branch?.name ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).email,
-                                      shift.user?.email ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).phone,
-                                      shift.user?.phone ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).address,
-                                      shift.user?.address ?? '-',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: spacingBetweenCard,
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: Column(
-                          spacing: spacingBetweenRowInCard,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            customCardTitle(context,
-                                title: S.of(context).summary),
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(paddingCard),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _row(
-                                      S.of(context).subTotal,
-                                      summary?.subtotal.toAmount() ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).discountTotal,
-                                      summary?.discountTotal.toAmount() ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).totalAfterDiscount,
-                                      summary?.totalAfterDiscount.toAmount() ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).taxestotal,
-                                      summary?.taxTotal.toAmount() ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).totalAfterTax,
-                                      summary?.totalAfterTax.toAmount() ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).cashTotal,
-                                      summary?.cashTotal.toAmount() ?? '-',
-                                    ),
-                                    _row(
-                                      S.of(context).onlineTotal,
-                                      summary?.onlineTotal.toAmount() ?? '-',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      // SizedBox(
-                      //   height: spacingBetweenCard,
-                      // ),
-                      // Column(
-                      //   spacing: spacingBetweenRowInCard,
-                      //   crossAxisAlignment: CrossAxisAlignment.start,
-                      //   children: [
-                      //     customCardTitle(context, title: S.of(context).shop),
-                      //     Card(
-                      //       child: Padding(
-                      //         padding: EdgeInsets.all(paddingCard),
-                      //         child: Column(
-                      //           crossAxisAlignment: CrossAxisAlignment.start,
-                      //           children: [
-                      //             _row(
-                      //               S.of(context).name,
-                      //               shop?.shopName ?? '-',
-                      //             ),
-                      //             _row(
-                      //               S.of(context).address,
-                      //               shop?.address ?? '-',
-                      //             ),
-                      //             _row(
-                      //               S.of(context).phone,
-                      //               shop?.phone ?? '-',
-                      //             ),
-                      //             _row(
-                      //               S.of(context).email,
-                      //               shop?.email ?? '-',
-                      //             ),
-                      //           ],
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: spacingBetweenCard,
-                        ),
-                      ),
-                      SliverToBoxAdapter(
-                        child: customCardTitle(context,
-                            title: S.of(context).orders),
-                      ),
-                      BlocBuilder<ShiftOrderPaginationCubit,
-                          ShiftOrderPaginationState>(
-                        builder: (context, state) {
-                          return SliverGrid.builder(
-                            itemCount: ShiftOrderPaginationCubit.get(context)
-                                .orderData
-                                .length,
-                            gridDelegate:
-                                SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 800,
-                                    mainAxisExtent: 100,
-                                    childAspectRatio: 4 / 1),
-                            itemBuilder: (context, index) {
-                              return Card(
+                child: SafeArea(
+
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              customCardTitle(context,
+                                  title: S.of(context).shiftDetails),
+                              Card(
                                 child: Padding(
                                   padding: EdgeInsets.all(paddingCard),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    spacing: spacingBetweenRowInCard,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        spacing: 50,
-                                        children: [
-                                          Expanded(
-                                            child: _row(
-                                              S.of(context).id,
-                                              ShiftOrderPaginationCubit.get(
-                                                          context)
-                                                      .orderData[index]
-                                                      .id
-                                                      ?.toString() ??
-                                                  '-',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: _row(
-                                              S.of(context).date,
-                                              getLocalTimeFormate(
-                                                ShiftOrderPaginationCubit.get(
-                                                            context)
-                                                        .orderData[index]
-                                                        .createdAt
-                                                        ?.toString() ??
-                                                    '-',
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                      _row(S.of(context).shiftNumber,
+                                          widget.shiftId.toString()),
+                                      _row(S.of(context).openingQuantity, (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0').toString()),
+                                      _row(S.of(context).ordersCount, (shift.ordersCount ?? 0).toString()),
+                                      _row(S.of(context).startAt, getLocalTimeFormate(shift?.startAt ?? '-')),
+                                      _row(S.of(context).endAt, getLocalTimeFormate(shift?.endAt ?? '-'))
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: spacingBetweenCard,
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: Column(
+                            spacing: spacingBetweenRowInCard,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              customCardTitle(context,
+                                  title: S.of(context).userInfo),
+                              Card(
+                                child: Padding(
+                                  padding: EdgeInsets.all(paddingCard),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      _row(
+                                        S.of(context).name,
+                                        shift.user?.name ?? '-',
                                       ),
-                                      Row(
-                                        spacing: 50,
-                                        children: [
-                                          Expanded(
-                                            child: _row(
-                                              S.of(context).user,
-                                              ShiftOrderPaginationCubit.get(
-                                                          context)
-                                                      .orderData[index]
-                                                      .user
-                                                      ?.name
-                                                      ?.toString() ??
-                                                  '-',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: _row(
-                                              S.of(context).branch,
-                                              ShiftOrderPaginationCubit.get(
-                                                          context)
-                                                      .orderData[index]
-                                                      .branch
-                                                      ?.name
-                                                      ?.toString() ??
-                                                  '-',
-                                            ),
-                                          ),
-                                        ],
+                                      _row(
+                                        S.of(context).branch,
+                                        shift.branch?.name ?? '-',
                                       ),
-                                      Row(
-                                        spacing: 50,
-                                        children: [
-                                          Expanded(
-                                            child: _row(
-                                              S.of(context).total,
-                                              ShiftOrderPaginationCubit.get(
-                                                          context)
-                                                      .orderData[index]
-                                                      .totalAfterTax
-                                                      ?.toString().toAmount() ??
-                                                  '-',
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                CustomTextBtn(
-                                                  textColor: AppColors.primary,
-                                                  text: S.of(context).details,
-                                                  onPressed: () {
-                                                    Navigator.pushNamed(
-                                                      context,
-                                                      AppRoutes
-                                                          .orderDetailsView,
-                                                      arguments:
-                                                          ShiftOrderPaginationCubit
-                                                                  .get(context)
-                                                              .orderData[index],
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
+                                      _row(
+                                        S.of(context).email,
+                                        shift.user?.email ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).phone,
+                                        shift.user?.phone ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).address,
+                                        shift.user?.address ?? '-',
                                       ),
                                     ],
                                   ),
                                 ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      SliverToBoxAdapter(
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: spacingBetweenCard,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                BlocConsumer<ShiftOrderPaginationCubit,
-                                    ShiftOrderPaginationState>(
-                                  listener: (context, state) {
-                                    if (state
-                                        is ShiftOrderPaginationErrorState) {
-                                      CustomPopUp.callMyToast(
-                                        context: context,
-                                        massage: mapStatusCodeToMessage(
-                                            context, state.message),
-                                        state: PopUpState.ERROR,
-                                      );
-                                    }
-                                  },
-                                  builder: (context, state) {
-                                    return state
-                                            is ShiftOrderPaginationLoadingState
-                                        ? Center(
-                                            child: CircularProgressIndicator(
-                                              color: AppColors.primary,
-                                            ),
-                                          )
-                                        : CustomTextBtn(
-                                            textColor:
-                                                ShiftOrderPaginationCubit.get(
-                                                            context)
-                                                        .noMoreData()
-                                                    ? Colors.grey
-                                                    : AppColors.primary,
-                                            text: S.of(context).showMore,
-                                            onPressed:
-                                                ShiftOrderPaginationCubit.get(
-                                                            context)
-                                                        .noMoreData()
-                                                    ? null
-                                                    : () {
-                                                        ShiftOrderPaginationCubit
-                                                                .get(context)
-                                                            .getOrderPagination();
-                                                      },
-                                          );
-                                  },
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: spacingBetweenCard,
-                            ),
-                          ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      // Column(
-                      //   crossAxisAlignment: CrossAxisAlignment.start,
-                      //   children: [
-                      //     SizedBox(
-                      //       height: spacingBetweenCard,
-                      //     ),
-
-                      //     ...state.shiftDetails.data?.data
-                      //             ?.map((order) => Column(
-                      //                   children: [
-
-                      //                   ],
-                      //                 ))
-                      //             .toList() ??
-                      //         [],
-                      //   ],
-                      // ),
-                    ],
-
-                    //   } else if (index == 1) {
-                    //     return const SizedBox(height: 12);
-                    //   } else if (index == 2) {
-                    //     return Card(
-                    //       child: ListTile(
-                    //         title: Text(S.of(context).branch),
-                    //         subtitle: Text(shift.branch?.name ?? "-"),
-                    //       ),
-                    //     );
-                    //   } else if (index == 3) {
-                    //     return Card(
-                    //       child: ListTile(
-                    //         title: Text(S.of(context).user),
-                    //         subtitle: Text(shift.user?.name ?? "-"),
-                    //       ),
-                    //     );
-                    //   } else if (index == 4) {
-                    //     return Column(
-                    //       crossAxisAlignment: CrossAxisAlignment.start,
-                    //       children: [
-                    //         const SizedBox(height: 16),
-                    //         Text(S.of(context).summary,
-                    //             style: const TextStyle(
-                    //                 fontWeight: FontWeight.bold, fontSize: 16)),
-                    //         const SizedBox(height: 8),
-                    //         Card(
-                    //           child: Padding(
-                    //             padding: const EdgeInsets.all(12),
-                    //             child: Column(
-                    //               children: [
-                    //                 _row("${S.of(context).total}:",
-                    //                     summary?.subtotal),
-                    //                 _row("${S.of(context).discount}:",
-                    //                     summary?.discountTotal),
-                    //                 _row("${S.of(context).totalAfterDiscount}:",
-                    //                     summary?.totalAfterDiscount),
-                    //                 _row(
-                    //                     "${S.of(context).tax}:", summary?.taxTotal),
-                    //                 _row("${S.of(context).totalAfterTax}:",
-                    //                     summary?.totalAfterTax),
-                    //                 _row("${S.of(context).cash}:",
-                    //                     summary?.cashTotal),
-                    //                 _row("${S.of(context).online}:",
-                    //                     summary?.onlineTotal),
-                    //               ],
-                    //             ),
-                    //           ),
-                    //         ),
-                    //         const SizedBox(height: 24),
-                    //         Text(S.of(context).orders,
-                    //             style: const TextStyle(
-                    //                 fontWeight: FontWeight.bold, fontSize: 16)),
-                    //         const SizedBox(height: 8),
-                    //       ],
-                    //     );
-                    //   } else {
-                    //     final order = orders[index - 5];
-                    //     return Card(
-                    //       child: Table(
-                    //         border: TableBorder.all(color: Colors.grey),
-                    //         columnWidths: const {
-                    //           0: FlexColumnWidth(2),
-                    //           1: FlexColumnWidth(1),
-                    //           2: FlexColumnWidth(2),
-                    //         },
-                    //         children: [
-                    //           TableRow(
-                    //             decoration:
-                    //                 const BoxDecoration(color: Colors.black12),
-                    //             children: [
-                    //               Padding(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Text("Order #",
-                    //                     style: const TextStyle(
-                    //                         fontWeight: FontWeight.bold)),
-                    //               ),
-                    //               Padding(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Text("Total",
-                    //                     style: const TextStyle(
-                    //                         fontWeight: FontWeight.bold)),
-                    //               ),
-                    //               Padding(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Text("Created At",
-                    //                     style: const TextStyle(
-                    //                         fontWeight: FontWeight.bold)),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //           TableRow(
-                    //             children: [
-                    //               Padding(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Text(order["id"]?.toString() ?? "-"),
-                    //               ),
-                    //               Padding(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Text(order["total_after_tax"] != null
-                    //                     ? double.tryParse(order["total_after_tax"]
-                    //                                 .toString())
-                    //                             ?.toStringAsFixed(2) ??
-                    //                         "-"
-                    //                     : "-"),
-                    //               ),
-                    //               Padding(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Text(
-                    //                     order["created_at"]?.toString() ?? "-"),
-                    //               ),
-                    //             ],
-                    //           ),
-                    //         ],
-                    //       ),
-                    //     );
-                    //   }
-                    // },
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: spacingBetweenCard,
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: Column(
+                            spacing: spacingBetweenRowInCard,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              customCardTitle(context,
+                                  title: S.of(context).summary),
+                              Card(
+                                child: Padding(
+                                  padding: EdgeInsets.all(paddingCard),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      _row(
+                                        S.of(context).subTotal,
+                                        summary?.subtotal.toAmount() ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).discountTotal,
+                                        summary?.discountTotal.toAmount() ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).totalAfterDiscount,
+                                        summary?.totalAfterDiscount.toAmount() ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).taxestotal,
+                                        summary?.taxTotal.toAmount() ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).totalAfterTax,
+                                        summary?.totalAfterTax.toAmount() ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).cashTotal,
+                                        summary?.cashTotal.toAmount() ?? '-',
+                                      ),
+                                      _row(
+                                        S.of(context).onlineTotal,
+                                        summary?.onlineTotal.toAmount() ?? '-',
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        // SizedBox(
+                        //   height: spacingBetweenCard,
+                        // ),
+                        // Column(
+                        //   spacing: spacingBetweenRowInCard,
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     customCardTitle(context, title: S.of(context).shop),
+                        //     Card(
+                        //       child: Padding(
+                        //         padding: EdgeInsets.all(paddingCard),
+                        //         child: Column(
+                        //           crossAxisAlignment: CrossAxisAlignment.start,
+                        //           children: [
+                        //             _row(
+                        //               S.of(context).name,
+                        //               shop?.shopName ?? '-',
+                        //             ),
+                        //             _row(
+                        //               S.of(context).address,
+                        //               shop?.address ?? '-',
+                        //             ),
+                        //             _row(
+                        //               S.of(context).phone,
+                        //               shop?.phone ?? '-',
+                        //             ),
+                        //             _row(
+                        //               S.of(context).email,
+                        //               shop?.email ?? '-',
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   ],
+                        // ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: spacingBetweenCard,
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: customCardTitle(context,
+                              title: S.of(context).orders),
+                        ),
+                        BlocBuilder<ShiftOrderPaginationCubit,
+                            ShiftOrderPaginationState>(
+                          builder: (context, state) {
+                            return SliverGrid.builder(
+                              itemCount: ShiftOrderPaginationCubit.get(context)
+                                  .orderData.length,
+                              gridDelegate:
+                                  SliverGridDelegateWithMaxCrossAxisExtent(
+                                      maxCrossAxisExtent: 800,
+                                      mainAxisExtent: 100,
+                                      childAspectRatio: 4 / 1),
+                              itemBuilder: (context, index) {
+                                return Card(
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: paddingCard),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          spacing: 50,
+                                          children: [
+                                            Expanded(
+                                              child: _row(
+                                                S.of(context).id,
+                                                ShiftOrderPaginationCubit.get(
+                                                            context)
+                                                        .orderData[index].id?.toString() ??
+                                                    '-',
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: _row(
+                                                S.of(context).date,
+                                                getLocalTimeFormate(
+                                                  ShiftOrderPaginationCubit.get(
+                                                              context)
+                                                          .orderData[index]
+                                                          .createdAt
+                                                          ?.toString() ??
+                                                      '-',
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          spacing: 50,
+                                          children: [
+                                            Expanded(
+                                              child: _row(
+                                                S.of(context).user,
+                                                ShiftOrderPaginationCubit.get(
+                                                            context)
+                                                        .orderData[index]
+                                                        .user
+                                                        ?.name
+                                                        ?.toString() ??
+                                                    '-',
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: _row(
+                                                S.of(context).branch,
+                                                ShiftOrderPaginationCubit.get(
+                                                            context)
+                                                        .orderData[index]
+                                                        .branch
+                                                        ?.name
+                                                        ?.toString() ??
+                                                    '-',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                       //   spacing: 50,
+                                          children: [
+                                            Expanded(
+                                              child: _row(
+                                                S.of(context).total,
+                                                ShiftOrderPaginationCubit.get(
+                                                            context)
+                                                        .orderData[index]
+                                                        .totalAfterTax
+                                                        ?.toString().toAmount() ??
+                                                    '-',
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  CustomTextBtn(
+                                                    textColor: AppColors.primary,
+                                                    text: S.of(context).details,
+                                                    onPressed: () {
+                                                      Navigator.pushNamed(
+                                                        context,
+                                                        AppRoutes.orderDetailsView,
+                                                        arguments: ShiftOrderPaginationCubit.get(context).orderData[index],
+                                                      );
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        SliverToBoxAdapter(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: spacingBetweenCard,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  BlocConsumer<ShiftOrderPaginationCubit,
+                                      ShiftOrderPaginationState>(
+                                    listener: (context, state) {
+                                      if (state
+                                          is ShiftOrderPaginationErrorState) {
+                                        CustomPopUp.callMyToast(
+                                          context: context,
+                                          massage: mapStatusCodeToMessage(
+                                              context, state.message),
+                                          state: PopUpState.ERROR,
+                                        );
+                                      }
+                                    },
+                                    builder: (context, state) {
+                                      return state
+                                              is ShiftOrderPaginationLoadingState
+                                          ? Center(
+                                              child: CircularProgressIndicator(
+                                                color: AppColors.primary,
+                                              ),
+                                            )
+                                          : CustomTextBtn(
+                                              textColor:
+                                                  ShiftOrderPaginationCubit.get(
+                                                              context)
+                                                          .noMoreData()
+                                                      ? Colors.grey
+                                                      : AppColors.primary,
+                                              text: S.of(context).showMore,
+                                              onPressed:
+                                                  ShiftOrderPaginationCubit.get(
+                                                              context)
+                                                          .noMoreData()
+                                                      ? null
+                                                      : () {
+                                                          ShiftOrderPaginationCubit
+                                                                  .get(context)
+                                                              .getOrderPagination();
+                                                        },
+                                            );
+                                    },
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: spacingBetweenCard,
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Column(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: [
+                        //     SizedBox(
+                        //       height: spacingBetweenCard,
+                        //     ),
+                  
+                        //     ...state.shiftDetails.data?.data
+                        //             ?.map((order) => Column(
+                        //                   children: [
+                  
+                        //                   ],
+                        //                 ))
+                        //             .toList() ??
+                        //         [],
+                        //   ],
+                        // ),
+                      ],
+                  
+                      //   } else if (index == 1) {
+                      //     return const SizedBox(height: 12);
+                      //   } else if (index == 2) {
+                      //     return Card(
+                      //       child: ListTile(
+                      //         title: Text(S.of(context).branch),
+                      //         subtitle: Text(shift.branch?.name ?? "-"),
+                      //       ),
+                      //     );
+                      //   } else if (index == 3) {
+                      //     return Card(
+                      //       child: ListTile(
+                      //         title: Text(S.of(context).user),
+                      //         subtitle: Text(shift.user?.name ?? "-"),
+                      //       ),
+                      //     );
+                      //   } else if (index == 4) {
+                      //     return Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         const SizedBox(height: 16),
+                      //         Text(S.of(context).summary,
+                      //             style: const TextStyle(
+                      //                 fontWeight: FontWeight.bold, fontSize: 16)),
+                      //         const SizedBox(height: 8),
+                      //         Card(
+                      //           child: Padding(
+                      //             padding: const EdgeInsets.all(12),
+                      //             child: Column(
+                      //               children: [
+                      //                 _row("${S.of(context).total}:",
+                      //                     summary?.subtotal),
+                      //                 _row("${S.of(context).discount}:",
+                      //                     summary?.discountTotal),
+                      //                 _row("${S.of(context).totalAfterDiscount}:",
+                      //                     summary?.totalAfterDiscount),
+                      //                 _row(
+                      //                     "${S.of(context).tax}:", summary?.taxTotal),
+                      //                 _row("${S.of(context).totalAfterTax}:",
+                      //                     summary?.totalAfterTax),
+                      //                 _row("${S.of(context).cash}:",
+                      //                     summary?.cashTotal),
+                      //                 _row("${S.of(context).online}:",
+                      //                     summary?.onlineTotal),
+                      //               ],
+                      //             ),
+                      //           ),
+                      //         ),
+                      //         const SizedBox(height: 24),
+                      //         Text(S.of(context).orders,
+                      //             style: const TextStyle(
+                      //                 fontWeight: FontWeight.bold, fontSize: 16)),
+                      //         const SizedBox(height: 8),
+                      //       ],
+                      //     );
+                      //   } else {
+                      //     final order = orders[index - 5];
+                      //     return Card(
+                      //       child: Table(
+                      //         border: TableBorder.all(color: Colors.grey),
+                      //         columnWidths: const {
+                      //           0: FlexColumnWidth(2),
+                      //           1: FlexColumnWidth(1),
+                      //           2: FlexColumnWidth(2),
+                      //         },
+                      //         children: [
+                      //           TableRow(
+                      //             decoration:
+                      //                 const BoxDecoration(color: Colors.black12),
+                      //             children: [
+                      //               Padding(
+                      //                 padding: const EdgeInsets.all(8),
+                      //                 child: Text("Order #",
+                      //                     style: const TextStyle(
+                      //                         fontWeight: FontWeight.bold)),
+                      //               ),
+                      //               Padding(
+                      //                 padding: const EdgeInsets.all(8),
+                      //                 child: Text("Total",
+                      //                     style: const TextStyle(
+                      //                         fontWeight: FontWeight.bold)),
+                      //               ),
+                      //               Padding(
+                      //                 padding: const EdgeInsets.all(8),
+                      //                 child: Text("Created At",
+                      //                     style: const TextStyle(
+                      //                         fontWeight: FontWeight.bold)),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //           TableRow(
+                      //             children: [
+                      //               Padding(
+                      //                 padding: const EdgeInsets.all(8),
+                      //                 child: Text(order["id"]?.toString() ?? "-"),
+                      //               ),
+                      //               Padding(
+                      //                 padding: const EdgeInsets.all(8),
+                      //                 child: Text(order["total_after_tax"] != null
+                      //                     ? double.tryParse(order["total_after_tax"]
+                      //                                 .toString())
+                      //                             ?.toStringAsFixed(2) ??
+                      //                         "-"
+                      //                     : "-"),
+                      //               ),
+                      //               Padding(
+                      //                 padding: const EdgeInsets.all(8),
+                      //                 child: Text(
+                      //                     order["created_at"]?.toString() ?? "-"),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ],
+                      //       ),
+                      //     );
+                      //   }
+                      // },
+                    ),
                   ),
                 ),
               );

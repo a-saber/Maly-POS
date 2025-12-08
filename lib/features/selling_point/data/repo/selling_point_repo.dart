@@ -186,8 +186,7 @@ class SellingPointRepo {
         }
       } else {
         if (search.isEmpty) {
-          if (categorySavingDataModels[index].getProductsModel == null ||
-              refreshCurrentCategory) {
+          if (categorySavingDataModels[index].getProductsModel == null || refreshCurrentCategory) {
             String url = await ApiEndPoints.getProducts();
             final response = await api.get(
               url: url,

@@ -145,6 +145,7 @@ abstract class ApiKeys {
   static const String startshift = 'users/shifts/start';
   static const String endshift = 'users/shifts/end';
   static const String shifts = 'shifts';
+  static const String restaurant= 'restaurant';
   static const String street = 'street';
   static const String building = 'building';
   static const String city = 'city';
