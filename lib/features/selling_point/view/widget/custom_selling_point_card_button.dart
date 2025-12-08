@@ -183,6 +183,21 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   // await SunmiPrinter.cutPaper();
                 } catch (e) {
                   debugPrint(' Sunmi print failed or not Android: $e');
+                  if (state.printModel.madaReceipt != null) {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) {
+                          return Scaffold(
+                            appBar: AppBar(),
+                            body: PdfPreview(build: (_) {
+                              return state.printModel.madaReceipt!;
+                            }),
+                          );
+                        },
+                      ),
+                    );
+                  }
                   Navigator.push(
                     context,
                     MaterialPageRoute(
