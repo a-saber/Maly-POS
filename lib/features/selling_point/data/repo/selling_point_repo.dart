@@ -99,10 +99,14 @@ class SellingPointRepo {
       }
       Uint8List? madaReceipt;
       if(paymentType?.apiKey == ApiKeys.mada){
+        print('MADA 01 ****** ');
         var madaResponse =await PaymentHelper.addTransaction(amount: totalaftertax);
+        print('MADA 02 ****** success');
         madaResponse.fold(
           (String error)=> throw NearPayException(error),
             (receipt)async{
+              print('MADA 03 ****** success');
+
               payResponseId = receipt.transaction_uuid;
               data["nearpay_transaction_uuid"]=receipt.transaction_uuid;
               madaReceipt = await PaymentHelper.toImage(receipt: receipt);
@@ -136,6 +140,8 @@ class SellingPointRepo {
       }
     }
     on NearPayException catch (e) {
+      print('MADA 04 ****** NearPayException');
+
       return Left(ApiResponse.fromErrorMSG(e.message));
     }
     catch (e) {
