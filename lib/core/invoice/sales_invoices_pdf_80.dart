@@ -10,28 +10,52 @@ import 'package:pos_app/core/invoice/pdf_font_loader.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:pdfx/pdfx.dart' as pdfx;
 
-Future<void> printSunmiPDF(Uint8List pdfData) async {
+Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
   try {
     final SunmiPrinterPlus sunmiPrinterPlus = SunmiPrinterPlus();
+    /// new select Size
+     Map<String, PaperConfig> paperConfigs = {
+      '58': PaperConfig(
+        width: 384,        // 58mm = 384 pixels at 203 DPI
+        scale: 2.0,
+        maxWidth: 380,
+      ),
+      '80': PaperConfig(
+        width: 576,        // 80mm = 576 pixels at 203 DPI
+        scale: 2.6,
+        maxWidth: 570,
+      ),
+    };
+    final config = paperConfigs[paperSize];
+    /// new select Size
 
     final pdfDocument = await pdfx.PdfDocument.openData(pdfData);
     // Render the first page as an image
     debugPrint("************* _printPDF 01 *********");
     final pdfPage = await pdfDocument.getPage(1); // 0-based index
     debugPrint("************* _printPDF 02 *********");
-    const double scale = 2.6; // Adjust scaling factor as needed
-    final double renderWidth = (pdfPage.width * scale);
-    final double renderHeight = (pdfPage.height * scale);
+    /// old select Size /////////////////////////////////////////////////
+    // const double scale = 2.6; // Adjust scaling factor as needed
+    // final double renderWidth = (pdfPage.width * scale);
+    // final double renderHeight = (pdfPage.height * scale);
+    /// old select Size
+    /// ///////////////////////////////////////////////////////////////
+    // Calculate render dimensions based on paper size
+    /// new select Size
+    final double renderWidth = config!.width.toDouble();
+    final double renderHeight = (pdfPage.height * config.scale);
     final pdfx.PdfPageImage? pageImage = await pdfPage.render(
       width: renderWidth,
       height: renderHeight,
+
     );
+    /// new select Size
     debugPrint("************* _printPDF 03 *********");
 
     if (pageImage != null) {
       // Print the rendered image
-      await sunmiPrinterPlus.printImage(pageImage.bytes,
-          align: SunmiPrintAlign.CENTER); // Use 'bytes' property
+
+      await sunmiPrinterPlus.printImage(pageImage.bytes, align: SunmiPrintAlign.CENTER); // Use 'bytes' property
       await sunmiPrinterPlus.lineWrap(times: 70); // Add spacing after the print
     } else {
       debugPrint("Failed to render PDF page.");
@@ -222,7 +246,6 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   3: pw.FlexColumnWidth(2),
                 },
                 children: [
-                  // ✅ Header row
                   pw.TableRow(
                     decoration:
                         pw.BoxDecoration(color: PdfColors.grey300), // gray bg
@@ -694,3 +717,14 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
   }
 }
 
+class PaperConfig {
+  final int width;      // Width in pixels
+  final double scale;   // Scale factor
+  final int maxWidth;   // Max width (for safety margin)
+
+  const PaperConfig({
+    required this.width,
+    required this.scale,
+    required this.maxWidth,
+  });
+}

@@ -341,18 +341,49 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 validator: (value) =>
                     MyFormValidators.validateDouble(value, context: context),
                 controller: unit.salePriceWithoutTaxController,
-                onChanged: (value) =>
-                    cubit.onChangeSalePrice(index: index, newValue: value),
-              )),
+                onChanged: (value) {
+                    if (cubit
+                                                .productUnits[index]
+                                                .salePriceWithoutTaxController!
+                                                .text !=
+                                            value) {
+                                          cubit
+                                              .productUnits[index]
+                                              .salePriceWithoutTaxController!
+                                              .text = value;
+                                        }
+                                        cubit.onChangeSalePrice(
+                                            cubit.productUnits[index]);
+                                        if (index == 0) {
+                                          cubit.onChangeCost(0);
+                                        }
+                }
+                      
+                    ),
+              ),
               DataCell(_customTextFormFieldTable(
                 hintText: "سعر البيع بالضريبة",
                 enabled: true,
                 validator: (value) =>
                     MyFormValidators.validateDouble(value, context: context),
                 controller: unit.salePriceWithTaxController,
-                onChanged: (value) => cubit.onChangeSalePriceWithTax(
-                    index: index, newValue: value),
-              )),
+                onChanged: (value) {
+                  if (cubit
+                                              .productUnits[index]
+                                              .salePriceWithTaxController!
+                                              .text !=
+                                          value) {
+                                        cubit
+                                            .productUnits[index]
+                                            .salePriceWithTaxController!
+                                            .text = value;
+                                      }
+                                      cubit.changeSalePriceWithTax(
+                                          cubit.productUnits[index]);
+                                      if (index == 0) {
+                                        cubit.onChangeCost(0);
+                                      }
+                })),
               DataCell(_customTextFormFieldTable(
                 hintText: "الباركود",
                 enabled: true,
@@ -366,7 +397,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 controller: unit.scaleBarcodeController,
               )),
               DataCell(
-                isExistingUnit
+                ///todo stop with out condition
+               /* isExistingUnit
                     ? Tooltip(
                         message: 'لا يمكن تعديل الوحدات الموجودة مسبقاً',
                         child: Container(
@@ -385,7 +417,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                           ),
                         ),
                       )
-                    : CustomTextBtn(
+                    :*/
+                CustomTextBtn(
                         text: "اضافة كمية",
                         textColor: AppColors.primary,
                         onPressed: () {

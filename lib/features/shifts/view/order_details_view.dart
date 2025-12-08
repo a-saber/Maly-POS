@@ -128,66 +128,63 @@ class OrderDetailsView extends StatelessWidget {
                 itemBuilder: (context, index) {
                   return Card(
                     child: Padding(
-                      padding: EdgeInsets.all(paddingCard),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            spacing: 50,
-                            children: [
-                              Expanded(
-                                child: _row(
-                                  S.of(context).id,
-                                  order.saleProducts?[index].product?.id
-                                          ?.toString() ??
-                                      '-',
-                                ),
+                      padding: EdgeInsets.symmetric(horizontal: paddingCard),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          spacing: 50,
+                          children: [
+                            Expanded(
+                              child: _row(
+                                S.of(context).id,
+                                order.saleProducts?[index].product?.id
+                                        ?.toString() ??
+                                    '-',
                               ),
-                              Expanded(
-                                child: _row(
-                                  S.of(context).type,
-                                  order.saleProducts?[index].product?.type ?? '-',
-                                ),
+                            ),
+                            Expanded(
+                              child: _row(
+                                S.of(context).type,
+                                order.saleProducts?[index].product?.type ?? '-',
                               ),
-                            ],
-                          ),
-                          Row(
-                            spacing: 50,
-                            children: [
-                              Expanded(
-                                child: _row(
-                                  S.of(context).name,
-                                  order.saleProducts?[index].product?.name
-                                          ?.toString() ??
-                                      '-',
-                                ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 50,
+                          children: [
+                            Expanded(
+                              child: _row(
+                                S.of(context).name,
+                                order.saleProducts?[index].product?.name
+                                        ?.toString() ??
+                                    '-',
                               ),
-                              Expanded(
-                                child: _row(
-                                  S.of(context).brand,
-                                  order.saleProducts?[index].product?.brand
-                                          ?.toString() ??
-                                      '-',
-                                ),
+                            ),
+                            Expanded(
+                              child: _row(
+                                S.of(context).brand,
+                                order.saleProducts?[index].product?.brand
+                                        ?.toString() ??
+                                    '-',
                               ),
-                            ],
-                          ),
-                          Row(
-                            spacing: 50,
-                            children: [
-                              Expanded(
-                                child: _row(
-                                  S.of(context).price,
-                                  order.saleProducts?[index].product?.price.toAmount()
-                                          ?.toString() ??
-                                      '-',
-                                ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          spacing: 50,
+                          children: [
+                            Expanded(
+                              child: _row(
+                                S.of(context).price,
+                                order.saleProducts?[index].price.toAmount()?.toString() ?? '-',
                               ),
-                              Expanded(
-                                child: _row(
-                                  S.of(context).priceAfterTax,
-                                  order.saleProducts?[index].product
-                                          ?.priceAfterTax
+                            ),
+                            Expanded(
+                              child: _row(
+                                S.of(context).priceAfterTax,
+                                order.saleProducts?[index].lineTotalAfterTax
                                           ?.toString().toAmount() ??
                                       '-',
                                 ),

@@ -58,6 +58,10 @@ class RoleModel {
   final bool? printers;
   @HiveField(25)
   final bool? shifts;
+  @HiveField(26)
+  final bool? allowLowerPrices;
+  @HiveField(27)
+  final bool? sellInNegativeQuantity;
 
   RoleModel({
     required this.id,
@@ -86,6 +90,10 @@ class RoleModel {
     required this.createdAt,
     required this.updatedAt,
     required this.shifts,
+    required this.allowLowerPrices,
+    required this.sellInNegativeQuantity,
+
+
   });
 
   factory RoleModel.fromJson(Map<String, dynamic> json) {
@@ -117,6 +125,10 @@ class RoleModel {
       inventory:
           json[ApiKeys.inventory] is int ? json[ApiKeys.inventory] == 1 : false,
       stock: json[ApiKeys.stock] is int ? json[ApiKeys.stock] == 1 : false,
+      allowLowerPrices: json[ApiKeys.allowLowerPrices],
+      sellInNegativeQuantity: json[ApiKeys.sellInNegativeQuantity],
+
+
     );
   }
 
@@ -154,6 +166,9 @@ class RoleModel {
       stock: permMap[ApiKeys.stock],
       printers: permMap[ApiKeys.printers],
       shifts: permMap[ApiKeys.shifts],
+      allowLowerPrices: permMap[ApiKeys.allowLowerPrices],
+      sellInNegativeQuantity: permMap[ApiKeys.sellInNegativeQuantity],
+
       createdAt: null,
       updatedAt: null,
     );
@@ -189,6 +204,9 @@ class RoleModel {
     data[ApiKeys.stock] = boolToInt(stock);
     data[ApiKeys.printers] = boolToInt(printers);
     data[ApiKeys.shifts] = boolToInt(shifts);
+    data[ApiKeys.allowLowerPrices] = boolToInt(allowLowerPrices);
+    data[ApiKeys.sellInNegativeQuantity] = boolToInt(sellInNegativeQuantity);
+
 
     return data;
   }
@@ -221,6 +239,9 @@ class RoleModel {
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
     data[ApiKeys.shifts] = shifts;
+    data[ApiKeys.allowLowerPrices] = allowLowerPrices;
+    data[ApiKeys.sellInNegativeQuantity] = sellInNegativeQuantity;
+
 
     return data;
   }
@@ -246,6 +267,8 @@ class RoleModel {
         ApiKeys.inventory: inventory,
         ApiKeys.stock: stock,
         ApiKeys.printers: printers,
-        ApiKeys.shifts: shifts
+        ApiKeys.shifts: shifts,
+        ApiKeys.allowLowerPrices: allowLowerPrices,
+        ApiKeys.sellInNegativeQuantity: sellInNegativeQuantity,
       };
 }

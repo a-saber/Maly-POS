@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:pos_app/core/cache/cache_keys.dart';
 import 'package:pos_app/core/cache/custom_secure_storage.dart';
@@ -145,7 +146,7 @@ abstract class ApiKeys {
   static const String startshift = 'users/shifts/start';
   static const String endshift = 'users/shifts/end';
   static const String shifts = 'shifts';
-  static const String restaurant= 'restaurant';
+  static const String restaurant = "restaurant";
   static const String street = 'street';
   static const String building = 'building';
   static const String city = 'city';
@@ -157,6 +158,8 @@ abstract class ApiKeys {
   static const String productUnits = 'product_units';
   static const String pricePerUnitWithTax = 'price_per_unit_with_tax';
   static const String mada = 'nearpay';
+  static const String allowLowerPrices = 'allow_lower_prices';
+  static const String sellInNegativeQuantity = 'sell_in_negative_quantity';
 }
 
 abstract class ApiEndPoints {

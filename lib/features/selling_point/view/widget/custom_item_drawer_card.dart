@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:input_quantity/input_quantity.dart';
+
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_cach_network_image.dart';
@@ -9,7 +9,7 @@ import 'package:pos_app/features/selling_point/data/model/product_selling_model.
 import 'package:pos_app/generated/l10n.dart';
 
 import '../../../../core/helper/my_form_validators.dart';
-import '../../../../core/widget/custom_btn.dart';
+
 import '../../../../core/widget/custom_form_field.dart';
 
 class CustomItemDrawerCard extends StatefulWidget {

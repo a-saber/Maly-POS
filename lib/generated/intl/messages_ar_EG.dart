@@ -484,6 +484,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "expense_categories": MessageLookupByLibrary.simpleMessage("فئات المصروفات"),
     "purchase_return": MessageLookupByLibrary.simpleMessage("مرتجعات المشتريات"),
     "rememberMe": MessageLookupByLibrary.simpleMessage("تذكرني"),
+    "allow_lower_prices": MessageLookupByLibrary.simpleMessage("السماح بتخفيض الأسعار"),
+    "sell_in_negative_quantity": MessageLookupByLibrary.simpleMessage("السماح بالبيع بكمية سالبة"),
+    "restaurant": MessageLookupByLibrary.simpleMessage("مطعم"),
     "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الوحدة لأن هناك منتجات مرتبطة بها."),
     "Cannot delete tax because there are sales associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الضريبه لأن هناك منتجات مرتبطة بها."),
 
