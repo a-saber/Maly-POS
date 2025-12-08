@@ -327,7 +327,7 @@ class AppRoutes {
             page: MultiBlocProvider(
               providers: [
                 BlocProvider.value(
-                  value: MyServiceLocator.getSingleton<HomeCubit>(),
+                  value: MyServiceLocator.getSingleton<HomeCubit>()..init(),
                 ),
                 BlocProvider.value(
                   value: MyServiceLocator.getIt<GetUsersCubit>(),

@@ -27,8 +27,7 @@ Future<bool?> showDeleteProductConfirmDialog(
                   deleteConfirmationDialogSuccess(ctx);
                   MyServiceLocator.getSingleton<GetAllProductsCubit>()
                       .removeProduct(state.id);
-                  SellingPointCubit.get(context)
-                      .deleteProduct(product, context: context);
+                  MyServiceLocator.getSingleton<SellingPointCubit>().deleteProduct(product, context: context);
                   if (goBack) {
                     Navigator.pop(context);
                   }

@@ -33,6 +33,14 @@ class _HomeViewState extends State<HomeView> {
     if (width >= 600) return 3;
     return 2;
   }
+  @override
+  void initState() {
+    Future.microtask(() {
+      MyServiceLocator.getIt<HomeCubit>().init();
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +48,8 @@ class _HomeViewState extends State<HomeView> {
     return MultiBlocProvider(
       providers: [
         BlocProvider<HomeCubit>.value(
-          value: MyServiceLocator.getIt<HomeCubit>()..init(),
+          ///todo get init() from cubit
+          value: MyServiceLocator.getIt<HomeCubit>(),
         ),
         BlocProvider(
           create: (_) => ShiftCubit(

@@ -666,9 +666,8 @@ class AddProductView extends StatelessWidget {
               //  TODO : Will Add Update Product Moel Selling Point
                GetAllProductsCubit.get(context).addProduct(state.product!);
               // TODO : Will Give Update Product Model Selling Point
-               MyServiceLocator.getSingleton<SellingPointCubit>()
-                  .addProduct(state.product!);
-              CustomPopUp.callMyToast(
+               MyServiceLocator.getSingleton<SellingPointCubit>().addProduct(state.product!);
+                CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,
                   state: PopUpState.SUCCESS);
@@ -689,8 +688,7 @@ class AddProductView extends StatelessWidget {
                   MyCustomScrollView(child: AddProductMobileBody(state: state)),
               tablet: MyCustomScrollView(
                   child: AddProductTabletAndDesktopBody(state: state)),
-              desktop: MyCustomScrollView(
-                  child: AddProductTabletAndDesktopBody(state: state)),
+              desktop: MyCustomScrollView(child: AddProductTabletAndDesktopBody(state: state)),
             );
           },
         ),

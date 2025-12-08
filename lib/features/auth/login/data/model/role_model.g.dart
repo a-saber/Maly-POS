@@ -43,6 +43,9 @@ class RoleModelAdapter extends TypeAdapter<RoleModel> {
       createdAt: fields[20] as String?,
       updatedAt: fields[21] as String?,
       shifts: fields[25] as bool?,
+      allowLowerPrices: fields[26] as bool?,
+      sellInNegativeQuantity: fields[27] as bool?,
+
     );
   }
 

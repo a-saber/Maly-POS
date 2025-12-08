@@ -11,8 +11,7 @@ import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
 
 Future<void> showStartShiftDialog(BuildContext context,
     {GetAllBranchesCubit? branchescubit,
-    ShiftCubit? shiftcubit,
-    BrancheModel? currentBranch}) async {
+    ShiftCubit? shiftcubit, BrancheModel? currentBranch}) async {
   final branchesCubit = branchescubit ?? GetAllBranchesCubit.get(context);
   final shiftCubit = shiftcubit ?? ShiftCubit.get(context);
 
@@ -23,7 +22,7 @@ Future<void> showStartShiftDialog(BuildContext context,
     context: context,
     barrierDismissible: false,
     builder: (ctx) {
-      selectedBranch = currentBranch;
+
       return MultiBlocProvider(
         providers: [
           BlocProvider.value(value: branchesCubit),

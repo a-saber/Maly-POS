@@ -366,7 +366,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 controller: unit.scaleBarcodeController,
               )),
               DataCell(
-                isExistingUnit
+                ///todo stop with out condition
+               /* isExistingUnit
                     ? Tooltip(
                         message: 'لا يمكن تعديل الوحدات الموجودة مسبقاً',
                         child: Container(
@@ -385,7 +386,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                           ),
                         ),
                       )
-                    : CustomTextBtn(
+                    :*/
+                CustomTextBtn(
                         text: "اضافة كمية",
                         textColor: AppColors.primary,
                         onPressed: () {

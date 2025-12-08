@@ -126,7 +126,7 @@ class OrderDetailsView extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Card(
                   child: Padding(
-                    padding: EdgeInsets.all(paddingCard),
+                    padding: EdgeInsets.symmetric(horizontal: paddingCard),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -176,16 +176,13 @@ class OrderDetailsView extends StatelessWidget {
                             Expanded(
                               child: _row(
                                 S.of(context).price,
-                                order.saleProducts?[index].product?.price.toAmount()
-                                        ?.toString() ??
-                                    '-',
+                                order.saleProducts?[index].price.toAmount()?.toString() ?? '-',
                               ),
                             ),
                             Expanded(
                               child: _row(
                                 S.of(context).priceAfterTax,
-                                order.saleProducts?[index].product
-                                        ?.priceAfterTax
+                                order.saleProducts?[index].lineTotalAfterTax
                                         ?.toString().toAmount() ??
                                     '-',
                               ),

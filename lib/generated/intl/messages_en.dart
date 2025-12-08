@@ -487,6 +487,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "expense_categories": MessageLookupByLibrary.simpleMessage("Expense Categories"),
     "purchase_return": MessageLookupByLibrary.simpleMessage("Purchase Return"),
     "rememberMe": MessageLookupByLibrary.simpleMessage("Remember Me"),
+    "allow_lower_prices": MessageLookupByLibrary.simpleMessage("Allow Lower Prices"),
+    "sell_in_negative_quantity": MessageLookupByLibrary.simpleMessage("Sell In Negative Quantity"),
+    "restaurant": MessageLookupByLibrary.simpleMessage("Restaurant"),
+
     "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete unit because there are products associated with it."),
     "Cannot delete tax because there are sales associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete tax because there are sales associated with it."),
 

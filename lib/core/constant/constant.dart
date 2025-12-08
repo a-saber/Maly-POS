@@ -195,8 +195,7 @@ class AppConstant {
         PermissionItemModel(name: ApiKeys.units, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.branches, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.customers, isSelected: asAdmin),
-        PermissionItemModel(
-            name: ApiKeys.expensecategories, isSelected: asAdmin),
+        PermissionItemModel(name: ApiKeys.expensecategories, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.expenses, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.purchasereturn, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.salereturn, isSelected: asAdmin),
@@ -208,6 +207,8 @@ class AppConstant {
         PermissionItemModel(name: ApiKeys.printers, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.shifts, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.restaurant, isSelected: asAdmin),
+        PermissionItemModel(name: ApiKeys.allowLowerPrices, isSelected: asAdmin),
+        PermissionItemModel(name: ApiKeys.sellInNegativeQuantity, isSelected: asAdmin),
       ];
   static List<PermissionItemModel> getUserPermissions(RoleModel role) {
     return role.permissions.entries
