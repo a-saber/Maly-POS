@@ -202,6 +202,8 @@ class AddProductCubit extends Cubit<AddProductState> {
           newValueDecimal.toString(), onePlusFraction.toString());
       productUnits[index].minPriceWithTaxController?.text =
           decimalToStringForUI(afterTax);
+      productUnits[index].minPriceWithTax =
+          double.tryParse(afterTax.toString())?.toStringAsFixed(10) ?? "0";
     } catch (_) {
       productUnits[index].minPriceWithTaxController?.text = "0";
     }
@@ -229,6 +231,8 @@ class AddProductCubit extends Cubit<AddProductState> {
    
     productUnits[index].minPriceWithoutTaxController?.text =
         decimalToStringForUI(beforeTax);
+    productUnits[index].minPriceWithoutTax =
+        double.tryParse(beforeTax.toString())?.toStringAsFixed(10) ?? "0";
   } catch (_) {
     productUnits[index].minPriceWithoutTaxController?.text = "0";
   }
@@ -248,50 +252,49 @@ class AddProductCubit extends Cubit<AddProductState> {
   }
 
   void onChangeCost(int index) {
-    if (productUnits.isEmpty) return;
+  if (productUnits.isEmpty) return;
 
-    if (index == 0) {
-      baseCost =
-          double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
-              0;
-      baseMinPriceWithoutTax = double.tryParse(
-              productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
-          baseCost;
-      baseMinPriceWithTax = double.tryParse(
-              productUnits[0].minPriceWithTaxController?.text ?? '') ??
-          baseMinPriceWithoutTax;
-      baseSalePriceWithoutTax = double.tryParse(
-              productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
-          0;
+  if (index == 0) {
+    baseCost =
+        double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
+    baseMinPriceWithoutTax = double.tryParse(
+            productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
+        baseCost;
+    baseMinPriceWithTax = double.tryParse(
+            productUnits[0].minPriceWithTaxController?.text ?? '') ??
+        baseMinPriceWithoutTax;
+    baseSalePriceWithoutTax = double.tryParse(
+            productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
+        0;
+    baseSalePriceWithTax = double.tryParse(
+            productUnits[0].salePriceWithTaxController?.text ?? '0') ??
+        0;
+    productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
+    productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
 
-      baseSalePriceWithTax = double.tryParse(
-              productUnits[0].salePriceWithTaxController?.text ?? '0') ??
-          0;
-
-      for (int i = 1; i < productUnits.length; i++) {
-        updateUnitPrices(i);
-      }
-    } else {
-      emit(UpdateProductUnitsCostWarning(
-        index: index,
-        factory:
-            int.tryParse(productUnits[index].factoryController?.text ?? '0') ??
-                0,
-        myCost: double.tryParse(
-                productUnits[index].costPriceController?.text ?? '0') ??
-            0,
-      ));
+    for (int i = 1; i < productUnits.length; i++) {
+      updateUnitPrices(i);
     }
-
-    emit(UpdateProductUnitsCost());
+  } else {
+    emit(UpdateProductUnitsCostWarning(
+      index: index,
+      factory:
+          int.tryParse(productUnits[index].factoryController?.text ?? '0') ??
+              0,
+      myCost: double.tryParse(
+              productUnits[index].costPriceController?.text ?? '0') ??
+          0,
+    ));
   }
 
+  emit(UpdateProductUnitsCost());
+}
   void updateUnitPrices(int index) {
     int factor =
         int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
 
     double newCost = baseCost * factor;
-    double newMinWithoutTax = baseMinPriceWithoutTax * factor;
+    double newMinWithoutTax = (double.tryParse(productUnits.first.minPriceWithoutTax??'0')??0) * factor;
     // double newSaleWithoutTax = baseSalePriceWithoutTax * factor;
     double newSaleWithoutTax = (double.tryParse(productUnits.first.salePriceWithoutTax??'0')??0) * factor;
     print('new 053 ${newSaleWithoutTax}');
@@ -324,71 +327,12 @@ class AddProductCubit extends Cubit<AddProductState> {
     emit(AddProductChangeUnit());
   }
 
-  void _changeMinAndCostWithTaxes() {
-    for (int i = 0; i < productUnits.length; i++) {
-      changeMinPriceWithoutTaxes(productUnits[i]);
-      changeSalePriceWithoutTax(productUnits[i]);
-    }
-  }
-
   String formatForUI(String value) {
     try {
       return double.parse(value).toStringAsFixed(2);
     } catch (_) {
       return value;
     }
-  }
-
-  void changeMinPriceWithoutTaxes(
-    ProductUnits productUnits,
-  ) {
-    if (taxes != null) {
-      double value = (double.tryParse(
-              productUnits.minPriceWithoutTaxController?.text ?? '') ??
-          0);
-      if (value != 0) {
-        double taxesPercentage =
-            (double.tryParse(taxes!.percentage ?? '') ?? 0);
-        if (taxesPercentage != 0) {
-          double taxesValue = value * (taxesPercentage / 100);
-          productUnits.minPriceWithTaxController?.text =
-              (value + taxesValue).toString();
-          debugPrint(" \n ******* taxesValue : $taxesValue *************** \n");
-          debugPrint(
-              " \n ******* minPriceWithTax : ${productUnits.minPriceWithTaxController?.text} *************** \n");
-        }
-      }
-    } else {
-      productUnits.minPriceWithTaxController?.text =
-          productUnits.minPriceWithoutTaxController?.text ?? '';
-    }
-    emit(UpdateProductUnitsMinPrice());
-  }
-
-  void changeMinPriceWithTaxes(
-    ProductUnits productUnits,
-  ) {
-    if (taxes != null) {
-      double value = (double.tryParse(
-              productUnits.minPriceWithTaxController?.text ?? '') ??
-          0);
-      if (value != 0) {
-        double taxesPercentage =
-            (double.tryParse(taxes!.percentage ?? '') ?? 0);
-        if (taxesPercentage != 0) {
-          double valueWithoutTax = (value / (1 + (taxesPercentage / 100)));
-          productUnits.minPriceWithoutTaxController?.text =
-              valueWithoutTax.toString();
-          // debugPrint(" \n ******* taxesValue : $taxesValue *************** \n");
-          debugPrint(
-              " \n ******* minPriceWithoutTaxController : ${productUnits.minPriceWithoutTaxController?.text} *************** \n");
-        }
-      }
-    } else {
-      productUnits.minPriceWithoutTaxController?.text =
-          productUnits.minPriceWithTaxController?.text ?? '';
-    }
-    emit(UpdateProductUnitsMinPrice());
   }
 
   void changeSalePriceWithoutTax(

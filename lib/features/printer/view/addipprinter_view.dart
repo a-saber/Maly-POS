@@ -190,6 +190,7 @@ class _CategorySection extends StatelessWidget {
                       builder: (item) => Text(item?.name ?? ''),
                     ),
                   ),
+                  ///
                   const SizedBox(width: 10),
                   Expanded(
                     child: CustomFormField(
