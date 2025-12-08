@@ -269,8 +269,6 @@ class AddProductCubit extends Cubit<AddProductState> {
     baseSalePriceWithTax = double.tryParse(
             productUnits[0].salePriceWithTaxController?.text ?? '0') ??
         0;
-    productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
-    productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
 
     for (int i = 1; i < productUnits.length; i++) {
       updateUnitPrices(i);
@@ -313,8 +311,11 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
 
     productUnits[index].costPriceController?.text = newCost.toStringAsFixed(2);
+    productUnits[index].costPrice = newCost.toStringAsFixed(10);
     productUnits[index].minPriceWithoutTaxController?.text =
         newMinWithoutTax.toStringAsFixed(2);
+    productUnits[index].minPriceWithoutTax =
+        newMinWithoutTax.toStringAsFixed(10);
     productUnits[index].minPriceWithTaxController?.text =
         newMinWithTax.toStringAsFixed(2);
     productUnits[index].salePriceWithoutTaxController?.text =
