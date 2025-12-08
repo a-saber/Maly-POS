@@ -26,8 +26,8 @@ class PaymentHelper {
   static Future<void> initialize() async {
     print("^^^^^^^^^^^^ init");
     nearpay = Nearpay(
-      authType: AuthenticationType.login,
-      authValue: "",
+      authType: AuthenticationType.email,
+      authValue: authEmail,
       env: Environments.sandbox, // Change to Environments.production when going live
       locale: Locale.localeDefault,
     );
