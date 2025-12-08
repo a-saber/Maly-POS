@@ -27,11 +27,9 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
 
   bool canLoading() =>  !isSearch()?repo.getProductsModel?.data?.nextPageUrl != null:repo.productSavingDataModel?.getProductsSearchModel?.data?.nextPageUrl != null;
   bool isFirtsTime() => repo.getProductsModel == null;
-
   List<ProductModel> getProductsAll(){
    return !isSearch()?products:searchProducts;
   }
-
   void init( ) {
     searchController = TextEditingController();
      query = '';

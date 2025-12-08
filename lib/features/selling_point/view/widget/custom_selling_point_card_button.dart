@@ -133,8 +133,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                       try {
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
-                        debugPrint(
-                            ' Using paper size: "${printer.paperSize}"');
+                        debugPrint(' Using paper size: "${printer.paperSize}"');
                         var invoiceBytesUint8List = await salesInvoicesPdf80(
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
@@ -218,7 +217,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   );
                 }
 
-                SellingPointCubit.get(context).getCategoryProduct();
+                MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
 
                 CustomPopUp.callMyToast(
                   context: context,
