@@ -28,7 +28,7 @@ class PaymentHelper {
     nearpay = Nearpay(
       authType: AuthenticationType.login,
       authValue: "",
-      env: Environments.production, // Change to Environments.production when going live
+      env: Environments.sandbox, // Change to Environments.production when going live
       locale: Locale.localeDefault,
     );
 
