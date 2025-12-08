@@ -45,7 +45,8 @@ Future<void> printSunmiPDF(Uint8List pdfData) async {
 }
 
 Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
-    {String? branchName, required double paid}) async {
+    {String? branchName, required double paid}) async
+{
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
 
@@ -692,3 +693,4 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     return emptyPdf.save();
   }
 }
+

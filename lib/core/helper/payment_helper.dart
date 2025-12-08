@@ -1,21 +1,31 @@
 
+import 'package:dartz/dartz.dart';
 import 'package:nearpay_flutter_sdk/errors/purchase_error/purchase_error.dart';
 import 'package:nearpay_flutter_sdk/errors/reconcile_error/reconcile_error.dart';
 import 'package:nearpay_flutter_sdk/errors/refund_error/refund_error.dart';
 import 'package:nearpay_flutter_sdk/errors/reverse_error/reversal_error.dart';
+import 'package:nearpay_flutter_sdk/models/transaction_receipt/transaction_receipt.dart';
 import 'package:nearpay_flutter_sdk/nearpay.dart';
 import 'package:nearpay_flutter_sdk/util/util.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:typed_data';
+
+class NearPayException implements Exception {
+  final String message;
+  NearPayException(this.message);
+
+  @override
+  String toString() => "NearPayException: $message";
+}
 
 class PaymentHelper {
   static late final Nearpay nearpay;
-  static const String authEmail = "Engazat.mobtakara@gmail.com"; // Change if needed
+  static const String authEmail = "engazat.mobtakara@gmail.com"; // Change if needed
 
   // Initialize NearPay authentication
   static Future<void> initialize() async {
     print("^^^^^^^^^^^^ init");
     nearpay = Nearpay(
-
       authType: AuthenticationType.email,
       authValue: authEmail,
       env: Environments.sandbox, // Change to Environments.production when going live
@@ -24,29 +34,41 @@ class PaymentHelper {
 
     try {
       var response = await nearpay.initialize();
+      nearpay.setup();
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialized Successfully\n${response.toString()}");
     } catch (e) {
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialization Failed: $e");
     }
   }
 
+  static Future<Uint8List> toImage({required TransactionReceipt receipt}) async {
+    Uint8List? imageBytes;
+    while(imageBytes == null) {
+      imageBytes = await nearpay.receiptToImage(receipt: receipt,);
+    }
+    return imageBytes;
+  }
   // Process a purchase transaction
-  static Future<String> addTransaction({ required double amount}) async
+  static Future<TransactionReceipt?> addTransaction({ required double amount}) async
   {
     try {
+      var uuid = const Uuid().v4();
       var response = await nearpay.purchase(
-        amount: (amount * 100).round(), // 14.55 SAR (amount in cents)
-        transactionId: const Uuid().v4(), // Unique transaction ID
+        amount: (amount*100).round(), // 14.55 SAR (amount in cents)
+        transactionId: uuid, // Unique transaction ID // check in 24
         //customerReferenceNumber: transactionId, // Custom reference number
         enableReceiptUi: true,
         enableReversalUi: true,
         enableUiDismiss: true,
         finishTimeout: 60,
       );
+      print('~~~~~~~ UUID ${uuid}');
 
       print("^^^^^^^^^^^^^^^^^^^ Transaction Successful: ${response.toJson()}");
-      print(response.receipts!.first.transaction_uuid);
-      return response.receipts!.first.transaction_uuid;
+      print(response.receipts!.first.transaction_uuid); // reverse and reconcile
+      //return PurchaseReturnDataModel(receipt: response.receipts!.first );
+      return response.receipts!.first;
+
     } catch (error) {
       String errorMSG;
       print("^^^^^^^^^^^^ Error transaction: $error");
@@ -64,7 +86,8 @@ class PaymentHelper {
         errorMSG ="Unexpected Error: $error";
       }
       print(errorMSG);
-     return errorMSG;
+      // return PurchaseReturnDataModel(error: errorMSG);
+      return null;
     }
   }
 

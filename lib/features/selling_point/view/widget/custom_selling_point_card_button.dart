@@ -6,6 +6,7 @@ import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/helper/is_mobile.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
+import 'package:pos_app/core/helper/printer_receit_builder.dart';
 import 'package:pos_app/core/invoice/sales_invoices_pdf_80.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
@@ -69,12 +70,19 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   Navigator.pop(context);
                 }
 
+
                 try {
+                  if (state.printModel.madaReceipt != null) {
+                    await printSunmiPDF(state.printModel.madaReceipt!);
+                    await SunmiPrinter.lineWrap(4);
+                    await SunmiPrinter.cutPaper();
+                  }
                   final allAutomaticPrinters =
                       MyServiceLocator.getSingleton<GetPrintersCubit>()
                           .printers
-                          .where((p) => p.automatic == true)
-                          .toList();
+                          // .where((p) => p.automatic == true)
+                          // .toList()
+                  ;
 
                   debugPrint('');
                   debugPrint(
@@ -127,10 +135,16 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(
                             ' Using paper size: "${printer.paperSize}"');
+                        var invoiceBytesUint8List = await salesInvoicesPdf80(
+                          state.printModel.apiResponse.data as Map<String, dynamic>,
+                          branchName: state.printModel.branchName,
+                          paid: state.printModel.paid,
+                        );
 
                         await PrinterHelper().printInvoice(
                           printer.discoveredPrinter!,
-                          invoiceData,
+                          invoiceBytesUint8List,
+                          // invoiceData,
                           paperSize: printer.paperSize,
                           openCashDrawer: true,
                         );
@@ -156,19 +170,34 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                       '===================================================');
                   debugPrint('');
 
-                  if (!Platform.isAndroid) {
-                    throw 'not android';
-                  }
+                  // if (!Platform.isAndroid) {
+                  //   throw 'not android';
+                  // }
 
-                  await printSunmiPDF(await salesInvoicesPdf80(
-                    state.printModel.apiResponse.data as Map<String, dynamic>,
-                    branchName: state.printModel.branchName,
-                    paid: state.printModel.paid,
-                  ));
-                  await SunmiPrinter.lineWrap(4);
-                  await SunmiPrinter.cutPaper();
+                  // await printSunmiPDF(await salesInvoicesPdf80(
+                  //   state.printModel.apiResponse.data as Map<String, dynamic>,
+                  //   branchName: state.printModel.branchName,
+                  //   paid: state.printModel.paid,
+                  // ));
+                  // await SunmiPrinter.lineWrap(4);
+                  // await SunmiPrinter.cutPaper();
                 } catch (e) {
                   debugPrint(' Sunmi print failed or not Android: $e');
+                  if (state.printModel.madaReceipt != null) {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) {
+                          return Scaffold(
+                            appBar: AppBar(),
+                            body: PdfPreview(build: (_) {
+                              return state.printModel.madaReceipt!;
+                            }),
+                          );
+                        },
+                      ),
+                    );
+                  }
                   Navigator.push(
                     context,
                     MaterialPageRoute(

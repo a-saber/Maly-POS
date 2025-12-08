@@ -128,15 +128,15 @@ class PrinterHelper {
   }
 
   Future<void> printInvoice(
-      DiscoveredPrinter printer, Map<String, dynamic> invoice,
+      DiscoveredPrinter printer, List<int> bytes,
       {String? paperSize, bool openCashDrawer = false}) async {
     try {
-      final bytes = await _buildInvoiceBytes(
-        printer,
-        invoice,
-        paperSize: paperSize,
-        openCashDrawer: openCashDrawer,
-      );
+      // final bytes = await _buildInvoiceBytes(
+      //   printer,
+      //   invoice,
+      //   paperSize: paperSize,
+      //   openCashDrawer: openCashDrawer,
+      // );
       await _printBytes(printer, bytes);
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
@@ -167,7 +167,7 @@ class PrinterHelper {
     }
   }
 
- 
+
   Future<void> _connectWithTimeout(
     PrinterType type,
     PrinterDevice device,
@@ -341,3 +341,4 @@ PaperSize _getPaperSize(String? paperSize) {
     }
   }
 }
+

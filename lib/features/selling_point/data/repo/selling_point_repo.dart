@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
+import 'package:nearpay_flutter_sdk/models/transaction_receipt/transaction_receipt.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
@@ -36,6 +39,7 @@ class SellingPointRepo {
     required List<ProductSellingModel> products,
     required double paid,
   }) async {
+    String? payResponseId;
     try {
       String url = await ApiEndPoints.getSales();
       /*
@@ -94,10 +98,22 @@ class SellingPointRepo {
       if (customer != null) {
         data[ApiKeys.customerid] = customer.id;
       }
+      Uint8List? madaReceipt;
       if(paymentType?.apiKey == ApiKeys.mada){
-        String? madauid=await PaymentHelper.addTransaction(amount: totalaftertax);
-        data["nearpay_transaction_uuid"]=madauid;
-      }
+        print('MADA 01 ****** ');
+        TransactionReceipt? madaResponse =await PaymentHelper.addTransaction(amount: totalaftertax);
+        print('MADA 02 ****** success');
+        if(madaResponse == null) {
+          throw NearPayException('Error in MADA');
+        }
+        else{
+          print('MADA 03 ****** success');
+
+          payResponseId = madaResponse.transaction_uuid;
+          data["nearpay_transaction_uuid"]=madaResponse.transaction_uuid;
+          madaReceipt = await PaymentHelper.toImage(receipt: madaResponse);
+        }
+        }
       var response = await api.post(
         url: url,
         data: data,
@@ -112,13 +128,27 @@ class SellingPointRepo {
         return Right(PrintModel(
             apiResponse: response,
             branchName: branch?.name ?? 'مش معروف',
-            paid: paid));
+            paid: paid,
+          madaReceipt: madaReceipt
+        ));
       } else {
+        if(payResponseId != null) {
+          await PaymentHelper.reverseTransaction(originalTransactionUUID: payResponseId!);
+        }
         return Left(
           response,
         );
       }
-    } catch (e) {
+    }
+    on NearPayException catch (e) {
+      print('MADA 04 ****** NearPayException');
+
+      return Left(ApiResponse.fromErrorMSG(e.message));
+    }
+    catch (e) {
+      if(payResponseId != null) {
+        await PaymentHelper.reverseTransaction(originalTransactionUUID: payResponseId!);
+      }
       debugPrint(e.toString());
       // ignore: use_build_context_synchronously
       return Left(ApiResponse.unKnownError());
@@ -153,7 +183,7 @@ class SellingPointRepo {
           url: url,
           queryParameters: {
             ApiKeys.search: search,
-            if (categortyId != -1) ApiKeys.categoryId: categortyId,
+            if (categortyId > 0) ApiKeys.categoryId: categortyId,
             ApiKeys.branchid: branch?.id,
             ApiKeys.perPage: perpage,
           },
@@ -192,7 +222,7 @@ class SellingPointRepo {
               url: url,
               queryParameters: {
                 ApiKeys.search: search,
-                if (categortyId != -1) ApiKeys.categoryId: categortyId,
+                if (categortyId > 0) ApiKeys.categoryId: categortyId,
                 ApiKeys.branchid: branch?.id,
                 ApiKeys.perPage: perpage,
               },
