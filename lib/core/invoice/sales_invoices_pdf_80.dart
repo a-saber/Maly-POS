@@ -122,12 +122,17 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
-        pageFormat: PdfPageFormat.roll80,
+        pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
+        pageTheme: pw.PageTheme(
+         buildBackground: (context) =>   pw.Container(
+           decoration:  pw.BoxDecoration(color: PdfColors.white),)
+
+        ),
+        margin: pw.EdgeInsets.zero,
+
 
         build: (context) =>  pw.Container(
-          decoration:  pw.BoxDecoration(
-              color: PdfColors.white
-              ),
+          decoration:  pw.BoxDecoration(color: PdfColors.white),
             child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [
@@ -717,8 +722,13 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     ),
                   )
                 : pw.SizedBox(),
+            pw.SizedBox(
+              height: 200
+            ),
+
           ],
-        )),
+        )
+        ),
       ),
     );
 

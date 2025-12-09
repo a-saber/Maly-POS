@@ -158,8 +158,16 @@ class PrinterHelper {
   Future<void> printInvoice(
       DiscoveredPrinter printer, Uint8List bytes,
       {String? paperSize, bool openCashDrawer = false}) async {
+    final profile = await CapabilityProfile.load();
+    final generator = Generator( PaperSize =='58'?PaperSize.mm58:PaperSize.mm80, profile);
     try {
+
+
       final byte = await  convertPdfToThermalPrinter(bytes)??[];
+      byte.addAll(generator.feed(2));
+
+      // Add cut command
+      byte.addAll(generator.cut());
 
       await _printBytes(printer, byte);
     } catch (e) {
@@ -167,7 +175,10 @@ class PrinterHelper {
       rethrow;
     }
   }
+
+
 // Convert PDF to ESC/POS printer format
+
   Future<List<int>?> convertPdfToThermalPrinter(Uint8List pdfBytes) async {
     try {
       debugPrint('Starting PDF to thermal conversion...');
@@ -393,7 +404,7 @@ class PrinterHelper {
     }
   }
 
- Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes) async {
+ Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes,{Uint8List?unit8List}) async {
     final type = printer.type;
     final device = printer.device;
 
@@ -403,9 +414,11 @@ class PrinterHelper {
       
 
       _manager.send(type: type, bytes: bytes);
+
       
      
       await Future.delayed(Duration(milliseconds: 500 + (bytes.length ~/ 10)));
+
       
       await _manager.disconnect(type: type);
       
