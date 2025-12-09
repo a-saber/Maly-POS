@@ -4,6 +4,7 @@ import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 import 'package:pos_app/features/discounts/data/repo/discounts_repo.dart';
+import 'package:pos_app/features/discounts/view/edit_discount_view.dart';
 
 part 'add_discount_state.dart';
 
@@ -27,7 +28,7 @@ class AddDiscountCubit extends Cubit<AddDiscountState> {
         discount: DiscountModel.fromJsonWithoutId(
             title: titleController.text,
             type: discountType ?? DiscountType.fixed,
-            value: value.text),
+            value: DiscountHelper.formatDiscountForBackend(value.text)),
       );
       response.fold(
         (error) => emit(AddDiscountFailing(errMessage: error)),
