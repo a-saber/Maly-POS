@@ -161,15 +161,15 @@ class PrinterHelper {
 
     try {
 
-
-      final byte = await addCutCommand(bytes,paperSize??'80');// await  convertPdfToThermalPrinter( await addCutCommand(bytes,paperSize??'80'))??[];
+     final invoice= await  convertPdfToThermalPrinter( bytes)??[];
+      final byte = await addCutCommand(invoice,paperSize??'80');
       await _printBytes(printer, byte);
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
       rethrow;
     }
   }
-  Future<List<int>>  addCutCommand(Uint8List pdfBytes,String paperSize) async {
+  Future<List<int>>  addCutCommand(List<int> pdfBytes,String paperSize) async {
       final profile = await CapabilityProfile.load();
       final size = _getPaperSize(paperSize);
       final generator = Generator(size, profile);
