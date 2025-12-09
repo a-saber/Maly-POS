@@ -175,15 +175,20 @@ class PrinterHelper {
 
     // Create a list to hold all bytes
     List<int> bytes = [];
+    bytes.addAll([0x1B, 0x40]); // ESC @ (initialize printer)
+    // 2. إضافة بيانات الفاتورة
+    bytes.addAll(pdfBytes);
 
     // Add your PDF/receipt bytes
     bytes.addAll(pdfBytes);
-
     // Add feed lines before cut (optional, gives space before cutting)
     bytes.addAll(generator.feed(2));
 
     // Add cut command
     bytes.addAll(generator.cut());
+    // 3. إضافة أسطر فارغة
+    bytes.addAll([0x1B, 0x64, 0x05]); // feed 5 lines   // سطرين جدد
+    bytes.addAll( [0x1D, 0x56, 0x00]);
 
     return Uint8List.fromList(bytes);
   }
