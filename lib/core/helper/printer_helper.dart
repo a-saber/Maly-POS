@@ -158,33 +158,32 @@ class PrinterHelper {
   Future<void> printInvoice(
       DiscoveredPrinter printer, Uint8List bytes,
       {String? paperSize, bool openCashDrawer = false}) async {
-    final profile = await CapabilityProfile.load();
-    final generator = Generator( PaperSize =='58'?PaperSize.mm58:PaperSize.mm80, profile);
+
     try {
 
 
-      final byte = await  convertPdfToThermalPrinter( addCutCommand(bytes))??[];
-
-
+      final byte = await  convertPdfToThermalPrinter( await addCutCommand(bytes,paperSize??'80'))??[];
       await _printBytes(printer, byte);
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
       rethrow;
     }
   }
-  Uint8List addCutCommand(Uint8List pdfBytes) {
+  Future<Uint8List> addCutCommand(Uint8List pdfBytes,String paperSize) async {
+    final profile = await CapabilityProfile.load();
+    final generator = Generator( PaperSize =='58'?PaperSize.mm58:PaperSize.mm80, profile);
+
+    // Create a list to hold all bytes
     List<int> bytes = [];
 
+    // Add your PDF/receipt bytes
     bytes.addAll(pdfBytes);
-    bytes.addAll([0x0A]);
-    // Feed 3 lines
-    bytes.addAll([0x1B, 0x64, 0x03]);
 
-    // Full cut command (ESC i)
-    bytes.addAll([0x1D, 0x56, 0x00]);
+    // Add feed lines before cut (optional, gives space before cutting)
+    bytes.addAll(generator.feed(2));
 
-    // Alternative: Partial cut (ESC m)
-    // bytes.addAll([0x1B, 0x6D]);
+    // Add cut command
+    bytes.addAll(generator.cut());
 
     return Uint8List.fromList(bytes);
   }
