@@ -49,7 +49,7 @@ class PaymentHelper {
     return imageBytes;
   }
   // Process a purchase transaction
-  static Future<TransactionReceipt?> addTransaction({ required double amount}) async
+  static Future<Either<String, TransactionReceipt>> addTransaction({ required double amount}) async
   {
     try {
       var uuid = const Uuid().v4();
@@ -67,7 +67,7 @@ class PaymentHelper {
       print("^^^^^^^^^^^^^^^^^^^ Transaction Successful: ${response.toJson()}");
       print(response.receipts!.first.transaction_uuid); // reverse and reconcile
       //return PurchaseReturnDataModel(receipt: response.receipts!.first );
-      return response.receipts!.first;
+      return right(response.receipts!.first);
 
     } catch (error) {
       String errorMSG;
@@ -87,7 +87,7 @@ class PaymentHelper {
       }
       print(errorMSG);
       // return PurchaseReturnDataModel(error: errorMSG);
-      return null;
+      return left(errorMSG);
     }
   }
 

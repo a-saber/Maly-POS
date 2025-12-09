@@ -101,19 +101,20 @@ class SellingPointRepo {
       Uint8List? madaReceipt;
       if(paymentType?.apiKey == ApiKeys.mada){
         print('MADA 01 ****** ');
-        TransactionReceipt? madaResponse =await PaymentHelper.addTransaction(amount: totalaftertax);
+        var madaResponse = await PaymentHelper.addTransaction(amount: totalaftertax);
         print('MADA 02 ****** success');
-        if(madaResponse == null) {
-          throw NearPayException('Error in MADA');
-        }
-        else{
+        madaResponse.fold((error) {
+          print('NearPayException Error 666: $error');
+          throw NearPayException(error);
+        },
+        (madaResponse)async{
           print('MADA 03 ****** success');
 
           payResponseId = madaResponse.transaction_uuid;
           data["nearpay_transaction_uuid"]=madaResponse.transaction_uuid;
           madaReceipt = await PaymentHelper.toImage(receipt: madaResponse);
-        }
-        }
+        });
+      }
       var response = await api.post(
         url: url,
         data: data,
