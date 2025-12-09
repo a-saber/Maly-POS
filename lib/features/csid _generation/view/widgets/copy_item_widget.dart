@@ -5,7 +5,6 @@ import '../../../../core/utils/app_colors.dart';
 import '../../../../core/utils/app_font_style.dart';
 import '../../../../core/widget/custom_form_field.dart';
 import '../../../../generated/l10n.dart';
-import '../../manager/cubit/csid_generation_setting_cubit.dart';
 
 class CopyItemWidget extends StatelessWidget {
   const CopyItemWidget({super.key, this.controller, this.hint, this.onTap});

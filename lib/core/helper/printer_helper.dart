@@ -32,34 +32,65 @@ class PrinterHelper {
   Map<String, DiscoveredPrinter> get discoveredDevices => _devices;
 
   /// --- DEVICE SCANNING SECTION ---
-  Future<bool> ensureBluetoothPermissions() async {
-    if (!await Permission.bluetoothScan.isGranted) {
-      await Permission.bluetoothScan.request();
+Future<bool> ensureBluetoothPermissions() async {
+  try {
+    // Check Android version
+    if (Platform.isAndroid) {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      final sdkInt = androidInfo.version.sdkInt;
+
+      debugPrint('Android SDK: $sdkInt');
+
+      // Android 12+ (API 31+)
+      if (sdkInt >= 31) {
+        // Request all Bluetooth permissions for Android 12+
+        Map<Permission, PermissionStatus> statuses = await [
+          Permission.bluetoothScan,
+          Permission.bluetoothConnect,
+          Permission.bluetoothAdvertise,
+        ].request();
+
+        debugPrint('Bluetooth Scan: ${statuses[Permission.bluetoothScan]}');
+        debugPrint('Bluetooth Connect: ${statuses[Permission.bluetoothConnect]}');
+        debugPrint('Bluetooth Advertise: ${statuses[Permission.bluetoothAdvertise]}');
+
+        // For Android 12+, location is not required if neverForLocation is set
+        // But some devices still need it
+        if (!await Permission.location.isGranted) {
+          await Permission.location.request();
+        }
+
+        return statuses[Permission.bluetoothScan]!.isGranted &&
+            statuses[Permission.bluetoothConnect]!.isGranted;
+      } 
+      // Android 10-11 (API 29-30)
+      else {
+        Map<Permission, PermissionStatus> statuses = await [
+          Permission.bluetooth,
+          Permission.location,
+        ].request();
+
+        debugPrint('Bluetooth: ${statuses[Permission.bluetooth]}');
+        debugPrint('Location: ${statuses[Permission.location]}');
+
+        // Check if location service is enabled
+        final locationService = await Permission.location.serviceStatus;
+        if (!locationService.isEnabled) {
+          debugPrint('Location service is disabled');
+          return false;
+        }
+
+        return statuses[Permission.bluetooth]!.isGranted &&
+            statuses[Permission.location]!.isGranted;
+      }
     }
-
-    if (!await Permission.bluetoothConnect.isGranted) {
-      await Permission.bluetoothConnect.request();
-    }
-
-    // LOCATION REQUIRED for BLE scanning in Android
-    if (!await Permission.location.isGranted) {
-      await Permission.location.request();
-    }
-
-    final locationService = await Permission.location.serviceStatus;
-    if (!locationService.isEnabled) {
-      return false;
-    }
-
-
-    final scanStatus = await Permission.bluetoothScan.status;
-    final connectStatus = await Permission.bluetoothConnect.status;
-    final locationStatus = await Permission.location.status;
-
-    return scanStatus.isGranted &&
-        connectStatus.isGranted &&
-        locationStatus.isGranted;
+    return true;
+  } catch (e) {
+    debugPrint('Error checking permissions: $e');
+    return false;
   }
+} 
   Future<bool>  isSunmiDevice() async {
     try {
       if (!kIsWeb) {

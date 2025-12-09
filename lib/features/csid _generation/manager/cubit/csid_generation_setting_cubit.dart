@@ -1,13 +1,8 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
-
 import '../../data/repo/csid_generation_repo.dart';
-
 part 'csid_generation_setting_state.dart';
-
 class ScidGenerationCubit extends Cubit<ScidGenerationState> {
   ScidGenerationCubit(this.repo) : super(ScidGenerationInitial());
 

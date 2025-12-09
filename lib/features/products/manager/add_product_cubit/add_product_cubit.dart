@@ -12,6 +12,7 @@ import 'package:pos_app/features/products/data/model/product_type.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
+import 'package:pos_app/features/taxes/data/repo/taxes_repo.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
 import '../../../../core/constant/constant.dart';
@@ -22,8 +23,10 @@ import '../../../units/data/repo/units_repo.dart';
 part 'add_product_state.dart';
 
 class AddProductCubit extends Cubit<AddProductState> {
-  AddProductCubit(this.repo,{ this.unitsRepo, this.categoryRepo}) : super(AddProductInitial()) {
+  AddProductCubit(this.repo,{ this.unitsRepo, this.categoryRepo, this.taxesRepo}
+  ) : super(AddProductInitial()) {
     addProductUnits();
+   _loadDataAndInitialize();
 
 
   }
@@ -31,6 +34,7 @@ class AddProductCubit extends Cubit<AddProductState> {
   final ProductsRepo repo;
   final UnitsRepo? unitsRepo;
   final CategoryRepo? categoryRepo;
+  final TaxesRepo? taxesRepo;
   GlobalKey<FormState> formKey = GlobalKey();
   AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
   final TextEditingController nameController = TextEditingController();
@@ -53,7 +57,68 @@ class AddProductCubit extends Cubit<AddProductState> {
   final TextEditingController brandController = TextEditingController();
   final TextEditingController openingQuantityController =
       TextEditingController();
+  List<TaxesModel>? availableTaxes;
+ void _initializeDefaults() {
+    final productTypes = AppConstant.producttype(MyApp.context);
+    if (productTypes != null && productTypes.isNotEmpty) {
+      productType = productTypes.firstWhere(
+        (type) => 
+          type.name?.toLowerCase() == 'خدمة' || 
+          type.name?.toLowerCase() == 'service' ||
+          type.value?.toLowerCase() == 'service',
+        orElse: () => productTypes.first,
+      );
+      print('Product type selected: ${productType?.name}');
+    }
 
+    if (availableTaxes != null && availableTaxes!.isNotEmpty) {
+      print('Available taxes: ${availableTaxes!.length}');
+      for (var tax in availableTaxes!) {
+        print('  - ${tax.id}: ${tax.percentage}%');
+      }
+      
+      taxes = availableTaxes!.firstWhere(
+        (tax) => tax.percentage == '15' || 
+                 tax.percentage == '15.0' || 
+                 tax.percentage == '15.00',
+        orElse: () => availableTaxes!.first,
+      );
+      print('Tax selected: ${taxes?.id}, ${taxes?.percentage}%');
+    } else {
+      print('No taxes available!');
+    }
+
+    emit(AddProductInitialized());
+  }
+
+
+ Future<void> _loadDataAndInitialize() async {
+    if (_cachedTaxes != null && _cachedTaxes!.isNotEmpty) {
+      print('Using cached taxes: ${_cachedTaxes!.length}');
+      availableTaxes = _cachedTaxes;
+    } else if (taxesRepo != null) {
+      try {
+        var result = await taxesRepo!.getTaxes();
+        
+        result.fold(
+          (error) => print('Error loading taxes: $error'),
+          (taxesData) {
+            if (taxesData != null && taxesData is List<TaxesModel>) {
+              availableTaxes = taxesData;
+              _cachedTaxes = taxesData; 
+              print('Taxes loaded and cached: ${availableTaxes?.length}');
+            }
+          },
+        );
+      } catch (e) {
+        print('Exception loading taxes: $e');
+      }
+    }
+
+    _initializeDefaults();
+  }
+
+  static List<TaxesModel>? _cachedTaxes;
   List<ProductUnits> productUnits = [];
   Future<void> addProduct() async {
     emit(AddProductLoading());

@@ -15,6 +15,7 @@ import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
 import 'package:pos_app/features/products/manager/add_product_cubit/add_product_cubit.dart';
+import 'package:pos_app/features/taxes/data/repo/taxes_repo.dart';
 import 'package:pos_app/features/units/view/widget/custom_drop_down_unit.dart';
 import 'package:pos_app/generated/l10n.dart';
 import '../../../core/helper/my_form_validators.dart';
@@ -82,7 +83,6 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
       builder: (context, state) {
         var cubit = AddProductCubit.get(context);
         return SafeArea(
-
           child: Form(
               key: cubit.formKey,
               autovalidateMode: cubit.autovalidateMode,
@@ -120,7 +120,9 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                     ),
                     CustomDropDownCategory(
                       value: cubit.category,
-                      onChangedCategory: (category) => AddProductCubit.get(context).onChangeCategory(category),
+                      onChangedCategory: (category) =>
+                          AddProductCubit.get(context)
+                              .onChangeCategory(category),
                     ),
                     SizedBox(
                       height: 20,
@@ -235,8 +237,8 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                               DataColumn(label: Text('الكميات الافتتاحية')),
                               DataColumn(label: Text('حذف')),
                             ],
-                            rows:
-                                List.generate(cubit.productUnits.length, (index) {
+                            rows: List.generate(cubit.productUnits.length,
+                                (index) {
                               return DataRow(
                                 cells: [
                                   // unit
@@ -248,10 +250,13 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                         child: SizedBox(
                                           width: 150,
                                           child: CustomDropDownUnit(
-                                            value: cubit.productUnits[index].unit,
+                                            value:
+                                                cubit.productUnits[index].unit,
                                             onChanged: (unit) {
                                               if (unit != null) {
-                                                cubit.onUnitChanged(unitModel: unit, index: index);
+                                                cubit.onUnitChanged(
+                                                    unitModel: unit,
+                                                    index: index);
                                               }
                                             },
                                           ),
@@ -476,7 +481,8 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                               tempBranchQuantities
                                                                   .add(
                                                                 BranchQuantity(
-                                                                  branchId: null,
+                                                                  branchId:
+                                                                      null,
                                                                   branch: null,
                                                                   qunantity: 0,
                                                                   quantityController:
@@ -489,7 +495,8 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                       ],
                                                     ),
                                                     ...List.generate(
-                                                      tempBranchQuantities.length,
+                                                      tempBranchQuantities
+                                                          .length,
                                                       (index) {
                                                         return Row(
                                                           spacing: 5,
@@ -523,11 +530,10 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                                             index]
                                                                         .quantityController,
                                                                 validator: (value) =>
-                                                                    MyFormValidators
-                                                                        .validateInteger(
-                                                                            value,
-                                                                            context:
-                                                                                context),
+                                                                    MyFormValidators.validateInteger(
+                                                                        value,
+                                                                        context:
+                                                                            context),
                                                                 onChanged:
                                                                     (p0) {},
                                                               ),
@@ -654,9 +660,10 @@ class AddProductView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AddProductCubit(
-          MyServiceLocator.getSingleton<ProductsRepo>(),
+        MyServiceLocator.getSingleton<ProductsRepo>(),
         unitsRepo: MyServiceLocator.getSingleton<UnitsRepo>(),
         categoryRepo: MyServiceLocator.getSingleton<CategoryRepo>(),
+        taxesRepo: MyServiceLocator.getSingleton<TaxesRepo>(),
       ),
       child: Scaffold(
         appBar: CustomAppBar(title: S.of(context).addProduct),
@@ -664,10 +671,11 @@ class AddProductView extends StatelessWidget {
           listener: (context, state) {
             if (state is AddProductSuccess) {
               //  TODO : Will Add Update Product Moel Selling Point
-               GetAllProductsCubit.get(context).addProduct(state.product!);
+              GetAllProductsCubit.get(context).addProduct(state.product!);
               // TODO : Will Give Update Product Model Selling Point
-               MyServiceLocator.getSingleton<SellingPointCubit>().addProduct(state.product!);
-                CustomPopUp.callMyToast(
+              MyServiceLocator.getSingleton<SellingPointCubit>()
+                  .addProduct(state.product!);
+              CustomPopUp.callMyToast(
                   context: context,
                   massage: S.of(context).addedSuccess,
                   state: PopUpState.SUCCESS);
@@ -675,10 +683,19 @@ class AddProductView extends StatelessWidget {
               Navigator.pop(context);
             } else if (state is AddProductFailing) {
               if (context.mounted) {
+                String errorMessage =
+                    mapStatusCodeToMessage(context, state.errMessage);
+                if (errorMessage.contains(
+                    "Service type products cannot have stock quantities")) {
+                  errorMessage =
+                      "منتجات الخدمة لا يمكن أن يكون لها كميات مخزنية";
+                }
+
                 CustomPopUp.callMyToast(
-                    context: context,
-                    massage: mapStatusCodeToMessage(context, state.errMessage),
-                    state: PopUpState.ERROR);
+                  context: context,
+                  massage: errorMessage,
+                  state: PopUpState.ERROR,
+                );
               }
             }
           },
@@ -688,7 +705,8 @@ class AddProductView extends StatelessWidget {
                   MyCustomScrollView(child: AddProductMobileBody(state: state)),
               tablet: MyCustomScrollView(
                   child: AddProductTabletAndDesktopBody(state: state)),
-              desktop: MyCustomScrollView(child: AddProductTabletAndDesktopBody(state: state)),
+              desktop: MyCustomScrollView(
+                  child: AddProductTabletAndDesktopBody(state: state)),
             );
           },
         ),

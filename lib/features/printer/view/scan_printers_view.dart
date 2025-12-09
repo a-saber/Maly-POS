@@ -1,4 +1,5 @@
 import 'dart:io' show Platform;
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,61 +32,74 @@ class _ScanPrintersViewState extends State<ScanPrintersView> {
 
 Future<void> _requestPermissions() async {
   if (!kIsWeb && Platform.isAndroid) {
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    final sdkInt = androidInfo.version.sdkInt;
 
-    await Permission.bluetoothScan.request();
-    await Permission.bluetoothConnect.request();
-    await Permission.location.request();
+    if (sdkInt >= 31) {
+      // Android 12+
+      await Permission.bluetoothScan.request();
+      await Permission.bluetoothConnect.request();
+      await Permission.bluetoothAdvertise.request();
+      
+      // Some devices still need location
+      await Permission.location.request();
 
-   
-    final serviceStatus = await Permission.location.serviceStatus;
-    final isLocationOn = serviceStatus == ServiceStatus.enabled;
+      final scanStatus = await Permission.bluetoothScan.status;
+      final connectStatus = await Permission.bluetoothConnect.status;
 
-    if (!isLocationOn) {
+      if (!scanStatus.isGranted || !connectStatus.isGranted) {
+        _showPermissionDialog();
+        return;
+      }
+    } else {
+      // Android 10-11
+      await Permission.bluetooth.request();
+      await Permission.location.request();
 
-      _showPermissionDialog();
-      return;
-    }
+      final serviceStatus = await Permission.location.serviceStatus;
+      if (serviceStatus != ServiceStatus.enabled) {
+        _showPermissionDialog();
+        return;
+      }
 
-
-    final scanStatus = await Permission.bluetoothScan.status;
-    final connectStatus = await Permission.bluetoothConnect.status;
-    final locStatus = await Permission.location.status;
-
-    if (!scanStatus.isGranted ||
-        !connectStatus.isGranted ||
-        !locStatus.isGranted) {
-      _showPermissionDialog();
-      return;
+      final locStatus = await Permission.location.status;
+      if (!locStatus.isGranted) {
+        _showPermissionDialog();
+        return;
+      }
     }
   }
 }
 
-   void _showPermissionDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Bluetooth Permission Required'),
-        content: const Text(
-          'This app needs Bluetooth permissions to scan for printers.\n\n'
-          'Please enable Bluetooth permissions in app settings.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              openAppSettings();
-            },
-            child: const Text('Open Settings'),
-          ),
-        ],
+void _showPermissionDialog() {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Permissions Required'),
+      content: const Text(
+        'This app needs the following permissions:\n\n'
+        '• Bluetooth (to scan for printers)\n'
+        '• Location (required by Android for Bluetooth scanning)\n'
+        '• Nearby Devices (Android 13+)\n\n'
+        'Please enable all permissions in app settings.',
       ),
-    );
-  }
-  @override
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            openAppSettings();
+          },
+          child: const Text('Open Settings'),
+        ),
+      ],
+    ),
+  );
+}  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => ScanLocalPrintersCubit()..getDiscoveredPrinters(),
