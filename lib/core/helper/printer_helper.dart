@@ -188,7 +188,7 @@ class PrinterHelper {
     bytes.addAll(generator.cut());
     // 3. إضافة أسطر فارغة
     bytes.addAll([0x1B, 0x64, 0x05]); // feed 5 lines   // سطرين جدد
-    bytes.addAll( [0x1D, 0x56, 0x00]);
+    bytes.addAll( [0x1D, 0x56, 0x41]);
 
     return Uint8List.fromList(bytes);
   }
