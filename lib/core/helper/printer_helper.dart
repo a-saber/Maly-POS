@@ -159,9 +159,9 @@ class PrinterHelper {
       DiscoveredPrinter printer, Uint8List bytes,
       {String? paperSize, bool openCashDrawer = false}) async {
     try {
-      final byte = await  convertPdfToThermalPrinter(bytes)??[];
+     // final byte = await  convertPdfToThermalPrinter(bytes)??[];
 
-      await _printBytes(printer, byte);
+      await _printBytes(printer, bytes.toList());
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
       rethrow;
