@@ -60,6 +60,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void confirmPayment() async {
+
     emit(SellingPointProductLoading());
     debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
     debugPrint(
@@ -93,6 +94,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         (errMessage) => emit(SellingPointProductFailing(message: errMessage)),
         (success) {
       init();
+
       emit(SellingPointProductSuccess(printModel: success));
     });
   }

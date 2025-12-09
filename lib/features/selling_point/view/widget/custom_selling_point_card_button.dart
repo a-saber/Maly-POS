@@ -71,17 +71,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
 
                final bool isSunmi=await PrinterHelper().isSunmiDevice();
                 try {
-                /* /// todo ahmed saber if (state.printModel.madaReceipt != null) {
-                    await printSunmiPDF(state.printModel.madaReceipt!);
+               if (state.printModel.madaReceipt != null) {
+                    await printSunmiPDF(state.printModel.madaReceipt!,'58');
                     await SunmiPrinter.lineWrap(4);
                     await SunmiPrinter.cutPaper();
-                  }*/
-                  final allAutomaticPrinters =
-                      MyServiceLocator.getSingleton<GetPrintersCubit>()
-                          .printers
+                  }
+                  final allAutomaticPrinters = MyServiceLocator.getSingleton<GetPrintersCubit>().printers;
                           // .where((p) => p.automatic == true)
-                          // .toList()
-                  ;
+
 
                   debugPrint('');
                   debugPrint(
@@ -128,15 +125,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   int failCount = 0;
 
                   for (final printer in allAutomaticPrinters) {
-                    /// new
-                    if (state.printModel.madaReceipt != null|| isSunmi || printer.printerType.toString().toLowerCase().contains('sunmi')) {
 
-                      await printSunmiPDF(state.printModel.madaReceipt!,printer.paperSize??'58');
-                      await SunmiPrinter.lineWrap(4);
-                      await SunmiPrinter.cutPaper();
-                    }
-                    else
-                    {
 
                     if (printer.discoveredPrinter != null && (printer.automatic??false)) {
 
@@ -168,7 +157,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                       }
                     }
 
-                    }
+
                   }
 
                   debugPrint('');
