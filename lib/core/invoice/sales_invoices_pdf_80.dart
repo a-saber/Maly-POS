@@ -123,11 +123,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
       pw.Page(
         textDirection: pw.TextDirection.rtl,
         pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
-        pageTheme: pw.PageTheme(
-         buildBackground: (context) =>   pw.Container(
-           decoration:  pw.BoxDecoration(color: PdfColors.white),)
 
-        ),
         margin: pw.EdgeInsets.zero,
 
 
@@ -722,9 +718,9 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     ),
                   )
                 : pw.SizedBox(),
-            pw.SizedBox(
-              height: 200
-            ),
+            // pw.SizedBox(
+            //   height: 200
+            // ),
 
           ],
         )
