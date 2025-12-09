@@ -4,6 +4,7 @@ import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
+import 'package:pos_app/features/discounts/view/edit_discount_view.dart';
 import 'package:pos_app/features/discounts/view/widget/show_delete_discount_confirm_dialog.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:redacted/redacted.dart';
@@ -61,8 +62,8 @@ class DiscountItemBuild extends StatelessWidget {
                   ),
                   Text(
                     discount.type == DiscountType.percentage
-                        ? "${discount.value} %"
-                        : "${discount.value} ",
+                        ? "${DiscountHelper.formatDiscountForDisplay(discount.value)} %"
+                        : "${DiscountHelper.formatDiscountForDisplay(discount.value)} ",
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

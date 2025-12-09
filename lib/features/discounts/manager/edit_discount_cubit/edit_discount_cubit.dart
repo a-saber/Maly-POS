@@ -4,6 +4,7 @@ import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 import 'package:pos_app/features/discounts/data/repo/discounts_repo.dart';
+import 'package:pos_app/features/discounts/view/edit_discount_view.dart';
 
 part 'edit_discount_state.dart';
 
@@ -11,7 +12,7 @@ class EditDiscountCubit extends Cubit<EditDiscountState> {
   EditDiscountCubit(this.repo, this.discount) : super(EditDiscountInitial()) {
     titleController = TextEditingController(text: discount.title);
     discountType = discount.type ?? DiscountType.fixed;
-    value = TextEditingController(text: discount.value);
+    value = TextEditingController(text: DiscountHelper.formatDiscountForDisplay(discount.value));
   }
 
   static EditDiscountCubit get(context) => BlocProvider.of(context);
@@ -32,7 +33,7 @@ class EditDiscountCubit extends Cubit<EditDiscountState> {
           id: discount.id,
           title: titleController.text,
           type: discountType,
-          value: value.text,
+          value:  DiscountHelper.formatDiscountForBackend(value.text),
         ),
       );
       response.fold(
