@@ -147,8 +147,10 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                           }
                             await SunmiPrinter.lineWrap(4);
                           await SunmiPrinter.cutPaper();
+                          await SunmiDrawer.openDrawer();
                         }
                         else{
+
                         var invoiceBytesUint8List = await salesInvoicesPdf80(
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,

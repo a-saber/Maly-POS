@@ -770,7 +770,7 @@ Future<Uint8List> salesInvoicesPdf58(Map<String, dynamic> response,
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
-        pageFormat: PdfPageFormat.roll57,
+        pageFormat:  PdfPageFormat.roll57,
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [
@@ -862,7 +862,7 @@ Future<Uint8List> salesInvoicesPdf58(Map<String, dynamic> response,
               ),
             if (sale[ApiKeys.ordertype] != null)
               pw.Text(
-                "${AppInvoiceString.orderType} ${sale[ApiKeys.ordertype]}",
+                "${AppInvoiceString.orderType}  ${sale[ApiKeys.ordertype]=='hall' }",
                 textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   font: arabicFont,
@@ -977,8 +977,7 @@ Future<Uint8List> salesInvoicesPdf58(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
                             child: pw.Text(
-                              p[ApiKeys.product]?[ApiKeys.name]?.toString() ??
-                                  "",
+                              p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -1011,7 +1010,7 @@ Future<Uint8List> salesInvoicesPdf58(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
                             child: pw.Text(
-                              double.tryParse(p[ApiKeys.linetotalafterdiscount]??'0')?.toStringAsFixed(2)??'0',
+                              double.tryParse(p[ApiKeys.linetotalaftertax]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
