@@ -9,6 +9,8 @@ import 'package:pos_app/features/selling_point/data/model/category_saving_data_m
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 
+import '../../../printer/manager/scan_printer/scan_printer_cubit.dart';
+
 part 'selling_point_state.dart';
 
 class SellingPointCubit extends Cubit<SellingPointState> {
@@ -62,6 +64,7 @@ class SellingPointCubit extends Cubit<SellingPointState> {
     // if (firstTime()) {
     //   getCategoryProduct(context: context);
     // }
+
     scrollController = ScrollController();
     query = '';
 
@@ -72,6 +75,8 @@ class SellingPointCubit extends Cubit<SellingPointState> {
       categoryId = -2;
       categorySavingDataModels = [];
       isFirstTime = false;
+      MyServiceLocator.getSingleton<GetPrintersCubit>().init();
+
     }
 
     scrollController.addListener(() {
