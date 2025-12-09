@@ -718,9 +718,9 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     ),
                   )
                 : pw.SizedBox(),
-            // pw.SizedBox(
-            //   height: 200
-            // ),
+            pw.SizedBox(
+              height: 30
+            ),
 
           ],
         )

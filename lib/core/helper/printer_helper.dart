@@ -174,13 +174,14 @@ class PrinterHelper {
   }
   Uint8List addCutCommand(Uint8List pdfBytes) {
     List<int> bytes = [];
-    bytes.addAll(pdfBytes);
 
+    bytes.addAll(pdfBytes);
+    bytes.addAll([0x0A]);
     // Feed 3 lines
     bytes.addAll([0x1B, 0x64, 0x03]);
 
     // Full cut command (ESC i)
-    bytes.addAll([0x1B, 0x69]);
+    bytes.addAll([0x1D, 0x56, 0x00]);
 
     // Alternative: Partial cut (ESC m)
     // bytes.addAll([0x1B, 0x6D]);
