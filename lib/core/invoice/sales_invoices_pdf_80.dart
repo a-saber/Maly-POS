@@ -123,9 +123,15 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
       pw.Page(
         textDirection: pw.TextDirection.rtl,
         pageFormat: PdfPageFormat.roll80,
-        build: (context) => pw.Column(
+
+        build: (context) =>  pw.Container(
+          decoration:  pw.BoxDecoration(
+              color: PdfColors.white
+              ),
+            child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [
+
             // Time & Date row (only if not empty)
             if (time.isNotEmpty || date.isNotEmpty)
               pw.Row(
@@ -712,7 +718,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   )
                 : pw.SizedBox(),
           ],
-        ),
+        )),
       ),
     );
 
