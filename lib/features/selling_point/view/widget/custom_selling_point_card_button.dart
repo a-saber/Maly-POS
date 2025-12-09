@@ -125,13 +125,25 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   for (final printer in allAutomaticPrinters) {
 
 
-                    if (printer.discoveredPrinter != null && (printer.automatic??false)) {
+                    if (printer.discoveredPrinter != null ) {
 
                       try {
 
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
+                        if(isSunmi||printer.printerType.toString().toLowerCase().contains('sunmi')){
+                          await printSunmiPDF(
+                              await salesInvoicesPdf80(
+                            state.printModel.apiResponse.data as Map<String, dynamic>,
+                            branchName: state.printModel.branchName,
+                            paid: state.printModel.paid,
+                          ),'58'
+                          );
+                          await SunmiPrinter.lineWrap(4);
+                          await SunmiPrinter.cutPaper();
+                        }
+                        else{
                         var invoiceBytesUint8List = await salesInvoicesPdf80(
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
@@ -148,12 +160,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
 
                         successCount++;
                         debugPrint(' SUCCESS: ${printer.printerName}');
+                        }
                       } catch (e) {
                         failCount++;
                         debugPrint(
                             ' FAILED: ${printer.printerName} - Error: $e');
                       }
                     }
+
 
 
                   }
