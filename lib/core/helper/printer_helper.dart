@@ -185,10 +185,10 @@ class PrinterHelper {
     bytes.addAll(generator.feed(2));
 
     // Add cut command
-    bytes.addAll(generator.cut());
+    bytes.addAll(generator.cut(mode: PosCutMode.partial,));
     // 3. إضافة أسطر فارغة
     bytes.addAll([0x1B, 0x64, 0x05]); // feed 5 lines   // سطرين جدد
-    bytes.addAll( [0x1D, 0x56, 0x42]);
+    bytes.addAll( [0x1B, 0x69]);
 
     return Uint8List.fromList(bytes);
   }
