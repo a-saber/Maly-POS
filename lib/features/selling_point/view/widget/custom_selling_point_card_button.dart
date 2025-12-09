@@ -130,21 +130,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
                         if(isSunmi||printer.printerType.toString().toLowerCase().contains('sunmi')){
-                          if(printer.paperSize=='80') {
-                            await printSunmiPDF(await salesInvoicesPdf80(
+
+                            await printSunmiPDF(await salesInvoicesPdf(
                               state.printModel.apiResponse.data as Map<
                                   String,
                                   dynamic>,
                               branchName: state.printModel.branchName,
-                              paid: state.printModel.paid,), '58');
-                          }else{
-                            await printSunmiPDF(await salesInvoicesPdf58(
-                              state.printModel.apiResponse.data as Map<
-                                  String,
-                                  dynamic>,
-                              branchName: state.printModel.branchName,
-                              paid: state.printModel.paid,), '58');
-                          }
+                              paid: state.printModel.paid,size: printer.paperSize??'80'), '58');
+
                             await SunmiPrinter.lineWrap(4);
                           await SunmiPrinter.cutPaper();
                           await SunmiDrawer.openDrawer();
@@ -155,6 +148,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
                           paid: state.printModel.paid,
+                          size: printer.paperSize??'80'
                         );
 
                         await PrinterHelper().printInvoice(
@@ -232,6 +226,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                                   as Map<String, dynamic>,
                               branchName: state.printModel.branchName,
                               paid: state.printModel.paid,
+                               size:'80'
                             );
                           }),
                         );

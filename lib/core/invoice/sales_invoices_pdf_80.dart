@@ -69,7 +69,7 @@ Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
 }
 
 Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
-    {String? branchName, required double paid}) async
+    {String? branchName, required double paid , required String size }) async
 {
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
@@ -247,8 +247,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                 },
                 children: [
                   pw.TableRow(
-                    decoration:
-                        pw.BoxDecoration(color: PdfColors.grey300), // gray bg
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300), // gray bg
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -302,6 +301,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ),
                   // ✅ خط فاصل بين العناوين والعناصر
                   pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.white),
                     children: [
                       pw.Container(
                         height: 0.5,
@@ -325,6 +325,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ...products.map(
                     (p) {
                       return pw.TableRow(
+                          decoration: pw.BoxDecoration(color: PdfColors.grey300),
                         children: [
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
@@ -381,7 +382,10 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
 
             // Totals
             pw.Table(
+
+
               border: pw.TableBorder(
+
                 horizontalInside: pw.BorderSide(
                   width: 0.2,
                   color: PdfColors.black,
@@ -414,6 +418,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
               children: [
                 if (sale[ApiKeys.subtotal] != null)
                   pw.TableRow(
+                decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -441,6 +446,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ),
                 if (sale[ApiKeys.discounttotal] != null)
                   pw.TableRow(
+                 decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -469,6 +475,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ),
                 if (sale[ApiKeys.totalafterdiscount] != null)
                   pw.TableRow(
+                   decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -497,6 +504,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ),
                 if (sale[ApiKeys.taxtotal] != null)
                   pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -525,6 +533,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ),
                 if (sale[ApiKeys.totalaftertax] != null)
                   pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -555,6 +564,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   ),
                 if (sale[ApiKeys.paymentmethod] != null)
                   pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -716,8 +726,8 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     return emptyPdf.save();
   }
 }
-Future<Uint8List> salesInvoicesPdf58(Map<String, dynamic> response,
-    {String? branchName, required double paid}) async
+Future<Uint8List> salesInvoicesPdf(Map<String, dynamic> response,
+    {String? branchName, required double paid,required String size}) async
 {
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
@@ -770,7 +780,7 @@ Future<Uint8List> salesInvoicesPdf58(Map<String, dynamic> response,
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
-        pageFormat:  PdfPageFormat.roll57,
+        pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [
