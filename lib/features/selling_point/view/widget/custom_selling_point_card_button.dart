@@ -81,10 +81,8 @@ class CustomSellingPointCardButtons extends StatelessWidget {
 
 
                   debugPrint('');
-                  debugPrint(
-                      ' ==================== SALE SUCCESS ====================');
-                  debugPrint(
-                      ' Total Automatic Printers: ${allAutomaticPrinters.length}');
+                  debugPrint(' ==================== SALE SUCCESS ====================');
+                  debugPrint(' Total Automatic Printers: ${allAutomaticPrinters.length}');
 
                   for (int i = 0; i < allAutomaticPrinters.length; i++) {
                     final p = allAutomaticPrinters[i];

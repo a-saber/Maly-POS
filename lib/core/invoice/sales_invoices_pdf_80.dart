@@ -13,21 +13,21 @@ import 'package:pdfx/pdfx.dart' as pdfx;
 Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
   try {
     final SunmiPrinterPlus sunmiPrinterPlus = SunmiPrinterPlus();
-    /// new select Size
-     Map<String, PaperConfig> paperConfigs = {
-      '58': PaperConfig(
-        width: 384,        // 58mm = 384 pixels at 203 DPI
-        scale: 2.0,
-        maxWidth: 380,
-      ),
-      '80': PaperConfig(
-        width: 576,        // 80mm = 576 pixels at 203 DPI
-        scale: 2.6,
-        maxWidth: 570,
-      ),
-    };
-    final config = paperConfigs[paperSize];
-    /// new select Size
+    // /// new select Size
+    //  Map<String, PaperConfig> paperConfigs = {
+    //   '58': PaperConfig(
+    //     width: 384,        // 58mm = 384 pixels at 203 DPI
+    //     scale: 2.0,
+    //     maxWidth: 380,
+    //   ),
+    //   '80': PaperConfig(
+    //     width: 576,        // 80mm = 576 pixels at 203 DPI
+    //     scale: 2.6,
+    //     maxWidth: 570,
+    //   ),
+    // };
+    // final config = paperConfigs[paperSize];
+    // /// new select Size
 
     final pdfDocument = await pdfx.PdfDocument.openData(pdfData);
     // Render the first page as an image
@@ -35,21 +35,21 @@ Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
     final pdfPage = await pdfDocument.getPage(1); // 0-based index
     debugPrint("************* _printPDF 02 *********");
     /// old select Size /////////////////////////////////////////////////
-    // const double scale = 2.6; // Adjust scaling factor as needed
-    // final double renderWidth = (pdfPage.width * scale);
-    // final double renderHeight = (pdfPage.height * scale);
-    /// old select Size
+    const double scale = 2.6; // Adjust scaling factor as needed
+     final double renderWidth = (pdfPage.width * scale);
+    final double renderHeight = (pdfPage.height * scale);
+     ///old select Size
     /// ///////////////////////////////////////////////////////////////
     // Calculate render dimensions based on paper size
-    /// new select Size
-    final double renderWidth = config!.width.toDouble();
-    final double renderHeight = (pdfPage.height * config.scale);
+    // /// new select Size
+    // final double renderWidth = config!.width.toDouble();
+    // final double renderHeight = (pdfPage.height * config.scale);
     final pdfx.PdfPageImage? pageImage = await pdfPage.render(
-      width: renderWidth,
-      height: renderHeight,
+        width: renderWidth,
+       height: renderHeight,
 
-    );
-    /// new select Size
+     );
+    // /// new select Size
     debugPrint("************* _printPDF 03 *********");
 
     if (pageImage != null) {
