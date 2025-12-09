@@ -162,36 +162,24 @@ class PrinterHelper {
     try {
 
 
-      final byte = await  convertPdfToThermalPrinter( await addCutCommand(bytes,paperSize??'80'))??[];
+      final byte = await addCutCommand(bytes,paperSize??'80');// await  convertPdfToThermalPrinter( await addCutCommand(bytes,paperSize??'80'))??[];
       await _printBytes(printer, byte);
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
       rethrow;
     }
   }
-  Future<Uint8List> addCutCommand(Uint8List pdfBytes,String paperSize) async {
-    final profile = await CapabilityProfile.load();
-    final generator = Generator( PaperSize =='58'?PaperSize.mm58:PaperSize.mm80, profile);
+  Future<List<int>>  addCutCommand(Uint8List pdfBytes,String paperSize) async {
+      final profile = await CapabilityProfile.load();
+      final size = _getPaperSize(paperSize);
+      final generator = Generator(size, profile);
 
-    // Create a list to hold all bytes
-    List<int> bytes = [];
-    bytes.addAll([0x1B, 0x40]); // ESC @ (initialize printer)
-    // 2. إضافة بيانات الفاتورة
-    bytes.addAll(pdfBytes);
-
-    // Add your PDF/receipt bytes
-    bytes.addAll(pdfBytes);
-    // Add feed lines before cut (optional, gives space before cutting)
-    bytes.addAll(generator.feed(2));
-
-    // Add cut command
-    bytes.addAll(generator.cut(mode: PosCutMode.partial,));
-    // 3. إضافة أسطر فارغة
-    bytes.addAll([0x1B, 0x64, 0x05]); // feed 5 lines   // سطرين جدد
-    bytes.addAll( [0x1B, 0x69]);
-
-    return Uint8List.fromList(bytes);
-  }
+      return [
+        ...pdfBytes,
+        ...generator.feed(2),
+        ...generator.cut(),
+      ];
+    }
 
 
 // Convert PDF to ESC/POS printer format
@@ -556,8 +544,7 @@ PaperSize _getPaperSize(String? paperSize) {
           styles: PosStyles(align: PosAlign.center, bold: true)),
       ...generator.text('   TEST PRINT   ',
           styles: PosStyles(align: PosAlign.center, bold: true)),
-      ...generator.text('***************',
-          styles: PosStyles(align: PosAlign.center, bold: true)),
+      ...generator.text('***************', styles: PosStyles(align: PosAlign.center, bold: true)),
       ...generator.hr(),
       ...generator.text('Printer: ${p.device.name}'),
       if (p.device.address != null)
