@@ -92,8 +92,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                     debugPrint('   - Paper Size: "${p.paperSize}"');
                     debugPrint('   - Type: ${p.communicationType}');
                   } 
-                  debugPrint(
-                      '========================================================');
+                  debugPrint('========================================================');
                   debugPrint('');
 
                   final invoiceData = {
@@ -124,18 +123,32 @@ class CustomSellingPointCardButtons extends StatelessWidget {
 
                   for (final printer in allAutomaticPrinters) {
 
-
-                    if (printer.discoveredPrinter != null && (printer.automatic??false)) {
+                    if (printer.discoveredPrinter != null ) {
 
                       try {
-
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
+                        if(isSunmi||printer.printerType.toString().toLowerCase().contains('sunmi')){
+
+                            await printSunmiPDF(await salesInvoicesPdf(
+                              state.printModel.apiResponse.data as Map<
+                                  String,
+                                  dynamic>,
+                              branchName: state.printModel.branchName,
+                              paid: state.printModel.paid,size: printer.paperSize??'80'), '58');
+
+                            await SunmiPrinter.lineWrap(4);
+                          await SunmiPrinter.cutPaper();
+                          await SunmiDrawer.openDrawer();
+                        }
+                        else{
+
                         var invoiceBytesUint8List = await salesInvoicesPdf80(
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
                           paid: state.printModel.paid,
+                          size: printer.paperSize??'80'
                         );
 
                         await PrinterHelper().printInvoice(
@@ -145,15 +158,18 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                           paperSize: printer.paperSize,
                           openCashDrawer: true,
                         );
+                         // await PrinterHelper().printWidget(context, printer.discoveredPrinter!);
 
                         successCount++;
                         debugPrint(' SUCCESS: ${printer.printerName}');
+                        }
                       } catch (e) {
                         failCount++;
                         debugPrint(
                             ' FAILED: ${printer.printerName} - Error: $e');
                       }
                     }
+
 
 
                   }
@@ -210,6 +226,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                                   as Map<String, dynamic>,
                               branchName: state.printModel.branchName,
                               paid: state.printModel.paid,
+                               size:'80'
                             );
                           }),
                         );

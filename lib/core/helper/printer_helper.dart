@@ -2,9 +2,19 @@ import 'dart:async';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
+import 'dart:ui' as ui;
+import 'package:image/image.dart' as img;
+import 'dart:typed_data';
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
+
+import '../../features/selling_point/view/widget/invoice.dart';
 
 /// Wrapper that pairs a discovered PrinterDevice with its PrinterType
 class DiscoveredPrinter {
@@ -177,23 +187,260 @@ Future<bool> ensureBluetoothPermissions() async {
   }
 
   Future<void> printInvoice(
-      DiscoveredPrinter printer, List<int> bytes,
+      DiscoveredPrinter printer, Uint8List bytes,
       {String? paperSize, bool openCashDrawer = false}) async {
+
     try {
-      // final bytes = await _buildInvoiceBytes(
-      //   printer,
-      //   invoice,
-      //   paperSize: paperSize,
-      //   openCashDrawer: openCashDrawer,
-      // );
-      await _printBytes(printer, bytes);
+
+     final invoice= await  convertPdfToThermalPrinter( bytes)??[];
+      final byte = await addCutCommand(invoice,paperSize??'80');
+      await _printBytes(printer, byte);
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
       rethrow;
     }
   }
+  Future<List<int>>  addCutCommand(List<int> pdfBytes,String paperSize) async {
+      final profile = await CapabilityProfile.load();
+      final size = _getPaperSize(paperSize);
+      final generator = Generator(size, profile);
 
- Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes) async {
+      return [
+        ...pdfBytes,
+        ...generator.feed(2),
+        ...generator.cut(),
+      ];
+    }
+
+
+// Convert PDF to ESC/POS printer format
+
+  Future<List<int>?> convertPdfToThermalPrinter(Uint8List pdfBytes) async {
+    try {
+      debugPrint('Starting PDF to thermal conversion...');
+
+      // Convert PDF to raster images and collect as list
+      final pages = await Printing.raster(
+        pdfBytes,
+        dpi: 203, // 203 DPI for most 80mm thermal printers
+        pages: [0], // Only first page
+      ).toList();
+
+      if (pages.isEmpty) {
+        debugPrint('❌ No pages generated from PDF');
+        return null;
+      }
+
+      debugPrint('✓ PDF converted to raster (${pages.length} page(s))');
+
+      // Get first page and convert to PNG
+      final rasterImage = await pages.first.toPng();
+      debugPrint('✓ PNG generated: ${rasterImage.length} bytes');
+
+      // Decode PNG to image object
+      img.Image? image = img.decodeImage(rasterImage);
+
+      if (image == null) {
+        debugPrint('❌ Failed to decode image');
+        return null;
+      }
+
+      debugPrint('✓ Image decoded: ${image.width}x${image.height} pixels');
+
+      // Convert to grayscale for thermal printing
+      img.Image grayscale = img.grayscale(image);
+
+      // Adjust contrast and brightness for better thermal output
+      grayscale = img.adjustColor(
+        grayscale,
+        contrast: 1.3,
+        brightness: 1.1,
+      );
+
+      debugPrint('✓ Image processed for thermal printing');
+
+      // Convert to ESC/POS format
+      final escPosBytes = _convertToEscPos(grayscale);
+
+      debugPrint('✅ Converted to ESC/POS: ${escPosBytes.length} bytes');
+
+      return escPosBytes;
+
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error: $e');
+      debugPrint('Stack trace: $stackTrace');
+      return null;
+    }
+  }
+
+// Convert image to ESC/POS bitmap format
+  List<int> _convertToEscPos(img.Image image) {
+    List<int> bytes = [];
+
+    // Initialize printer
+    bytes.addAll([0x1B, 0x40]); // ESC @ - Initialize
+
+    int width = image.width;
+    int height = image.height;
+    int widthBytes = (width + 7) ~/ 8;
+
+    // ESC/POS GS v 0 command
+    bytes.addAll([0x1D, 0x76, 0x30, 0x00]);
+    bytes.addAll([widthBytes & 0xFF, (widthBytes >> 8) & 0xFF]);
+    bytes.addAll([height & 0xFF, (height >> 8) & 0xFF]);
+
+    // Convert pixels to monochrome bitmap
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x += 8) {
+        int byte = 0;
+        for (int b = 0; b < 8; b++) {
+          if (x + b < width) {
+            final pixel = image.getPixel(x + b, y);
+            final brightness = pixel.r.toInt();
+            if (brightness < 128) {
+              byte |= (1 << (7 - b));
+            }
+          }
+        }
+        bytes.add(byte);
+      }
+    }
+
+    // Feed paper
+    bytes.addAll([0x0A, 0x0A, 0x0A]);
+
+    return bytes;
+  }
+
+  Future<Uint8List?> captureWidget( BuildContext context,Widget widget) async {
+    try {
+
+      final boundary = RenderRepaintBoundary();
+      final renderView = RenderView(
+        view: View.of(context),
+        child: RenderPositionedBox(
+
+          alignment: Alignment.topCenter,
+          child: boundary,
+        ),
+        configuration: ViewConfiguration(
+          physicalConstraints: BoxConstraints(minWidth: 384, maxWidth: 384, minHeight: 200, maxHeight: double.infinity),
+          logicalConstraints: BoxConstraints(minWidth: 384, maxWidth: 384, minHeight: 200, maxHeight: double.infinity),
+          devicePixelRatio: 2.0, // Higher DPI for crisp printing
+        ),
+      );
+
+
+
+
+
+      final pipelineOwner = PipelineOwner();
+      final buildOwner = BuildOwner(focusManager: FocusManager());
+
+      pipelineOwner.rootNode = renderView;
+      renderView.prepareInitialFrame();
+
+      final rootElement = RenderObjectToWidgetAdapter<RenderBox>(
+        container: boundary,
+        child: Directionality(
+          textDirection: ui.TextDirection.rtl ,
+          child: widget,
+        ),
+      ).attachToRenderTree(buildOwner);
+
+      buildOwner.buildScope(rootElement);
+      buildOwner.finalizeTree();
+
+      pipelineOwner.flushLayout();
+      pipelineOwner.flushCompositingBits();
+      pipelineOwner.flushPaint();
+
+      final image = await boundary.toImage(pixelRatio: 2.0);
+
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+
+      return byteData?.buffer.asUint8List();
+    } catch (e) {
+      debugPrint('Error capturing widget: $e');
+      return null;
+    }
+  }
+  // Convert widget image to printer format
+  Future<List<int>?> convertWidgetToPrinterBytes(BuildContext context, Widget widget) async {
+    // Capture widget as image
+    final Uint8List? imageBytes = await captureWidget(context, widget);
+
+    if (imageBytes == null) {
+      debugPrint('Failed to capture widget');
+      return null;
+    }
+
+    // Decode PNG image
+    img.Image? image = img.decodeImage(imageBytes);
+
+    if (image == null) {
+      debugPrint('Failed to decode image');
+      return null;
+    }
+
+    // Convert to grayscale for better printing
+    img.Image grayscale = img.grayscale(image);
+
+    // Adjust contrast for thermal printers (optional but recommended)
+    grayscale = img.adjustColor(grayscale, contrast: 1.2);
+
+    // Convert to ESC/POS bitmap format
+    List<int> bytes = [];
+
+    int width = grayscale.width;
+    int height = grayscale.height;
+    int widthBytes = (width + 7) ~/ 8; // Round up to nearest byte
+
+    // ESC/POS image command: GS v 0
+    bytes.addAll([0x1D, 0x76, 0x30, 0x00]);
+    bytes.addAll([widthBytes & 0xFF, (widthBytes >> 8) & 0xFF]); // width in bytes
+    bytes.addAll([height & 0xFF, (height >> 8) & 0xFF]); // height in pixels
+
+    // Convert pixels to monochrome bitmap
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x += 8) {
+        int byte = 0;
+        for (int b = 0; b < 8; b++) {
+          if (x + b < width) {
+            // Get pixel as Pixel object
+            final pixel = grayscale.getPixel(x + b, y);
+
+            // Get luminance from the pixel (average of RGB values)
+            final luminance = (pixel.r + pixel.g + pixel.b) / 3;
+
+            // Threshold: pixels darker than 128 become black
+            if (luminance < 128) {
+              byte |= (1 << (7 - b));
+            }
+          }
+        }
+        bytes.add(byte);
+      }
+    }
+
+    return bytes;
+  }
+  // Usage example
+  Future<void> printWidget(BuildContext context, DiscoveredPrinter printer, ) async {
+
+
+    // Convert widget to printer bytes
+    final List<int>? printerBytes = await convertWidgetToPrinterBytes(context, InvoicePrintWidget());
+
+    if (printerBytes != null) {
+      _printBytes( printer, printerBytes);
+      debugPrint('Widget sent to printer successfully');
+    } else {
+      debugPrint('Failed to convert widget to printer format');
+    }
+  }
+
+ Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes,{Uint8List?unit8List}) async {
     final type = printer.type;
     final device = printer.device;
 
@@ -203,9 +450,11 @@ Future<bool> ensureBluetoothPermissions() async {
       
 
       _manager.send(type: type, bytes: bytes);
+
       
      
       await Future.delayed(Duration(milliseconds: 500 + (bytes.length ~/ 10)));
+
       
       await _manager.disconnect(type: type);
       
@@ -326,8 +575,7 @@ PaperSize _getPaperSize(String? paperSize) {
           styles: PosStyles(align: PosAlign.center, bold: true)),
       ...generator.text('   TEST PRINT   ',
           styles: PosStyles(align: PosAlign.center, bold: true)),
-      ...generator.text('***************',
-          styles: PosStyles(align: PosAlign.center, bold: true)),
+      ...generator.text('***************', styles: PosStyles(align: PosAlign.center, bold: true)),
       ...generator.hr(),
       ...generator.text('Printer: ${p.device.name}'),
       if (p.device.address != null)
