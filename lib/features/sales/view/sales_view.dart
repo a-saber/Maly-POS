@@ -74,18 +74,6 @@ class _SalesViewState extends State<SalesView> {
                 ),
               )
             : null,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // هنا حط الفانكشن بتاعت الطباعة
-            // مثلاً: GetSalesCubit.get(context).printSales();
-          },
-          backgroundColor: AppColors.primary,
-          child: Icon(
-            Icons.print,
-            color: Colors.white,
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         body: CustomRefreshIndicator(
           onRefresh: () async {
             GetSalesCubit.get(context).getSales();
