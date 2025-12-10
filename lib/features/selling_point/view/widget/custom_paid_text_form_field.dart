@@ -155,7 +155,7 @@ class _PaidDialogState extends State<_PaidDialog> {
             )
             ),
             SizedBox(height: 10,),
-            Text("${totalPrice}",
+            Text("${totalPrice.toStringAsFixed(2)}",
             style: TextStyle(
               fontSize: 14,
               color: AppColors.black
