@@ -493,6 +493,6 @@ class MessageLookup extends MessageLookupByLibrary {
 
     "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete unit because there are products associated with it."),
     "Cannot delete tax because there are sales associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete tax because there are sales associated with it."),
-
+    "remainingAmount":MessageLookupByLibrary.simpleMessage("remainingAmount"),
   };
 }

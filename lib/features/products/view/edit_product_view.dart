@@ -62,6 +62,11 @@ class EditProductView extends StatelessWidget {
                   errorMessage =
                       "منتجات الخدمة لا يمكن أن يكون لها كميات مخزنية";
                 }
+                if (errorMessage.contains("The min sale price at unit") &&
+                    errorMessage.contains("must be ≥ cost price")) {
+                  errorMessage =
+                      "الحد الأدنى لسعر البيع يجب أن يكون أكبر من أو يساوي سعر التكلفة";
+                }
                 CustomPopUp.callMyToast(
                     context: context,
                     massage: errorMessage,
@@ -133,6 +138,7 @@ class EditProductDataView extends StatefulWidget {
 }
 
 class _EditProductDataViewState extends State<EditProductDataView> {
+  bool isSwitchOn = true;
   @override
   void initState() {
     super.initState();
@@ -159,6 +165,21 @@ class _EditProductDataViewState extends State<EditProductDataView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Switch(
+                    value: isSwitchOn,
+                    activeColor: AppColors.primary,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey.shade300,
+                    onChanged: (value) {
+                      setState(() {
+                        isSwitchOn = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(height: 10),
                 ImageManagerView(
                   onSelected: (image) => cubit.image = image,
                   imageUrl: cubit.product.imageUrl,

@@ -41,6 +41,7 @@ class AddProductDataView2 extends StatefulWidget {
 }
 
 class _AddProductDataView2State extends State<AddProductDataView2> {
+  bool isSwitchOn = true;
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AddProductCubit, AddProductState>(
@@ -91,6 +92,21 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Switch(
+                        value: isSwitchOn,
+                        activeColor: AppColors.primary,
+                        inactiveThumbColor: Colors.grey,
+                        inactiveTrackColor: Colors.grey.shade300,
+                        onChanged: (value) {
+                          setState(() {
+                            isSwitchOn = value;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 10),
                     ImageManagerView(
                       onSelected: (image) =>
                           AddProductCubit.get(context).image = image,
@@ -689,6 +705,11 @@ class AddProductView extends StatelessWidget {
                     "Service type products cannot have stock quantities")) {
                   errorMessage =
                       "منتجات الخدمة لا يمكن أن يكون لها كميات مخزنية";
+                }
+                if (errorMessage.contains("The min sale price at unit") &&
+                    errorMessage.contains("must be ≥ cost price")) {
+                  errorMessage =
+                      "الحد الأدنى لسعر البيع يجب أن يكون أكبر من أو يساوي سعر التكلفة";
                 }
 
                 CustomPopUp.callMyToast(

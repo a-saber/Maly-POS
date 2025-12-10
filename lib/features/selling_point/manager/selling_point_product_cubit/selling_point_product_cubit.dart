@@ -45,7 +45,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     // value = '';
     // discount = null;
     // autovalidateMode = AutovalidateMode.disabled;
-
+    madaAmount = 0.0;
+    onlineAmount = 0.0;
+    cashAmount=0.0;
     user = null;
     // paymentController = TextEditingController();
     emit(SellingPointProductInitial());
@@ -59,8 +61,13 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     emit(SellingPointProductInitial());
   }
 
-  void confirmPayment() async {
+  double remainingAmount() {
+    double paid = double.tryParse(paidController.text) ?? 0.0;
+    double total = totalPrice();
+    return paid > total ? paid - total : 0.0;
+  }
 
+  void confirmPayment() async {
     emit(SellingPointProductLoading());
     debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
     debugPrint(
@@ -77,7 +84,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
             ? (round2(totalPrice()).toString())
             : paidController.text,
       ),
-
+      madaAmount: madaAmount,
+      onlineAmount: onlineAmount,
+       online: onlineAmount, 
       subtotal: round2(subTotalPrice()),
       discounttotal: round2(discountPrice()),
       totalafterdiscount: round2(totalAfterDiscount()),
@@ -164,7 +173,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         if (taxes != null) {
           total += (priceOfProductAfterDicount(element) * (taxes / 100.0));
         }
-
       }
     }
 
@@ -182,14 +190,22 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   /////// end of calculation function
   /////////////////////////////////////////////////////////////////////////////////
 
-  void addProduct({required ProductModel product,ProductUnit? productUnit}) {
-    bool isFound = products.any((element) => element.product.id == product.id && element.productUnit?.unitId == productUnit?.unitId);
+  void addProduct({required ProductModel product, ProductUnit? productUnit}) {
+    bool isFound = products.any((element) =>
+        element.product.id == product.id &&
+        element.productUnit?.unitId == productUnit?.unitId);
     if (isFound) {
-      var myproduct = products.firstWhere((element) => element.product.id == product.id && element.productUnit?.unitId == productUnit?.unitId);
-      increaseCount(productId: myproduct.product.id ?? -1,productUnitId: productUnit?.unitId);
+      var myproduct = products.firstWhere((element) =>
+          element.product.id == product.id &&
+          element.productUnit?.unitId == productUnit?.unitId);
+      increaseCount(
+          productId: myproduct.product.id ?? -1,
+          productUnitId: productUnit?.unitId);
     } else {
-      if (product.type?.toLowerCase().trim() == ApiKeys.service.toLowerCase().trim()) {
-        products.add(ProductSellingModel(product: product, count: 1,productUnit: productUnit));
+      if (product.type?.toLowerCase().trim() ==
+          ApiKeys.service.toLowerCase().trim()) {
+        products.add(ProductSellingModel(
+            product: product, count: 1, productUnit: productUnit));
         updatePaid();
         emit(SellingPointProductAddingProduct());
       } else if (product.quantity == null || product.quantity == 0) {
@@ -197,15 +213,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         emit(SellingPointProductAddingFailingProduct());
         return;
       } else {
-        products.add(ProductSellingModel(product: product, count: 1,productUnit: productUnit));
+        products.add(ProductSellingModel(
+            product: product, count: 1, productUnit: productUnit));
         updatePaid();
         emit(SellingPointProductAddingProduct());
       }
     }
   }
 
-  void increaseCount({ required int productId,required int? productUnitId}) {
-    var product = products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId);
+  void increaseCount({required int productId, required int? productUnitId}) {
+    var product = products.firstWhere((element) =>
+        element.product.id == productId &&
+        element.productUnit?.unitId == productUnitId);
 
     bool canIncrease = product.increaseCount();
 
@@ -218,40 +237,70 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void decreaseCount({ required int productId,required int? productUnitId}) {
-    if (products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).count == 1) {
-      removeProduct(productId: productId,productUnitId: productUnitId);
+  void decreaseCount({required int productId, required int? productUnitId}) {
+    if (products
+            .firstWhere((element) =>
+                element.product.id == productId &&
+                element.productUnit?.unitId == productUnitId)
+            .count ==
+        1) {
+      removeProduct(productId: productId, productUnitId: productUnitId);
     } else {
-      products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).count--;
+      products
+          .firstWhere((element) =>
+              element.product.id == productId &&
+              element.productUnit?.unitId == productUnitId)
+          .count--;
       updatePaid();
       emit(SellingPointProductDecreaseCount());
     }
   }
 
-  void removeProduct({ required int productId,required int? productUnitId}) {
-    products.removeWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId);
+  void removeProduct({required int productId, required int? productUnitId}) {
+    products.removeWhere((element) =>
+        element.product.id == productId &&
+        element.productUnit?.unitId == productUnitId);
     updatePaid();
     emit(SellingPointProductRemoveProduct());
   }
-  void toggleShowEditPrice({ required int productId,required int? productUnitId}){
 
-       products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).toggleShowEditPrice();
+  void toggleShowEditPrice(
+      {required int productId, required int? productUnitId}) {
+    products
+        .firstWhere((element) =>
+            element.product.id == productId &&
+            element.productUnit?.unitId == productUnitId)
+        .toggleShowEditPrice();
 
     emit(SellingPointProductChangePrice());
   }
-  void changePrice({ required int productId,required int? productUnitId}) {
-  final bool valid  =products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).formKey.currentState!.validate();
 
-      if(!valid) {
-        products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).validatePrice();
-      }else{
-        products.firstWhere((element) => element.product.id == productId&&element.productUnit?.unitId==productUnitId).toggleShowEditPrice();
-      }
+  void changePrice({required int productId, required int? productUnitId}) {
+    final bool valid = products
+        .firstWhere((element) =>
+            element.product.id == productId &&
+            element.productUnit?.unitId == productUnitId)
+        .formKey
+        .currentState!
+        .validate();
+
+    if (!valid) {
+      products
+          .firstWhere((element) =>
+              element.product.id == productId &&
+              element.productUnit?.unitId == productUnitId)
+          .validatePrice();
+    } else {
+      products
+          .firstWhere((element) =>
+              element.product.id == productId &&
+              element.productUnit?.unitId == productUnitId)
+          .toggleShowEditPrice();
+    }
 
     updatePaid();
     emit(SellingPointProductChangePrice());
   }
-
 
   // Function Change
 
@@ -262,8 +311,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductChangeDiscount());
     }
   }
-
-
 
   void onChangeBranche(BrancheModel? branche) {
     if (branche?.id != repo.branch?.id) {
@@ -328,16 +375,29 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     products = [];
     user = null;
     discount = null;
+    madaAmount = 0.0;
+    onlineAmount = 0.0;
+    cashAmount = 0.0;
     updatePaid();
     emit(SellingPointProductResetProduct());
   }
 
-  void changePaid(String? value) {
-    if (value == null || ((double.tryParse(value) ?? 0) < totalPrice())) {
+  double madaAmount = 0.0;
+  double onlineAmount = 0.0;
+  double cashAmount = 0.0;
+  void changePaid(String? value, {double mada = 0.0, double online = 0.0}) {
+    double cash = double.tryParse(value ?? '0') ?? 0.0;
+    double total = cash + mada + online;
+
+    if (total < totalPrice()) {
       emit(SellingPointProductChangePaidFailing());
     } else {
-      paidController.text = value;
+      paidController.text = value ?? '0';
+      cashAmount = cash;
+      madaAmount = mada;
+      onlineAmount = online;
       emit(SellingPointProductChangePaid());
     }
   }
+
 }

@@ -324,5 +324,6 @@
         "secretKey": "المفتاح السري",
         "createCsid": "إنشاء CSID",
         "userName":"اسم المستخدم",
-        "ZakatAndTaxAuthority":"هيئة الزكاة والضريبة "
+        "ZakatAndTaxAuthority":"هيئة الزكاة والضريبة ",
+       , "remainingAmount":"الباقي"
 }

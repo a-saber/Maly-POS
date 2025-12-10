@@ -85,7 +85,7 @@ class ProductItemBuilder extends StatelessWidget {
                     //   overflow: TextOverflow.ellipsis,
                     // ),
                     Text(
-                      product.unit?.name ?? S.of(context).noUnitName,
+                      product.category?.name?? S.of(context).noCategories,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),

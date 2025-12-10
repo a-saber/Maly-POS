@@ -102,13 +102,6 @@ class AppConstant {
       ),
       HomeViewItemModel(
         color: Color(0xffffa700),
-        icon: Icons.handshake_outlined,
-        pageRoute: AppRoutes.suppliers,
-        title: S.of(context).suppliers,
-        canAccess: user.role?.suppliers ?? false,
-      ),
-      HomeViewItemModel(
-        color: Color(0xffffa700),
         icon: Icons.settings_outlined,
         pageRoute: AppRoutes.shopSettingView,
         title: S.of(context).shopSetting,
