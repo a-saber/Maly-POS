@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/helper/is_mobile.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
+import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/utils/app_padding.dart';
 import 'package:pos_app/core/widget/custom_app_bar.dart';
@@ -42,6 +43,7 @@ class _SalesViewState extends State<SalesView> {
   }
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
+  
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -72,6 +74,18 @@ class _SalesViewState extends State<SalesView> {
                 ),
               )
             : null,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            // هنا حط الفانكشن بتاعت الطباعة
+            // مثلاً: GetSalesCubit.get(context).printSales();
+          },
+          backgroundColor: AppColors.primary,
+          child: Icon(
+            Icons.print,
+            color: Colors.white,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         body: CustomRefreshIndicator(
           onRefresh: () async {
             GetSalesCubit.get(context).getSales();

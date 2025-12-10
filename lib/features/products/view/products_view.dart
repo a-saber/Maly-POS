@@ -9,7 +9,6 @@ import 'package:pos_app/core/widget/custom_floating_action_btn.dart';
 import 'package:pos_app/core/widget/custom_grid_view_card.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
 import 'package:pos_app/features/products/manager/get_all_products_cubit/get_all_products_cubit.dart';
-import 'package:pos_app/features/products/view/widget/custom_drop_down_product.dart';
 import 'package:pos_app/features/products/view/widget/product_cubit_build.dart';
 import 'package:pos_app/features/products/view/widget/product_item_builder.dart';
 import 'package:pos_app/generated/l10n.dart';
