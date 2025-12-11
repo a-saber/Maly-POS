@@ -276,7 +276,6 @@ class EditProductCubit extends Cubit<EditProductState> {
   void addProductUnits() {
   final newUnit = ProductUnits.empty();
   newUnit.id = null;
-  newUnit.isExistingUnit = false;
   productUnits.add(newUnit);
 
   if (productUnits.length == 1) {
@@ -400,7 +399,6 @@ class EditProductCubit extends Cubit<EditProductState> {
       for (var apiUnit in product.productUnits!) {
         final productUnit = ProductUnits.empty();
         productUnit.id = apiUnit.id;
-        productUnit.isExistingUnit = apiUnit.id != null;
         productUnit.unit = apiUnit.unit;
         productUnit.unitId = apiUnit.unitId;
         
@@ -452,7 +450,6 @@ class EditProductCubit extends Cubit<EditProductState> {
     } else {
       final baseUnit = ProductUnits.empty();
       baseUnit.unitId = unit?.id ?? product.baseUnitId;
-      baseUnit.isExistingUnit = false;
       baseUnit.unit = unit;
       baseUnit.unitId = unit?.id ?? product.baseUnitId;
       baseUnit.conversionFactor = "1";

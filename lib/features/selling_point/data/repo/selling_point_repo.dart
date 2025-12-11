@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:nearpay_flutter_sdk/models/transaction_receipt/transaction_receipt.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
@@ -38,6 +37,9 @@ class SellingPointRepo {
     required CustomerModel? customer,
     required List<ProductSellingModel> products,
     required double paid,
+    required double online,
+     required double madaAmount,
+      required double onlineAmount,
   }) async {
     String? payResponseId;
     try {
@@ -88,9 +90,7 @@ class SellingPointRepo {
         ApiKeys.branchid: branch?.id,
         // ApiKeys.customerid: customer.id,
         ApiKeys.ordertype: typeOfTakeOrder?.apiKey,
-        ApiKeys.products: products
-            .map((e) => e.toJson())
-            .toList(),
+        ApiKeys.products: products.map((e) => e.toJson()).toList(),
       };
       if (discount != null) {
         data[ApiKeys.discountid] = discount.id;
@@ -99,19 +99,19 @@ class SellingPointRepo {
         data[ApiKeys.customerid] = customer.id;
       }
       Uint8List? madaReceipt;
-      if(paymentType?.apiKey == ApiKeys.mada){
+      if (paymentType?.apiKey == ApiKeys.mada) {
         print('MADA 01 ****** ');
-        var madaResponse = await PaymentHelper.addTransaction(amount: totalaftertax);
+        var madaResponse =
+            await PaymentHelper.addTransaction(amount: totalaftertax);
         print('MADA 02 ****** success');
         madaResponse.fold((error) {
           print('NearPayException Error 666: $error');
           throw NearPayException(error);
-        },
-        (madaResponse)async{
+        }, (madaResponse) async {
           print('MADA 03 ****** success');
 
           payResponseId = madaResponse.transaction_uuid;
-          data["nearpay_transaction_uuid"]=madaResponse.transaction_uuid;
+          data["nearpay_transaction_uuid"] = madaResponse.transaction_uuid;
           madaReceipt = await PaymentHelper.toImage(receipt: madaResponse);
         });
       }
@@ -130,25 +130,24 @@ class SellingPointRepo {
             apiResponse: response,
             branchName: branch?.name ?? 'مش معروف',
             paid: paid,
-          madaReceipt: madaReceipt
-        ));
+            madaReceipt: madaReceipt));
       } else {
-        if(payResponseId != null) {
-          await PaymentHelper.reverseTransaction(originalTransactionUUID: payResponseId!);
+        if (payResponseId != null) {
+          await PaymentHelper.reverseTransaction(
+              originalTransactionUUID: payResponseId!);
         }
         return Left(
           response,
         );
       }
-    }
-    on NearPayException catch (e) {
+    } on NearPayException catch (e) {
       print('MADA 04 ****** NearPayException');
 
       return Left(ApiResponse.fromErrorMSG(e.message));
-    }
-    catch (e) {
-      if(payResponseId != null) {
-        await PaymentHelper.reverseTransaction(originalTransactionUUID: payResponseId!);
+    } catch (e) {
+      if (payResponseId != null) {
+        await PaymentHelper.reverseTransaction(
+            originalTransactionUUID: payResponseId!);
       }
       debugPrint(e.toString());
       // ignore: use_build_context_synchronously
@@ -164,14 +163,13 @@ class SellingPointRepo {
         (element) => element.id == categoryId,
       );
 
-  Future<Either<ApiResponse, List<CategorySavingDataModel>>> getData({
-    required int categortyId,
-    bool refreshAllData = false,
-    String search = '',
-    bool refreshCurrentCategory = false,
-    int perpage = 10,
-    bool fromHome=false
-  }) async {
+  Future<Either<ApiResponse, List<CategorySavingDataModel>>> getData(
+      {required int categortyId,
+      bool refreshAllData = false,
+      String search = '',
+      bool refreshCurrentCategory = false,
+      int perpage = 10,
+      bool fromHome = false}) async {
     try {
       if (refreshAllData) {
         categorySavingDataModels.clear();
@@ -217,7 +215,8 @@ class SellingPointRepo {
         }
       } else {
         if (search.isEmpty) {
-          if (categorySavingDataModels[index].getProductsModel == null || refreshCurrentCategory) {
+          if (categorySavingDataModels[index].getProductsModel == null ||
+              refreshCurrentCategory) {
             String url = await ApiEndPoints.getProducts();
             final response = await api.get(
               url: url,
@@ -268,7 +267,8 @@ class SellingPointRepo {
             }
           }
         } else {
-          if (search != categorySavingDataModels[index].query || categorySavingDataModels[index].getProductsSearchModel == null) {
+          if (search != categorySavingDataModels[index].query ||
+              categorySavingDataModels[index].getProductsSearchModel == null) {
             String url = await ApiEndPoints.getProducts();
             final response = await api.get(
               url: url,
@@ -304,7 +304,8 @@ class SellingPointRepo {
                 url: categorySavingDataModels[index]
                         .getProductsSearchModel
                         ?.data
-                        ?.nextPageUrl ?? '');
+                        ?.nextPageUrl ??
+                    '');
             if (response.status) {
               GetProductsModel getProductsModel =
                   GetProductsModel.fromJson(response.data);

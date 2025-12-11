@@ -50,7 +50,7 @@ class SalesRepo {
           to: to,
           typeOfTakeOrder: typeOfTakeOrder,
         );
-
+          print("${queryParameters}");
         url = await ApiEndPoints.getSales();
         apiResponse = await api.get(
           url: url,

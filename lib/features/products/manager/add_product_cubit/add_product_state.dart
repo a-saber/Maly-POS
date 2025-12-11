@@ -11,7 +11,7 @@ final class AddProductSuccess extends AddProductState {
   final ProductModel? product;
   AddProductSuccess({required this.product});
 }
-
+final class AddProductInitialized extends AddProductState {}
 final class AddProductFailing extends AddProductState {
   final ApiResponse errMessage;
   AddProductFailing({required this.errMessage});

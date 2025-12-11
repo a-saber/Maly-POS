@@ -56,9 +56,20 @@ class EditProductView extends StatelessWidget {
               Navigator.pop(context, state.product);
             } else if (state is EditProductFailing) {
               if (context.mounted) {
+                String errorMessage = state.errMessage.toString();
+                if (errorMessage.contains(
+                    "Service type products cannot have stock quantities")) {
+                  errorMessage =
+                      "منتجات الخدمة لا يمكن أن يكون لها كميات مخزنية";
+                }
+                if (errorMessage.contains("The min sale price at unit") &&
+                    errorMessage.contains("must be ≥ cost price")) {
+                  errorMessage =
+                      "الحد الأدنى لسعر البيع يجب أن يكون أكبر من أو يساوي سعر التكلفة";
+                }
                 CustomPopUp.callMyToast(
                     context: context,
-                    massage: state.errMessage,
+                    massage: errorMessage,
                     state: PopUpState.ERROR);
               }
             } else if (state is UpdateProductUnitsCostWarning) {
@@ -127,6 +138,7 @@ class EditProductDataView extends StatefulWidget {
 }
 
 class _EditProductDataViewState extends State<EditProductDataView> {
+  bool isSwitchOn = true;
   @override
   void initState() {
     super.initState();
@@ -153,6 +165,21 @@ class _EditProductDataViewState extends State<EditProductDataView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Switch(
+                    value: isSwitchOn,
+                    activeColor: AppColors.primary,
+                    inactiveThumbColor: Colors.grey,
+                    inactiveTrackColor: Colors.grey.shade300,
+                    onChanged: (value) {
+                      setState(() {
+                        isSwitchOn = value;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(height: 10),
                 ImageManagerView(
                   onSelected: (image) => cubit.image = image,
                   imageUrl: cubit.product.imageUrl,
@@ -233,7 +260,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 else
                   CustomFilledBtn(
                     text: S.of(context).update,
-                    onPressed: (){
+                    onPressed: () {
                       cubit.editProduct(context);
                     },
                   ),
@@ -272,40 +299,23 @@ class _EditProductDataViewState extends State<EditProductDataView> {
           ],
           rows: List.generate(cubit.productUnits.length, (index) {
             final unit = cubit.productUnits[index];
-            final isExistingUnit = unit.isExistingUnit;
 
             return DataRow(cells: [
               DataCell(
                 SizedBox(
                   width: 150,
-                  child: isExistingUnit
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.grey.shade300),
-                          ),
-                          child: Text(
-                            unit.unit?.name ?? "",
-                            style: AppFontStyle.formText(context: context),
-                          ),
-                        )
-                      : CustomDropDownUnit(
-                          value: unit.unit,
-                          onChanged: (value) {
-                            if (value != null) {
-                              cubit.onUnitChangedd(
-                                  unitModel: value, index: index);
-                            }
-                          },
-                        ),
+                  child: CustomDropDownUnit(
+                    value: unit.unit,
+                    onChanged: (value) {
+                      if (value != null) {
+                        cubit.onUnitChangedd(unitModel: value, index: index);
+                      }
+                    },
+                  ),
                 ),
               ),
               DataCell(_customTextFormFieldTable(
                   hintText: "المعامل",
-                  enabled: !isExistingUnit,
                   validator: (value) => null,
                   controller: unit.factoryController,
                   onChanged: (value) => cubit.updateUnitPrices(index))),
@@ -335,55 +345,44 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 onChanged: (value) => cubit.onChangeMinPriceWithTax(
                     index: index, newValue: value),
               )),
-              DataCell(_customTextFormFieldTable(
-                hintText: "سعر البيع",
-                enabled: true,
-                validator: (value) =>
-                    MyFormValidators.validateDouble(value, context: context),
-                controller: unit.salePriceWithoutTaxController,
-                onChanged: (value) {
-                    if (cubit
-                                                .productUnits[index]
-                                                .salePriceWithoutTaxController!
-                                                .text !=
-                                            value) {
-                                          cubit
-                                              .productUnits[index]
-                                              .salePriceWithoutTaxController!
-                                              .text = value;
-                                        }
-                                        cubit.onChangeSalePrice(
-                                            cubit.productUnits[index]);
-                                        if (index == 0) {
-                                          cubit.onChangeCost(0);
-                                        }
-                }
-                      
-                    ),
+              DataCell(
+                _customTextFormFieldTable(
+                    hintText: "سعر البيع",
+                    enabled: true,
+                    validator: (value) => MyFormValidators.validateDouble(value,
+                        context: context),
+                    controller: unit.salePriceWithoutTaxController,
+                    onChanged: (value) {
+                      if (cubit.productUnits[index]
+                              .salePriceWithoutTaxController!.text !=
+                          value) {
+                        cubit.productUnits[index].salePriceWithoutTaxController!
+                            .text = value;
+                      }
+                      cubit.onChangeSalePrice(cubit.productUnits[index]);
+                      if (index == 0) {
+                        cubit.onChangeCost(0);
+                      }
+                    }),
               ),
               DataCell(_customTextFormFieldTable(
-                hintText: "سعر البيع بالضريبة",
-                enabled: true,
-                validator: (value) =>
-                    MyFormValidators.validateDouble(value, context: context),
-                controller: unit.salePriceWithTaxController,
-                onChanged: (value) {
-                  if (cubit
-                                              .productUnits[index]
-                                              .salePriceWithTaxController!
-                                              .text !=
-                                          value) {
-                                        cubit
-                                            .productUnits[index]
-                                            .salePriceWithTaxController!
-                                            .text = value;
-                                      }
-                                      cubit.changeSalePriceWithTax(
-                                          cubit.productUnits[index]);
-                                      if (index == 0) {
-                                        cubit.onChangeCost(0);
-                                      }
-                })),
+                  hintText: "سعر البيع بالضريبة",
+                  enabled: true,
+                  validator: (value) =>
+                      MyFormValidators.validateDouble(value, context: context),
+                  controller: unit.salePriceWithTaxController,
+                  onChanged: (value) {
+                    if (cubit.productUnits[index].salePriceWithTaxController!
+                            .text !=
+                        value) {
+                      cubit.productUnits[index].salePriceWithTaxController!
+                          .text = value;
+                    }
+                    cubit.changeSalePriceWithTax(cubit.productUnits[index]);
+                    if (index == 0) {
+                      cubit.onChangeCost(0);
+                    }
+                  })),
               DataCell(_customTextFormFieldTable(
                 hintText: "الباركود",
                 enabled: true,
@@ -398,7 +397,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
               )),
               DataCell(
                 ///todo stop with out condition
-               /* isExistingUnit
+                /* isExistingUnit
                     ? Tooltip(
                         message: 'لا يمكن تعديل الوحدات الموجودة مسبقاً',
                         child: Container(
@@ -419,19 +418,21 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                       )
                     :*/
                 CustomTextBtn(
-                        text: "اضافة كمية",
-                        textColor: AppColors.primary,
-                        onPressed: () {
-                          _showAddQuantityDialog(context, cubit, index);
-                        },
-                      ),
+                  text: "اضافة كمية",
+                  textColor: AppColors.primary,
+                  onPressed: () {
+                    _showAddQuantityDialog(context, cubit, index);
+                  },
+                ),
               ),
               DataCell(IconButton(
                 icon: Icon(Icons.delete),
                 color: Colors.red,
-                disabledColor: Colors.grey,
-                onPressed:
-                    isExistingUnit ? null : () => cubit.removeNewUnit(index),
+                onPressed: cubit.productUnits.length > 1
+                    ? () {
+                        cubit.removeNewUnit(index);
+                      }
+                    : null,
               )),
             ]);
           }),
@@ -442,22 +443,10 @@ class _EditProductDataViewState extends State<EditProductDataView> {
 
   void _showAddQuantityDialog(
       BuildContext context, EditProductCubit cubit, int index) {
-    // تحقق مرة أخرى أن الوحدة جديدة
-    if (cubit.productUnits[index].isExistingUnit) {
-      CustomPopUp.callMyToast(
-        context: context,
-        massage: 'لا يمكن إضافة كميات للوحدات الموجودة مسبقاً',
-        state: PopUpState.ERROR,
-      );
-      return;
-    }
-
     showDialog(
       context: context,
       builder: (ctx) {
         List<BranchQuantity> tempBranchQuantities = [];
-        
-        // نسخ الكميات الموجودة
         for (int i = 0; i < cubit.productUnits[index].branchQty.length; i++) {
           tempBranchQuantities
               .add(BranchQuantity.from(cubit.productUnits[index].branchQty[i]));
@@ -539,7 +528,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                                           setState(() {
                                             if (value != null) {
                                               tempBranchQuantities[branchIndex]
-                                                  .branch = BrancheModel.from(value);
+                                                      .branch =
+                                                  BrancheModel.from(value);
                                               tempBranchQuantities[branchIndex]
                                                   .branchId = value.id;
                                             }
@@ -550,8 +540,9 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                                     Expanded(
                                       child: CustomFormField(
                                         hintText: "الكمية",
-                                        controller: tempBranchQuantities[branchIndex]
-                                            .quantityController,
+                                        controller:
+                                            tempBranchQuantities[branchIndex]
+                                                .quantityController,
                                         validator: (value) =>
                                             MyFormValidators.validateInteger(
                                                 value,
@@ -566,7 +557,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                                     IconButton(
                                       onPressed: () {
                                         setState(() {
-                                          tempBranchQuantities.removeAt(branchIndex);
+                                          tempBranchQuantities
+                                              .removeAt(branchIndex);
                                         });
                                       },
                                       icon: Icon(
@@ -599,24 +591,22 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                     text: "حفظ",
                     textColor: AppColors.primary,
                     onPressed: () {
-                      // التحقق من البيانات قبل الحفظ
                       bool isValid = true;
                       Set<int?> branchIds = {};
-                      
+
                       for (var bq in tempBranchQuantities) {
-                        // تحقق من وجود فرع وكمية
-                        if (bq.branch == null || 
+                        if (bq.branch == null ||
                             bq.quantityController.text.isEmpty) {
                           isValid = false;
                           CustomPopUp.callMyToast(
                             context: context,
-                            massage: 'الرجاء اختيار الفرع وإدخال الكمية لجميع الصفوف',
+                            massage:
+                                'الرجاء اختيار الفرع وإدخال الكمية لجميع الصفوف',
                             state: PopUpState.ERROR,
                           );
                           break;
                         }
-                        
-                        // تحقق من عدم تكرار الفرع
+
                         if (branchIds.contains(bq.branch?.id)) {
                           isValid = false;
                           CustomPopUp.callMyToast(
@@ -630,7 +620,6 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                       }
 
                       if (isValid) {
-                        // تحديث الكميات من الـ controllers
                         for (var bq in tempBranchQuantities) {
                           bq.qunantity =
                               int.tryParse(bq.quantityController.text) ?? 0;
@@ -641,7 +630,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                             index: index,
                             branchQuantities: tempBranchQuantities);
                         Navigator.pop(ctx);
-                        
+
                         CustomPopUp.callMyToast(
                           context: context,
                           massage: 'تم حفظ الكميات بنجاح',

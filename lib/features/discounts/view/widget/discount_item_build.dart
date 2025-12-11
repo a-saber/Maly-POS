@@ -98,42 +98,41 @@ class DiscountItemLoading extends StatelessWidget {
           ]),
       child: Align(
         alignment: AlignmentDirectional.centerStart,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "unit name",
-              style: AppFontStyle.itemsTitle(
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(start: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Discount Name",
+                style: AppFontStyle.itemsTitle(
+                  context: context,
+                  color: AppColors.black,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ).redacted(
                 context: context,
-                color: AppColors.black,
+                redact: true,
+                configuration: RedactedConfiguration(
+                  animationDuration: const Duration(milliseconds: 800),
+                ),
               ),
-            ).redacted(
-              context: context,
-              redact: true,
-              configuration: RedactedConfiguration(
-                animationDuration: const Duration(milliseconds: 800), //default
+              const Text(
+                "100.00 %",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ).redacted(
+                context: context,
+                redact: true,
+                configuration: RedactedConfiguration(
+                  animationDuration: const Duration(milliseconds: 800),
+                ),
               ),
-            ),
-            Text(
-              "100 %",
-            ).redacted(
-              context: context,
-              redact: true,
-              configuration: RedactedConfiguration(
-                animationDuration: const Duration(milliseconds: 800), //default
-              ),
-            ),
-            Text(
-              "descriptiondescription",
-            ).redacted(
-              context: context,
-              redact: true,
-              configuration: RedactedConfiguration(
-                animationDuration: const Duration(milliseconds: 800), //default
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

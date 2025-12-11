@@ -2589,6 +2589,14 @@ class S {
       args: [],
     );
   }
+  String get remainingAmount {
+    return Intl.message(
+      'Remaining Amount',
+      name: 'remainingAmount',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

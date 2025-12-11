@@ -42,11 +42,8 @@ class PaymentHelper {
   }
 
   static Future<Uint8List> toImage({required TransactionReceipt receipt}) async {
-    Uint8List? imageBytes;
-    while(imageBytes == null) {
-      imageBytes = await nearpay.receiptToImage(receipt: receipt,);
-    }
-    return imageBytes;
+     return await nearpay.receiptToImage(receipt: receipt,);
+
   }
   // Process a purchase transaction
   static Future<Either<String, TransactionReceipt>> addTransaction({ required double amount}) async

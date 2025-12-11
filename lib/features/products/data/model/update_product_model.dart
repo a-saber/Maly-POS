@@ -318,7 +318,6 @@ class ProductUnits {
   List<BranchQuantity> branchQty = [];
   TextEditingController? minPriceWithoutTaxValue;
   String? minPriceWithTax;
-  bool isExistingUnit = false;
 
   ProductUnits({
     this.id,
@@ -343,7 +342,6 @@ class ProductUnits {
     this.salePriceWithTaxController,
     this.minPriceWithTax,
     this.minPriceWithTaxController,
-    this.isExistingUnit = false,
   });
 
   factory ProductUnits.empty({UnitModel? unit}) {
@@ -357,7 +355,6 @@ class ProductUnits {
       salePriceWithoutTaxController: TextEditingController(),
       salePriceWithTaxController: TextEditingController(),
       minPriceWithTaxController: TextEditingController(),
-      isExistingUnit: false,
       unit: unit
 
     );
@@ -437,7 +434,6 @@ class ProductUnits {
     scaleBarcodeController = TextEditingController(text: scaleBarcode ?? "");
 
     unit = json['unit'] != null ? UnitModel.fromJson(json['unit']) : null;
-    isExistingUnit = id != null;
     branchQty = [];
 
     if (json['opening_stocks'] != null && json['opening_stocks'] is List) {
@@ -482,14 +478,6 @@ class ProductUnits {
   for (int i = 0; i < branches.length; i++) {
     data["units[$index][opening_stocks][$i][branch_id]"] = branches[i].branch?.id;
     data["units[$index][opening_stocks][$i][quantity]"] = branches[i].quantityController.text;
-  }
-    if (!isExistingUnit) {
-    for (int i = 0; i < branches.length; i++) {
-      data["units[$index][opening_stocks][$i][branch_id]"] =
-          branches[i].branchId;
-      data["units[$index][opening_stocks][$i][quantity]"] =
-          branches[i].quantityController.text;
-    }
   }
 
   return data;

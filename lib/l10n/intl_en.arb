@@ -328,5 +328,6 @@
         "createCsid": "Create CSID",
         "userName":"User Name",
         "copy": "Copy",
-        "ZakatAndTaxAuthority":"Zakat and Tax Authority"
+        "ZakatAndTaxAuthority":"Zakat and Tax Authority",
+        "remainingAmount":"remainingAmount",
 }
