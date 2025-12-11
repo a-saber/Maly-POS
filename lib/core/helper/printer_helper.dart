@@ -162,6 +162,7 @@ class PrinterHelper {
     try {
 
      final invoice= await  convertPdfToThermalPrinter( bytes)??[];
+
       final byte = await addCutCommand(invoice,paperSize??'80');
       await _printBytes(printer, byte);
     } catch (e) {
@@ -178,7 +179,7 @@ class PrinterHelper {
         ...pdfBytes,
         ...generator.feed(2),
         ...generator.cut(),
-      ];
+        ];
     }
 
 

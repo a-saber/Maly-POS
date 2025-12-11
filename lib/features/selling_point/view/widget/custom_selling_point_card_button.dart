@@ -131,10 +131,8 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                         debugPrint(' Using paper size: "${printer.paperSize}"');
                         if(isSunmi||printer.printerType.toString().toLowerCase().contains('sunmi')){
 
-                            await printSunmiPDF(await salesInvoicesPdf(
-                              state.printModel.apiResponse.data as Map<
-                                  String,
-                                  dynamic>,
+                            await printSunmiPDF(await salesInvoicesPdfSunmi(
+                                state.printModel.apiResponse.data as Map<String, dynamic>,
                               branchName: state.printModel.branchName,
                               paid: state.printModel.paid,size: printer.paperSize??'80'), '58');
 
