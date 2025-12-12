@@ -330,4 +330,6 @@
         "copy": "Copy",
         "ZakatAndTaxAuthority":"Zakat and Tax Authority",
         "remainingAmount":"remainingAmount",
+        "paymentsMethods":"paymentsMethods",
+        "discountType":{"Fixed","Percentage"}
 }

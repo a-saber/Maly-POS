@@ -73,10 +73,27 @@ class DiscountDataBuild extends StatelessWidget {
                   value: discountType,
                   items: DiscountType.values,
                   onChanged: onChanged,
-                  builder: (DiscountType? item) => Text(
-                    item?.name ?? '',
-                    style: AppFontStyle.formText(context: context),
-                  ),
+                  builder: (DiscountType? item) {
+                    if (item == null) return Text('');
+
+                    String translatedName;
+                    switch (item) {
+                      case DiscountType.fixed:
+                        translatedName =S.of(context).fixed; // أو S.of(context).fixed
+                        break;
+                      case DiscountType.percentage:
+                        translatedName =
+                            'نسبة مئوية'; // أو S.of(context).percentage
+                        break;
+                      default:
+                        translatedName = item.name;
+                    }
+
+                    return Text(
+                      translatedName,
+                      style: AppFontStyle.formText(context: context),
+                    );
+                  },
                 ),
                 SizedBox(
                   height: 20,

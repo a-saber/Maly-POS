@@ -490,5 +490,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "Cannot delete unit because there are products associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الوحدة لأن هناك منتجات مرتبطة بها."),
     "Cannot delete tax because there are sales associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الضريبه لأن هناك منتجات مرتبطة بها."),
     "remainingAmount": MessageLookupByLibrary.simpleMessage("الباقي "),
+    "paymentsMethods":MessageLookupByLibrary.simpleMessage("طرق الدفع"),
+    "Fixed": MessageLookupByLibrary.simpleMessage("ثابت"),
+    "Percentage": MessageLookupByLibrary.simpleMessage("  نسبة مئوية"), 
   };
 }

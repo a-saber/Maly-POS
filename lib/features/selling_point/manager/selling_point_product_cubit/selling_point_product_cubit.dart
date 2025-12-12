@@ -385,19 +385,16 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   double madaAmount = 0.0;
   double onlineAmount = 0.0;
   double cashAmount = 0.0;
-  void changePaid(String? value, {double mada = 0.0, double online = 0.0}) {
-    double cash = double.tryParse(value ?? '0') ?? 0.0;
-    double total = cash + mada + online;
-
-    if (total < totalPrice()) {
-      emit(SellingPointProductChangePaidFailing());
-    } else {
-      paidController.text = value ?? '0';
-      cashAmount = cash;
-      madaAmount = mada;
-      onlineAmount = online;
-      emit(SellingPointProductChangePaid());
-    }
+void changePaid(String newPaidAmount, {double mada = 0.0, double online = 0.0}) {
+  double totalPaid = double.tryParse(newPaidAmount) ?? 0.0;
+  
+  if (totalPaid >= totalPrice()) {
+    paidController.text = totalPaid.toStringAsFixed(2);
+    
+    emit(SellingPointProductChangePaid());
+  } else {
+    emit(SellingPointProductChangePaidFailing());
   }
+}
 
 }

@@ -160,6 +160,7 @@ abstract class ApiKeys {
   static const String mada = 'nearpay';
   static const String allowLowerPrices = 'allow_lower_prices';
   static const String sellInNegativeQuantity = 'sell_in_negative_quantity';
+  static const String paymentmethods='payment-methods';
 }
 
 abstract class ApiEndPoints {
@@ -285,7 +286,10 @@ abstract class ApiEndPoints {
     final baseUrl = await _getPosUrl();
     return "${baseUrl}shifts";
   }
-
+  static Future<String> getAllPaymentMethods() async {
+    final baseUrl = await _getPosUrl();
+    return "${baseUrl}payment-methods";
+  }
   static Future<String> getShiftDetails({
     required int shiftId,
     int perPage = 10,

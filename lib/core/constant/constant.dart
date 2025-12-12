@@ -16,6 +16,7 @@ import 'package:pos_app/features/selling_point/data/model/type_of_take_order_mod
 import 'package:pos_app/features/store_move/data/model/type_of_movement_model.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+
 class AppConstant {
   static int formExpandedTableandMobile = 4;
 
@@ -161,6 +162,15 @@ class AppConstant {
         canAccess: true,
         // canAccess: true,
       ),
+      HomeViewItemModel(
+        color:Color(0xffffa700),
+        icon: Icons.payment,
+        pageRoute: AppRoutes.paymentMethodsView,
+        title: S.of(context).paymentsMethods,
+        canAccess: true,
+        // canAccess: true,
+
+      )
     ];
 
     List<HomeViewItemBuilder> homeViewItemBuilders = [];
