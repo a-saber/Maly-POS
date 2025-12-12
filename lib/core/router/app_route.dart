@@ -32,6 +32,8 @@ import 'package:pos_app/features/expense_categories/presentation/add_expense_cat
 import 'package:pos_app/features/expense_categories/presentation/edit_expense_categories_view.dart';
 import 'package:pos_app/features/expense_categories/presentation/expense_categories_view.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
+import 'package:pos_app/features/paymentmethods/manager/cubit/paymentscubit.dart';
+import 'package:pos_app/features/paymentmethods/view/paymentview.dart';
 import 'package:pos_app/features/shifts/data/model/getshift.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/home/view/home_view.dart';
@@ -168,6 +170,7 @@ class AppRoutes {
   static const String shiftDetails = '/shiftDetailsView';
   static const String orderDetailsView = '/orderDetailsView';
   static const String scidGenerationView = '/scidGenerationView';
+  static const String paymentMethodsView = '/paymentMethodsViews';
 
   // Custom route with left-to-right + fade transition
   static PageRouteBuilder customGetPageRouteBuilder({
@@ -657,6 +660,14 @@ class AppRoutes {
               ),
             ),
           );
+        case paymentMethodsView:
+          return customGetPageRouteBuilder(
+            page: BlocProvider.value(
+              value: MyServiceLocator.getIt<PaymentMethodsCubit>(),
+                child:PaymentMethodsViews(
+                  
+                ) ),
+        );
 
         default:
           throw Exception("Route not found: ${settings.name}");

@@ -102,7 +102,14 @@ class S {
       args: [],
     );
   }
-
+  String get paymentsMethods {
+    return Intl.message(
+      'paymentsMethods',
+      name: 'paymentsMethods',
+      desc: '',
+      args: [],
+    );
+  }
   /// `Password is required`
   String get passwordisrequired {
     return Intl.message(
@@ -176,6 +183,14 @@ class S {
   /// `is required`
   String get isrequired {
     return Intl.message('is required', name: 'isrequired', desc: '', args: []);
+  }
+  String get discountTypes {
+    return Intl.message(
+      'discountTypes',
+      name: 'discountTypes',
+      desc: '',
+      args: [],
+    );
   }
 
   /// `Name`
@@ -1737,7 +1752,23 @@ class S {
       args: [],
     );
   }
-
+  String get fixed {
+    return Intl.message(
+      'Fixed',
+      name: 'fixed',
+      desc: '',
+      args: [],
+    );
+  }
+  String get percentage {
+    return Intl.message(
+      'Percentage',
+      name: 'percentage',
+      desc: '',
+      args: [],
+    );
+  }
+  
   /// `User Info`
   String get userInfo {
     return Intl.message('User Info', name: 'userInfo', desc: '', args: []);

@@ -19,6 +19,8 @@ import 'package:pos_app/features/expense_categories/data/repo/expense_categories
 import 'package:pos_app/features/expense_categories/manager/get_expense_categories_cubit/get_expense_categories_cubit.dart';
 import 'package:pos_app/features/home/data/repo/home_repo.dart';
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
+import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
+import 'package:pos_app/features/paymentmethods/manager/cubit/paymentscubit.dart';
 import 'package:pos_app/features/shifts/data/repo/shift_repo.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/permissions/data/repo/permission_repo.dart';
@@ -224,6 +226,12 @@ class MyServiceLocator {
       getIt(),
     ));
     registerSingleton<ScidGenerationCubit>(ScidGenerationCubit(
+      getIt(),
+    ));
+    registerSingleton<PaymentMethodsRepo>(PaymentMethodsRepo(
+      api: getIt(),
+    ));
+    registerSingleton<PaymentMethodsCubit>(PaymentMethodsCubit(
       getIt(),
     ));
   }

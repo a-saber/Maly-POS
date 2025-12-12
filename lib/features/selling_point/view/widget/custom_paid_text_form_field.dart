@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_form_validators.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
-import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
@@ -28,14 +27,16 @@ class CustomPaidTextFormField extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (dialogContext) => BlocProvider.value(
-                    value: MyServiceLocator.getSingleton<SellingPointProductCubit>(),
+                    value: MyServiceLocator.getSingleton<
+                        SellingPointProductCubit>(),
                     child: _PaidDialog(),
                   ),
                 );
               },
               child: CustomFormField(
                 enabled: false,
-                controller: SellingPointProductCubit.get(context).paidController,
+                controller:
+                    SellingPointProductCubit.get(context).paidController,
                 labelText: S.of(context).paid,
                 validator: (value) => MyFormValidators.validateDoublePrice(
                   value,
@@ -69,11 +70,18 @@ class _PaidDialogState extends State<_PaidDialog> {
     super.initState();
     final cubit = SellingPointProductCubit.get(context);
     totalPrice = cubit.totalPrice();
-    
-    cashController = TextEditingController(text: cubit.paidController.text);
+
+    double currentPaid = double.tryParse(cubit.paidController.text) ?? 0.0;    
+    cashController = TextEditingController(
+      text: currentPaid > 0 ? currentPaid.toStringAsFixed(2) : '0.00'
+    );
     madaController = TextEditingController(text: '0.00');
     onlineController = TextEditingController(text: '0.00');
-    remainingController = TextEditingController(text: calculateRemaining().toStringAsFixed(2));
+    
+    double remaining = currentPaid > totalPrice ? currentPaid - totalPrice : totalPrice - currentPaid;
+    remainingController = TextEditingController(
+      text: remaining.toStringAsFixed(2)
+    );
   }
 
   @override
@@ -87,13 +95,18 @@ class _PaidDialogState extends State<_PaidDialog> {
 
   // Auto fill the remaining amount when tapping on a field
   void autoFillRemaining(TextEditingController controller) {
+    double currentValue = double.tryParse(controller.text) ?? 0.0;
+    if (currentValue != 0.0) {
+      return;
+    }
+
     double cash = double.tryParse(cashController.text) ?? 0.0;
     double mada = double.tryParse(madaController.text) ?? 0.0;
     double online = double.tryParse(onlineController.text) ?? 0.0;
-    
+
     double paid = cash + mada + online;
     double remaining = totalPrice - paid;
-    
+
     if (remaining > 0) {
       setState(() {
         controller.text = remaining.toStringAsFixed(2);
@@ -106,7 +119,7 @@ class _PaidDialogState extends State<_PaidDialog> {
   void fillFullAmount(TextEditingController targetController) {
     setState(() {
       targetController.text = totalPrice.toStringAsFixed(2);
-      
+
       // Zero out other fields
       if (targetController != cashController) {
         cashController.text = '0.00';
@@ -117,7 +130,7 @@ class _PaidDialogState extends State<_PaidDialog> {
       if (targetController != onlineController) {
         onlineController.text = '0.00';
       }
-      
+
       updateRemaining();
     });
   }
@@ -126,7 +139,7 @@ class _PaidDialogState extends State<_PaidDialog> {
     double cash = double.tryParse(cashController.text) ?? 0.0;
     double mada = double.tryParse(madaController.text) ?? 0.0;
     double online = double.tryParse(onlineController.text) ?? 0.0;
-    
+
     if (mada == 0.0 && online == 0.0) {
       return cash > totalPrice ? cash - totalPrice : 0.0;
     } else {
@@ -149,18 +162,17 @@ class _PaidDialogState extends State<_PaidDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(S.of(context).cashTotal,
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.black
-            )
+                style: TextStyle(fontSize: 16, color: AppColors.black)),
+            SizedBox(
+              height: 10,
             ),
-            SizedBox(height: 10,),
-            Text("${totalPrice.toStringAsFixed(2)}",
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.black
-            ),),
-            SizedBox(height: 5,),
+            Text(
+              "${totalPrice.toStringAsFixed(2)}",
+              style: TextStyle(fontSize: 14, color: AppColors.black),
+            ),
+            SizedBox(
+              height: 5,
+            ),
             // Cash Field with Button
             Row(
               children: [
@@ -172,7 +184,8 @@ class _PaidDialogState extends State<_PaidDialog> {
                       value,
                       context: context,
                     ),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
                       updateRemaining();
                     },
@@ -192,7 +205,7 @@ class _PaidDialogState extends State<_PaidDialog> {
               ],
             ),
             SizedBox(height: 15),
-            
+
             // Remaining Amount Field
             CustomFormField(
               controller: remainingController,
@@ -201,7 +214,7 @@ class _PaidDialogState extends State<_PaidDialog> {
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 15),
-            
+
             // Mada Field with Button
             Row(
               children: [
@@ -213,7 +226,8 @@ class _PaidDialogState extends State<_PaidDialog> {
                       value,
                       context: context,
                     ),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
                       updateRemaining();
                     },
@@ -233,7 +247,7 @@ class _PaidDialogState extends State<_PaidDialog> {
               ],
             ),
             SizedBox(height: 15),
-            
+
             // Online Field with Button
             Row(
               children: [
@@ -245,7 +259,8 @@ class _PaidDialogState extends State<_PaidDialog> {
                       value,
                       context: context,
                     ),
-                    keyboardType: TextInputType.numberWithOptions(decimal: true),
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
                     onChanged: (value) {
                       updateRemaining();
                     },
@@ -275,7 +290,8 @@ class _PaidDialogState extends State<_PaidDialog> {
                 if (state is SellingPointProductChangePaidFailing) {
                   CustomPopUp.callMyToast(
                     context: context,
-                    massage: S.of(context).priceShoudBeBiggerThanOrEqualTotalPrice,
+                    massage:
+                        S.of(context).priceShoudBeBiggerThanOrEqualTotalPrice,
                     state: PopUpState.ERROR,
                   );
                 }
@@ -288,14 +304,15 @@ class _PaidDialogState extends State<_PaidDialog> {
                   final mada = double.tryParse(madaController.text) ?? 0.0;
                   final online = double.tryParse(onlineController.text) ?? 0.0;
                   final total = cash + mada + online;
-                  
+
                   bool isCashOnly = (mada == 0.0 && online == 0.0);
-                  
+
                   if (isCashOnly) {
                     if (cash < totalPrice) {
                       CustomPopUp.callMyToast(
                         context: context,
-                        massage: 'المبلغ المدفوع (${cash.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
+                        massage:
+                            'المبلغ المدفوع (${cash.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
                         state: PopUpState.ERROR,
                       );
                       return;
@@ -304,24 +321,25 @@ class _PaidDialogState extends State<_PaidDialog> {
                     if (total < totalPrice) {
                       CustomPopUp.callMyToast(
                         context: context,
-                        massage: 'إجمالي المدفوعات (${total.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
+                        massage:
+                            'إجمالي المدفوعات (${total.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
                         state: PopUpState.ERROR,
                       );
                       return;
                     }
-                    
+
                     if (total > totalPrice) {
                       CustomPopUp.callMyToast(
                         context: context,
-                        massage: 'عند الدفع بأكثر من طريقة، المجموع يجب أن يساوي (${totalPrice.toStringAsFixed(2)}) بالظبط',
+                        massage:
+                            'عند الدفع بأكثر من طريقة، المجموع يجب أن يساوي (${totalPrice.toStringAsFixed(2)}) بالظبط',
                         state: PopUpState.ERROR,
                       );
                       return;
                     }
                   }
-                  
                   SellingPointProductCubit.get(context).changePaid(
-                    cashController.text,
+                    total.toStringAsFixed(2),
                     mada: mada,
                     online: online,
                   );
