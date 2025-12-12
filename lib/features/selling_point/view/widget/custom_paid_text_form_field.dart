@@ -68,7 +68,6 @@ class _PaidDialogState extends State<_PaidDialog> {
   
   TextEditingController? activeController;
   
-  
   bool isFirstTapCash = true;
   bool isFirstTapMada = true;
   bool isFirstTapOnline = true;
@@ -79,16 +78,24 @@ class _PaidDialogState extends State<_PaidDialog> {
     final cubit = SellingPointProductCubit.get(context);
     totalPrice = cubit.totalPrice();
 
-  cashController = TextEditingController(text: '0.00');
+    cashController = TextEditingController(text: '0.00');
     madaController = TextEditingController(text: '0.00');
     onlineController = TextEditingController(text: '0.00');
     remainingController = TextEditingController(text: '0.00');
     
     activeController = cashController;
+    
+    cashController.addListener(_calculateAndUpdateRemaining);
+    madaController.addListener(_calculateAndUpdateRemaining);
+    onlineController.addListener(_calculateAndUpdateRemaining);
   }
 
   @override
   void dispose() {
+    cashController.removeListener(_calculateAndUpdateRemaining);
+    madaController.removeListener(_calculateAndUpdateRemaining);
+    onlineController.removeListener(_calculateAndUpdateRemaining);
+    
     cashController.dispose();
     remainingController.dispose();
     madaController.dispose();
@@ -96,19 +103,35 @@ class _PaidDialogState extends State<_PaidDialog> {
     super.dispose();
   }
 
+  void _calculateAndUpdateRemaining() {
+    if (!mounted) return;
+    
+    double cash = double.tryParse(cashController.text) ?? 0.0;
+    double mada = double.tryParse(madaController.text) ?? 0.0;
+    double online = double.tryParse(onlineController.text) ?? 0.0;
+    
+    double remaining = 0.0;
+    if (mada == 0.0 && online == 0.0 && cash > totalPrice) {
+      remaining = cash - totalPrice;
+    }
+  
+    setState(() {
+      remainingController.text = remaining.toStringAsFixed(2);
+    });
+  }
+
   void onFieldTap(TextEditingController controller) {
-   
     activeController = controller;
     
- 
+    // مسح القيمة الافتراضية عند أول ضغطة
     if (controller == cashController && isFirstTapCash) {
-      cashController.text = '0.00';
+      cashController.text = '';
       isFirstTapCash = false;
     } else if (controller == madaController && isFirstTapMada) {
-      madaController.text = '0.00';
+      madaController.text = '';
       isFirstTapMada = false;
     } else if (controller == onlineController && isFirstTapOnline) {
-      onlineController.text = '0.00';
+      onlineController.text = '';
       isFirstTapOnline = false;
     }
     
@@ -130,10 +153,12 @@ class _PaidDialogState extends State<_PaidDialog> {
 
     if (remaining > 0) {
       controller.text = remaining.toStringAsFixed(2);
+      
       if (controller == cashController) isFirstTapCash = false;
       if (controller == madaController) isFirstTapMada = false;
       if (controller == onlineController) isFirstTapOnline = false;
-      updateRemaining();
+      
+
       setState(() {});
     }
   }
@@ -162,26 +187,8 @@ class _PaidDialogState extends State<_PaidDialog> {
       isFirstTapOnline = false;
     }
 
-    updateRemaining();
+
     setState(() {});
-  }
-
-  double calculateRemaining() {
-    double cash = double.tryParse(cashController.text) ?? 0.0;
-    double mada = double.tryParse(madaController.text) ?? 0.0;
-    double online = double.tryParse(onlineController.text) ?? 0.0;
-
-    if (mada == 0.0 && online == 0.0) {
-      return cash > totalPrice ? cash - totalPrice : 0.0;
-    } else {
-      return 0.0;
-    }
-  }
-
-  void updateRemaining() {
-    setState(() {
-      remainingController.text = calculateRemaining().toStringAsFixed(2);
-    });
   }
 
   @override
@@ -321,7 +328,7 @@ class _PaidDialogState extends State<_PaidDialog> {
             if (activeController != null)
               CustomPaymentKeyboard(
                 controller: activeController!,
-                onChanged: updateRemaining,
+                onChanged: _calculateAndUpdateRemaining,
               ),
           ],
         ),
@@ -382,7 +389,14 @@ class _PaidDialogState extends State<_PaidDialog> {
                       return;
                     }
                   }
-                  SellingPointProductCubit.get(context).changePaid(
+                  
+      
+                  final cubit = SellingPointProductCubit.get(context);
+                  cubit.cashAmount = cash;
+                  cubit.madaAmount = mada;
+                  cubit.onlineAmount = online;
+                  
+                  cubit.changePaid(
                     total.toStringAsFixed(2),
                     mada: mada,
                     online: online,
