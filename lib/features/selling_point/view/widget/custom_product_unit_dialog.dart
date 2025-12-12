@@ -84,7 +84,7 @@ class CustomProductUnitDialog extends StatelessWidget {
                     ),
                     Expanded(
                       child: Text(
-                        double.tryParse( element.salePriceWithoutTax??'0')?.toStringAsFixed(2)??'',
+                        double.tryParse( element.salePriceWithTax??'0')?.toStringAsFixed(2)??'',
                         style: AppFontStyle.itemsSubTitle(
                           context: context,
                           color: AppColors.black,

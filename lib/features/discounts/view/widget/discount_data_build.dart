@@ -9,6 +9,17 @@ import 'package:pos_app/core/widget/custom_loading.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+extension DiscountTypeLocalization on DiscountType {
+  String getLocalizedName(BuildContext context) {
+    switch (this) {
+      case DiscountType.fixed:
+        return S.of(context).fixed;
+      case DiscountType.percentage:
+        return S.of(context).percentage;
+    }
+  }
+}
+
 class DiscountDataBuild extends StatelessWidget {
   const DiscountDataBuild(
       {super.key,
@@ -18,14 +29,12 @@ class DiscountDataBuild extends StatelessWidget {
       required this.onPressed,
       required this.isEdit,
       required this.titleController,
-      // required this.descriptionController,
       required this.value,
       this.discountType,
       required this.onChanged});
 
   final GlobalKey<FormState> formKey;
   final TextEditingController titleController;
-  // final TextEditingController descriptionController;
   final TextEditingController value;
   final bool isLoading;
   final void Function() onPressed;
@@ -33,8 +42,14 @@ class DiscountDataBuild extends StatelessWidget {
   final AutovalidateMode? autovalidateMode;
   final DiscountType? discountType;
   final void Function(DiscountType? value) onChanged;
+  
   @override
   Widget build(BuildContext context) {
+
+    String valueLabel = discountType == DiscountType.fixed
+        ? S.of(context).value 
+        : S.of(context).valueAsPercentage;  
+    
     return Form(
       key: formKey,
       autovalidateMode: autovalidateMode,
@@ -45,9 +60,9 @@ class DiscountDataBuild extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(
-                  height: 10,
-                ),
+                SizedBox(height: 10),
+                
+             
                 CustomFormField(
                   controller: titleController,
                   labelText: S.of(context).title,
@@ -57,9 +72,9 @@ class DiscountDataBuild extends StatelessWidget {
                   ),
                   keyboardType: TextInputType.name,
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
+                
+             
                 CustomDropdown<DiscountType>(
                   hint: S.of(context).discountType,
                   compareFn: (discountType1, discountType2) {
@@ -75,43 +90,40 @@ class DiscountDataBuild extends StatelessWidget {
                   onChanged: onChanged,
                   builder: (DiscountType? item) {
                     if (item == null) return Text('');
-
-                    String translatedName;
-                    switch (item) {
-                      case DiscountType.fixed:
-                        translatedName =S.of(context).fixed; // أو S.of(context).fixed
-                        break;
-                      case DiscountType.percentage:
-                        translatedName =
-                            'نسبة مئوية'; // أو S.of(context).percentage
-                        break;
-                      default:
-                        translatedName = item.name;
-                    }
-
                     return Text(
-                      translatedName,
+                      item.getLocalizedName(context),
                       style: AppFontStyle.formText(context: context),
                     );
                   },
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
+                
+               
                 CustomFormField(
                   controller: value,
-                  labelText: S.of(context).valueAsPercentage,
-                  validator: (value) => MyFormValidators.validatePercentage(
-                    value,
-                    context: context,
-                  ),
-                  keyboardType: TextInputType.text,
+                  labelText: valueLabel,  
+                  validator: (value) {
+                 
+                    if (discountType == DiscountType.percentage) {
+                      return MyFormValidators.validatePercentage(
+                        value,
+                        context: context,
+                      );
+                    } else {
+                   
+                      return MyFormValidators.validateDoublePrice(
+                        value,
+                        context: context,
+                      );
+                    }
+                  },
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
+                SizedBox(height: 20),
               ],
             ),
+            
+          
             Builder(
               builder: (context) {
                 if (isLoading) {
