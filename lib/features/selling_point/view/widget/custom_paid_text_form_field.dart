@@ -7,6 +7,7 @@ import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
+import 'package:pos_app/features/selling_point/view/widget/customkeyboard.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class CustomPaidTextFormField extends StatelessWidget {
@@ -64,6 +65,13 @@ class _PaidDialogState extends State<_PaidDialog> {
   late TextEditingController madaController;
   late TextEditingController onlineController;
   late double totalPrice;
+  
+  TextEditingController? activeController;
+  
+  
+  bool isFirstTapCash = true;
+  bool isFirstTapMada = true;
+  bool isFirstTapOnline = true;
 
   @override
   void initState() {
@@ -71,17 +79,12 @@ class _PaidDialogState extends State<_PaidDialog> {
     final cubit = SellingPointProductCubit.get(context);
     totalPrice = cubit.totalPrice();
 
-    double currentPaid = double.tryParse(cubit.paidController.text) ?? 0.0;    
-    cashController = TextEditingController(
-      text: currentPaid > 0 ? currentPaid.toStringAsFixed(2) : '0.00'
-    );
+  cashController = TextEditingController(text: '0.00');
     madaController = TextEditingController(text: '0.00');
     onlineController = TextEditingController(text: '0.00');
+    remainingController = TextEditingController(text: '0.00');
     
-    double remaining = currentPaid > totalPrice ? currentPaid - totalPrice : totalPrice - currentPaid;
-    remainingController = TextEditingController(
-      text: remaining.toStringAsFixed(2)
-    );
+    activeController = cashController;
   }
 
   @override
@@ -93,7 +96,25 @@ class _PaidDialogState extends State<_PaidDialog> {
     super.dispose();
   }
 
-  // Auto fill the remaining amount when tapping on a field
+  void onFieldTap(TextEditingController controller) {
+   
+    activeController = controller;
+    
+ 
+    if (controller == cashController && isFirstTapCash) {
+      cashController.text = '0.00';
+      isFirstTapCash = false;
+    } else if (controller == madaController && isFirstTapMada) {
+      madaController.text = '0.00';
+      isFirstTapMada = false;
+    } else if (controller == onlineController && isFirstTapOnline) {
+      onlineController.text = '0.00';
+      isFirstTapOnline = false;
+    }
+    
+    setState(() {});
+  }
+
   void autoFillRemaining(TextEditingController controller) {
     double currentValue = double.tryParse(controller.text) ?? 0.0;
     if (currentValue != 0.0) {
@@ -108,31 +129,41 @@ class _PaidDialogState extends State<_PaidDialog> {
     double remaining = totalPrice - paid;
 
     if (remaining > 0) {
-      setState(() {
-        controller.text = remaining.toStringAsFixed(2);
-        updateRemaining();
-      });
+      controller.text = remaining.toStringAsFixed(2);
+      if (controller == cashController) isFirstTapCash = false;
+      if (controller == madaController) isFirstTapMada = false;
+      if (controller == onlineController) isFirstTapOnline = false;
+      updateRemaining();
+      setState(() {});
     }
   }
 
-  // Fill the entire amount in one field and zero out others
   void fillFullAmount(TextEditingController targetController) {
-    setState(() {
-      targetController.text = totalPrice.toStringAsFixed(2);
+    targetController.text = totalPrice.toStringAsFixed(2);
 
-      // Zero out other fields
-      if (targetController != cashController) {
-        cashController.text = '0.00';
-      }
-      if (targetController != madaController) {
-        madaController.text = '0.00';
-      }
-      if (targetController != onlineController) {
-        onlineController.text = '0.00';
-      }
+    if (targetController != cashController) {
+      cashController.text = '0.00';
+      isFirstTapCash = true;
+    } else {
+      isFirstTapCash = false;
+    }
+    
+    if (targetController != madaController) {
+      madaController.text = '0.00';
+      isFirstTapMada = true;
+    } else {
+      isFirstTapMada = false;
+    }
+    
+    if (targetController != onlineController) {
+      onlineController.text = '0.00';
+      isFirstTapOnline = true;
+    } else {
+      isFirstTapOnline = false;
+    }
 
-      updateRemaining();
-    });
+    updateRemaining();
+    setState(() {});
   }
 
   double calculateRemaining() {
@@ -156,129 +187,142 @@ class _PaidDialogState extends State<_PaidDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      content: Padding(
-        padding: const EdgeInsets.only(top: 20),
+      contentPadding: EdgeInsets.zero,
+      content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(S.of(context).cashTotal,
-                style: TextStyle(fontSize: 16, color: AppColors.black)),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              "${totalPrice.toStringAsFixed(2)}",
-              style: TextStyle(fontSize: 14, color: AppColors.black),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            // Cash Field with Button
-            Row(
-              children: [
-                Expanded(
-                  child: CustomFormField(
-                    controller: cashController,
-                    labelText: S.of(context).cash,
-                    validator: (value) => MyFormValidators.validateDoublePrice(
-                      value,
-                      context: context,
-                    ),
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (value) {
-                      updateRemaining();
-                    },
-                    onTap: () {
-                      autoFillRemaining(cashController);
-                    },
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(S.of(context).paid,
+                      style: TextStyle(fontSize: 16, color: AppColors.black)),
+                  SizedBox(height: 10),
+                  Text(
+                    "${totalPrice.toStringAsFixed(2)}",
+                    style: TextStyle(fontSize: 14, color: AppColors.black),
                   ),
-                ),
-                SizedBox(width: 8),
-                CustomTextBtn(
-                  textColor: AppColors.primary,
-                  text: S.of(context).paid,
-                  onPressed: () {
-                    fillFullAmount(cashController);
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 15),
-
-            // Remaining Amount Field
-            CustomFormField(
-              controller: remainingController,
-              labelText: S.of(context).remainingAmount,
-              enabled: false,
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 15),
-
-            // Mada Field with Button
-            Row(
-              children: [
-                Expanded(
-                  child: CustomFormField(
-                    controller: madaController,
-                    labelText: S.of(context).mada,
-                    validator: (value) => MyFormValidators.validateDoublePrice(
-                      value,
-                      context: context,
-                    ),
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (value) {
-                      updateRemaining();
-                    },
-                    onTap: () {
-                      autoFillRemaining(madaController);
-                    },
+                  SizedBox(height: 5),
+                  
+                  // Cash Field with Button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            onFieldTap(cashController);
+                            autoFillRemaining(cashController);
+                          },
+                          child: CustomFormField(
+                            controller: cashController,
+                            labelText: S.of(context).cash,
+                            enabled: true, 
+                            keyboardType: TextInputType.none,
+                            onTap: () {
+                              onFieldTap(cashController);
+                              autoFillRemaining(cashController);
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      CustomTextBtn(
+                        textColor: AppColors.primary,
+                        text: S.of(context).paid,
+                        onPressed: () {
+                          fillFullAmount(cashController);
+                        },
+                      ),
+                    ],
                   ),
-                ),
-                SizedBox(width: 8),
-                CustomTextBtn(
-                  textColor: AppColors.primary,
-                  text: S.of(context).mada,
-                  onPressed: () {
-                    fillFullAmount(madaController);
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 15),
+                  SizedBox(height: 15),
 
-            // Online Field with Button
-            Row(
-              children: [
-                Expanded(
-                  child: CustomFormField(
-                    controller: onlineController,
-                    labelText: S.of(context).online,
-                    validator: (value) => MyFormValidators.validateDoublePrice(
-                      value,
-                      context: context,
-                    ),
-                    keyboardType:
-                        TextInputType.numberWithOptions(decimal: true),
-                    onChanged: (value) {
-                      updateRemaining();
-                    },
-                    onTap: () {
-                      autoFillRemaining(onlineController);
-                    },
+                  // Remaining Amount Field
+                  CustomFormField(
+                    controller: remainingController,
+                    labelText: S.of(context).remainingAmount,
+                    enabled: false,
+                    keyboardType: TextInputType.number,
                   ),
-                ),
-                SizedBox(width: 8),
-                CustomTextBtn(
-                  textColor: AppColors.primary,
-                  text: S.of(context).online,
-                  onPressed: () {
-                    fillFullAmount(onlineController);
-                  },
-                ),
-              ],
+                  SizedBox(height: 15),
+
+                  // Mada Field with Button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            onFieldTap(madaController);
+                            autoFillRemaining(madaController);
+                          },
+                          child: CustomFormField(
+                            controller: madaController,
+                            labelText: S.of(context).mada,
+                            enabled: true,
+                            keyboardType: TextInputType.none,
+                            onTap: () {
+                              onFieldTap(madaController);
+                              autoFillRemaining(madaController);
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      CustomTextBtn(
+                        textColor: AppColors.primary,
+                        text: S.of(context).mada,
+                        onPressed: () {
+                          fillFullAmount(madaController);
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 15),
+
+                  // Online Field with Button
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            onFieldTap(onlineController);
+                            autoFillRemaining(onlineController);
+                          },
+                          child: CustomFormField(
+                            controller: onlineController,
+                            labelText: S.of(context).online,
+                            enabled: true,
+                            keyboardType: TextInputType.none,
+                            onTap: () {
+                              onFieldTap(onlineController);
+                              autoFillRemaining(onlineController);
+                            },
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      CustomTextBtn(
+                        textColor: AppColors.primary,
+                        text: S.of(context).online,
+                        onPressed: () {
+                          fillFullAmount(onlineController);
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                ],
+              ),
             ),
+            
+            // الكيبورد المخصص تحت الـ fields
+            if (activeController != null)
+              CustomPaymentKeyboard(
+                controller: activeController!,
+                onChanged: updateRemaining,
+              ),
           ],
         ),
       ),

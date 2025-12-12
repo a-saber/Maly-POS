@@ -491,7 +491,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "Cannot delete tax because there are sales associated with it.": MessageLookupByLibrary.simpleMessage("لا يمكن حذف الضريبه لأن هناك منتجات مرتبطة بها."),
     "remainingAmount": MessageLookupByLibrary.simpleMessage("الباقي "),
     "paymentsMethods":MessageLookupByLibrary.simpleMessage("طرق الدفع"),
-    "Fixed": MessageLookupByLibrary.simpleMessage("ثابت"),
-    "Percentage": MessageLookupByLibrary.simpleMessage("  نسبة مئوية"), 
+    "fixed": MessageLookupByLibrary.simpleMessage("ثابت"),
+    "percentage": MessageLookupByLibrary.simpleMessage("  نسبة مئوية"), 
   };
 }

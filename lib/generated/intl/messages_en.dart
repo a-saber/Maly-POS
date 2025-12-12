@@ -495,7 +495,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "Cannot delete tax because there are sales associated with it.": MessageLookupByLibrary.simpleMessage("Cannot delete tax because there are sales associated with it."),
     "remainingAmount":MessageLookupByLibrary.simpleMessage("remainingAmount"),
     "paymentsMethods":MessageLookupByLibrary.simpleMessage("paymentsMethods"),
-    "Fixed":MessageLookupByLibrary.simpleMessage("Fixed"),
-    "Percentage":MessageLookupByLibrary.simpleMessage("Percentage"),
+    "fixed":MessageLookupByLibrary.simpleMessage("Fixed"),
+    "percentage":MessageLookupByLibrary.simpleMessage("Percentage"),
   };
 }
