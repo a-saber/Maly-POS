@@ -7,8 +7,13 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/core/constant/app_invoice_string.dart';
 import 'package:pos_app/core/invoice/pdf_font_loader.dart';
+import 'package:pos_app/core/utils/extensions.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:pdfx/pdfx.dart' as pdfx;
+
+import '../../features/shifts/data/model/end_shift_model.dart';
+import '../../generated/l10n.dart';
+import '../helper/formate_date_time.dart';
 
 Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
   try {
@@ -129,29 +134,33 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
 
         build: (context) =>  pw.Container(
           decoration:  pw.BoxDecoration(color: PdfColors.white),
+            padding:pw.EdgeInsets.symmetric(horizontal: 3) ,
             child: pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
 
             // Time & Date row (only if not empty)
             if (time.isNotEmpty || date.isNotEmpty)
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  if (time.isNotEmpty)
-                    pw.Text(time,
-                        style: pw.TextStyle(
-                          fontSize: 10,
-                          font: arabicFont,
-                        )),
-                  if (date.isNotEmpty)
-                    pw.Text(date,
-                        style: pw.TextStyle(
-                          fontSize: 10,
-                          font: arabicFont,
-                        )),
-                ].reversed.toList(),
-              ),
+          pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+          children: [
+            pw.SizedBox(width: 5),
+            if (time.isNotEmpty)
+              pw.Text(time,
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    font: arabicFont,
+                  ))
+            ,
+            if (date.isNotEmpty)
+              pw.Text(date,
+                  style: pw.TextStyle(
+                    fontSize: 10,
+                    font: arabicFont,
+                  )),
+            pw.SizedBox(width: 5),
+          ].reversed.toList(),
+        ),
             if (time.isNotEmpty || date.isNotEmpty) pw.SizedBox(height: 5),
 
             // Title
@@ -221,7 +230,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
               ),
             if (sale[ApiKeys.ordertype] != null)
               pw.Text(
-                "${AppInvoiceString.orderType} ${sale[ApiKeys.ordertype]}",
+                "${AppInvoiceString.orderType}:${ orderType(sale[ApiKeys.ordertype])}",
                 textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   font: arabicFont,
@@ -718,9 +727,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     ),
                   )
                 : pw.SizedBox(),
-            pw.SizedBox(
-              height:120
-            ),
+           
 
           ],
         )
@@ -738,7 +745,421 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     return emptyPdf.save();
   }
 }
-Future<Uint8List> salesInvoicesPdf(Map<String, dynamic> response,
+Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndShiftModel shift, required String size }) async
+{
+  http.Response? imageResponse;
+  var arabicFont = PdfFontLoader.arabicFont;
+  var arabicFontBold = PdfFontLoader.arabicFontBold;
+
+  final pdf = pw.Document(
+    theme: pw.ThemeData.withFont(
+      base: arabicFont,
+      bold: arabicFontBold,
+    ),
+  );
+
+  try {
+    if (shift.setting?.logoUrl != null) {
+      try {
+        final url = shift.setting?.logoUrl ?? "";
+        if (url.isNotEmpty) {
+          imageResponse = await http.get(Uri.parse(url));
+          // Only use if status is OK
+          if (imageResponse.statusCode != 200) {
+            imageResponse = null; // invalidate on bad status
+          }
+        }
+      } catch (e) {
+        debugPrint('⚠️ Failed to load image: $e');
+        imageResponse = null;
+      }
+    }
+
+
+    pdf.addPage(
+      pw.Page(
+        textDirection: pw.TextDirection.rtl,
+        pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
+
+        margin: pw.EdgeInsets.zero,
+
+
+        build: ( context) =>  pw.Container(
+          decoration:  pw.BoxDecoration(color: PdfColors.white),
+            padding:pw.EdgeInsets.symmetric(horizontal: 3) ,
+            child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          children: [
+
+
+
+            // Shop Info
+            (shift.setting?.logoUrl != null && imageResponse != null)
+                ? pw.Center(
+              // ✅ keeps it centered without stretching
+              child: pw.ClipOval(
+                child: pw.Container(
+                  width: 50, // fixed size
+                  height: 50, // fixed size
+                  child: pw.Image(
+                    pw.MemoryImage(imageResponse.bodyBytes),
+                    fit: pw.BoxFit.fill,
+                  ),
+                ),
+              ),
+            )
+                : pw.SizedBox(),
+            // Title
+            pw.Center(
+              child: pw.Text(
+                S.of(contextView).shiftDetails,
+                style: pw.TextStyle(
+                  fontSize: 14,
+                  font: arabicFontBold,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+                textAlign: pw.TextAlign.center,
+              ),
+            ),
+            pw.SizedBox(height: 10),
+
+            pw.Center(
+                child: pw.Text(
+                "${ S.of(contextView).startAt}: ${getLocalTimeFormate(shift.shift?.startAt ?? '-')}",
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  font: arabicFont,
+                )
+            )),
+           pw.Center(
+                child: pw.Text(
+                "${ S.of(contextView).endAt}: ${getLocalTimeFormate(shift.shift?.endAt ?? '-')}",
+                style: pw.TextStyle(
+                  fontSize: 10,
+                  font: arabicFont,
+                )
+            )),
+
+            pw.SizedBox(height: 10),
+
+            // Totals
+            pw.Table(
+
+
+              border: pw.TableBorder(
+
+                horizontalInside: pw.BorderSide(
+                  width: 0.2,
+                  color: PdfColors.black,
+                ), // خطوط أفقية بين الصفوف
+                verticalInside: pw.BorderSide(
+                  width: 0.2,
+                  color: PdfColors.black,
+                ), // خطوط عمودية بين الأعمدة
+                top: pw.BorderSide(
+                  width: 0.7,
+                  color: PdfColors.black,
+                ), // خط علوي
+                bottom: pw.BorderSide(
+                  width: 0.7,
+                  color: PdfColors.black,
+                ), // خط سفلي
+                left: pw.BorderSide(
+                  width: 0.7,
+                  color: PdfColors.black,
+                ), // خط يسار
+                right: pw.BorderSide(
+                  width: 0.7,
+                  color: PdfColors.black,
+                ), // خط يمين
+              ),
+              columnWidths: {
+                0: pw.FlexColumnWidth(1), // العناوين
+                1: pw.FlexColumnWidth(2), // القيم
+              },
+              children: [
+
+                  pw.TableRow(
+                decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).user,
+                         // AppInvoiceString.totalBeforeTax,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                             (shift.shift?.user?.name ?? '-'),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+
+                  pw.TableRow(
+                 decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).branch,
+                          //AppInvoiceString.discount,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (shift.shift?.branch?.name ?? '-'),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+
+
+                  pw.TableRow(
+                   decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).openingQuantity,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (double.tryParse(shift.shift?.openingQuantity??'0')?.toStringAsFixed(1) ?? '-'),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+
+                  pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).discountTotal,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (shift.shift?.discountTotal ?? '-').toAmount(),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+
+                  pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).taxestotal,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            fontWeight: pw.FontWeight.bold,
+                            font: arabicFontBold,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (shift.shift?.taxTotal ?? '-').toAmount(),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            fontWeight: pw.FontWeight.bold,
+                            font: arabicFontBold,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+
+                  pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).cashTotal,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (shift.shift?.cashTotal ?? '-').toAmount(),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+                pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).onlineTotal,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (shift.shift?.onlineTotal ?? '-').toAmount(),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+                pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey300),
+                    children: [
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          S.of(contextView).total,
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                      pw.Padding(
+                        padding: const pw.EdgeInsets.all(2),
+                        child: pw.Text(
+                          (shift.shift?.totalAfterTax ?? '-').toAmount(),
+                          style: pw.TextStyle(
+                            fontSize: 8,
+                            font: arabicFont,
+                          ),
+                          textAlign: pw.TextAlign.center,
+                        ),
+                      ),
+                    ].reversed.toList(),
+                  ),
+
+
+              ],
+            ),
+
+            pw.SizedBox(height: 12),
+
+
+            CustomUserHiveBox.getUser().name != null
+                ? pw.Center(
+                    child: pw.Text(
+                      "${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}",
+                      style: pw.TextStyle(
+                        fontSize: 7,
+                        font: arabicFont,
+                      ),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  )
+                : pw.SizedBox(),
+            pw.SizedBox(height: 12),
+
+
+
+          ],
+        )
+        ),
+      ),
+    );
+
+    return pdf.save();
+  } catch (e) {
+    debugPrint('⚠️ PDF Generation Error: $e');
+    final emptyPdf = pw.Document();
+    emptyPdf.addPage(pw.Page(
+        build: (context) =>
+            pw.Center(child: pw.Text('خطأ في إنشاء الفاتورة'))));
+    return emptyPdf.save();
+  }
+}
+
+String  orderType(String type ){
+  switch (type){
+    case  ApiKeys.hall:return "${ApiKeys.hall}-${'محلي'}";
+    case  ApiKeys.delivery : return "${ApiKeys.delivery}-${'توصيل'}";
+    default: return "${"takeaway"}-${'سفري'}";
+
+
+
+  }
+
+
+}
+
+Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
     {String? branchName, required double paid,required String size}) async
 {
   var arabicFont = PdfFontLoader.arabicFont;
@@ -884,7 +1305,7 @@ Future<Uint8List> salesInvoicesPdf(Map<String, dynamic> response,
               ),
             if (sale[ApiKeys.ordertype] != null)
               pw.Text(
-                "${AppInvoiceString.orderType}  ${sale[ApiKeys.ordertype]=='hall' }",
+                "${AppInvoiceString.orderType}:${ orderType(sale[ApiKeys.ordertype])}",
                 textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   font: arabicFont,
@@ -1386,14 +1807,3 @@ Future<Uint8List> salesInvoicesPdf(Map<String, dynamic> response,
   }
 }
 
-class PaperConfig {
-  final int width;      // Width in pixels
-  final double scale;   // Scale factor
-  final int maxWidth;   // Max width (for safety margin)
-
-  const PaperConfig({
-    required this.width,
-    required this.scale,
-    required this.maxWidth,
-  });
-}

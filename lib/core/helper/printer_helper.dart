@@ -193,6 +193,7 @@ Future<bool> ensureBluetoothPermissions() async {
     try {
 
      final invoice= await  convertPdfToThermalPrinter( bytes)??[];
+
       final byte = await addCutCommand(invoice,paperSize??'80');
       await _printBytes(printer, byte);
     } catch (e) {
@@ -209,7 +210,7 @@ Future<bool> ensureBluetoothPermissions() async {
         ...pdfBytes,
         ...generator.feed(2),
         ...generator.cut(),
-      ];
+        ];
     }
 
 

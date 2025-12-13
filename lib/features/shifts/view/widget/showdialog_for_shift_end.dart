@@ -7,6 +7,9 @@ import 'package:pos_app/core/widget/custom_btn.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/shifts/data/model/end_shift_model.dart';
 import 'package:pos_app/generated/l10n.dart';
+import 'package:printing/printing.dart';
+
+import '../../../../core/invoice/sales_invoices_pdf_80.dart';
 
 Future<void> showDialogForShiftEnd(BuildContext context,
     {required EndShiftModel shift}) async {
@@ -110,7 +113,23 @@ Future<void> showDialogForShiftEnd(BuildContext context,
               CustomTextBtn(
                 text: S.of(context).print,
                 onPressed: () {
-                  // TODO : Print
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) {
+                        return Scaffold(
+                          appBar: AppBar(),
+                          body: PdfPreview(build: (_) {
+                            return endShiftInvoicesPdf(
+                               context,
+                                shift: shift,
+                                size:'80'
+                            );
+                          }),
+                        );
+                      },
+                    ),
+                  );
                 },
               ),
               CustomTextBtn(
