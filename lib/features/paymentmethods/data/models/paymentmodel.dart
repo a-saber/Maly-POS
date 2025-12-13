@@ -1,43 +1,35 @@
-class AddPaymentMethodModel {
-  final int id;
-  final String name;
-  final int isActive;
-  final int requiresReference;
-  final String? deletedAt;
-  final String createdAt;
-  final String updatedAt;
+import 'package:pos_app/features/paymentmethods/data/models/paymentmethodmodel.dart';
 
-  AddPaymentMethodModel({
-    required this.id,
-    required this.name,
-    required this.isActive,
-    required this.requiresReference,
+class PaymentMethodSalesModel {
+  int? id;
+  String? name;
+  int? isActive;
+  int? requiresReference;
+  int? isNearpay;
+  dynamic deletedAt;
+  String? createdAt;
+  String? updatedAt;
+
+  PaymentMethodSalesModel({
+    this.id,
+    this.name,
+    this.isActive,
+    this.requiresReference,
+    this.isNearpay,
     this.deletedAt,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
-
-  factory AddPaymentMethodModel.fromJson(Map<String, dynamic> json) {
-    return AddPaymentMethodModel(
-      id: json['id'],
-      name: json['name'],
-      isActive: json['is_active'],
-      requiresReference: json['requires_reference'],
-      deletedAt: json['deleted_at'],
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
+  factory PaymentMethodSalesModel.fromData(PaymentMethodData data) {
+    return PaymentMethodSalesModel(
+      id: data.id,
+      name: data.name,
+      isActive: data.isActive,
+      requiresReference: data.requiresReference,
+      isNearpay: data.isNearpay,
+      deletedAt: data.deletedAt,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'is_active': isActive,
-      'requires_reference': requiresReference,
-      'deleted_at': deletedAt,
-      'created_at': createdAt,
-      'updated_at': updatedAt,
-    };
   }
 }

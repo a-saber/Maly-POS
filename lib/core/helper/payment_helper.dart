@@ -24,6 +24,7 @@ class PaymentHelper {
 
   // Initialize NearPay authentication
   static Future<void> initialize() async {
+  
     print("^^^^^^^^^^^^ init");
     nearpay = Nearpay(
       authType: AuthenticationType.email,

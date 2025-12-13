@@ -1,6 +1,7 @@
 
 
-import 'package:pos_app/features/paymentmethods/data/models/paymentmethodmodel.dart';
+
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 
 abstract class PaymentMethodsState {}
 
@@ -9,7 +10,7 @@ class PaymentMethodsInitial extends PaymentMethodsState {}
 class PaymentMethodsLoading extends PaymentMethodsState {}
 
 class PaymentMethodsSuccess extends PaymentMethodsState {
-  final List<PaymentMethodsModel> paymentMethods;
+  final List<PaymentMethodSalesModel> paymentMethods;
   PaymentMethodsSuccess(this.paymentMethods);
 }
 
