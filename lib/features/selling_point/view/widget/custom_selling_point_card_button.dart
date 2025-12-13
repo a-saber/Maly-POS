@@ -240,7 +240,10 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   massage: S.of(context).confirmPaymentSuccess,
                   state: PopUpState.SUCCESS,
                 );
-              } else if (state is SellingPointProductFailing) {
+              } 
+              else if (state is SellingPointProductFailing) {
+                debugPrint(' ==================== ${PrinterHelper.getSavedLocalPrinter().map((toElement)=>toElement.toJson([]))} ====================');
+                
                 if (context.mounted) {
                   if (state.message.shiftError != null &&
                       (state.message.shiftError ?? false)) {

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:pos_app/core/helper/printer_helper.dart';
 import 'package:pos_app/features/categories/data/model/category_model.dart';
 import 'package:thermal_printer/thermal_printer.dart';
@@ -51,7 +53,9 @@ class PrinterModel {
     printerName = json['printer_name'];
     communicationType = json['communication_type'];
     paperSize = json['paper_size'];
-    fromscan = json['from_scan'];
+    fromscan = json['from_scan'] is int
+        ? json['from_scan'] == 1
+        : json['from_scan'] as bool?;
 
     switch (json['communication_type']) {
       case 'usb':
@@ -136,6 +140,7 @@ class PrinterModel {
 
     final Map<String, dynamic> data = {
       if (address != null) 'address': address,
+      "id":Random().nextInt(100),
       "from_scan": (fromscan ?? true) ? 1 : 0,
       'paper_size': paperSize?.replaceAll('mm', ''),
       'printer_name': printerName?.trim(),

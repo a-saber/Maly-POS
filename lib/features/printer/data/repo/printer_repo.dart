@@ -5,6 +5,7 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/printer/data/model/printers_search_model.dart';
 
+import '../../../../core/helper/printer_helper.dart';
 import '../../manager/printer_data_cubit/printer_data_cubit.dart';
 import '../model/printer_model.dart';
 
@@ -65,7 +66,9 @@ class PrinterRepo {
       final url = await ApiEndPoints.getPrinters();
 
       Map<String, dynamic> printerData = printer.toJson(categoryRows);
-      debugPrint("------------\n  printData $printerData   \n----------------");
+      final savePrinters=  await PrinterHelper.saveLocalPrinter(printerData);
+
+      debugPrint("------------\n  printData${savePrinters} $printerData   \n----------------");
       final response = await api.post(url: url, data: printerData);
       debugPrint('Response Data: ${response.data}');
       if (response.status) {

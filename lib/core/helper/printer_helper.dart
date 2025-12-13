@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pos_app/core/cache/cache_helper.dart';
 import 'package:thermal_printer/thermal_printer.dart';
 import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'dart:ui' as ui;
@@ -14,7 +16,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 
+import '../../features/printer/data/model/printer_model.dart';
 import '../../features/selling_point/view/widget/invoice.dart';
+import '../cache/cache_keys.dart';
 
 /// Wrapper that pairs a discovered PrinterDevice with its PrinterType
 class DiscoveredPrinter {
@@ -614,6 +618,28 @@ PaperSize _getPaperSize(String? paperSize) {
       ...generator.feed(2),
       ...generator.cut(),
     ];
+  }
+ static Future<bool> saveLocalPrinter(Map<String, dynamic> printerJson)async {
+    List<Map<String, dynamic>> prints = [];
+
+  final listJsons=CacheHelper.getData(key: CacheKeys.printers)??'[]';
+    prints = (jsonDecode(listJsons) as List<dynamic>).map((item) => Map<String, dynamic>.from(item)).toList();
+    prints.add(printerJson);
+
+   return  await CacheHelper.saveData(key: CacheKeys.printers, value: jsonEncode(prints));
+
+
+
+  }
+  static List<PrinterModel> getSavedLocalPrinter() {
+    List<PrinterModel> prints = [];
+    List<Map<String, dynamic>> jsonMap = [];
+    final listJsons=CacheHelper.getData(key: CacheKeys.printers);
+     if(listJsons==null) return [];
+    jsonMap = (jsonDecode(listJsons) as List<dynamic>).map((item) => Map<String, dynamic>.from(item)).toList();
+    if(jsonMap.isEmpty) return [];
+    prints = jsonMap.map((e) => PrinterModel.fromJson(Map<String, dynamic>.from(e))).toList();
+    return prints ;
   }
 
   Future<void> printTestByIp(String ip, {int port = 9100, String? paperSize}) async {
