@@ -1890,6 +1890,8 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
 }
 
 
+
+
 Future<List<int>> generateCenteredReceipt(
     Map<String, dynamic> response, {
       required String paperSize,
@@ -1906,10 +1908,11 @@ Future<List<int>> generateCenteredReceipt(
 
   List<int> bytes = [];
 
-  // Initialize
+  // Set code page to Arabic (CP864)
+  bytes += generator.setGlobalCodeTable('CP864');
   bytes += generator.reset();
 
-  // Time & Date (centered)
+  // Time & Date
   final createdAt = sale[ApiKeys.createdat]?.toString() ?? "";
   DateTime? parsed;
   if (createdAt.isNotEmpty) {
@@ -1930,27 +1933,23 @@ Future<List<int>> generateCenteredReceipt(
 
   bytes += generator.emptyLines(1);
 
-  // Title (centered, large, bold)
+  // Title (Arabic)
   bytes += generator.text(
-    AppInvoiceString.invoiceTitle,
+    _reverseArabic(AppInvoiceString.invoiceTitle),
     styles: PosStyles(
       align: PosAlign.center,
       height: PosTextSize.size2,
       width: PosTextSize.size2,
       bold: true,
     ),
+    linesAfter: 1,
   );
 
-  bytes += generator.emptyLines(1);
-
-  // Shop Info (all centered)
+  // Shop Info
   if (setting[ApiKeys.shopname] != null) {
     bytes += generator.text(
-      setting[ApiKeys.shopname],
-      styles: PosStyles(
-        align: PosAlign.center,
-        bold: true,
-      ),
+      _reverseArabic(setting[ApiKeys.shopname]),
+      styles: PosStyles(align: PosAlign.center, bold: true),
     );
   }
 
@@ -1963,31 +1962,31 @@ Future<List<int>> generateCenteredReceipt(
 
   if (setting[ApiKeys.commercialno] != null) {
     bytes += generator.text(
-      '${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}',
+      _reverseArabic('${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}'),
       styles: PosStyles(align: PosAlign.center),
     );
   }
 
   if (sale[ApiKeys.id] != null) {
     bytes += generator.text(
-      '${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}',
+      _reverseArabic('${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}'),
       styles: PosStyles(align: PosAlign.center),
     );
   }
 
   if (sale[ApiKeys.ordertype] != null) {
     bytes += generator.text(
-      '${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}',
+      _reverseArabic('${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}'),
       styles: PosStyles(align: PosAlign.center),
     );
   }
 
   bytes += generator.emptyLines(1);
-
-  // Order Number Box (centered)
   bytes += generator.hr();
+
+  // Order Number
   bytes += generator.text(
-    'OrderNumber',
+    'Order Number',
     styles: PosStyles(align: PosAlign.center),
   );
   bytes += generator.text(
@@ -1999,198 +1998,103 @@ Future<List<int>> generateCenteredReceipt(
       bold: true,
     ),
   );
+
   bytes += generator.hr();
   bytes += generator.emptyLines(1);
 
-  // Products Header
-  bytes += generator.row([
-    PosColumn(
-      text: AppInvoiceString.product,
-      width: 5,
-      styles: PosStyles(align: PosAlign.left, bold: true),
-    ),
-    PosColumn(
-      text: AppInvoiceString.quantity,
-      width: 2,
-      styles: PosStyles(align: PosAlign.center, bold: true),
-    ),
-    PosColumn(
-      text: AppInvoiceString.price,
-      width: 2,
-      styles: PosStyles(align: PosAlign.right, bold: true),
-    ),
-    PosColumn(
-      text: AppInvoiceString.total,
-      width: 3,
-      styles: PosStyles(align: PosAlign.right, bold: true),
-    ),
-  ]);
-
+  // Products Table - Print in English columns format for better compatibility
+  bytes += generator.text(
+    'Product              Qty   Price    Total',
+    styles: PosStyles(align: PosAlign.left, bold: true),
+  );
   bytes += generator.hr();
 
   // Products
   for (var p in products) {
-    bytes += generator.row([
-      PosColumn(
-        text: p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? '',
-        width: 5,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: p[ApiKeys.quantity]?.toString() ?? '',
-        width: 2,
-        styles: PosStyles(align: PosAlign.center),
-      ),
-      PosColumn(
-        text: double.tryParse(p[ApiKeys.price] ?? '0')?.toStringAsFixed(2) ?? '0',
-        width: 2,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-      PosColumn(
-        text: double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')
-            ?.toStringAsFixed(2) ??
-            '0',
-        width: 3,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
+    final productName = p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? '';
+    final quantity = p[ApiKeys.quantity]?.toString() ?? '';
+    final price = double.tryParse(p[ApiKeys.price] ?? '0')?.toStringAsFixed(2) ?? '0';
+    final total = double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')?.toStringAsFixed(2) ?? '0';
+
+    // If Arabic, reverse it
+    final displayName = _containsArabic(productName) ? _reverseArabic(productName) : productName;
+
+    // Format: Name (20 chars) | Qty (5) | Price (8) | Total (8)
+    final line = '${displayName.padRight(20).substring(0, 20)} ${quantity.padLeft(3)} ${price.padLeft(7)} ${total.padLeft(8)}';
+
+    bytes += generator.text(line, styles: PosStyles(align: PosAlign.left));
   }
 
   bytes += generator.hr();
   bytes += generator.emptyLines(1);
 
-  // Totals (right-aligned values)
+  // Totals
   if (sale[ApiKeys.subtotal] != null) {
-    bytes += generator.row([
-      PosColumn(
-        text: AppInvoiceString.totalBeforeTax,
-        width: 7,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: double.tryParse(sale[ApiKeys.subtotal] ?? '0')?.toStringAsFixed(2) ??
-            '0',
-        width: 5,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.totalBeforeTax),
+      double.tryParse(sale[ApiKeys.subtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
   }
 
   if (sale[ApiKeys.discounttotal] != null) {
-    bytes += generator.row([
-      PosColumn(
-        text: AppInvoiceString.discount,
-        width: 7,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: double.tryParse(sale[ApiKeys.discounttotal] ?? '0')
-            ?.toStringAsFixed(2) ??
-            '0',
-        width: 5,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.discount),
+      double.tryParse(sale[ApiKeys.discounttotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
   }
 
   if (sale[ApiKeys.totalafterdiscount] != null) {
-    bytes += generator.row([
-      PosColumn(
-        text: AppInvoiceString.totalAfterDiscount,
-        width: 7,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')
-            ?.toStringAsFixed(2) ??
-            '0',
-        width: 5,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.totalAfterDiscount),
+      double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
   }
 
   if (sale[ApiKeys.taxtotal] != null) {
-    bytes += generator.row([
-      PosColumn(
-        text: AppInvoiceString.tax,
-        width: 7,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text:
-        double.tryParse(sale[ApiKeys.taxtotal] ?? '0')?.toStringAsFixed(2) ??
-            '0',
-        width: 5,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.tax),
+      double.tryParse(sale[ApiKeys.taxtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
   }
 
   if (sale[ApiKeys.totalaftertax] != null) {
-    bytes += generator.row([
-      PosColumn(
-        text: AppInvoiceString.totalAfterTax,
-        width: 7,
-        styles: PosStyles(align: PosAlign.left, bold: true),
-      ),
-      PosColumn(
-        text: double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')
-            ?.toStringAsFixed(2) ??
-            '0',
-        width: 5,
-        styles: PosStyles(align: PosAlign.right, bold: true),
-      ),
-    ]);
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.totalAfterTax),
+      double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')?.toStringAsFixed(2) ?? '0',
+      bold: true,
+    );
   }
 
   if (sale[ApiKeys.paymentmethod] != null) {
-    bytes += generator.row([
-      PosColumn(
-        text: AppInvoiceString.paymentMethod,
-        width: 7,
-        styles: PosStyles(align: PosAlign.left),
-      ),
-      PosColumn(
-        text: '${sale[ApiKeys.paymentmethod]}',
-        width: 5,
-        styles: PosStyles(align: PosAlign.right),
-      ),
-    ]);
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.paymentMethod),
+      '${sale[ApiKeys.paymentmethod]}',
+    );
   }
 
-  bytes += generator.row([
-    PosColumn(
-      text: AppInvoiceString.paid,
-      width: 7,
-      styles: PosStyles(align: PosAlign.left, bold: true),
-    ),
-    PosColumn(
-      text: paid.toStringAsFixed(2),
-      width: 5,
-      styles: PosStyles(align: PosAlign.right, bold: true),
-    ),
-  ]);
+  bytes += _printTotal(
+    generator,
+    _reverseArabic(AppInvoiceString.paid),
+    paid.toStringAsFixed(2),
+    bold: true,
+  );
 
-  bytes += generator.row([
-    PosColumn(
-      text: AppInvoiceString.remain,
-      width: 7,
-      styles: PosStyles(align: PosAlign.left),
-    ),
-    PosColumn(
-      text:
-      (paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0))
-          .toStringAsFixed(2),
-      width: 5,
-      styles: PosStyles(align: PosAlign.right),
-    ),
-  ]);
+  bytes += _printTotal(
+    generator,
+    _reverseArabic(AppInvoiceString.remain),
+    (paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)).toStringAsFixed(2),
+  );
 
   bytes += generator.hr();
   bytes += generator.emptyLines(1);
 
-  // QR Code (centered)
+  // QR Code
   if (sale[ApiKeys.zatcaQrcode] != null) {
     bytes += generator.qrcode(
       sale[ApiKeys.zatcaQrcode],
@@ -2200,41 +2104,83 @@ Future<List<int>> generateCenteredReceipt(
     bytes += generator.emptyLines(1);
   }
 
-  // Footer (all centered)
+  // Footer
   bytes += generator.text(
-    AppInvoiceString.thanks,
+    _reverseArabic(AppInvoiceString.thanks),
     styles: PosStyles(align: PosAlign.center, bold: true),
   );
 
   if (setting[ApiKeys.address] != null) {
     bytes += generator.text(
-      setting[ApiKeys.address],
+      _reverseArabic(setting[ApiKeys.address]),
       styles: PosStyles(align: PosAlign.center),
     );
   }
 
   if (CustomUserHiveBox.getUser().name != null) {
     bytes += generator.text(
-      '${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}',
+      _reverseArabic('${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}'),
       styles: PosStyles(align: PosAlign.center),
     );
   }
 
   if (branchName != null) {
     bytes += generator.text(
-      '${AppInvoiceString.branchName} $branchName',
+      _reverseArabic('${AppInvoiceString.branchName} $branchName'),
       styles: PosStyles(align: PosAlign.center),
     );
   }
 
-  // Cut
   bytes += generator.feed(2);
   bytes += generator.cut();
 
   return bytes;
 }
 
+// Helper: Print total row
+List<int> _printTotal(
+    Generator generator,
+    String label,
+    String value, {
+      bool bold = false,
+    }) {
+  // Format: Label (right-aligned to 35 chars) | Value (right-aligned)
+  final line = '${label.padLeft(35)} ${value.padLeft(12)}';
+  return generator.text(
+    line,
+    styles: PosStyles(align: PosAlign.left, bold: bold),
+  );
+}
+
+// Helper: Reverse Arabic text for RTL display
+String _reverseArabic(String text) {
+  if (!_containsArabic(text)) return text;
+
+  // Split by spaces to handle mixed content
+  final words = text.split(' ');
+  final reversedWords = <String>[];
+
+  for (var word in words) {
+    if (_containsArabic(word)) {
+      // Reverse Arabic characters
+      reversedWords.add(word.split('').reversed.join(''));
+    } else {
+      // Keep English/numbers as is
+      reversedWords.add(word);
+    }
+  }
+
+  // Reverse the entire order
+  return reversedWords.reversed.join(' ');
+}
+
+// Helper: Check if text contains Arabic
+bool _containsArabic(String text) {
+  return text.contains(RegExp(r'[\u0600-\u06FF]'));
+}
+
 PaperSize _getPaperSize(String paperSize) {
   return paperSize == '80' ? PaperSize.mm80 : PaperSize.mm58;
 }
+
 

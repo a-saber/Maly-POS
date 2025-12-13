@@ -153,8 +153,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                           paid: state.printModel.paid,
                           size: printer.paperSize??'80'
                         );*/
-                              var invoiceBytesUint8List = await generateCenteredReceipt(
-
+                        var invoiceBytesUint8List = await generateCenteredReceipt(
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
                           paid: state.printModel.paid,
