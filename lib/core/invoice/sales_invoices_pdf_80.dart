@@ -134,7 +134,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
         pageFormat: size=='80' ? PdfPageFormat(
           width80mm,
           double.infinity, // Auto height
-          marginAll: 5 * mmToPoint, // 5mm padding on all sides
+          marginAll: 3 * mmToPoint, // 5mm padding on all sides
         ): PdfPageFormat.roll57,
 
         margin: pw.EdgeInsets.zero,
