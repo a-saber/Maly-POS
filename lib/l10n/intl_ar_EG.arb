@@ -327,5 +327,6 @@
         "ZakatAndTaxAuthority":"هيئة الزكاة والضريبة ",
        , "remainingAmount":"الباقي"
        "paymentsMethods":"طرق الدفع",
-       "discountType":{"ثابت","نسبة مؤية"}
+       "discountType":{"ثابت","نسبة مؤية"},
+       "nameAlreadyTaken":"اسم مستخدم موجود بالفعل",
 }

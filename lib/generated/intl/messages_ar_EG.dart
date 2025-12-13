@@ -493,5 +493,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentsMethods":MessageLookupByLibrary.simpleMessage("طرق الدفع"),
     "fixed": MessageLookupByLibrary.simpleMessage("ثابت"),
     "percentage": MessageLookupByLibrary.simpleMessage("  نسبة مئوية"), 
+    "nameAlreadyTaken": MessageLookupByLibrary.simpleMessage("اسم مستخدم موجود بالفعل"),
   };
 }
