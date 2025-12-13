@@ -497,5 +497,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentsMethods":MessageLookupByLibrary.simpleMessage("paymentsMethods"),
     "fixed":MessageLookupByLibrary.simpleMessage("Fixed"),
     "percentage":MessageLookupByLibrary.simpleMessage("Percentage"),
+    "nameAlreadyTaken":MessageLookupByLibrary.simpleMessage("Name already taken"),
   };
 }
