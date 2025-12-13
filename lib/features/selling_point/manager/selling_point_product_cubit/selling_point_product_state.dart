@@ -62,3 +62,5 @@ final class SellingPointProductChangePaidFailing
     extends SellingPointProductState {}
 final class SellingPointProductChangePrice
     extends SellingPointProductState {}
+// أضف هذا في ملف الـ states
+class SellingPointProductPaymentMethodsLoaded extends SellingPointProductState {}

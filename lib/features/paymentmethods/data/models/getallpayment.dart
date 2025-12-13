@@ -1,137 +1,108 @@
-import 'package:dartz/dartz.dart';
 import 'package:pos_app/features/paymentmethods/data/models/paymentmethodmodel.dart';
+import 'package:pos_app/features/shifts/data/model/getshift.dart' hide Links;
 
 class GetAllPaymentMethods {
-  String? status;
-  int? code;
+  bool? status;
   String? message;
-  Data? data;
+  PaymentMethodPagination? paymentMethod;
 
-  GetAllPaymentMethods({this.status, this.code, this.message, this.data});
+  GetAllPaymentMethods({this.status, this.message, this.paymentMethod});
 
   GetAllPaymentMethods.fromJson(Map<String, dynamic> json) {
     status = json['status'];
-    code = json['code'];
     message = json['message'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    data['status'] = this.status;
-    data['code'] = this.code;
-    data['message'] = this.message;
-    if (this.data != null) {
-      data['data'] = this.data!.toJson();
-    }
-    return data;
-  }
-}
-
-class Data {
-  List<PaymentMethodsModel>? items;
-  Pagination? pagination;
-
-  Data({this.items, this.pagination});
-
-  Data.fromJson(Map<String, dynamic> json) {
-    if (json['items'] != null) {
-      items = <PaymentMethodsModel>[];
-      json['items'].forEach((v) {
-        items!.add(PaymentMethodsModel.fromJson(v));
-      });
-    }
-    pagination = json['pagination'] != null
-        ? Pagination.fromJson(json['pagination'])
+    paymentMethod = json['paymentMethod'] != null
+        ? PaymentMethodPagination.fromJson(json['paymentMethod'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    if (this.items != null) {
-      data['items'] = this.items!.map((v) => v.toJson()).toList();
-    }
-    if (this.pagination != null) {
-      data['pagination'] = this.pagination!.toJson();
+    final Map<String, dynamic> data = {};
+    data['status'] = status;
+    data['message'] = message;
+    if (paymentMethod != null) {
+      data['paymentMethod'] = paymentMethod!.toJson();
     }
     return data;
   }
 }
 
-class Items {
-  int? id;
-  String? name;
-  int? isActive;
-  int? requiresReference;
-  Null? deletedAt;
-  String? createdAt;
-  String? updatedAt;
-
-  Items(
-      {this.id,
-      this.name,
-      this.isActive,
-      this.requiresReference,
-      this.deletedAt,
-      this.createdAt,
-      this.updatedAt});
-
-  Items.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    isActive = json['is_active'];
-    requiresReference = json['requires_reference'];
-    deletedAt = json['deleted_at'];
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['is_active'] = this.isActive;
-    data['requires_reference'] = this.requiresReference;
-    data['deleted_at'] = this.deletedAt;
-    data['created_at'] = this.createdAt;
-    data['updated_at'] = this.updatedAt;
-    return data;
-  }
-}
-
-class Pagination {
-  int? total;
-  int? perPage;
+class PaymentMethodPagination {
   int? currentPage;
-  int? lastPage;
+  List<PaymentMethodData>? data;
+  String? firstPageUrl;
   int? from;
+  int? lastPage;
+  String? lastPageUrl;
+  List<Links>? links;
+  String? nextPageUrl;
+  String? path;
+  int? perPage;
+  String? prevPageUrl;
   int? to;
+  int? total;
 
-  Pagination(
-      {this.total,
-      this.perPage,
-      this.currentPage,
-      this.lastPage,
-      this.from,
-      this.to});
+  PaymentMethodPagination({
+    this.currentPage,
+    this.data,
+    this.firstPageUrl,
+    this.from,
+    this.lastPage,
+    this.lastPageUrl,
+    this.links,
+    this.nextPageUrl,
+    this.path,
+    this.perPage,
+    this.prevPageUrl,
+    this.to,
+    this.total,
+  });
 
-  Pagination.fromJson(Map<String, dynamic> json) {
-    total = json['total'];
-    perPage = json['per_page'];
+  PaymentMethodPagination.fromJson(Map<String, dynamic> json) {
     currentPage = json['current_page'];
-    lastPage = json['last_page'];
+    if (json['data'] != null) {
+      data = <PaymentMethodData>[];
+      json['data'].forEach((v) {
+        data!.add(PaymentMethodData.fromJson(v));
+      });
+    }
+    firstPageUrl = json['first_page_url'];
     from = json['from'];
+    lastPage = json['last_page'];
+    lastPageUrl = json['last_page_url'];
+    if (json['links'] != null) {
+      links = <Links>[];
+      json['links'].forEach((v) {
+        links!.add(Links.fromJson(v));
+      });
+    }
+    nextPageUrl = json['next_page_url'];
+    path = json['path'];
+    perPage = json['per_page'];
+    prevPageUrl = json['prev_page_url'];
     to = json['to'];
+    total = json['total'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['total'] = this.total;
-    data['per_page'] = this.perPage;
-    data['current_page'] = this.currentPage;
-    data['last_page'] = this.lastPage;
-    data['from'] = this.from;
-    data['to'] = this.to;
+    final Map<String, dynamic> data = {};
+    data['current_page'] = currentPage;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    data['first_page_url'] = firstPageUrl;
+    data['from'] = from;
+    data['last_page'] = lastPage;
+    data['last_page_url'] = lastPageUrl;
+    if (links != null) {
+      data['links'] = links!.map((v) => v.toJson()).toList();
+    }
+    data['next_page_url'] = nextPageUrl;
+    data['path'] = path;
+    data['per_page'] = perPage;
+    data['prev_page_url'] = prevPageUrl;
+    data['to'] = to;
+    data['total'] = total;
     return data;
   }
 }

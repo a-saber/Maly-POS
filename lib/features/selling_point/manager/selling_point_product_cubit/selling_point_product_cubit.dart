@@ -8,48 +8,46 @@ import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
-import 'package:pos_app/features/selling_point/data/model/payment_method_model.dart';
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart' as PaymentAdmin;
+import 'package:pos_app/features/selling_point/data/model/payment_method_model.dart' as PaymentSales;
 import 'package:pos_app/features/selling_point/data/model/print_model.dart';
 import 'package:pos_app/features/selling_point/data/model/product_selling_model.dart';
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
+import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 
 import '../../../products/data/model/product_unit_model.dart';
 
 part 'selling_point_product_state.dart';
 
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
-  SellingPointProductCubit(this.repo) : super(SellingPointProductInitial());
+  SellingPointProductCubit(this.repo, this.paymentMethodsRepo) : super(SellingPointProductInitial());
 
   static SellingPointProductCubit get(context) => BlocProvider.of(context);
   final SellingPointRepo repo;
+  final PaymentMethodsRepo paymentMethodsRepo;
 
   List<ProductSellingModel> products = [];
-  // TaxesModel? taxes;
   DiscountModel? discount;
   TypeOfTakeOrderModel? typeOfTakeOrder;
-  PaymentMethodModel? paymentMethod;
+  PaymentSales.PaymentMethodModel? paymentMethod;
   CustomerModel? user;
-  // BrancheModel? branche;
 
-  // String? valuePaid;
   TextEditingController paidController = TextEditingController();
-  // GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  // AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
+
+
+  List<PaymentAdmin.PaymentMethodSalesModel> availablePaymentMethods = [];
+  Map<int, double> selectedPaymentAmounts = {}; // {paymentMethodId: amount}
+  Map<int, String> paymentReferences = {}; // {paymentMethodId: reference}
 
   init() {
-    // formKey = GlobalKey<FormState>();
     resetProduct();
-    // typeOfTakeOrder = null;
-    // taxes = null;
-    // value = '';
-    // discount = null;
-    // autovalidateMode = AutovalidateMode.disabled;
+    cashAmount = 0.0;
     madaAmount = 0.0;
     onlineAmount = 0.0;
-    cashAmount=0.0;
     user = null;
-    // paymentController = TextEditingController();
+    selectedPaymentAmounts = {};
+    paymentReferences = {};
     emit(SellingPointProductInitial());
   }
 
@@ -61,6 +59,25 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     emit(SellingPointProductInitial());
   }
 
+
+  Future<void> loadPaymentMethods() async {
+    emit(SellingPointProductLoading());
+    
+    final result = await paymentMethodsRepo.getPaymentMethods(isFresh: true);
+    
+    result.fold(
+      (apiError) {
+        emit(SellingPointProductFailing(message
+        : apiError));
+      },
+      (methods) {
+   
+        availablePaymentMethods = methods.where((m) => m.isActive == 1).toList();
+        emit(SellingPointProductPaymentMethodsLoaded());
+      },
+    );
+  }
+
   double remainingAmount() {
     double paid = double.tryParse(paidController.text) ?? 0.0;
     double total = totalPrice();
@@ -69,14 +86,13 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   void confirmPayment() async {
     emit(SellingPointProductLoading());
+    
     debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
-    debugPrint(
-        " \n ******* discounttotal : ${discountPrice()} *************** \n");
-    debugPrint(
-        " \n ******* totalafterdiscount : ${totalAfterDiscount()} *************** \n");
+    debugPrint(" \n ******* discounttotal : ${discountPrice()} *************** \n");
+    debugPrint(" \n ******* totalafterdiscount : ${totalAfterDiscount()} *************** \n");
     debugPrint(" \n ******* taxtotal : ${taxesPrice()} *************** \n");
-    debugPrint(
-        " \n ******* totalaftertax : ${totalAfterTax()} *************** \n");
+    debugPrint(" \n ******* totalaftertax : ${totalAfterTax()} *************** \n");
+    
     var respons = await repo.newSales(
       typeOfTakeOrder: typeOfTakeOrder!,
       paid: double.parse(
@@ -84,34 +100,33 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
             ? (round2(totalPrice()).toString())
             : paidController.text,
       ),
-      madaAmount: madaAmount,
-      onlineAmount: onlineAmount,
-       online: onlineAmount, 
+      madaAmount: selectedPaymentAmounts[2] ?? 0.0,
+      onlineAmount: selectedPaymentAmounts[3] ?? 0.0,
+      online: selectedPaymentAmounts[3] ?? 0.0,
       subtotal: round2(subTotalPrice()),
       discounttotal: round2(discountPrice()),
       totalafterdiscount: round2(totalAfterDiscount()),
       taxtotal: round2(taxesPrice()),
       totalaftertax: round2(totalAfterTax()),
       paymentType: paymentMethod,
-      // taxes: taxes!,
       discount: discount,
-
       customer: user,
       products: products,
+     
+      paymentAmounts: selectedPaymentAmounts,
+      paymentReferences: paymentReferences,
     );
+    
     respons.fold(
-        (errMessage) => emit(SellingPointProductFailing(message: errMessage)),
-        (success) {
-      init();
-
-      emit(SellingPointProductSuccess(printModel: success));
-    });
+      (errMessage) => emit(SellingPointProductFailing(message:  errMessage)),
+      (success) {
+        init();
+        emit(SellingPointProductSuccess(printModel: success));
+      }
+    );
   }
 
   bool containProduct() => products.isNotEmpty;
-
-  /////////////////////////////////////////////////////
-  /// Calculation Function
 
   double round2(double value) {
     return ((value * 100).round() / 100.0);
@@ -119,11 +134,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   double subTotalPrice() {
     double total = 0;
-
     for (var element in products) {
       total += element.totalPrice();
     }
-
     return total;
   }
 
@@ -155,18 +168,12 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     if (discount == null) {
       return product.totalPrice();
     }
-
     double percentageOfParticipation = (product.totalPrice() / subTotalPrice());
-    debugPrint(
-        " \n ******* percentage ${product.totalPrice()} : ${(product.totalPrice() / subTotalPrice())} *************** \n");
-    debugPrint(
-        " \n ******* priceOfProductAfterDicount ${product.totalPrice()} : ${totalAfterDiscount() * (percentageOfParticipation)} *************** \n");
     return totalAfterDiscount() * (percentageOfParticipation);
   }
 
   double taxesPrice() {
     double total = 0;
-
     for (var element in products) {
       if (element.product.tax != null) {
         double? taxes = double.tryParse(element.product.tax!.percentage ?? '');
@@ -175,7 +182,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         }
       }
     }
-
     return total;
   }
 
@@ -186,9 +192,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   double totalPrice() {
     return totalAfterTax();
   }
-
-  /////// end of calculation function
-  /////////////////////////////////////////////////////////////////////////////////
 
   void addProduct({required ProductModel product, ProductUnit? productUnit}) {
     bool isFound = products.any((element) =>
@@ -302,8 +305,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     emit(SellingPointProductChangePrice());
   }
 
-  // Function Change
-
   void changeDiscount(DiscountModel? discount) {
     if (discount?.id != this.discount?.id) {
       this.discount = discount;
@@ -326,7 +327,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void changePaymentMethod(PaymentMethodModel? paymentMethod) {
+  void changePaymentMethod(PaymentSales.PaymentMethodModel? paymentMethod) {
     if (paymentMethod?.id != this.paymentMethod?.id) {
       this.paymentMethod = paymentMethod;
       emit(SellingPointProductChangePayment());
@@ -346,7 +347,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
     if (index != -1) {
       int count = products[index].count;
-
       products[index] = ProductSellingModel(product: product, count: count);
       updatePaid();
       emit(SellingPointProductUpdateProduct());
@@ -375,26 +375,34 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     products = [];
     user = null;
     discount = null;
+    selectedPaymentAmounts = {};
+    paymentReferences = {};
+    cashAmount = 0.0;
     madaAmount = 0.0;
     onlineAmount = 0.0;
-    cashAmount = 0.0;
     updatePaid();
     emit(SellingPointProductResetProduct());
   }
 
+  double cashAmount = 0.0;
   double madaAmount = 0.0;
   double onlineAmount = 0.0;
-  double cashAmount = 0.0;
-void changePaid(String newPaidAmount, {double mada = 0.0, double online = 0.0}) {
-  double totalPaid = double.tryParse(newPaidAmount) ?? 0.0;
-  
-  if (totalPaid >= totalPrice()) {
-    paidController.text = totalPaid.toStringAsFixed(2);
-    
-    emit(SellingPointProductChangePaid());
-  } else {
-    emit(SellingPointProductChangePaidFailing());
-  }
-}
 
+  void changePaid(String newPaidAmount, {Map<int, double>? paymentAmounts}) {
+    double totalPaid = double.tryParse(newPaidAmount) ?? 0.0;
+    
+    if (totalPaid >= totalPrice()) {
+      paidController.text = totalPaid.toStringAsFixed(2);
+      
+ 
+      if (paymentAmounts != null && paymentAmounts.isNotEmpty) {
+        selectedPaymentAmounts = Map.from(paymentAmounts);
+        debugPrint(' Saved payment amounts in Cubit: $selectedPaymentAmounts');
+      }
+      
+      emit(SellingPointProductChangePaid());
+    } else {
+      emit(SellingPointProductChangePaidFailing());
+    }
+  }
 }

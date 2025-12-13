@@ -63,177 +63,76 @@ class MyServiceLocator {
   static final GetIt getIt = GetIt.instance;
 
   static void init() {
-    registerSingleton<ApiHelper>(ApiHelper(
-      dio: getDio(),
-    ));
-    registerSingleton<PermissionsRepo>(PermissionsRepo(
-      api: getIt(),
-    ));
-    registerSingleton<CategoryRepo>(CategoryRepo(
-      api: getIt(),
-    ));
-    registerSingleton<PrinterRepo>(PrinterRepo(
-      api: getIt(),
-    ));
-    registerSingleton<UsersRepo>(UsersRepo(
-      api: getIt(),
-    ));
-    registerSingleton<ClientsRepo>(ClientsRepo(
-      api: getIt(),
-    ));
-    registerSingleton<SuppliersRepo>(SuppliersRepo(
-      api: getIt(),
-    ));
-    registerSingleton<UnitsRepo>(UnitsRepo(
-      api: getIt(),
-    ));
-    registerSingleton<BranchesRepo>(BranchesRepo(
-      api: getIt(),
-    ));
-    registerSingleton<ProductsRepo>(ProductsRepo(
-      api: getIt(),
-    ));
-    registerSingleton<DiscountsRepo>(DiscountsRepo(
-      api: getIt(),
-    ));
-    registerSingleton<TaxesRepo>(TaxesRepo(
-      api: getIt(),
-    ));
-    registerSingleton<ExpenseCategoriesRepo>(ExpenseCategoriesRepo(
-      api: getIt(),
-    ));
-    registerSingleton<StoreQuantityRepo>(StoreQuantityRepo(
-      api: getIt(),
-    ));
-    registerSingleton<StoreMoveRepo>(StoreMoveRepo(
-      api: getIt(),
-    ));
-    registerSingleton<SellingPointRepo>(SellingPointRepo(
-      api: getIt(),
-    ));
-    registerSingleton<RegisterRepo>(RegisterRepo(
-      api: getIt(),
-    ));
-    registerSingleton<LoginRepo>(LoginRepo(
-      api: getIt(),
-    ));
-    registerSingleton<SalesRepo>(SalesRepo(
-      api: getIt(),
-    ));
-    registerSingleton<SalesReturnRepo>(SalesReturnRepo(
-      api: getIt(),
-    ));
-    registerSingleton<HomeRepo>(HomeRepo(
-      api: getIt(),
-    ));
-    registerSingleton<ShiftRepo>(ShiftRepo(
-      api: getIt(),
-    ));
-    registerSingleton<ShopSettingRepo>(ShopSettingRepo(
-      getIt(),
-    ));
-    registerSingleton<ScidGenerationRepo>(ScidGenerationRepo(
-      getIt(),
-    ));
-    registerSingleton<GetCategoryCubit>(GetCategoryCubit(
-      getIt(),
-    ));
-    registerSingleton<HomeCubit>(HomeCubit(
-      getIt(),
-    ));
-    registerSingleton<GetPermissionsCubit>(GetPermissionsCubit(
-      getIt(),
-    ));
-    registerSingleton<GetUsersCubit>(GetUsersCubit(
-      getIt(),
-    ));
-    registerSingleton<GetClientsCubit>(GetClientsCubit(
-      getIt(),
-    ));
-    registerSingleton<GetSuppliersCubit>(GetSuppliersCubit(
-      getIt(),
-    ));
-    registerSingleton<GetAllUnitsCubit>(GetAllUnitsCubit(
-      getIt(),
-    ));
-    registerSingleton<GetAllBranchesCubit>(GetAllBranchesCubit(
-      getIt(),
-    ));
-    registerSingleton<GetAllProductsCubit>(GetAllProductsCubit(
-      getIt(),
-    ));
-    registerSingleton<GetAllDiscountsCubit>(GetAllDiscountsCubit(
-      getIt(),
-    ));
-    registerSingleton<GetAllTaxesCubit>(GetAllTaxesCubit(
-      getIt(),
-    ));
-    registerSingleton<GetExpenseCategoriesCubit>(GetExpenseCategoriesCubit(
-      getIt(),
-    ));
-    registerSingleton<StoreQuantityCubit>(StoreQuantityCubit(
-      getIt(),
-    ));
-    registerSingleton<StoreMoveCubit>(StoreMoveCubit(
-      getIt(),
-    ));
-    registerSingleton<SellingPointCubit>(SellingPointCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchPermissionCubit>(SearchPermissionCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchBranchCubit>(SearchBranchCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchCategoryCubit>(SearchCategoryCubit(
-      repo: getIt(),
-    ));
-    registerSingleton<SearchUnitCubit>(SearchUnitCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchTaxesCubit>(SearchTaxesCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchDiscountCubit>(SearchDiscountCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchClientCubit>(SearchClientCubit(
-      getIt(),
-    ));
+    // ========== STEP 1: Register Core (ApiHelper) ==========
+    registerSingleton<ApiHelper>(ApiHelper(dio: getDio()));
+
+    // ========== STEP 2: Register ALL Repositories First ==========
+    registerSingleton<PermissionsRepo>(PermissionsRepo(api: getIt()));
+    registerSingleton<CategoryRepo>(CategoryRepo(api: getIt()));
+    registerSingleton<PrinterRepo>(PrinterRepo(api: getIt()));
+    registerSingleton<UsersRepo>(UsersRepo(api: getIt()));
+    registerSingleton<ClientsRepo>(ClientsRepo(api: getIt()));
+    registerSingleton<SuppliersRepo>(SuppliersRepo(api: getIt()));
+    registerSingleton<UnitsRepo>(UnitsRepo(api: getIt()));
+    registerSingleton<BranchesRepo>(BranchesRepo(api: getIt()));
+    registerSingleton<ProductsRepo>(ProductsRepo(api: getIt()));
+    registerSingleton<DiscountsRepo>(DiscountsRepo(api: getIt()));
+    registerSingleton<TaxesRepo>(TaxesRepo(api: getIt()));
+    registerSingleton<ExpenseCategoriesRepo>(ExpenseCategoriesRepo(api: getIt()));
+    registerSingleton<StoreQuantityRepo>(StoreQuantityRepo(api: getIt()));
+    registerSingleton<StoreMoveRepo>(StoreMoveRepo(api: getIt()));
+    registerSingleton<RegisterRepo>(RegisterRepo(api: getIt()));
+    registerSingleton<LoginRepo>(LoginRepo(api: getIt()));
+    registerSingleton<SalesRepo>(SalesRepo(api: getIt()));
+    registerSingleton<SalesReturnRepo>(SalesReturnRepo(api: getIt()));
+    registerSingleton<HomeRepo>(HomeRepo(api: getIt()));
+    registerSingleton<ShiftRepo>(ShiftRepo(api: getIt()));
+    registerSingleton<ShopSettingRepo>(ShopSettingRepo(getIt()));
+    registerSingleton<ScidGenerationRepo>(ScidGenerationRepo(getIt()));
+    
+    // IMPORTANT: Register these two repos before SellingPointProductCubit
+    registerSingleton<SellingPointRepo>(SellingPointRepo(api: getIt()));
+    registerSingleton<PaymentMethodsRepo>(PaymentMethodsRepo(api: getIt()));
+
+    // ========== STEP 3: Register ALL Cubits After Repos ==========
+    registerSingleton<GetCategoryCubit>(GetCategoryCubit(getIt()));
+    registerSingleton<HomeCubit>(HomeCubit(getIt()));
+    registerSingleton<GetPermissionsCubit>(GetPermissionsCubit(getIt()));
+    registerSingleton<GetUsersCubit>(GetUsersCubit(getIt()));
+    registerSingleton<GetClientsCubit>(GetClientsCubit(getIt()));
+    registerSingleton<GetSuppliersCubit>(GetSuppliersCubit(getIt()));
+    registerSingleton<GetAllUnitsCubit>(GetAllUnitsCubit(getIt()));
+    registerSingleton<GetAllBranchesCubit>(GetAllBranchesCubit(getIt()));
+    registerSingleton<GetAllProductsCubit>(GetAllProductsCubit(getIt()));
+    registerSingleton<GetAllDiscountsCubit>(GetAllDiscountsCubit(getIt()));
+    registerSingleton<GetAllTaxesCubit>(GetAllTaxesCubit(getIt()));
+    registerSingleton<GetExpenseCategoriesCubit>(GetExpenseCategoriesCubit(getIt()));
+    registerSingleton<StoreQuantityCubit>(StoreQuantityCubit(getIt()));
+    registerSingleton<StoreMoveCubit>(StoreMoveCubit(getIt()));
+    registerSingleton<SellingPointCubit>(SellingPointCubit(getIt()));
+    registerSingleton<SearchPermissionCubit>(SearchPermissionCubit(getIt()));
+    registerSingleton<SearchBranchCubit>(SearchBranchCubit(getIt()));
+    registerSingleton<SearchCategoryCubit>(SearchCategoryCubit(repo: getIt()));
+    registerSingleton<SearchUnitCubit>(SearchUnitCubit(getIt()));
+    registerSingleton<SearchTaxesCubit>(SearchTaxesCubit(getIt()));
+    registerSingleton<SearchDiscountCubit>(SearchDiscountCubit(getIt()));
+    registerSingleton<SearchClientCubit>(SearchClientCubit(getIt()));
+    
+    // Now both repos are registered, so this will work
     registerSingleton<SellingPointProductCubit>(SellingPointProductCubit(
-      getIt(),
+      getIt<SellingPointRepo>(),
+      getIt<PaymentMethodsRepo>(),
     ));
-    registerSingleton<SearchProductCubit>(SearchProductCubit(
-      getIt(),
-    ));
-    registerSingleton<GetSalesCubit>(GetSalesCubit(
-      getIt(),
-    ));
-    registerSingleton<SearchUserCubit>(SearchUserCubit(
-      getIt(),
-    ));
-    registerSingleton<GetSalesReturnCubit>(GetSalesReturnCubit(
-      getIt(),
-    ));
-    registerSingleton<ShopSettingCubit>(ShopSettingCubit(
-      getIt(),
-    ));
-    registerSingleton<GetPrintersCubit>(GetPrintersCubit(
-      getIt(),
-    ));
-    registerSingleton<ShiftCubit>(ShiftCubit(
-      getIt(),
-    ));
-    registerSingleton<ScidGenerationCubit>(ScidGenerationCubit(
-      getIt(),
-    ));
-    registerSingleton<PaymentMethodsRepo>(PaymentMethodsRepo(
-      api: getIt(),
-    ));
-    registerSingleton<PaymentMethodsCubit>(PaymentMethodsCubit(
-      getIt(),
-    ));
+    
+    registerSingleton<SearchProductCubit>(SearchProductCubit(getIt()));
+    registerSingleton<GetSalesCubit>(GetSalesCubit(getIt()));
+    registerSingleton<SearchUserCubit>(SearchUserCubit(getIt()));
+    registerSingleton<GetSalesReturnCubit>(GetSalesReturnCubit(getIt()));
+    registerSingleton<ShopSettingCubit>(ShopSettingCubit(getIt()));
+    registerSingleton<GetPrintersCubit>(GetPrintersCubit(getIt()));
+    registerSingleton<ShiftCubit>(ShiftCubit(getIt()));
+    registerSingleton<ScidGenerationCubit>(ScidGenerationCubit(getIt()));
+    registerSingleton<PaymentMethodsCubit>(PaymentMethodsCubit(getIt()));
   }
 
   static void registerSingleton<T extends Object>(T instance) {

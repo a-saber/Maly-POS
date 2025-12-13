@@ -1,13 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:pos_app/features/paymentmethods/data/models/paymentmethodmodel.dart';
 import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/paymentmethods/manager/state/paymentsstate.dart';
 
 class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
   final PaymentMethodsRepo repo;
-  List<PaymentMethodsModel> paymentMethods = [];
+  List<PaymentMethodSalesModel> paymentMethods = [];
   bool isLoadingMore = false;
 
   PaymentMethodsCubit(this.repo) : super(PaymentMethodsInitial());
@@ -55,20 +54,15 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
     required String name,
     required int isActive,
     required int requiresReference,
+    required int isNearpay,
   }) async {
     emit(PaymentMethodsLoading());
 
-    final paymentMethod = AddPaymentMethodModel(
-      id: 0,
+    final result = await repo.addPaymentMethod(
       name: name,
       isActive: isActive,
       requiresReference: requiresReference,
-      createdAt: DateTime.now().toString(),
-      updatedAt: DateTime.now().toString(),
-    );
-
-    final result = await repo.addPaymentMethod(
-      paymentMethod: paymentMethod,
+      isNearpay: isNearpay,
     );
 
     result.fold(
@@ -81,7 +75,7 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
   }
 
   Future<void> updatePaymentMethod({
-    required PaymentMethodsModel paymentMethod,
+    required PaymentMethodSalesModel paymentMethod,
   }) async {
     emit(PaymentMethodsLoading());
 
