@@ -8,8 +8,12 @@ import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/shifts/data/model/end_shift_model.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:printing/printing.dart';
+import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 
+import '../../../../core/helper/my_service_locator.dart';
+import '../../../../core/helper/printer_helper.dart';
 import '../../../../core/invoice/sales_invoices_pdf_80.dart';
+import '../../../printer/manager/scan_printer/scan_printer_cubit.dart';
 
 Future<void> showDialogForShiftEnd(BuildContext context,
     {required EndShiftModel shift}) async {
@@ -112,8 +116,8 @@ Future<void> showDialogForShiftEnd(BuildContext context,
             children: [
               CustomTextBtn(
                 text: S.of(context).print,
-                onPressed: () {
-                  Navigator.push(
+                onPressed: () async {
+                /*  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) {
@@ -129,7 +133,62 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                         );
                       },
                     ),
+                  );*/
+                  final bool isSunmi=await PrinterHelper().isSunmiDevice();
+                  final allAutomaticPrinters = MyServiceLocator.getSingleton<GetPrintersCubit>().printers;
+                  for (final printer in allAutomaticPrinters) {
+
+                    if (printer.discoveredPrinter != null ) {
+
+                      try {
+                        debugPrint('');
+                        debugPrint(' Printing to: ${printer.printerName}');
+                        debugPrint(' Using paper size: "${printer.paperSize}"');
+                        if(isSunmi & printer.printerType.toString().toLowerCase().contains('sunmi') && (printer?.automatic??false)){
+
+                          await printSunmiPDF(await endShiftInvoicesPdf(
+                              context,
+                              shift: shift,
+                              size:'80'
+                          ), '58');
+
+                  await SunmiPrinter.lineWrap(4);
+                  await SunmiPrinter.cutPaper();
+                  await SunmiDrawer.openDrawer();
+                  /*   if( state.printModel.apiResponse.data[ApiKeys.sale][ApiKeys.ordertype]==ApiKeys.hall){
+                          await SunmiDrawer.openDrawer();
+                            }*/
+                  }
+                  else if((printer.automatic??false)){
+
+                  var invoiceBytesUint8List = await endShiftInvoicesPdf(
+                      context,
+                      shift: shift,
+                      size:'80'
                   );
+
+                  await PrinterHelper().printInvoice(
+                  printer.discoveredPrinter!,
+                  invoiceBytesUint8List,
+                  // invoiceData,
+                  paperSize: printer.paperSize,
+                  openCashDrawer: true,
+                  );
+                  // await PrinterHelper().printWidget(context, printer.discoveredPrinter!);
+
+
+                  debugPrint(' SUCCESS: ${printer.printerName}');
+                  }
+                  } catch (e) {
+
+                  debugPrint(
+                  ' FAILED: ${printer.printerName} - Error: $e');
+                  }
+                }
+
+
+
+                }
                 },
               ),
               CustomTextBtn(

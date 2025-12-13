@@ -13,6 +13,8 @@ import 'package:pdfx/pdfx.dart' as pdfx;
 
 import '../../features/shifts/data/model/end_shift_model.dart';
 import '../../generated/l10n.dart';
+import '../cache/cache_helper.dart';
+import '../cache/cache_keys.dart';
 import '../helper/formate_date_time.dart';
 
 Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
@@ -237,6 +239,29 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                 ),
               ),
 
+               pw.Container(
+                 width: double.infinity,
+                 padding: pw.EdgeInsets.all(10),
+                 decoration: pw.BoxDecoration(
+                   border: pw.Border.all(
+                     color: PdfColors.black,
+                     width: 1,
+                     style: pw.BorderStyle.solid,
+                   )
+                 ),
+                 child: pw.Center(
+                   child: pw.Text(
+                     "${'invoiceNumber'}#${((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1)}",
+                     textAlign: pw.TextAlign.center,
+                     style: pw.TextStyle(
+                       font: arabicFont,
+                       fontSize: 20,
+                     ),
+                   ),
+                 )
+
+               ),
+
             // if (sale["branch_id"] != null) pw.Text("الفرع: ${sale["branch_id"]}"),
             // if (sale["customer"]?["name"] != null)
             //   pw.Text("العميل: ${sale["customer"]["name"]}"),
@@ -346,8 +371,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
                             child: pw.Text(
-                              p[ApiKeys.product]?[ApiKeys.name]?.toString() ??
-                                  "",
+                              p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,

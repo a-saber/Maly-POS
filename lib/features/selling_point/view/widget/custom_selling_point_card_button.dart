@@ -1,11 +1,10 @@
-import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/helper/is_mobile.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
-import 'package:pos_app/core/helper/printer_receit_builder.dart';
 import 'package:pos_app/core/invoice/sales_invoices_pdf_80.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
@@ -19,6 +18,9 @@ import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:printing/printing.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
+
+import '../../../../core/cache/cache_helper.dart';
+import '../../../../core/cache/cache_keys.dart';
 
 class CustomSellingPointCardButtons extends StatelessWidget {
   const CustomSellingPointCardButtons({
@@ -88,14 +90,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                     final p = allAutomaticPrinters[i];
                     debugPrint('');
                     debugPrint(' Printer ${i + 1}:');
+                   // debugPrint('   - Automatic: ${p.categories?.firstOrNull}');
                     debugPrint('   - Name: ${p.printerName}');
                     debugPrint('   - Paper Size: "${p.paperSize}"');
                     debugPrint('   - Type: ${p.communicationType}');
                   } 
                   debugPrint('========================================================');
                   debugPrint('');
-
-                  final invoiceData = {
+                 /* final invoiceData = {
                     'date': DateTime.now().toString(),
                     'id': state.printModel.apiResponse.data['sale']['id']
                             ?.toString() ??
@@ -116,32 +118,34 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                             .data['sale']['total_after_tax']
                             ?.toString() ??
                         '0',
-                  };
-
+                  };*/
                   int successCount = 0;
                   int failCount = 0;
-
                   for (final printer in allAutomaticPrinters) {
-
                     if (printer.discoveredPrinter != null ) {
-
                       try {
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
-                        if(isSunmi||printer.printerType.toString().toLowerCase().contains('sunmi')){
+                        if(isSunmi & printer.printerType.toString().toLowerCase().contains('sunmi') && (printer?.automatic??false)){
+                           for(int i=0;i<(printer.printReceiptCount??1);i++) {
+                             await printSunmiPDF(await salesInvoicesPdfSunmi(
+                                 state.printModel.apiResponse.data as Map<String, dynamic>,
+                                 branchName: state.printModel.branchName,
+                                 paid: state.printModel.paid,size: printer.paperSize??'80'), '58');
 
-                            await printSunmiPDF(await salesInvoicesPdfSunmi(
-                                state.printModel.apiResponse.data as Map<String, dynamic>,
-                              branchName: state.printModel.branchName,
-                              paid: state.printModel.paid,size: printer.paperSize??'80'), '58');
-
-                            await SunmiPrinter.lineWrap(4);
-                          await SunmiPrinter.cutPaper();
+                             await SunmiPrinter.lineWrap(4);
+                             await SunmiPrinter.cutPaper();
+                             await SunmiDrawer.openDrawer();
+                             /*   if( state.printModel.apiResponse.data[ApiKeys.sale][ApiKeys.ordertype]==ApiKeys.hall){
                           await SunmiDrawer.openDrawer();
-                        }
-                        else{
+                            }*/
+                           }
 
+                           CacheHelper.saveData(key:  CacheKeys.invoiceNumber, value:   ((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1));
+                        }
+                        else if((printer.automatic??false)){
+                          for(int i=0;i<(printer.printReceiptCount??1);i++) {
                         var invoiceBytesUint8List = await salesInvoicesPdf80(
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
@@ -160,6 +164,9 @@ class CustomSellingPointCardButtons extends StatelessWidget {
 
                         successCount++;
                         debugPrint(' SUCCESS: ${printer.printerName}');
+
+                        }
+                          CacheHelper.saveData(key:  CacheKeys.invoiceNumber, value:   ((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1));
                         }
                       } catch (e) {
                         failCount++;
@@ -168,21 +175,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                       }
                     }
 
-
-
                   }
-
                   debugPrint('');
-                  debugPrint(
-                      '📊 ==================== SUMMARY ====================');
-                  debugPrint(
-                      '📊 Total Printers: ${allAutomaticPrinters.length}');
+                  debugPrint('📊 ==================== SUMMARY ====================');
+                  debugPrint('📊 Total Printers: ${allAutomaticPrinters.length}');
                   debugPrint(' Successful: $successCount');
                   debugPrint(' Failed: $failCount');
-                  debugPrint(
-                      '===================================================');
+                  debugPrint('===================================================');
                   debugPrint('');
-
 
                   // if (!Platform.isAndroid) {
                   //   throw 'not android';

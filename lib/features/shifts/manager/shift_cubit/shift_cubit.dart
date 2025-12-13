@@ -4,6 +4,9 @@ import 'package:pos_app/features/shifts/data/model/shifts_model.dart';
 import 'package:pos_app/features/shifts/data/repo/shift_repo.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
 
+import '../../../../core/cache/cache_helper.dart';
+import '../../../../core/cache/cache_keys.dart';
+
 class ShiftCubit extends Cubit<ShiftState> {
   final ShiftRepo shiftRepo;
   List<ShiftData> shifts = [];
@@ -22,7 +25,11 @@ class ShiftCubit extends Cubit<ShiftState> {
     final result = await shiftRepo.startShift(branchId: branchId, cash: cash);
     result.fold(
       (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
-      (_) => emit(ShiftSuccess(message: "Shift started successfully")),
+      (_) async {
+        await CacheHelper.saveData(key:  CacheKeys.invoiceNumber, value: 0);
+        emit(
+          ShiftSuccess(message: "Shift started successfully"));
+      },
     );
   }
 
@@ -31,7 +38,7 @@ class ShiftCubit extends Cubit<ShiftState> {
     final result = await shiftRepo.endShift(branchId: branchId);
     result.fold(
       (failure) => emit(ShiftError(message: failure.message ?? "Failed")),
-      (endShiftModel) {
+      (endShiftModel) async {
         // final updatedShift = endShiftModel.shift;
 
         // final currentState = state;
@@ -42,12 +49,12 @@ class ShiftCubit extends Cubit<ShiftState> {
         //   if (index != -1) shifts[index] = updatedShift;
 
         // }
-
         emit(ShiftSuccessEndWithData(
           endShiftModel: endShiftModel,
           shifts: shifts,
           // pagination: currentState.pagination,
         ));
+
 
         // emit(ShiftSuccess(message: "Shift ended successfully"));
       },
