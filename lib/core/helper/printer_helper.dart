@@ -191,20 +191,24 @@ Future<bool> ensureBluetoothPermissions() async {
   }
 
   Future<void> printInvoice(
-      DiscoveredPrinter printer, Uint8List bytes,
-      {String? paperSize, bool openCashDrawer = false}) async {
+      DiscoveredPrinter printer, List<int> bytes,
+      {String? paperSize, bool openCashDrawer = false,bool isConvert=true}) async {
 
     try {
-
-     final invoice= await  convertPdfToThermalPrinter( bytes)??[];
-
-      final byte = await addCutCommand(invoice,paperSize??'80');
-      await _printBytes(printer, byte);
+    if(isConvert) {
+      // final invoice= await  convertPdfToThermalPrinter( bytes)??[];
+      // final byte = await addCutCommand(invoice,paperSize??'80');
+      // await _printBytes(printer, byte);}
+    }
+    else {
+      await _printBytes(printer, bytes);
+    }
     } catch (e) {
       debugPrint(' Print Invoice Error: $e');
       rethrow;
     }
   }
+
   Future<List<int>>  addCutCommand(List<int> pdfBytes,String paperSize) async {
       final profile = await CapabilityProfile.load();
       final size = _getPaperSize(paperSize);
@@ -216,6 +220,7 @@ Future<bool> ensureBluetoothPermissions() async {
         ...generator.cut(),
         ];
     }
+
 
 
 // Convert PDF to ESC/POS printer format
@@ -478,7 +483,7 @@ Future<bool> ensureBluetoothPermissions() async {
   ) async {
     await Future.any([
       _connect(type, device, isBle),
-      Future.delayed(const Duration(seconds: 10), () {
+      Future.delayed(const Duration(seconds: 3), () {
         // throw TimeoutException('Connection timeout after 10 seconds');
       }),
     ]);

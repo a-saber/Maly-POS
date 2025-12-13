@@ -146,12 +146,19 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                         }
                         else if((printer.automatic??false)){
                           for(int i=0;i<(printer.printReceiptCount??1);i++) {
-                        var invoiceBytesUint8List = await salesInvoicesPdf80(
+                      /*  var invoiceBytesUint8List = await salesInvoicesPdf80(
 
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
                           paid: state.printModel.paid,
                           size: printer.paperSize??'80'
+                        );*/
+                              var invoiceBytesUint8List = await generateCenteredReceipt(
+
+                          state.printModel.apiResponse.data as Map<String, dynamic>,
+                          branchName: state.printModel.branchName,
+                          paid: state.printModel.paid,
+                            paperSize: printer.paperSize??'80'
                         );
 
                         await PrinterHelper().printInvoice(
@@ -160,6 +167,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                           // invoiceData,
                           paperSize: printer.paperSize,
                           openCashDrawer: true,
+                          isConvert: false
                         );
                          // await PrinterHelper().printWidget(context, printer.discoveredPrinter!);
 

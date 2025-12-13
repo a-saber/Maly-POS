@@ -1,3 +1,4 @@
+import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -830,7 +831,7 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
 
         build: ( context) =>  pw.Container(
           decoration:  pw.BoxDecoration(color: PdfColors.white),
-            padding:pw.EdgeInsets.symmetric(horizontal: 3) ,
+            padding:pw.EdgeInsets.symmetric(horizontal: 3),
             child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
@@ -1886,5 +1887,354 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             pw.Center(child: pw.Text('خطأ في إنشاء الفاتورة'))));
     return emptyPdf.save();
   }
+}
+
+
+Future<List<int>> generateCenteredReceipt(
+    Map<String, dynamic> response, {
+      required String paperSize,
+      required double paid,
+      String? branchName,
+    }) async {
+  final profile = await CapabilityProfile.load();
+  final size = _getPaperSize(paperSize);
+  final generator = Generator(size, profile);
+
+  final sale = response[ApiKeys.sale];
+  final setting = response[ApiKeys.settings];
+  final products = sale[ApiKeys.saleproducts] as List<dynamic>;
+
+  List<int> bytes = [];
+
+  // Initialize
+  bytes += generator.reset();
+
+  // Time & Date (centered)
+  final createdAt = sale[ApiKeys.createdat]?.toString() ?? "";
+  DateTime? parsed;
+  if (createdAt.isNotEmpty) {
+    parsed = DateTime.tryParse(createdAt)?.toLocal();
+  }
+
+  if (parsed != null) {
+    final date =
+        "${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}";
+    final time =
+        "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}:${parsed.second.toString().padLeft(2, '0')}";
+
+    bytes += generator.text(
+      '$time  $date',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  bytes += generator.emptyLines(1);
+
+  // Title (centered, large, bold)
+  bytes += generator.text(
+    AppInvoiceString.invoiceTitle,
+    styles: PosStyles(
+      align: PosAlign.center,
+      height: PosTextSize.size2,
+      width: PosTextSize.size2,
+      bold: true,
+    ),
+  );
+
+  bytes += generator.emptyLines(1);
+
+  // Shop Info (all centered)
+  if (setting[ApiKeys.shopname] != null) {
+    bytes += generator.text(
+      setting[ApiKeys.shopname],
+      styles: PosStyles(
+        align: PosAlign.center,
+        bold: true,
+      ),
+    );
+  }
+
+  if (setting[ApiKeys.phone] != null) {
+    bytes += generator.text(
+      setting[ApiKeys.phone],
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (setting[ApiKeys.commercialno] != null) {
+    bytes += generator.text(
+      '${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (sale[ApiKeys.id] != null) {
+    bytes += generator.text(
+      '${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (sale[ApiKeys.ordertype] != null) {
+    bytes += generator.text(
+      '${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  bytes += generator.emptyLines(1);
+
+  // Order Number Box (centered)
+  bytes += generator.hr();
+  bytes += generator.text(
+    'OrderNumber',
+    styles: PosStyles(align: PosAlign.center),
+  );
+  bytes += generator.text(
+    '#${((CacheHelper.getData(key: CacheKeys.invoiceNumber) ?? 0) + 1)}',
+    styles: PosStyles(
+      align: PosAlign.center,
+      height: PosTextSize.size2,
+      width: PosTextSize.size2,
+      bold: true,
+    ),
+  );
+  bytes += generator.hr();
+  bytes += generator.emptyLines(1);
+
+  // Products Header
+  bytes += generator.row([
+    PosColumn(
+      text: AppInvoiceString.product,
+      width: 5,
+      styles: PosStyles(align: PosAlign.left, bold: true),
+    ),
+    PosColumn(
+      text: AppInvoiceString.quantity,
+      width: 2,
+      styles: PosStyles(align: PosAlign.center, bold: true),
+    ),
+    PosColumn(
+      text: AppInvoiceString.price,
+      width: 2,
+      styles: PosStyles(align: PosAlign.right, bold: true),
+    ),
+    PosColumn(
+      text: AppInvoiceString.total,
+      width: 3,
+      styles: PosStyles(align: PosAlign.right, bold: true),
+    ),
+  ]);
+
+  bytes += generator.hr();
+
+  // Products
+  for (var p in products) {
+    bytes += generator.row([
+      PosColumn(
+        text: p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? '',
+        width: 5,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: p[ApiKeys.quantity]?.toString() ?? '',
+        width: 2,
+        styles: PosStyles(align: PosAlign.center),
+      ),
+      PosColumn(
+        text: double.tryParse(p[ApiKeys.price] ?? '0')?.toStringAsFixed(2) ?? '0',
+        width: 2,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+      PosColumn(
+        text: double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')
+            ?.toStringAsFixed(2) ??
+            '0',
+        width: 3,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+  }
+
+  bytes += generator.hr();
+  bytes += generator.emptyLines(1);
+
+  // Totals (right-aligned values)
+  if (sale[ApiKeys.subtotal] != null) {
+    bytes += generator.row([
+      PosColumn(
+        text: AppInvoiceString.totalBeforeTax,
+        width: 7,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: double.tryParse(sale[ApiKeys.subtotal] ?? '0')?.toStringAsFixed(2) ??
+            '0',
+        width: 5,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+  }
+
+  if (sale[ApiKeys.discounttotal] != null) {
+    bytes += generator.row([
+      PosColumn(
+        text: AppInvoiceString.discount,
+        width: 7,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: double.tryParse(sale[ApiKeys.discounttotal] ?? '0')
+            ?.toStringAsFixed(2) ??
+            '0',
+        width: 5,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+  }
+
+  if (sale[ApiKeys.totalafterdiscount] != null) {
+    bytes += generator.row([
+      PosColumn(
+        text: AppInvoiceString.totalAfterDiscount,
+        width: 7,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')
+            ?.toStringAsFixed(2) ??
+            '0',
+        width: 5,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+  }
+
+  if (sale[ApiKeys.taxtotal] != null) {
+    bytes += generator.row([
+      PosColumn(
+        text: AppInvoiceString.tax,
+        width: 7,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text:
+        double.tryParse(sale[ApiKeys.taxtotal] ?? '0')?.toStringAsFixed(2) ??
+            '0',
+        width: 5,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+  }
+
+  if (sale[ApiKeys.totalaftertax] != null) {
+    bytes += generator.row([
+      PosColumn(
+        text: AppInvoiceString.totalAfterTax,
+        width: 7,
+        styles: PosStyles(align: PosAlign.left, bold: true),
+      ),
+      PosColumn(
+        text: double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')
+            ?.toStringAsFixed(2) ??
+            '0',
+        width: 5,
+        styles: PosStyles(align: PosAlign.right, bold: true),
+      ),
+    ]);
+  }
+
+  if (sale[ApiKeys.paymentmethod] != null) {
+    bytes += generator.row([
+      PosColumn(
+        text: AppInvoiceString.paymentMethod,
+        width: 7,
+        styles: PosStyles(align: PosAlign.left),
+      ),
+      PosColumn(
+        text: '${sale[ApiKeys.paymentmethod]}',
+        width: 5,
+        styles: PosStyles(align: PosAlign.right),
+      ),
+    ]);
+  }
+
+  bytes += generator.row([
+    PosColumn(
+      text: AppInvoiceString.paid,
+      width: 7,
+      styles: PosStyles(align: PosAlign.left, bold: true),
+    ),
+    PosColumn(
+      text: paid.toStringAsFixed(2),
+      width: 5,
+      styles: PosStyles(align: PosAlign.right, bold: true),
+    ),
+  ]);
+
+  bytes += generator.row([
+    PosColumn(
+      text: AppInvoiceString.remain,
+      width: 7,
+      styles: PosStyles(align: PosAlign.left),
+    ),
+    PosColumn(
+      text:
+      (paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0))
+          .toStringAsFixed(2),
+      width: 5,
+      styles: PosStyles(align: PosAlign.right),
+    ),
+  ]);
+
+  bytes += generator.hr();
+  bytes += generator.emptyLines(1);
+
+  // QR Code (centered)
+  if (sale[ApiKeys.zatcaQrcode] != null) {
+    bytes += generator.qrcode(
+      sale[ApiKeys.zatcaQrcode],
+      align: PosAlign.center,
+      size: QRSize.size5,
+    );
+    bytes += generator.emptyLines(1);
+  }
+
+  // Footer (all centered)
+  bytes += generator.text(
+    AppInvoiceString.thanks,
+    styles: PosStyles(align: PosAlign.center, bold: true),
+  );
+
+  if (setting[ApiKeys.address] != null) {
+    bytes += generator.text(
+      setting[ApiKeys.address],
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (CustomUserHiveBox.getUser().name != null) {
+    bytes += generator.text(
+      '${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (branchName != null) {
+    bytes += generator.text(
+      '${AppInvoiceString.branchName} $branchName',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  // Cut
+  bytes += generator.feed(2);
+  bytes += generator.cut();
+
+  return bytes;
+}
+
+PaperSize _getPaperSize(String paperSize) {
+  return paperSize == '80' ? PaperSize.mm80 : PaperSize.mm58;
 }
 
