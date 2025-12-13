@@ -139,6 +139,14 @@ class S {
   String get email {
     return Intl.message('email', name: 'email', desc: '', args: []);
   }
+  String get translateError {
+    return Intl.message(
+      'translateError',
+      name: 'translateError',
+      desc: '',
+      args: [],
+    );
+  }
 
   /// `password`
   String get password {
@@ -693,6 +701,38 @@ class S {
     return Intl.message(
       'Enter a valid price',
       name: 'enteravalidprice',
+      desc: '',
+      args: [],
+    );
+  }
+  String get networkError {
+    return Intl.message(
+      'Network Error',
+      name: 'networkError',
+      desc: '',
+      args: [],
+    );
+  }
+  String get unauthorized {
+    return Intl.message(
+      'Unauthorized',
+      name: 'unauthorized',
+      desc: '',
+      args: [],
+    );
+  }
+  String get notFound {
+    return Intl.message(
+      'Not Found',
+      name: 'notFound',
+      desc: '',
+      args: [],
+    );
+  }
+  String get validationError {
+    return Intl.message(
+      'Validation Error',
+      name: 'validationError',
       desc: '',
       args: [],
     );
@@ -2620,7 +2660,15 @@ class S {
       args: [],
     );
   }
-  String get remainingAmount {
+  String get nameAlreadyTaken {
+    return Intl.message(
+      'The name has already been taken.',
+      name: 'nameAlreadyTaken',
+      desc: '',
+      args: [],
+    );
+  }
+String get remainingAmount {
     return Intl.message(
       'Remaining Amount',
       name: 'remainingAmount',
