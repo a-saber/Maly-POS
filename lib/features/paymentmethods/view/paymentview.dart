@@ -12,6 +12,7 @@ import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/core/widget/cutsom_layout_builder.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
 import 'package:pos_app/features/paymentmethods/data/models/paymentmethodmodel.dart';
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/paymentmethods/manager/cubit/paymentscubit.dart';
 import 'package:pos_app/features/paymentmethods/manager/state/paymentsstate.dart';
@@ -83,7 +84,8 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
   
   bool _isActive = true;
   bool _requiresReference = false;
-  PaymentMethodsModel? _editingPaymentMethod;
+  bool _isNearpay = false;
+  PaymentMethodSalesModel? _editingPaymentMethod;
   bool _showForm = false;
 
   @override
@@ -112,17 +114,19 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
       _nameController.clear();
       _isActive = true;
       _requiresReference = false;
+      _isNearpay = false;
       _editingPaymentMethod = null;
       _showForm = false;
     });
   }
 
-  void _editPaymentMethod(PaymentMethodsModel paymentMethod) {
+  void _editPaymentMethod(PaymentMethodSalesModel paymentMethod) {
     setState(() {
       _editingPaymentMethod = paymentMethod;
       _nameController.text = paymentMethod.name ?? '';
       _isActive = paymentMethod.isActive == 1;
       _requiresReference = paymentMethod.requiresReference == 1;
+      _isNearpay = paymentMethod.isNearpay == 1;
       _showForm = true;
     });
   }
@@ -136,13 +140,15 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
           name: _nameController.text,
           isActive: _isActive ? 1 : 0,
           requiresReference: _requiresReference ? 1 : 0,
+          isNearpay: _isNearpay ? 1 : 0,
         );
       } else {
-        final updatedPaymentMethod = PaymentMethodsModel(
+        final updatedPaymentMethod = PaymentMethodSalesModel(
           id: _editingPaymentMethod!.id,
           name: _nameController.text,
           isActive: _isActive ? 1 : 0,
           requiresReference: _requiresReference ? 1 : 0,
+          isNearpay: _isNearpay ? 1 : 0,
           createdAt: _editingPaymentMethod!.createdAt,
           updatedAt: DateTime.now().toString(),
         );
@@ -172,11 +178,8 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // زر إظهار/إخفاء الفورم
                   CustomFilledBtn(
-                    text: _showForm
-                        ? 'إخفاء النموذج'
-                        : 'إضافة طريقة دفع جديدة',
+                    text: _showForm ? 'إخفاء النموذج' : 'إضافة طريقة دفع جديدة',
                     onPressed: () {
                       setState(() {
                         if (_showForm) {
@@ -188,7 +191,6 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
                     },
                   ),
                   
-                  // الفورم
                   if (_showForm) ...[
                     const SizedBox(height: 20),
                     Card(
@@ -224,53 +226,22 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
                               
                               const SizedBox(height: 15),
                               
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'الحالة',
-                                    style: AppFontStyle.formText(context: context),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Text(
-                                        _isActive ? 'نشط' : 'غير نشط',
-                                        style: TextStyle(
-                                          color: _isActive ? Colors.green : Colors.grey,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      Switch(
-                                        value: _isActive,
-                                        activeColor: AppColors.primary,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _isActive = value;
-                                          });
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              _buildSwitchRow(
+                                'الحالة',
+                                _isActive,
+                                (value) => setState(() => _isActive = value),
                               ),
                               
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'يتطلب مرجع',
-                                    style: AppFontStyle.formText(context: context),
-                                  ),
-                                  Switch(
-                                    value: _requiresReference,
-                                    activeColor: AppColors.primary,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _requiresReference = value;
-                                      });
-                                    },
-                                  ),
-                                ],
+                              _buildSwitchRow(
+                                'يتطلب مرجع',
+                                _requiresReference,
+                                (value) => setState(() => _requiresReference = value),
+                              ),
+                              
+                              _buildSwitchRow(
+                                'دفع عبر Nearpay',
+                                _isNearpay,
+                                (value) => setState(() => _isNearpay = value),
                               ),
                               
                               const SizedBox(height: 20),
@@ -279,9 +250,7 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
                                 children: [
                                   Expanded(
                                     child: CustomFilledBtn(
-                                      text: _editingPaymentMethod == null
-                                          ? 'إضافة'
-                                          : 'تحديث',
+                                      text: _editingPaymentMethod == null ? 'إضافة' : 'تحديث',
                                       onPressed: _submitForm,
                                     ),
                                   ),
@@ -306,17 +275,13 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
                   
                   const SizedBox(height: 20),
                   
-                  // القائمة
                   if (cubit.paymentMethods.isEmpty)
                     Center(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
                         child: Text(
                           'لا توجد طرق دفع. اضغط على "إضافة طريقة دفع جديدة" لإضافة طريقة جديدة',
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
-                          ),
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -327,8 +292,7 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: cubit.paymentMethods.length +
                           (state is PaymentMethodsLoadingMore ? 1 : 0),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 10),
+                      separatorBuilder: (context, index) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         if (index == cubit.paymentMethods.length) {
                           return const Center(
@@ -340,106 +304,7 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
                         }
 
                         final paymentMethod = cubit.paymentMethods[index];
-                        return Card(
-                          elevation: 2,
-                          child: ListTile(
-                            leading: Container(
-                              width: 50,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                color: AppColors.primary.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Icon(
-                                Icons.payment,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                            title: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    paymentMethod.name!,
-                                    style:
-                                        AppFontStyle.formText(context: context)
-                                            .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: paymentMethod.isActive == 1
-                                        ? Colors.green.withOpacity(0.1)
-                                        : Colors.red.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: Text(
-                                    paymentMethod.isActive == 1
-                                        ? 'نشط'
-                                        : 'غير نشط',
-                                    style: TextStyle(
-                                      color: paymentMethod.isActive == 1
-                                          ? Colors.green
-                                          : Colors.red,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            subtitle: paymentMethod.requiresReference == 1
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.info_outline,
-                                          size: 14,
-                                          color: Colors.orange,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'يتطلب مرجع',
-                                          style: TextStyle(
-                                            color: Colors.orange,
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : null,
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit),
-                                  color: AppColors.primary,
-                                  onPressed: () {
-                                    _editPaymentMethod(paymentMethod);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  color: Colors.red,
-                                  onPressed: () {
-                                    _showDeleteConfirmation(
-                                      context,
-                                      cubit,
-                                      paymentMethod,
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                        return _buildPaymentMethodCard(paymentMethod, cubit);
                       },
                     ),
                 ],
@@ -451,10 +316,132 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
     );
   }
 
+  Widget _buildSwitchRow(String label, bool value, Function(bool) onChanged) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: AppFontStyle.formText(context: context)),
+        Row(
+          children: [
+            Text(
+              value ? 'نشط' : 'غير نشط',
+              style: TextStyle(
+                color: value ? Colors.green : Colors.grey,
+                fontSize: 14,
+              ),
+            ),
+            Switch(
+              value: value,
+              activeColor: AppColors.primary,
+              onChanged: onChanged,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPaymentMethodCard(PaymentMethodSalesModel paymentMethod, PaymentMethodsCubit cubit) {
+    return Card(
+      elevation: 2,
+      child: ListTile(
+        leading: Container(
+          width: 50,
+          height: 50,
+          decoration: BoxDecoration(
+            color: AppColors.primary.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            paymentMethod.isNearpay == 1 ? Icons.contactless : Icons.payment,
+            color: AppColors.primary,
+          ),
+        ),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                paymentMethod.name ?? '',
+                style: AppFontStyle.formText(context: context).copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            _buildStatusBadge(paymentMethod.isActive == 1),
+          ],
+        ),
+        subtitle: _buildSubtitle(paymentMethod),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              color: AppColors.primary,
+              onPressed: () => _editPaymentMethod(paymentMethod),
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete),
+              color: Colors.red,
+              onPressed: () => _showDeleteConfirmation(context, cubit, paymentMethod),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(bool isActive) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: isActive ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        isActive ? 'نشط' : 'غير نشط',
+        style: TextStyle(
+          color: isActive ? Colors.green : Colors.red,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildSubtitle(PaymentMethodSalesModel paymentMethod) {
+    final hasReference = paymentMethod.requiresReference == 1;
+    final hasNearpay = paymentMethod.isNearpay == 1;
+
+    if (!hasReference && !hasNearpay) return null;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 4,
+        children: [
+          if (hasReference) _buildInfoChip('يتطلب مرجع', Icons.info_outline, Colors.orange),
+          if (hasNearpay) _buildInfoChip('Nearpay', Icons.contactless, Colors.blue),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoChip(String label, IconData icon, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(label, style: TextStyle(color: color, fontSize: 12)),
+      ],
+    );
+  }
+
   void _showDeleteConfirmation(
     BuildContext context,
     PaymentMethodsCubit cubit,
-    PaymentMethodsModel paymentMethod,
+    PaymentMethodSalesModel paymentMethod,
   ) {
     showDialog(
       context: context,

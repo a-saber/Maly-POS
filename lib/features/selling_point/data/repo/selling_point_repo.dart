@@ -23,138 +23,132 @@ class SellingPointRepo {
   BrancheModel? branch;
 
   SellingPointRepo({required this.api});
-  Future<Either<ApiResponse, PrintModel>> newSales({
-    required double subtotal,
-    required double discounttotal,
-    required double totalafterdiscount,
-    required double taxtotal,
-    required double totalaftertax,
-    required PaymentMethodModel? paymentType,
-    required TypeOfTakeOrderModel? typeOfTakeOrder,
-    // required TaxesModel taxes,
-    required DiscountModel? discount,
-    // required BrancheModel? branch,
-    required CustomerModel? customer,
-    required List<ProductSellingModel> products,
-    required double paid,
-    required double online,
-     required double madaAmount,
-      required double onlineAmount,
-  }) async {
-    String? payResponseId;
-    try {
-      String url = await ApiEndPoints.getSales();
-      /*
-{
-    {
-    "subtotal": 1000,
-    "discount_total": 150,
-    "total_after_discount": 850,
-    "tax_total": 127.5,
-    "total_after_tax": 977.5,
+Future<Either<ApiResponse, PrintModel>> newSales({
+  required double subtotal,
+  required double discounttotal,
+  required double totalafterdiscount,
+  required double taxtotal,
+  required double totalaftertax,
+  required PaymentMethodModel? paymentType,
+  required TypeOfTakeOrderModel? typeOfTakeOrder,
+  required DiscountModel? discount,
+  required CustomerModel? customer,
+  required List<ProductSellingModel> products,
+  required double paid,
+  required double online,
+  required double madaAmount,
+  required double onlineAmount,
+ 
+  Map<int, double>? paymentAmounts,
+  Map<int, String>? paymentReferences,
+}) async {
+  String? payResponseId;
+  try {
+    String url = await ApiEndPoints.getSales();
 
-    "payment_method": "online",
-    "discount_id": 1,
-    "branch_id": 1,
-    "customer_id": 2,
-    "products": 
-    [
-        {
-            "product_id": 9,
-            "quantity": 3
-        },
-        {
-            "product_id": 10,
-            "quantity": 5
+ 
+    double rest = 0.0;
+    if (paymentAmounts != null && paymentAmounts.length == 1) {
+
+      double totalPaid = paymentAmounts.values.first;
+      if (totalPaid > totalaftertax) {
+        rest = totalPaid - totalaftertax;
+      }
+    }
+
+   
+    List<Map<String, dynamic>> paymentsArray = [];
+    if (paymentAmounts != null && paymentAmounts.isNotEmpty) {
+      for (var entry in paymentAmounts.entries) {
+        Map<String, dynamic> paymentItem = {
+          'payment_method_id': entry.key,
+          'amount': entry.value,
+        };
+        
+    
+        if (paymentReferences != null && paymentReferences.containsKey(entry.key)) {
+          paymentItem['reference'] = paymentReferences[entry.key];
         }
-    ]
-}
-      */
-
-      // double.parse(value.toStringAsFixed(2))
-
-      Map<String, dynamic> data = {
-        ApiKeys.subtotal: subtotal,
-
-        ApiKeys.discounttotal:
-            discounttotal, // (discounttotal * 100).truncateToDouble() / 100,
-        ApiKeys.totalafterdiscount:
-            totalafterdiscount, //  ( * 100).truncateToDouble() / 100,
-        ApiKeys.taxtotal: taxtotal, // ( * 100).truncateToDouble() / 100,
-        ApiKeys.totalaftertax:
-            totalaftertax, // (totalaftertax * 100).truncateToDouble() / 100,
-
-        ApiKeys.paymentmethod: paymentType?.apiKey,
-        // ApiKeys.taxid: taxes.id,
-        // ApiKeys.discountid: discount.id,
-        ApiKeys.branchid: branch?.id,
-        // ApiKeys.customerid: customer.id,
-        ApiKeys.ordertype: typeOfTakeOrder?.apiKey,
-        ApiKeys.products: products.map((e) => e.toJson()).toList(),
-      };
-      if (discount != null) {
-        data[ApiKeys.discountid] = discount.id;
+        
+        paymentsArray.add(paymentItem);
       }
-      if (customer != null) {
-        data[ApiKeys.customerid] = customer.id;
-      }
-      Uint8List? madaReceipt;
-      if (paymentType?.apiKey == ApiKeys.mada) {
-        print('MADA 01 ****** ');
-        var madaResponse =
-            await PaymentHelper.addTransaction(amount: totalaftertax);
-        print('MADA 02 ****** success');
-        madaResponse.fold((error) {
-          print('NearPayException Error 666: $error');
-          throw NearPayException(error);
-        }, (madaResponse) async {
-          print('MADA 03 ****** success');
+    }
 
-          payResponseId = madaResponse.transaction_uuid;
-          data["nearpay_transaction_uuid"] = madaResponse.transaction_uuid;
-          madaReceipt = await PaymentHelper.toImage(receipt: madaResponse);
-        });
-      }
-      var response = await api.post(
-        url: url,
-        data: data,
-        isFormData: false,
-      );
-      if (response.status) {
-        // Printing.directPrintPdf(
-        //     printer:
-        //     Printer(url: '{sharedPreferences!.getString( "cashierprinter")}'),
-        //     onLayout: (format) =>
-        //     salesInvoicesPdf80(response.data as Map<String, dynamic>));
-        return Right(PrintModel(
-            apiResponse: response,
-            branchName: branch?.name ?? 'مش معروف',
-            paid: paid,
-            madaReceipt: madaReceipt));
-      } else {
-        if (payResponseId != null) {
-          await PaymentHelper.reverseTransaction(
-              originalTransactionUUID: payResponseId!);
-        }
-        return Left(
-          response,
-        );
-      }
-    } on NearPayException catch (e) {
-      print('MADA 04 ****** NearPayException');
-
-      return Left(ApiResponse.fromErrorMSG(e.message));
-    } catch (e) {
+    Map<String, dynamic> data = {
+      ApiKeys.subtotal: subtotal,
+      ApiKeys.discounttotal: discounttotal,
+      ApiKeys.totalafterdiscount: totalafterdiscount,
+      ApiKeys.taxtotal: taxtotal,
+      ApiKeys.totalaftertax: totalaftertax,
+      
+ 
+      'paid': paid,
+      'rest': rest,
+      'payments': paymentsArray,
+      
+      ApiKeys.paymentmethod: paymentType?.apiKey,
+      ApiKeys.branchid: branch?.id,
+      ApiKeys.ordertype: typeOfTakeOrder?.apiKey,
+      ApiKeys.products: products.map((e) => e.toJson()).toList(),
+    };
+    
+    if (discount != null) {
+      data[ApiKeys.discountid] = discount.id;
+    }
+    if (customer != null) {
+      data[ApiKeys.customerid] = customer.id;
+    }
+    
+    Uint8List? madaReceipt;
+    if (paymentType?.apiKey == ApiKeys.mada) {
+      print('MADA 01 ****** ');
+      var madaResponse = await PaymentHelper.addTransaction(amount: totalaftertax);
+      print('MADA 02 ****** success');
+      madaResponse.fold((error) {
+        print('NearPayException Error 666: $error');
+        throw NearPayException(error);
+      }, (madaResponse) async {
+        print('MADA 03 ****** success');
+        payResponseId = madaResponse.transaction_uuid;
+        data["nearpay_transaction_uuid"] = madaResponse.transaction_uuid;
+        madaReceipt = await PaymentHelper.toImage(receipt: madaResponse);
+      });
+    }
+    
+    var response = await api.post(
+      url: url,
+      data: data,
+      isFormData: false,
+    );
+    
+    if (response.status) {
+      return Right(PrintModel(
+        apiResponse: response,
+        branchName: branch?.name ?? 'مش معروف',
+        paid: paid,
+        madaReceipt: madaReceipt
+      ));
+    } else {
       if (payResponseId != null) {
         await PaymentHelper.reverseTransaction(
-            originalTransactionUUID: payResponseId!);
+          originalTransactionUUID: payResponseId!
+        );
       }
-      debugPrint(e.toString());
-      // ignore: use_build_context_synchronously
-      return Left(ApiResponse.unKnownError());
+      return Left(response);
     }
+  } on NearPayException catch (e) {
+    print('MADA 04 ****** NearPayException');
+    return Left(ApiResponse.fromErrorMSG(e.message));
+  } catch (e) {
+    if (payResponseId != null) {
+      await PaymentHelper.reverseTransaction(
+        originalTransactionUUID: payResponseId!
+      );
+    }
+    debugPrint(e.toString());
+    return Left(ApiResponse.unKnownError());
   }
-
+}
   List<CategorySavingDataModel> categorySavingDataModels = [];
   int currentIndex({
     required int? categoryId,

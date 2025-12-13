@@ -16,54 +16,28 @@ class CustomPaymentKeyboard extends StatelessWidget {
     
     if (value == 'C') {
       // Clear
-      controller.text = '0.00';
+      controller.text = '';
     } else if (value == '⌫') {
       // Backspace
-      if (currentText.isNotEmpty && currentText != '0.00') {
-        String numOnly = currentText.replaceAll('.', '');
-        
-        if (numOnly.length > 1) {
-          numOnly = numOnly.substring(0, numOnly.length - 1);
-        } else {
-          controller.text = '0.00';
-          onChanged();
-          return;
-        }
-        
-        // Format with decimal
-        if (numOnly == '0') {
-          controller.text = '0.00';
-        } else if (numOnly.length == 1) {
-          controller.text = '0.0$numOnly';
-        } else if (numOnly.length == 2) {
-          controller.text = '0.$numOnly';
-        } else {
-          int decimalPos = numOnly.length - 2;
-          controller.text = '${numOnly.substring(0, decimalPos)}.${numOnly.substring(decimalPos)}';
-        }
+      if (currentText.isNotEmpty) {
+        controller.text = currentText.substring(0, currentText.length - 1);
       }
-    }  else {
-  // Number pressed
-  String numOnly = currentText.replaceAll('.', '');
+    } else if (value == '.') {
 
-
-  numOnly = numOnly.replaceFirst(RegExp(r'^0+'), '');
-
-
-  numOnly = numOnly.isEmpty ? value : numOnly + value;
-
-  // Format with decimal
-  if (numOnly.length == 1) {
-    controller.text = '0.0$numOnly';
-  } else if (numOnly.length == 2) {
-    controller.text = '0.$numOnly';
-  } else {
-    int decimalPos = numOnly.length - 2;
-    controller.text =
-        '${numOnly.substring(0, decimalPos)}.${numOnly.substring(decimalPos)}';
-  }
-}
-
+      if (currentText.isEmpty) {
+        controller.text = '0.';
+      } 
+      else if (!currentText.contains('.')) {
+        controller.text = currentText + '.';
+      }
+    } else {
+    
+      if (currentText.isEmpty) {
+        controller.text = value;
+      } else {
+        controller.text = currentText + value;
+      }
+    }
     
     onChanged();
   }
@@ -146,9 +120,14 @@ class CustomPaymentKeyboard extends StatelessWidget {
           ),
           Row(
             children: [
-              _buildKey('C', isSpecial: true),
+              _buildKey('.', isSpecial: true),
               _buildKey('0'),
               _buildKey('⌫', isSpecial: true),
+            ],
+          ),
+          Row(
+            children: [
+              _buildKey('C', isSpecial: true),
             ],
           ),
         ],
