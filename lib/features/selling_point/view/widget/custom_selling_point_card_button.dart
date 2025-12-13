@@ -235,11 +235,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
 
                 MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
 
-                CustomPopUp.callMyToast(
-                  context: context,
-                  massage: S.of(context).confirmPaymentSuccess,
-                  state: PopUpState.SUCCESS,
-                );
+
               } 
               else if (state is SellingPointProductFailing) {
                 debugPrint(' ==================== ${PrinterHelper.getSavedLocalPrinter().map((toElement)=>toElement.toJson([]))} ====================');

@@ -239,28 +239,42 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                 ),
               ),
 
-               pw.Container(
-                 width: double.infinity,
-                 padding: pw.EdgeInsets.all(10),
-                 decoration: pw.BoxDecoration(
-                   border: pw.Border.all(
-                     color: PdfColors.black,
-                     width: 1,
-                     style: pw.BorderStyle.solid,
-                   )
-                 ),
-                 child: pw.Center(
-                   child: pw.Text(
-                     "${'invoiceNumber'}#${((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1)}",
-                     textAlign: pw.TextAlign.center,
-                     style: pw.TextStyle(
-                       font: arabicFont,
-                       fontSize: 20,
-                     ),
-                   ),
-                 )
+            pw.Container(
+                width: double.infinity,
+                padding: pw.EdgeInsets.all(10),
+                decoration: pw.BoxDecoration(
+                    border: pw.Border.all(
+                      color: PdfColors.black,
+                      width: 1,
+                      style: pw.BorderStyle.solid,
+                    )
+                ),
+                child: pw.Center(
+                  child: pw.Column(
+                      children: [
+                        pw.Text(
+                          'invoiceNumber',
+                          textAlign: pw.TextAlign.center,
+                          style: pw.TextStyle(
+                            font: arabicFont,
+                            fontSize: 18,
+                          ),
+                        ),
+                        pw.SizedBox(height: 2),
 
-               ),
+                        pw.Text(
+                          "#${((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1)}",
+                          textAlign: pw.TextAlign.center,
+                          style: pw.TextStyle(
+                            font: arabicFont,
+                            fontSize: 20,
+                          ),
+                        )
+                      ]
+                  ),
+                )
+
+            ),
 
             // if (sale["branch_id"] != null) pw.Text("الفرع: ${sale["branch_id"]}"),
             // if (sale["customer"]?["name"] != null)
@@ -404,7 +418,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(2),
                             child: pw.Text(
-                              double.tryParse(p[ApiKeys.linetotalafterdiscount]??'0')?.toStringAsFixed(2)??'0',
+                              double.tryParse(p[ApiKeys.linetotalaftertax]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -1335,6 +1349,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                   font: arabicFont,
                 ),
               ),
+            pw.SizedBox(height: 10),
             pw.Container(
                 width: double.infinity,
                 padding: pw.EdgeInsets.all(10),
@@ -1346,13 +1361,27 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                     )
                 ),
                 child: pw.Center(
-                  child: pw.Text(
-                    "${'invoiceNumber'}#${((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1)}",
+                  child: pw.Column(
+                      children: [
+                    pw.Text(
+                    'invoiceNumber',
                     textAlign: pw.TextAlign.center,
                     style: pw.TextStyle(
                       font: arabicFont,
-                      fontSize: 20,
+                      fontSize: 18,
                     ),
+                  ),
+                        pw.SizedBox(height: 2),
+
+                    pw.Text(
+                      "#${((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1)}",
+                      textAlign: pw.TextAlign.center,
+                      style: pw.TextStyle(
+                        font: arabicFont,
+                        fontSize: 20,
+                      ),
+                    )
+                  ]
                   ),
                 )
 
@@ -1464,7 +1493,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                       return pw.TableRow(
                         children: [
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
@@ -1475,7 +1504,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               p[ApiKeys.quantity]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
@@ -1486,7 +1515,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               double.tryParse(p[ApiKeys.price]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
@@ -1497,7 +1526,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               double.tryParse(p[ApiKeys.linetotalaftertax]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
