@@ -147,6 +147,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                         else if((printer.automatic??false)){
                           for(int i=0;i<(printer.printReceiptCount??1);i++) {
                         var invoiceBytesUint8List = await salesInvoicesPdf80(
+
                           state.printModel.apiResponse.data as Map<String, dynamic>,
                           branchName: state.printModel.branchName,
                           paid: state.printModel.paid,

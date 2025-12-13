@@ -445,7 +445,7 @@ Future<bool> ensureBluetoothPermissions() async {
     }
   }
 
- Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes,{Uint8List?unit8List}) async {
+ Future<void> _printBytes(DiscoveredPrinter printer, List<int> bytes) async {
     final type = printer.type;
     final device = printer.device;
 
@@ -461,7 +461,7 @@ Future<bool> ensureBluetoothPermissions() async {
       await Future.delayed(Duration(milliseconds: 500 + (bytes.length ~/ 10)));
 
       
-      await _manager.disconnect(type: type);
+     // await _manager.disconnect(type: type);
       
     } catch (e) {
       debugPrint(' Print error: $e');

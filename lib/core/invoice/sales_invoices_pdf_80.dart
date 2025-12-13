@@ -125,11 +125,16 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     final time = parsed != null
         ? "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}:${parsed.second.toString().padLeft(2, '0')}"
         : "";
-
+    const double mmToPoint = 2.83465;
+    const double width80mm = 80 * mmToPoint;
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
-        pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
+        pageFormat: size=='80' ? PdfPageFormat(
+          width80mm,
+          double.infinity, // Auto height
+          marginAll: 5 * mmToPoint, // 5mm padding on all sides
+        ): PdfPageFormat.roll57,
 
         margin: pw.EdgeInsets.zero,
 
@@ -238,6 +243,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   font: arabicFont,
                 ),
               ),
+            pw.SizedBox(height: 10),
 
             pw.Container(
                 width: double.infinity,
@@ -253,11 +259,11 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   child: pw.Column(
                       children: [
                         pw.Text(
-                          'invoiceNumber',
+                          'OrderNumber',
                           textAlign: pw.TextAlign.center,
                           style: pw.TextStyle(
                             font: arabicFont,
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                         ),
                         pw.SizedBox(height: 2),
@@ -383,7 +389,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                           decoration: pw.BoxDecoration(color: PdfColors.grey300),
                         children: [
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
@@ -394,7 +400,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               p[ApiKeys.quantity]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
@@ -405,7 +411,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               double.tryParse(p[ApiKeys.price]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
@@ -416,7 +422,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               double.tryParse(p[ApiKeys.linetotalaftertax]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
@@ -688,7 +694,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(2),
                       child: pw.Text(
-                        "${(((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100).truncateToDouble() / 100).toStringAsFixed(2)}",
+                        (((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100)/ 100).toStringAsFixed(2),
                         style: pw.TextStyle(
                           fontSize: 8,
                           font: arabicFont,
