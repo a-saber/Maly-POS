@@ -497,7 +497,7 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
   int usedMethods = amounts.length;
 
   if (usedMethods == 1) {
-    if (totalPaid < totalPrice) {
+    if (double.parse(totalPaid.toStringAsFixed(2)) < double.parse(totalPrice.toStringAsFixed(2))) {
       CustomPopUp.callMyToast(
         context: context,
         massage: 'المبلغ المدفوع (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
@@ -506,7 +506,7 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
       return;
     }
   } else if (usedMethods > 1) {
-    if (totalPaid < totalPrice) {
+    if (double.parse(totalPaid.toStringAsFixed(2)) < double.parse(totalPrice.toStringAsFixed(2))) {
       CustomPopUp.callMyToast(
         context: context,
         massage: 'إجمالي المدفوعات (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',

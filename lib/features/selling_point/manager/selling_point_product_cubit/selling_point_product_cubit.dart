@@ -391,7 +391,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   void changePaid(String newPaidAmount, {Map<int, double>? paymentAmounts}) {
     double totalPaid = double.tryParse(newPaidAmount) ?? 0.0;
     
-    if (totalPaid >= totalPrice()) {
+    if (double.parse(totalPaid.toStringAsFixed(2)) >= double.parse(totalPrice().toStringAsFixed(2))) {
       paidController.text = totalPaid.toStringAsFixed(2);
       
  
