@@ -4,6 +4,9 @@ import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/paymentmethods/manager/state/paymentsstate.dart';
 
+import '../../../../core/helper/my_service_locator.dart';
+import '../../../selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
+
 class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
   final PaymentMethodsRepo repo;
   List<PaymentMethodSalesModel> paymentMethods = [];
@@ -69,7 +72,11 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
       (error) => emit(PaymentMethodsFailure(error.message ?? 'حدث خطأ')),
       (success) {
         emit(AddPaymentMethodSuccess());
+
+
         getPaymentMethods(isFresh: true);
+        MyServiceLocator.getSingleton<SellingPointProductCubit>().addPaymentMethod(PaymentMethodSalesModel.fromData(success));
+
       },
     );
   }
@@ -87,7 +94,9 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
       (error) => emit(PaymentMethodsFailure(error.message ?? 'حدث خطأ')),
       (success) {
         emit(UpdatePaymentMethodSuccess());
+
         getPaymentMethods(isFresh: true);
+        MyServiceLocator.getSingleton<SellingPointProductCubit>().updatePaymentMethod(PaymentMethodSalesModel.fromData(success));
       },
     );
   }
@@ -101,8 +110,10 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
       (error) => emit(PaymentMethodsFailure(error.message ?? 'حدث خطأ')),
       (deletedId) {
         paymentMethods.removeWhere((pm) => pm.id == deletedId);
+
         emit(DeletePaymentMethodSuccess());
         emit(PaymentMethodsSuccess(paymentMethods));
+        MyServiceLocator.getSingleton<SellingPointProductCubit>().deletePaymentMethod(id);
       },
     );
   }

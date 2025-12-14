@@ -55,7 +55,7 @@ class LoginCubit extends Cubit<LoginState> {
     if(credentials.isNotEmpty){
       // emailController.text= credentials[0].split(":")[0];
       // passwordController.text= credentials[0].split(":")[1];
-      CustomDialog.showDialogHelper(context, builder: CredentialsWidget(credentials: credentials,loginCubit: BlocProvider.of<LoginCubit>(context),),contentWidget: SizedBox());
+      CustomServiceWidget.showDialogHelper(context, builder: CredentialsWidget(credentials: credentials,loginCubit: BlocProvider.of<LoginCubit>(context),),contentWidget: SizedBox());
     }
     emit(ChangeRememberMeState());
 

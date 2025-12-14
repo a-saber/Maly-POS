@@ -38,7 +38,7 @@ class ProductItemSellingPointBuild extends StatelessWidget {
         onTap: () {
           if((product.productUnits?.length??0)>1 ){
 
-            CustomDialog.showDialogHelper(context, contentWidget: CustomProductUnitDialog(product: product));
+            CustomServiceWidget.showDialogHelper(context, contentWidget: CustomProductUnitDialog(product: product));
           }
           else{
 

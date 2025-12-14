@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../features/auth/login/manager/cubit/login_cubit.dart';
+import 'package:toastification/toastification.dart';
 import '../../features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import '../helper/my_service_locator.dart';
 
-class CustomDialog {
+class CustomServiceWidget {
 
 
   static showDialogHelper(BuildContext context,
@@ -36,5 +35,25 @@ class CustomDialog {
         onDismiss();
       }
     });
+  }
+  static void showCustomToast(
+      BuildContext context, {
+        String? message,
+        ToastificationType? type,
+        Widget? icon,
+        AlignmentDirectional? alignment,
+      }) {
+    toastification.show(
+      context: context,
+      type: type ?? ToastificationType.success,
+      style: ToastificationStyle.flat,
+      title: Text(
+        message ?? '',
+
+      ),
+      alignment: alignment ?? Alignment.bottomCenter,
+      autoCloseDuration: const Duration(seconds: 4),
+      showProgressBar: false,
+    );
   }
 }
