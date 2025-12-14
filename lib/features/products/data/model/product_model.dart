@@ -32,6 +32,7 @@ class ProductModel {
   final int? quantity;
   final List<ProductUnit>? productUnits;
   final CategoryModel? category;
+  final int? isavailable;
 
   ProductModel(   {
     this.productUnits,
@@ -53,10 +54,10 @@ class ProductModel {
     required this.taxId,
     required this.priceAfterTax,
     required this.type,
-
+    this.isavailable,
     required this.quantity,
   });
-
+   bool get isAvailableBool => isavailable == 1;
   double? get salePriceWithTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithTax?? "").toString());
 
 
@@ -82,6 +83,7 @@ class ProductModel {
       quantity: 0,
       productUnits: null,
      category: null,
+      isavailable: 1
 
     );
   }
@@ -106,6 +108,7 @@ class ProductModel {
     int? quantity,
     List<ProductUnit>? productUnits,
     CategoryModel? category,
+    int? isavailable,
 
   }) {
     return ProductModel(
@@ -129,6 +132,7 @@ class ProductModel {
       quantity: quantity ?? this.quantity,
       productUnits: productUnits ?? this.productUnits,
       category: category ?? this.category,
+      isavailable: isavailable ?? this.isavailable
     );
   }
 
@@ -168,8 +172,13 @@ class ProductModel {
         ? CategoryModel.fromJson(json[ApiKeys.category])
         : null,
 
+       isavailable: json['switch'] == null
+    ? 1  
+    : json['switch'] is bool
+        ? (json['switch'] ? 1 : 0)
+        : int.tryParse(json['switch'].toString()) ?? 1,
+    );
 
-  );
   }
   factory ProductModel.copyWith(UnitModel? unit, ProductModel product) {
     return ProductModel(
@@ -193,6 +202,7 @@ class ProductModel {
       quantity: product.quantity,
        category: product.category,
       productUnits: product.productUnits,
+      isavailable: product.isavailable
     );
   }
 
@@ -208,6 +218,7 @@ class ProductModel {
     required TaxesModel? tax,
     required String? type,
     int? id,
+     bool isavailable=true,
 
   }) {
     return ProductModel(
@@ -230,6 +241,7 @@ class ProductModel {
       type: type,
       quantity: null,
       category: category,
+       isavailable: isavailable ? 1 : 0,
     );
   }
 
@@ -253,6 +265,7 @@ class ProductModel {
     data[ApiKeys.type] = type;
     data[ApiKeys.quantity] = quantity;
     data[ApiKeys.productUnits]=productUnits;
+     data['switch'] = isavailable;
 
     return data;
   }
@@ -275,6 +288,8 @@ class ProductModel {
     data[ApiKeys.brand] = brand;
     data[ApiKeys.price] = price;
     data[ApiKeys.unit] = unit;
+    data['switch'] = isavailable;
+
     if (openingquantity != null && openingquantity.isNotEmpty) {
       data[ApiKeys.openingquantity] = openingquantity;
     }

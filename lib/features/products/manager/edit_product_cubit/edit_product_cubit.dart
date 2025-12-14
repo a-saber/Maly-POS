@@ -27,6 +27,7 @@ class EditProductCubit extends Cubit<EditProductState> {
     required this.categoryRepo,
   }) : super(EditProductInitial()) {
      baseUnitId = product.baseUnitId ?? product.unit?.id ?? 1;
+     isavailable = product.isavailable ?? 1;
     _initControllers();
   }
 
@@ -44,7 +45,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   UnitModel? unit;
   BrancheModel? branch;
   XFile? image;
-
+  late int isavailable;
   GlobalKey<FormState> formKey = GlobalKey();
   AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
 
@@ -72,7 +73,10 @@ class EditProductCubit extends Cubit<EditProductState> {
     openingQuantityController = TextEditingController();
     emit(EditProductOnPriceChange());
   }
-  
+  void onChangeAvailability(bool value) {
+    isavailable = value ? 1 : 0;
+    emit(AddProductChangeAvailability());
+  }
   void init({required BuildContext context}) async {
     emit(EditProductInitializing());
 
@@ -176,7 +180,7 @@ class EditProductCubit extends Cubit<EditProductState> {
       u.salePriceWithTax = u.salePriceWithTaxController?.text;
       u.barcode = u.barCodeController?.text;
       u.scaleBarcode = u.scaleBarcodeController?.text;
-      
+      isavailable = product.isavailable ?? 1;
       for (var bq in u.branchQty) {
         bq.branchId = bq.branchId ?? bq.branch?.id;
         bq.qunantity = int.tryParse(bq.quantityController.text) ?? 0;
@@ -195,6 +199,8 @@ class EditProductCubit extends Cubit<EditProductState> {
       brand: brandController.text,
       tax: taxes,
       type: productType?.value ?? product.type ?? 'inventory',
+      isavailable: isavailable,
+      
 
     );
     if (productUnits.isNotEmpty) {
@@ -225,6 +231,7 @@ class EditProductCubit extends Cubit<EditProductState> {
             updatedAt: productFromApi.updatedAt,
             imageUrl: productFromApi.imageUrl,
             tax: taxes,
+            isavailable: productFromApi.isavailable,
 
 
             taxId: productFromApi.taxId,

@@ -51,7 +51,7 @@ class AddProductCubit extends Cubit<AddProductState> {
   BrancheModel? branch;
   TaxesModel? taxes;
   ProductType? productType=AppConstant.producttype(MyApp.context)?.lastOrNull;
-
+  int? isavailable=1;
 
   final TextEditingController barCodeController = TextEditingController();
   final TextEditingController brandController = TextEditingController();
@@ -117,7 +117,10 @@ class AddProductCubit extends Cubit<AddProductState> {
 
     _initializeDefaults();
   }
-
+   void onChangeAvailability(bool value) {
+    isavailable = value ? 1 : 0;
+    emit(AddProductChangeAvailability());
+  }
   static List<TaxesModel>? _cachedTaxes;
   List<ProductUnits> productUnits = [];
   Future<void> addProduct() async {
@@ -152,6 +155,7 @@ class AddProductCubit extends Cubit<AddProductState> {
         brand: brandController.text,
         tax: taxes,
         type: productType?.value,
+        isavailable: isavailable,
       );
       Map<String, dynamic> jsonToSend =
           await updateProductModel.toJsonWithoutId(
