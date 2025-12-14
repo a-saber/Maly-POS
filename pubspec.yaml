@@ -71,6 +71,7 @@ dependencies:
       ref: v1-google
   connectivity_plus: ^4.0.2
   device_info_plus: ^10.1.2
+  toastification: ^3.0.3
 
   # timezone:
   # geolocator:
