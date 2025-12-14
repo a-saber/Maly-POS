@@ -11,12 +11,48 @@ import 'package:pos_app/core/widget/custom_loading.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/core/widget/cutsom_layout_builder.dart';
 import 'package:pos_app/core/widget/custom_refresh_indicator.dart';
-import 'package:pos_app/features/paymentmethods/data/models/paymentmethodmodel.dart';
 import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/paymentmethods/manager/cubit/paymentscubit.dart';
 import 'package:pos_app/features/paymentmethods/manager/state/paymentsstate.dart';
+import 'package:pos_app/generated/l10n.dart';
+String _getTranslatedError(BuildContext context, String errorMessage) {
 
+  switch (errorMessage.toLowerCase()) {
+    case 'network error':
+    case 'no internet connection':
+      return S.of(context).networkError;
+    
+    case 'server error':
+    case 'internal server error':
+      return S.of(context).serverError;
+    
+    case 'unauthorized':
+    case 'authentication failed':
+      return S.of(context).unauthorized;
+    
+    case 'not found':
+      return S.of(context).notFound;
+    
+    case 'validation error':
+      return S.of(context).validationError;
+      case 'name: the name has already been taken.':
+    case 'the name has already been taken.':
+    case 'the name has already been taken':
+      case 'messages.cannot_delete_payment_method_in_use':
+      return 'لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً';
+    
+    default:
+      if (errorMessage.toLowerCase().contains('already been taken')) {
+        return S.of(context).nameAlreadyTaken;
+      }
+      
+      if (errorMessage.toLowerCase().contains('cannot_delete_payment_method_in_use')) {
+        return 'لا يمكن حذف طريقة الدفع لأنها مستخدمة في معاملات نشطة';
+      }
+      return errorMessage;
+  }
+}
 class PaymentMethodsViews extends StatelessWidget {
   const PaymentMethodsViews({super.key});
 
@@ -49,9 +85,10 @@ class PaymentMethodsViews extends StatelessWidget {
                 state: PopUpState.SUCCESS,
               );
             } else if (state is PaymentMethodsFailure) {
+
               CustomPopUp.callMyToast(
                 context: context,
-                massage: state.errMessage,
+                massage: _getTranslatedError(context, state.errMessage),
                 state: PopUpState.ERROR,
               );
             }
@@ -344,47 +381,60 @@ class _PaymentMethodsDataViewState extends State<PaymentMethodsDataView> {
   Widget _buildPaymentMethodCard(PaymentMethodSalesModel paymentMethod, PaymentMethodsCubit cubit) {
     return Card(
       elevation: 2,
-      child: ListTile(
-        leading: Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            paymentMethod.isNearpay == 1 ? Icons.contactless : Icons.payment,
-            color: AppColors.primary,
-          ),
-        ),
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                paymentMethod.name ?? '',
-                style: AppFontStyle.formText(context: context).copyWith(
-                  fontWeight: FontWeight.bold,
+      child: InkWell(
+        onTap: () => _editPaymentMethod(paymentMethod),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  paymentMethod.isNearpay == 1 ? Icons.contactless : Icons.payment,
+                  color: AppColors.primary,
                 ),
               ),
-            ),
-            _buildStatusBadge(paymentMethod.isActive == 1),
-          ],
-        ),
-        subtitle: _buildSubtitle(paymentMethod),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit),
-              color: AppColors.primary,
-              onPressed: () => _editPaymentMethod(paymentMethod),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete),
-              color: Colors.red,
-              onPressed: () => _showDeleteConfirmation(context, cubit, paymentMethod),
-            ),
-          ],
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            paymentMethod.name ?? '',
+                            style: AppFontStyle.formText(context: context).copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        _buildStatusBadge(paymentMethod.isActive == 1),
+                      ],
+                    ),
+                    if (_buildSubtitle(paymentMethod) != null)
+                      _buildSubtitle(paymentMethod)!,
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                color: AppColors.primary,
+                onPressed: () => _editPaymentMethod(paymentMethod),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete),
+                color: Colors.red,
+                onPressed: () => _showDeleteConfirmation(context, cubit, paymentMethod),
+              ),
+            ],
+          ),
         ),
       ),
     );

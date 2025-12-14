@@ -1,3 +1,4 @@
+import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -125,11 +126,16 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
     final time = parsed != null
         ? "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}:${parsed.second.toString().padLeft(2, '0')}"
         : "";
-
+    const double mmToPoint = 2.83465;
+    const double width80mm = 80 * mmToPoint;
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
-        pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
+        pageFormat: size=='80' ? PdfPageFormat(
+          width80mm,
+          double.infinity, // Auto height
+          marginAll: 3 * mmToPoint, // 5mm padding on all sides
+        ): PdfPageFormat.roll57,
 
         margin: pw.EdgeInsets.zero,
 
@@ -238,6 +244,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   font: arabicFont,
                 ),
               ),
+            pw.SizedBox(height: 10),
 
             pw.Container(
                 width: double.infinity,
@@ -253,11 +260,11 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                   child: pw.Column(
                       children: [
                         pw.Text(
-                          'invoiceNumber',
+                          'OrderNumber',
                           textAlign: pw.TextAlign.center,
                           style: pw.TextStyle(
                             font: arabicFont,
-                            fontSize: 18,
+                            fontSize: 16,
                           ),
                         ),
                         pw.SizedBox(height: 2),
@@ -383,7 +390,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                           decoration: pw.BoxDecoration(color: PdfColors.grey300),
                         children: [
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
@@ -394,7 +401,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               p[ApiKeys.quantity]?.toString() ?? "",
                               textAlign: pw.TextAlign.center,
@@ -405,7 +412,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               double.tryParse(p[ApiKeys.price]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
@@ -416,7 +423,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                             ),
                           ),
                           pw.Padding(
-                            padding: const pw.EdgeInsets.all(2),
+                            padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
                               double.tryParse(p[ApiKeys.linetotalaftertax]??'0')?.toStringAsFixed(2)??'0',
                               textAlign: pw.TextAlign.center,
@@ -688,7 +695,7 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(2),
                       child: pw.Text(
-                        "${(((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100).truncateToDouble() / 100).toStringAsFixed(2)}",
+                        (((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100)/ 100).toStringAsFixed(2),
                         style: pw.TextStyle(
                           fontSize: 8,
                           font: arabicFont,
@@ -824,7 +831,7 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
 
         build: ( context) =>  pw.Container(
           decoration:  pw.BoxDecoration(color: PdfColors.white),
-            padding:pw.EdgeInsets.symmetric(horizontal: 3) ,
+            padding:pw.EdgeInsets.symmetric(horizontal: 3),
             child: pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.center,
           children: [
@@ -1881,4 +1888,299 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
     return emptyPdf.save();
   }
 }
+
+
+
+
+Future<List<int>> generateCenteredReceipt(
+    Map<String, dynamic> response, {
+      required String paperSize,
+      required double paid,
+      String? branchName,
+    }) async {
+  final profile = await CapabilityProfile.load();
+  final size = _getPaperSize(paperSize);
+  final generator = Generator(size, profile);
+
+  final sale = response[ApiKeys.sale];
+  final setting = response[ApiKeys.settings];
+  final products = sale[ApiKeys.saleproducts] as List<dynamic>;
+
+  List<int> bytes = [];
+
+  // Set code page to Arabic (CP864)
+  bytes += generator.setGlobalCodeTable('CP864');
+  bytes += generator.reset();
+
+  // Time & Date
+  final createdAt = sale[ApiKeys.createdat]?.toString() ?? "";
+  DateTime? parsed;
+  if (createdAt.isNotEmpty) {
+    parsed = DateTime.tryParse(createdAt)?.toLocal();
+  }
+
+  if (parsed != null) {
+    final date =
+        "${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}";
+    final time =
+        "${parsed.hour.toString().padLeft(2, '0')}:${parsed.minute.toString().padLeft(2, '0')}:${parsed.second.toString().padLeft(2, '0')}";
+
+    bytes += generator.text(
+      '$time  $date',
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  bytes += generator.emptyLines(1);
+
+  // Title (Arabic)
+  bytes += generator.text(
+    _reverseArabic(AppInvoiceString.invoiceTitle),
+    styles: PosStyles(
+      align: PosAlign.center,
+      height: PosTextSize.size2,
+      width: PosTextSize.size2,
+      bold: true,
+    ),
+    linesAfter: 1,
+  );
+
+  // Shop Info
+  if (setting[ApiKeys.shopname] != null) {
+    bytes += generator.text(
+      _reverseArabic(setting[ApiKeys.shopname]),
+      styles: PosStyles(align: PosAlign.center, bold: true),
+    );
+  }
+
+  if (setting[ApiKeys.phone] != null) {
+    bytes += generator.text(
+      setting[ApiKeys.phone],
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (setting[ApiKeys.commercialno] != null) {
+    bytes += generator.text(
+      _reverseArabic('${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}'),
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (sale[ApiKeys.id] != null) {
+    bytes += generator.text(
+      _reverseArabic('${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}'),
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (sale[ApiKeys.ordertype] != null) {
+    bytes += generator.text(
+      _reverseArabic('${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}'),
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  bytes += generator.emptyLines(1);
+  bytes += generator.hr();
+
+  // Order Number
+  bytes += generator.text(
+    'Order Number',
+    styles: PosStyles(align: PosAlign.center),
+  );
+  bytes += generator.text(
+    '#${((CacheHelper.getData(key: CacheKeys.invoiceNumber) ?? 0) + 1)}',
+    styles: PosStyles(
+      align: PosAlign.center,
+      height: PosTextSize.size2,
+      width: PosTextSize.size2,
+      bold: true,
+    ),
+  );
+
+  bytes += generator.hr();
+  bytes += generator.emptyLines(1);
+
+  // Products Table - Print in English columns format for better compatibility
+  bytes += generator.text(
+    'Product              Qty   Price    Total',
+    styles: PosStyles(align: PosAlign.left, bold: true),
+  );
+  bytes += generator.hr();
+
+  // Products
+  for (var p in products) {
+    final productName = p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? '';
+    final quantity = p[ApiKeys.quantity]?.toString() ?? '';
+    final price = double.tryParse(p[ApiKeys.price] ?? '0')?.toStringAsFixed(2) ?? '0';
+    final total = double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')?.toStringAsFixed(2) ?? '0';
+
+    // If Arabic, reverse it
+    final displayName = _containsArabic(productName) ? _reverseArabic(productName) : productName;
+
+    // Format: Name (20 chars) | Qty (5) | Price (8) | Total (8)
+    final line = '${displayName.padRight(20).substring(0, 20)} ${quantity.padLeft(3)} ${price.padLeft(7)} ${total.padLeft(8)}';
+
+    bytes += generator.text(line, styles: PosStyles(align: PosAlign.left));
+  }
+
+  bytes += generator.hr();
+  bytes += generator.emptyLines(1);
+
+  // Totals
+  if (sale[ApiKeys.subtotal] != null) {
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.totalBeforeTax),
+      double.tryParse(sale[ApiKeys.subtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
+  }
+
+  if (sale[ApiKeys.discounttotal] != null) {
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.discount),
+      double.tryParse(sale[ApiKeys.discounttotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
+  }
+
+  if (sale[ApiKeys.totalafterdiscount] != null) {
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.totalAfterDiscount),
+      double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
+  }
+
+  if (sale[ApiKeys.taxtotal] != null) {
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.tax),
+      double.tryParse(sale[ApiKeys.taxtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+    );
+  }
+
+  if (sale[ApiKeys.totalaftertax] != null) {
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.totalAfterTax),
+      double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')?.toStringAsFixed(2) ?? '0',
+      bold: true,
+    );
+  }
+
+  if (sale[ApiKeys.paymentmethod] != null) {
+    bytes += _printTotal(
+      generator,
+      _reverseArabic(AppInvoiceString.paymentMethod),
+      '${sale[ApiKeys.paymentmethod]}',
+    );
+  }
+
+  bytes += _printTotal(
+    generator,
+    _reverseArabic(AppInvoiceString.paid),
+    paid.toStringAsFixed(2),
+    bold: true,
+  );
+
+  bytes += _printTotal(
+    generator,
+    _reverseArabic(AppInvoiceString.remain),
+    (paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)).toStringAsFixed(2),
+  );
+
+  bytes += generator.hr();
+  bytes += generator.emptyLines(1);
+
+  // QR Code
+  if (sale[ApiKeys.zatcaQrcode] != null) {
+    bytes += generator.qrcode(
+      sale[ApiKeys.zatcaQrcode],
+      align: PosAlign.center,
+      size: QRSize.size5,
+    );
+    bytes += generator.emptyLines(1);
+  }
+
+  // Footer
+  bytes += generator.text(
+    _reverseArabic(AppInvoiceString.thanks),
+    styles: PosStyles(align: PosAlign.center, bold: true),
+  );
+
+  if (setting[ApiKeys.address] != null) {
+    bytes += generator.text(
+      _reverseArabic(setting[ApiKeys.address]),
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (CustomUserHiveBox.getUser().name != null) {
+    bytes += generator.text(
+      _reverseArabic('${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}'),
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  if (branchName != null) {
+    bytes += generator.text(
+      _reverseArabic('${AppInvoiceString.branchName} $branchName'),
+      styles: PosStyles(align: PosAlign.center),
+    );
+  }
+
+  bytes += generator.feed(2);
+  bytes += generator.cut();
+
+  return bytes;
+}
+
+// Helper: Print total row
+List<int> _printTotal(
+    Generator generator,
+    String label,
+    String value, {
+      bool bold = false,
+    }) {
+  // Format: Label (right-aligned to 35 chars) | Value (right-aligned)
+  final line = '${label.padLeft(35)} ${value.padLeft(12)}';
+  return generator.text(
+    line,
+    styles: PosStyles(align: PosAlign.left, bold: bold),
+  );
+}
+
+// Helper: Reverse Arabic text for RTL display
+String _reverseArabic(String text) {
+  if (!_containsArabic(text)) return text;
+
+  // Split by spaces to handle mixed content
+  final words = text.split(' ');
+  final reversedWords = <String>[];
+
+  for (var word in words) {
+    if (_containsArabic(word)) {
+      // Reverse Arabic characters
+      reversedWords.add(word.split('').reversed.join(''));
+    } else {
+      // Keep English/numbers as is
+      reversedWords.add(word);
+    }
+  }
+
+  // Reverse the entire order
+  return reversedWords.reversed.join(' ');
+}
+
+// Helper: Check if text contains Arabic
+bool _containsArabic(String text) {
+  return text.contains(RegExp(r'[\u0600-\u06FF]'));
+}
+
+PaperSize _getPaperSize(String paperSize) {
+  return paperSize == '80' ? PaperSize.mm80 : PaperSize.mm58;
+}
+
 
