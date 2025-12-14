@@ -8,8 +8,10 @@ import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
-import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart' as PaymentAdmin;
-import 'package:pos_app/features/selling_point/data/model/payment_method_model.dart' as PaymentSales;
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart'
+    as PaymentAdmin;
+import 'package:pos_app/features/selling_point/data/model/payment_method_model.dart'
+    as PaymentSales;
 import 'package:pos_app/features/selling_point/data/model/print_model.dart';
 import 'package:pos_app/features/selling_point/data/model/product_selling_model.dart';
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
@@ -21,7 +23,8 @@ import '../../../products/data/model/product_unit_model.dart';
 part 'selling_point_product_state.dart';
 
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
-  SellingPointProductCubit(this.repo, this.paymentMethodsRepo) : super(SellingPointProductInitial());
+  SellingPointProductCubit(this.repo, this.paymentMethodsRepo)
+      : super(SellingPointProductInitial());
 
   static SellingPointProductCubit get(context) => BlocProvider.of(context);
   final SellingPointRepo repo;
@@ -35,7 +38,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   TextEditingController paidController = TextEditingController();
 
-
   List<PaymentAdmin.PaymentMethodSalesModel> availablePaymentMethods = [];
   Map<int, double> selectedPaymentAmounts = {}; // {paymentMethodId: amount}
   Map<int, String> paymentReferences = {}; // {paymentMethodId: reference}
@@ -48,6 +50,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     user = null;
     selectedPaymentAmounts = {};
     paymentReferences = {};
+    if (availablePaymentMethods.isNotEmpty) {
+      final firstMethod = availablePaymentMethods.first;
+      selectedPaymentAmounts[firstMethod.id!] = totalPrice();
+      paidController.text = totalPrice().toStringAsFixed(2);
+    }
     emit(SellingPointProductInitial());
   }
 
@@ -77,20 +84,23 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     emit(SellingPointProductInitial());
   }
 
-
   Future<void> loadPaymentMethods() async {
     emit(SellingPointProductLoading());
-    
+
     final result = await paymentMethodsRepo.getPaymentMethods(isFresh: true);
-    
+
     result.fold(
       (apiError) {
-        emit(SellingPointProductFailing(message
-        : apiError));
+        emit(SellingPointProductFailing(message: apiError));
       },
       (methods) {
-   
-        availablePaymentMethods = methods.where((m) => m.isActive == 1).toList();
+        availablePaymentMethods =
+            methods.where((m) => m.isActive == 1).toList();
+        if (availablePaymentMethods.isNotEmpty) {
+          final firstMethod = availablePaymentMethods.first;
+
+          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
+        }
         emit(SellingPointProductPaymentMethodsLoaded());
       },
     );
@@ -104,13 +114,16 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   void confirmPayment() async {
     emit(SellingPointProductLoading());
-    
+
     debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
-    debugPrint(" \n ******* discounttotal : ${discountPrice()} *************** \n");
-    debugPrint(" \n ******* totalafterdiscount : ${totalAfterDiscount()} *************** \n");
+    debugPrint(
+        " \n ******* discounttotal : ${discountPrice()} *************** \n");
+    debugPrint(
+        " \n ******* totalafterdiscount : ${totalAfterDiscount()} *************** \n");
     debugPrint(" \n ******* taxtotal : ${taxesPrice()} *************** \n");
-    debugPrint(" \n ******* totalaftertax : ${totalAfterTax()} *************** \n");
-    
+    debugPrint(
+        " \n ******* totalaftertax : ${totalAfterTax()} *************** \n");
+
     var respons = await repo.newSales(
       typeOfTakeOrder: typeOfTakeOrder!,
       paid: double.parse(
@@ -130,18 +143,16 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       discount: discount,
       customer: user,
       products: products,
-     
       paymentAmounts: selectedPaymentAmounts,
       paymentReferences: paymentReferences,
     );
-    
+
     respons.fold(
-      (errMessage) => emit(SellingPointProductFailing(message:  errMessage)),
-      (success) {
-        init();
-        emit(SellingPointProductSuccess(printModel: success));
-      }
-    );
+        (errMessage) => emit(SellingPointProductFailing(message: errMessage)),
+        (success) {
+      init();
+      emit(SellingPointProductSuccess(printModel: success));
+    });
   }
 
   bool containProduct() => products.isNotEmpty;
@@ -228,6 +239,10 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.add(ProductSellingModel(
             product: product, count: 1, productUnit: productUnit));
         updatePaid();
+        if (availablePaymentMethods.isNotEmpty) {
+          final firstMethod = availablePaymentMethods.first;
+          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
+        }
         emit(SellingPointProductAddingProduct());
       } else if (product.quantity == null || product.quantity == 0) {
         updatePaid();
@@ -237,6 +252,10 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.add(ProductSellingModel(
             product: product, count: 1, productUnit: productUnit));
         updatePaid();
+        if (products.length == 1 && availablePaymentMethods.isNotEmpty) {
+          final firstMethod = availablePaymentMethods.first;
+          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
+        }
         emit(SellingPointProductAddingProduct());
       }
     }
@@ -376,6 +395,10 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updatePaid() {
+    if (selectedPaymentAmounts.length == 1 && products.isNotEmpty) {
+      final methodId = selectedPaymentAmounts.keys.first;
+      selectedPaymentAmounts[methodId] = totalPrice();
+    }
     paidController.text = roundTotolPrice().toString();
   }
 
@@ -408,16 +431,16 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   void changePaid(String newPaidAmount, {Map<int, double>? paymentAmounts}) {
     double totalPaid = double.tryParse(newPaidAmount) ?? 0.0;
-    
-    if (double.parse(totalPaid.toStringAsFixed(2)) >= double.parse(totalPrice().toStringAsFixed(2))) {
+
+    if (double.parse(totalPaid.toStringAsFixed(2)) >=
+        double.parse(totalPrice().toStringAsFixed(2))) {
       paidController.text = totalPaid.toStringAsFixed(2);
-      
- 
+
       if (paymentAmounts != null && paymentAmounts.isNotEmpty) {
         selectedPaymentAmounts = Map.from(paymentAmounts);
         debugPrint(' Saved payment amounts in Cubit: $selectedPaymentAmounts');
       }
-      
+
       emit(SellingPointProductChangePaid());
     } else {
       emit(SellingPointProductChangePaidFailing());
