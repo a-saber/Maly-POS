@@ -161,6 +161,7 @@ abstract class ApiKeys {
   static const String allowLowerPrices = 'allow_lower_prices';
   static const String sellInNegativeQuantity = 'sell_in_negative_quantity';
   static const String paymentmethods='payment-methods';
+  static const String isavailable='switch';
 }
 
 abstract class ApiEndPoints {
