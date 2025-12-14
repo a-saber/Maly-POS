@@ -39,6 +39,9 @@ class CustomDrawer extends StatelessWidget {
           CustomServiceWidget.showCustomToast(context, message: state.message,type: ToastificationType.error);
 
         }
+
+
+
       },
       builder: (context, state) {
         return Drawer(
