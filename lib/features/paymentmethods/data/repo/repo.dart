@@ -104,22 +104,22 @@ class PaymentMethodsRepo {
 
     final response = await api.post(
       url: url,
-      data: data, // هنا مباشرة
+      data: data, 
     );
 
-    debugPrint('📥 Response status: ${response.status}');
-    debugPrint('📥 Response message: ${response.message}');
+    debugPrint(' Response status: ${response.status}');
+    debugPrint(' Response message: ${response.message}');
 
     if (response.status) {
-      debugPrint("✅ Payment method added successfully");
+      debugPrint(" Payment method added successfully");
       paymentMethodsModel = null;
       return Right(unit);
     } else {
-      debugPrint('❌ API Error: ${response.message}');
+      debugPrint(' API Error: ${response.message}');
       return Left(response);
     }
   } catch (e, stackTrace) {
-    debugPrint('❌ Exception in addPaymentMethod: $e');
+    debugPrint(' Exception in addPaymentMethod: $e');
     debugPrint('Stack trace: $stackTrace');
     return Left(ApiResponse.unKnownError());
   }
@@ -129,7 +129,7 @@ class PaymentMethodsRepo {
     try {
       final String url = await ApiEndPoints.getAllPaymentMethods();
       final fullUrl = "$url/${paymentMethod.id}";
-      debugPrint("✏️ Updating payment method at: $fullUrl");
+      debugPrint(" Updating payment method at: $fullUrl");
 
       Map<String, dynamic> data = {
         'name': paymentMethod.name,
@@ -138,7 +138,7 @@ class PaymentMethodsRepo {
         'is_nearpay': paymentMethod.isNearpay ?? 0,
       };
 
-      debugPrint("📤 Update data: $data");
+      debugPrint(" Update data: $data");
 
       final response = await api.post(
         url: fullUrl,
@@ -146,15 +146,15 @@ class PaymentMethodsRepo {
       );
 
       if (response.status) {
-        debugPrint("✅ Payment method updated successfully");
+        debugPrint(" Payment method updated successfully");
         paymentMethodsModel = null;
         return Right(unit);
       } else {
-        debugPrint("❌ API Error: ${response.message}");
+        debugPrint(" API Error: ${response.message}");
         return Left(response);
       }
     } catch (e, stackTrace) {
-      debugPrint("❌ Exception in updatePaymentMethod: $e");
+      debugPrint(" Exception in updatePaymentMethod: $e");
       debugPrint('Stack trace: $stackTrace');
       return Left(ApiResponse.unKnownError());
     }
@@ -166,22 +166,22 @@ class PaymentMethodsRepo {
     try {
       String url = await ApiEndPoints.getAllPaymentMethods();
       final fullUrl = "$url/$id";
-      debugPrint("🗑️ Deleting payment method at: $fullUrl");
+      debugPrint(" Deleting payment method at: $fullUrl");
 
       var response = await api.delete(
         url: fullUrl,
       );
 
       if (response.status) {
-        debugPrint("✅ Payment method deleted successfully");
+        debugPrint(" Payment method deleted successfully");
         paymentMethodsModel = null;
         return Right(id);
       } else {
-        debugPrint("❌ Delete failed: ${response.message}");
+        debugPrint(" Delete failed: ${response.message}");
         return Left(response);
       }
     } catch (e, stackTrace) {
-      debugPrint("❌ Exception in deletePaymentMethod: $e");
+      debugPrint(" Exception in deletePaymentMethod: $e");
       debugPrint('Stack trace: $stackTrace');
       return Left(ApiResponse.unKnownError());
     }

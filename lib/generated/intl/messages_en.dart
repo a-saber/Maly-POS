@@ -497,5 +497,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentsMethods":MessageLookupByLibrary.simpleMessage("paymentsMethods"),
     "fixed":MessageLookupByLibrary.simpleMessage("Fixed"),
     "percentage":MessageLookupByLibrary.simpleMessage("Percentage"),
+    "nameAlreadyTaken":MessageLookupByLibrary.simpleMessage("Name already taken"),
+    "cannot_delete_payment_method_in_use":MessageLookupByLibrary.simpleMessage("Cannot delete payment method in use"),
   };
 }

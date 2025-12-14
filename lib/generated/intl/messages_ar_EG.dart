@@ -493,5 +493,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "paymentsMethods":MessageLookupByLibrary.simpleMessage("طرق الدفع"),
     "fixed": MessageLookupByLibrary.simpleMessage("ثابت"),
     "percentage": MessageLookupByLibrary.simpleMessage("  نسبة مئوية"), 
+    "nameAlreadyTaken": MessageLookupByLibrary.simpleMessage("اسم مستخدم موجود بالفعل"),
+    "cannot_delete_payment_method_in_use": MessageLookupByLibrary.simpleMessage("لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً"),
   };
 }
