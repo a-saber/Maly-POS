@@ -39,10 +39,16 @@ String _getTranslatedError(BuildContext context, String errorMessage) {
       case 'name: the name has already been taken.':
     case 'the name has already been taken.':
     case 'the name has already been taken':
-      return S.of(context).nameAlreadyTaken;
+      case 'messages.cannot_delete_payment_method_in_use':
+      return 'لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً';
+    
     default:
-       if (errorMessage.toLowerCase().contains('already been taken')) {
+      if (errorMessage.toLowerCase().contains('already been taken')) {
         return S.of(context).nameAlreadyTaken;
+      }
+      
+      if (errorMessage.toLowerCase().contains('cannot_delete_payment_method_in_use')) {
+        return 'لا يمكن حذف طريقة الدفع لأنها مستخدمة في معاملات نشطة';
       }
       return errorMessage;
   }

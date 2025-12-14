@@ -27,14 +27,16 @@ class CustomPaidTextFormField extends StatelessWidget {
                 showDialog(
                   context: context,
                   builder: (dialogContext) => BlocProvider.value(
-                    value: MyServiceLocator.getSingleton<SellingPointProductCubit>(),
-                    child: _DynamicPaidDialog(),
+                    value: MyServiceLocator.getSingleton<
+                        SellingPointProductCubit>(),
+                    child: DynamicPaidDialog(),
                   ),
                 );
               },
               child: CustomFormField(
                 enabled: false,
-                controller: SellingPointProductCubit.get(context).paidController,
+                controller:
+                    SellingPointProductCubit.get(context).paidController,
                 labelText: S.of(context).paid,
                 validator: (value) => MyFormValidators.validateDoublePrice(
                   value,
@@ -51,12 +53,12 @@ class CustomPaidTextFormField extends StatelessWidget {
   }
 }
 
-class _DynamicPaidDialog extends StatefulWidget {
+class DynamicPaidDialog extends StatefulWidget {
   @override
-  State<_DynamicPaidDialog> createState() => _DynamicPaidDialogState();
+  State<DynamicPaidDialog> createState() => DynamicPaidDialogState();
 }
 
-class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
+class DynamicPaidDialogState extends State<DynamicPaidDialog> {
   late double totalPrice;
   Map<int, TextEditingController> paymentControllers = {};
   Map<int, TextEditingController> referenceControllers = {};
@@ -65,17 +67,29 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
 
   Map<int, int> _getPaymentMethodMapping() {
     return {
-    1: 1, 2: 2, 3: 3,  4: 4, 
-    5: 5, 6: 6,  7: 7, 8: 8, 
-    9: 9, 10: 10, 11: 11,12: 12,
-    13: 13, 14: 14, 15: 15, 16: 16,
-    17: 17, 
-    18: 18, 
-    19: 19, 
-    20: 20, 
-    21: 21, 
-    22: 22, 
-    23: 23,
+      1: 1,
+      2: 2,
+      3: 3,
+      4: 4,
+      5: 5,
+      6: 6,
+      7: 7,
+      8: 8,
+      9: 9,
+      10: 10,
+      11: 11,
+      12: 12,
+      13: 13,
+      14: 14,
+      15: 15,
+      16: 16,
+      17: 17,
+      18: 18,
+      19: 19,
+      20: 20,
+      21: 21,
+      22: 22,
+      23: 23,
     };
   }
 
@@ -95,16 +109,16 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
 
   void _initializeControllers() {
     final cubit = SellingPointProductCubit.get(context);
-    
+
     for (var method in cubit.availablePaymentMethods) {
       paymentControllers[method.id!] = TextEditingController(text: '');
       paymentControllers[method.id!]!.addListener(_calculateRemaining);
-      
+
       if (method.requiresReference == 1) {
         referenceControllers[method.id!] = TextEditingController(text: '');
       }
     }
-    
+
     activeController = paymentControllers.values.first;
   }
 
@@ -126,15 +140,17 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
 
     double totalPaid = 0.0;
     for (var controller in paymentControllers.values) {
-      totalPaid += double.tryParse(controller.text) ?? 0.0;
+      double amount = double.tryParse(controller.text) ?? 0.0;
+
+      totalPaid += double.parse(amount.toStringAsFixed(2));
     }
 
     double remaining = 0.0;
-    
+
     int usedMethods = paymentControllers.values
         .where((c) => (double.tryParse(c.text) ?? 0.0) > 0)
         .length;
-    
+
     if (usedMethods == 1 && totalPaid > totalPrice) {
       remaining = totalPaid - totalPrice;
     }
@@ -150,7 +166,8 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
   }
 
   void autoFillRemaining(int paymentMethodId) {
-    double currentValue = double.tryParse(paymentControllers[paymentMethodId]!.text) ?? 0.0;
+    double currentValue =
+        double.tryParse(paymentControllers[paymentMethodId]!.text) ?? 0.0;
     if (currentValue != 0.0) return;
 
     double totalPaid = 0.0;
@@ -200,14 +217,16 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
           builder: (context, state) {
             final cubit = SellingPointProductCubit.get(context);
 
-            if (state is SellingPointProductLoading && cubit.availablePaymentMethods.isEmpty) {
+            if (state is SellingPointProductLoading &&
+                cubit.availablePaymentMethods.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.all(40.0),
                 child: Center(child: CircularProgressIndicator()),
               );
             }
 
-            if (state is SellingPointProductPaymentMethodsLoaded && paymentControllers.isEmpty) {
+            if (state is SellingPointProductPaymentMethodsLoaded &&
+                paymentControllers.isEmpty) {
               _initializeControllers();
             }
 
@@ -238,8 +257,6 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
                           ),
                         ),
                         SizedBox(height: 15),
-
-                      
                         ...cubit.availablePaymentMethods.map((method) {
                           return Column(
                             children: [
@@ -248,20 +265,24 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
                                   Expanded(
                                     child: GestureDetector(
                                       onTap: () {
-                                        onFieldTap(paymentControllers[method.id!]!);
+                                        onFieldTap(
+                                            paymentControllers[method.id!]!);
                                         autoFillRemaining(method.id!);
                                       },
                                       child: CustomFormField(
-                                        controller: paymentControllers[method.id!]!,
+                                        controller:
+                                            paymentControllers[method.id!]!,
                                         labelText: method.name ?? 'طريقة دفع',
                                         enabled: true,
                                         keyboardType: TextInputType.none,
                                         onTap: () {
-                                          onFieldTap(paymentControllers[method.id!]!);
+                                          onFieldTap(
+                                              paymentControllers[method.id!]!);
                                           autoFillRemaining(method.id!);
                                         },
                                         suffixIcon: method.isNearpay == 1
-                                            ? Icon(Icons.contactless, color: AppColors.primary)
+                                            ? Icon(Icons.contactless,
+                                                color: AppColors.primary)
                                             : null,
                                       ),
                                     ),
@@ -274,23 +295,20 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
                                   ),
                                 ],
                               ),
-                              
                               if (method.requiresReference == 1) ...[
                                 SizedBox(height: 10),
                                 CustomFormField(
                                   controller: referenceControllers[method.id!]!,
                                   labelText: 'رقم المرجع (${method.name})',
                                   enabled: true,
-                                  prefixIcon: Icon(Icons.receipt_long, color: AppColors.primary),
+                                  prefixIcon: Icon(Icons.receipt_long,
+                                      color: AppColors.primary),
                                 ),
                               ],
-                              
                               SizedBox(height: 15),
                             ],
                           );
                         }).toList(),
-
-                    
                         CustomFormField(
                           controller: remainingController,
                           labelText: S.of(context).remainingAmount,
@@ -301,8 +319,6 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
                       ],
                     ),
                   ),
-
-                
                   if (activeController != null)
                     CustomPaymentKeyboard(
                       controller: activeController!,
@@ -313,12 +329,15 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        BlocListener<SellingPointProductCubit, SellingPointProductState>(
+                        BlocListener<SellingPointProductCubit,
+                            SellingPointProductState>(
                           listener: (context, state) {
                             if (state is SellingPointProductChangePaidFailing) {
                               CustomPopUp.callMyToast(
                                 context: context,
-                                massage: S.of(context).priceShoudBeBiggerThanOrEqualTotalPrice,
+                                massage: S
+                                    .of(context)
+                                    .priceShoudBeBiggerThanOrEqualTotalPrice,
                                 state: PopUpState.ERROR,
                               );
                             }
@@ -346,215 +365,223 @@ class _DynamicPaidDialogState extends State<_DynamicPaidDialog> {
     );
   }
 
- void _handleSave(BuildContext context) async { 
-  final cubit = SellingPointProductCubit.get(context);
+  void _handleSave(BuildContext context) async {
+    final cubit = SellingPointProductCubit.get(context);
 
-  Map<int, double> amounts = {};
-  double totalPaid = 0.0;
+    Map<int, double> amounts = {};
+    double totalPaid = 0.0;
 
-  for (var entry in paymentControllers.entries) {
-    double amount = double.tryParse(entry.value.text) ?? 0.0;
-    if (amount > 0) {
-      amounts[entry.key] = amount;
-      totalPaid += amount;
+    for (var entry in paymentControllers.entries) {
+      double amount = double.tryParse(entry.value.text) ?? 0.0;
+      if (amount > 0) {
+        amounts[entry.key] = double.parse(amount.toStringAsFixed(2));
+        totalPaid += amounts[entry.key]!;
+      }
     }
-  }
 
-  debugPrint(' Original IDs from UI: ${amounts.keys.toList()}');
+    debugPrint(' Original IDs from UI: ${amounts.keys.toList()}');
 
-  if (amounts.isEmpty) {
-    CustomPopUp.callMyToast(
-      context: context,
-      massage: 'يرجى إدخال مبلغ في إحدى طرق الدفع على الأقل',
-      state: PopUpState.ERROR,
-    );
-    return;
-  }
-
-  List<int> nearpayMethods = [];
-  for (var methodId in amounts.keys) {
-    final method = cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
-    if (method.isNearpay == 1) {
-      nearpayMethods.add(methodId);
+    if (amounts.isEmpty) {
+      CustomPopUp.callMyToast(
+        context: context,
+        massage: 'يرجى إدخال مبلغ في إحدى طرق الدفع على الأقل',
+        state: PopUpState.ERROR,
+      );
+      return;
     }
-  }
 
-  Map<int, String> originalReferences = {};
-  if (nearpayMethods.isNotEmpty) {
-    for (var methodId in nearpayMethods) {
-      final method = cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
-      double amount = amounts[methodId]!;
+    List<int> nearpayMethods = [];
+    for (var methodId in amounts.keys) {
+      final method =
+          cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
+      if (method.isNearpay == 1) {
+        nearpayMethods.add(methodId);
+      }
+    }
 
-      try {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => WillPopScope(
-            onWillPop: () async => false,
-            child: Center(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(color: AppColors.primary),
-                    SizedBox(height: 16),
-                    Text(
-                      'جاري الدفع عبر ${method.name}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+    Map<int, String> originalReferences = {};
+    if (nearpayMethods.isNotEmpty) {
+      for (var methodId in nearpayMethods) {
+        final method =
+            cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
+        double amount = amounts[methodId]!;
+
+        try {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (_) => WillPopScope(
+              onWillPop: () async => false,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      CircularProgressIndicator(color: AppColors.primary),
+                      SizedBox(height: 16),
+                      Text(
+                        'جاري الدفع عبر ${method.name}',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      'المبلغ: ${amount.toStringAsFixed(2)} ريال',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.primary,
+                      SizedBox(height: 8),
+                      Text(
+                        'المبلغ: ${amount.toStringAsFixed(2)} ريال',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
+          );
 
-        debugPrint(' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
+          debugPrint(
+              ' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
 
-        var madaResponse = await PaymentHelper.addTransaction(amount: amount);
+          var madaResponse = await PaymentHelper.addTransaction(amount: amount);
 
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
-        bool paymentSuccess = false;
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
+          bool paymentSuccess = false;
 
-        madaResponse.fold(
-          (error) {
-            debugPrint(' Payment failed: $error');
-            CustomPopUp.callMyToast(
-              context: context,
-              massage: 'فشل الدفع عبر ${method.name}\n$error',
-              state: PopUpState.ERROR,
-            );
-          },
-          (response) {
-            debugPrint(' Payment successful via ${method.name}');
-            debugPrint(' Transaction UUID: ${response.transaction_uuid}');
+          madaResponse.fold(
+            (error) {
+              debugPrint(' Payment failed: $error');
+              CustomPopUp.callMyToast(
+                context: context,
+                massage: 'فشل الدفع عبر ${method.name}\n$error',
+                state: PopUpState.ERROR,
+              );
+            },
+            (response) {
+              debugPrint(' Payment successful via ${method.name}');
+              debugPrint(' Transaction UUID: ${response.transaction_uuid}');
 
-            originalReferences[methodId] = response.transaction_uuid ?? '';
-            paymentSuccess = true;
-            CustomPopUp.callMyToast(
-              context: context,
-              massage: ' تم الدفع بنجاح عبر ${method.name}\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
-              state: PopUpState.SUCCESS,
-            );
-          },
-        );
+              originalReferences[methodId] = response.transaction_uuid ?? '';
+              paymentSuccess = true;
+              CustomPopUp.callMyToast(
+                context: context,
+                massage:
+                    ' تم الدفع بنجاح عبر ${method.name}\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
+                state: PopUpState.SUCCESS,
+              );
+            },
+          );
 
-        if (!paymentSuccess) {
-          return; 
-        }
+          if (!paymentSuccess) {
+            return;
+          }
+        } catch (e) {
+          debugPrint(' Exception during payment: $e');
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          }
 
-      } catch (e) {
-        debugPrint(' Exception during payment: $e');
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
-
-        CustomPopUp.callMyToast(
-          context: context,
-          massage: 'حدث خطأ أثناء الدفع\n$e',
-          state: PopUpState.ERROR,
-        );
-        return; 
-      }
-    }
-  }
-
-  for (var method in cubit.availablePaymentMethods) {
-    if (method.requiresReference == 1 && amounts.containsKey(method.id)) {
-      if (method.isNearpay != 1) {
-        String? reference = referenceControllers[method.id!]?.text;
-        if (reference == null || reference.trim().isEmpty) {
           CustomPopUp.callMyToast(
             context: context,
-            massage: 'يرجى إدخال رقم المرجع لـ ${method.name}',
+            massage: 'حدث خطأ أثناء الدفع\n$e',
             state: PopUpState.ERROR,
           );
           return;
         }
-        originalReferences[method.id!] = reference;
       }
     }
+
+    for (var method in cubit.availablePaymentMethods) {
+      if (method.requiresReference == 1 && amounts.containsKey(method.id)) {
+        if (method.isNearpay != 1) {
+          String? reference = referenceControllers[method.id!]?.text;
+          if (reference == null || reference.trim().isEmpty) {
+            CustomPopUp.callMyToast(
+              context: context,
+              massage: 'يرجى إدخال رقم المرجع لـ ${method.name}',
+              state: PopUpState.ERROR,
+            );
+            return;
+          }
+          originalReferences[method.id!] = reference;
+        }
+      }
+    }
+
+    int usedMethods = amounts.length;
+
+    if (usedMethods == 1) {
+      if (double.parse(totalPaid.toStringAsFixed(2)) <
+          double.parse(totalPrice.toStringAsFixed(2))) {
+        CustomPopUp.callMyToast(
+          context: context,
+          massage:
+              'المبلغ المدفوع (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
+          state: PopUpState.ERROR,
+        );
+        return;
+      }
+    } else if (usedMethods > 1) {
+      if (double.parse(totalPaid.toStringAsFixed(2)) <
+          double.parse(totalPrice.toStringAsFixed(2))) {
+        CustomPopUp.callMyToast(
+          context: context,
+          massage:
+              'إجمالي المدفوعات (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
+          state: PopUpState.ERROR,
+        );
+        return;
+      }
+
+      if (totalPaid > totalPrice) {
+        CustomPopUp.callMyToast(
+          context: context,
+          massage:
+              'عند الدفع بأكثر من طريقة، المجموع يجب أن يساوي (${totalPrice.toStringAsFixed(2)}) بالظبط',
+          state: PopUpState.ERROR,
+        );
+        return;
+      }
+    }
+
+    Map<int, int> mapping = _getPaymentMethodMapping();
+    Map<int, double> mappedAmounts = {};
+    Map<int, String> mappedReferences = {};
+
+    debugPrint('📋 Mapping: $mapping');
+
+    for (var entry in amounts.entries) {
+      int correctId = mapping[entry.key] ?? entry.key;
+      mappedAmounts[correctId] = entry.value;
+
+      if (originalReferences.containsKey(entry.key)) {
+        mappedReferences[correctId] = originalReferences[entry.key]!;
+      }
+
+      debugPrint(
+          '   Mapping ${entry.key} -> $correctId (amount: ${entry.value})');
+    }
+
+    debugPrint(' Mapped IDs to send to API: ${mappedAmounts.keys.toList()}');
+    debugPrint(' Mapped Amounts: $mappedAmounts');
+    debugPrint(' Mapped References: $mappedReferences');
+
+    cubit.selectedPaymentAmounts = mappedAmounts;
+    cubit.paymentReferences = mappedReferences;
+
+    cubit.changePaid(
+      totalPaid.toStringAsFixed(2),
+      paymentAmounts: mappedAmounts,
+    );
+
+    Navigator.pop(context);
   }
-
-  int usedMethods = amounts.length;
-
-  if (usedMethods == 1) {
-    if (double.parse(totalPaid.toStringAsFixed(2)) < double.parse(totalPrice.toStringAsFixed(2))) {
-      CustomPopUp.callMyToast(
-        context: context,
-        massage: 'المبلغ المدفوع (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
-        state: PopUpState.ERROR,
-      );
-      return;
-    }
-  } else if (usedMethods > 1) {
-    if (double.parse(totalPaid.toStringAsFixed(2)) < double.parse(totalPrice.toStringAsFixed(2))) {
-      CustomPopUp.callMyToast(
-        context: context,
-        massage: 'إجمالي المدفوعات (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
-        state: PopUpState.ERROR,
-      );
-      return;
-    }
-
-    if (totalPaid > totalPrice) {
-      CustomPopUp.callMyToast(
-        context: context,
-        massage: 'عند الدفع بأكثر من طريقة، المجموع يجب أن يساوي (${totalPrice.toStringAsFixed(2)}) بالظبط',
-        state: PopUpState.ERROR,
-      );
-      return;
-    }
-  }
-
-  Map<int, int> mapping = _getPaymentMethodMapping();
-  Map<int, double> mappedAmounts = {};
-  Map<int, String> mappedReferences = {};
-
-  debugPrint('📋 Mapping: $mapping');
-
-  for (var entry in amounts.entries) {
-    int correctId = mapping[entry.key] ?? entry.key;
-    mappedAmounts[correctId] = entry.value;
-
-    if (originalReferences.containsKey(entry.key)) {
-      mappedReferences[correctId] = originalReferences[entry.key]!;
-    }
-
-    debugPrint('   Mapping ${entry.key} -> $correctId (amount: ${entry.value})');
-  }
-
-  debugPrint(' Mapped IDs to send to API: ${mappedAmounts.keys.toList()}');
-  debugPrint(' Mapped Amounts: $mappedAmounts');
-  debugPrint(' Mapped References: $mappedReferences');
-
-
-  cubit.selectedPaymentAmounts = mappedAmounts;
-  cubit.paymentReferences = mappedReferences;
-
-  cubit.changePaid(
-    totalPaid.toStringAsFixed(2),
-    paymentAmounts: mappedAmounts,
-  );
-
-  Navigator.pop(context);
-}
 }
