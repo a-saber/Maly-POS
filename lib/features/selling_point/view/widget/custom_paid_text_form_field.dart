@@ -207,29 +207,35 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        width: _getDialogWidth(context),
-        child: BlocBuilder<SellingPointProductCubit, SellingPointProductState>(
-          builder: (context, state) {
-            final cubit = SellingPointProductCubit.get(context);
 
-            if (state is SellingPointProductLoading &&
-                cubit.availablePaymentMethods.isEmpty) {
-              return Padding(
-                padding: const EdgeInsets.all(40.0),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
+@override
+Widget build(BuildContext context) {
+  final screenWidth = MediaQuery.of(context).size.width;
+  final isMobile = screenWidth < 600;
+  
+  return Dialog(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    child: Container(
+      width: getDialogWidth(context),
+      child: BlocBuilder<SellingPointProductCubit, SellingPointProductState>(
+        builder: (context, state) {
+          final cubit = SellingPointProductCubit.get(context);
 
-            if (state is SellingPointProductPaymentMethodsLoaded &&
-                paymentControllers.isEmpty) {
-              _initializeControllers();
-            }
+          if (state is SellingPointProductLoading &&
+              cubit.availablePaymentMethods.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.all(40.0),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
 
+          if (state is SellingPointProductPaymentMethodsLoaded &&
+              paymentControllers.isEmpty) {
+            _initializeControllers();
+          }
+
+     
+          if (isMobile) {
             return SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -239,76 +245,9 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          S.of(context).paid,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.black,
-                          ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          "${totalPrice.toStringAsFixed(2)}",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primary,
-                          ),
-                        ),
+                        _buildHeader(context),
                         SizedBox(height: 15),
-                        ...cubit.availablePaymentMethods.map((method) {
-                          return Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        onFieldTap(
-                                            paymentControllers[method.id!]!);
-                                        autoFillRemaining(method.id!);
-                                      },
-                                      child: CustomFormField(
-                                        controller:
-                                            paymentControllers[method.id!]!,
-                                        labelText: method.name ?? 'طريقة دفع',
-                                        enabled: true,
-                                        keyboardType: TextInputType.none,
-                                        onTap: () {
-                                          onFieldTap(
-                                              paymentControllers[method.id!]!);
-                                          autoFillRemaining(method.id!);
-                                        },
-                                        suffixIcon: method.isNearpay == 1
-                                            ? Icon(Icons.contactless,
-                                                color: AppColors.primary)
-                                            : null,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  CustomTextBtn(
-                                    textColor: AppColors.primary,
-                                    text: method.name ?? 'دفع',
-                                    onPressed: () => fillFullAmount(method.id!),
-                                  ),
-                                ],
-                              ),
-                              if (method.requiresReference == 1) ...[
-                                SizedBox(height: 10),
-                                CustomFormField(
-                                  controller: referenceControllers[method.id!]!,
-                                  labelText: 'رقم المرجع (${method.name})',
-                                  enabled: true,
-                                  prefixIcon: Icon(Icons.receipt_long,
-                                      color: AppColors.primary),
-                                ),
-                              ],
-                              SizedBox(height: 15),
-                            ],
-                          );
-                        }).toList(),
+                        ..._buildPaymentFields(cubit),
                         CustomFormField(
                           controller: remainingController,
                           labelText: S.of(context).remainingAmount,
@@ -326,44 +265,219 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
                     ),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        BlocListener<SellingPointProductCubit,
-                            SellingPointProductState>(
-                          listener: (context, state) {
-                            if (state is SellingPointProductChangePaidFailing) {
-                              CustomPopUp.callMyToast(
-                                context: context,
-                                massage: S
-                                    .of(context)
-                                    .priceShoudBeBiggerThanOrEqualTotalPrice,
-                                state: PopUpState.ERROR,
-                              );
-                            }
-                          },
-                          child: CustomTextBtn(
-                            textColor: AppColors.primary,
-                            text: S.of(context).savechanges,
-                            onPressed: () => _handleSave(context),
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        CustomTextBtn(
-                          text: S.of(context).cancel,
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                      ],
-                    ),
+                    child: _buildActionButtons(context),
                   ),
                 ],
               ),
             );
-          },
+          }
+
+        
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+           
+              if (activeController != null)
+                Container(
+                  width: 300,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.shade50,
+                    border: Border(
+                      right: BorderSide(
+                        color: AppColors.grey.shade300,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 20),
+                      CustomPaymentKeyboard(
+                        controller: activeController!,
+                        onChanged: _calculateRemaining,
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        child: _buildActionButtons(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+        
+              Expanded(
+                flex: 3,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12, 20, 24, 20),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildHeader(context),
+                        SizedBox(height: 15),
+                        ..._buildPaymentFields(cubit),
+                        CustomFormField(
+                          controller: remainingController,
+                          labelText: S.of(context).remainingAmount,
+                          enabled: false,
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    ),
+  );
+}
+
+Widget _buildHeader(BuildContext context) {
+  return Column(
+    children: [
+      Text(
+        S.of(context).paid,
+        style: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: AppColors.black,
         ),
       ),
+      SizedBox(height: 10),
+      Text(
+        "${totalPrice.toStringAsFixed(2)}",
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppColors.primary,
+        ),
+      ),
+    ],
+  );
+}
+
+List<Widget> _buildPaymentFields(SellingPointProductCubit cubit) {
+  return cubit.availablePaymentMethods.map((method) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: GestureDetector(
+                onTap: () {
+                  onFieldTap(paymentControllers[method.id!]!);
+                  autoFillRemaining(method.id!);
+                },
+                child: CustomFormField(
+                  controller: paymentControllers[method.id!]!,
+                  labelText: method.name ?? 'طريقة دفع',
+                  enabled: true,
+                  keyboardType: TextInputType.none,
+                  onTap: () {
+                    onFieldTap(paymentControllers[method.id!]!);
+                    autoFillRemaining(method.id!);
+                  },
+                  suffixIcon: method.isNearpay == 1
+                      ? Icon(Icons.contactless, color: AppColors.primary)
+                      : null,
+                ),
+              ),
+            ),
+            SizedBox(width: 8),
+            CustomTextBtn(
+              textColor: AppColors.primary,
+              text: method.name ?? 'دفع',
+              onPressed: () => fillFullAmount(method.id!),
+            ),
+          ],
+        ),
+        if (method.requiresReference == 1) ...[
+          SizedBox(height: 10),
+          CustomFormField(
+            controller: referenceControllers[method.id!]!,
+            labelText: 'رقم المرجع (${method.name})',
+            enabled: true,
+            prefixIcon: Icon(Icons.receipt_long, color: AppColors.primary),
+          ),
+        ],
+        SizedBox(height: 15),
+      ],
     );
+  }).toList();
+}
+
+
+Widget _buildActionButtons(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      BlocListener<SellingPointProductCubit, SellingPointProductState>(
+        listener: (context, state) {
+          if (state is SellingPointProductChangePaidFailing) {
+            CustomPopUp.callMyToast(
+              context: context,
+              massage: S.of(context).priceShoudBeBiggerThanOrEqualTotalPrice,
+              state: PopUpState.ERROR,
+            );
+          }
+        },
+        child: ElevatedButton(
+          onPressed: () => _handleSave(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text(
+            S.of(context).savechanges,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+      SizedBox(height: 12),
+      OutlinedButton(
+        onPressed: () => Navigator.pop(context),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.grey.shade700,
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          side: BorderSide(color: Colors.grey.shade400),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        child: Text(
+          S.of(context).cancel,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+double getDialogWidth(BuildContext context) {
+  final screenWidth = MediaQuery.of(context).size.width;
+  if (screenWidth < 600) {
+    return screenWidth * 0.9;
+  } else if (screenWidth < 1200) {
+    return 700;
+  } else {
+    return 900;
   }
+}
 
   void _handleSave(BuildContext context) async {
     final cubit = SellingPointProductCubit.get(context);
