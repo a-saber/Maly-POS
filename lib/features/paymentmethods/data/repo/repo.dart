@@ -6,6 +6,8 @@ import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/paymentmethods/data/models/getallpayment.dart';
 import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 
+import '../models/paymentmethodmodel.dart';
+
 class PaymentMethodsRepo {
   GetAllPaymentMethods? paymentMethodsModel;
   final ApiHelper api;
@@ -82,7 +84,7 @@ class PaymentMethodsRepo {
     }
   }
 
- Future<Either<ApiResponse, Unit>> addPaymentMethod({
+ Future<Either<ApiResponse, PaymentMethodData>> addPaymentMethod({
   required String name,
   required int isActive,
   required int requiresReference,
@@ -113,7 +115,8 @@ class PaymentMethodsRepo {
     if (response.status) {
       debugPrint(" Payment method added successfully");
       paymentMethodsModel = null;
-      return Right(unit);
+      return Right(PaymentMethodData.fromJson(response.data['paymentMethod']??{}));
+
     } else {
       debugPrint(' API Error: ${response.message}');
       return Left(response);
@@ -123,7 +126,7 @@ class PaymentMethodsRepo {
     debugPrint('Stack trace: $stackTrace');
     return Left(ApiResponse.unKnownError());
   }
-}  Future<Either<ApiResponse, Unit>> updatePaymentMethod({
+}  Future<Either<ApiResponse, PaymentMethodData>> updatePaymentMethod({
     required PaymentMethodSalesModel paymentMethod,
   }) async {
     try {
@@ -148,7 +151,7 @@ class PaymentMethodsRepo {
       if (response.status) {
         debugPrint(" Payment method updated successfully");
         paymentMethodsModel = null;
-        return Right(unit);
+        return Right(PaymentMethodData.fromJson(response.data['paymentMethod']??{}));
       } else {
         debugPrint(" API Error: ${response.message}");
         return Left(response);

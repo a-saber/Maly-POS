@@ -334,4 +334,8 @@
         "discountType":{"Fixed","Percentage"},
         "nameAlreadyTaken":"Name already taken",
         "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً"
+        "discountType":{"Fixed","Percentage"}
+        "discountType":{"Fixed","Percentage"},
+        "nameAlreadyTaken":"Name already taken",
+        "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً"
 }

@@ -65,6 +65,24 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     paymentMethod = AppConstant.paymentMethods(context).first;
     emit(SellingPointProductInitial());
   }
+  void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
+    if(availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
+    emit(SellingPointProductInitial());
+  }
+  void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
+    final index = availablePaymentMethods.indexWhere((element) => element.id == value.id);
+    if(index != -1){
+      availablePaymentMethods[index] = value;
+    }
+    emit(SellingPointProductInitial());
+  }
+  void deletePaymentMethod(int id){
+    final index = availablePaymentMethods.indexWhere((element) => element.id == id);
+    if(index != -1){
+      availablePaymentMethods.removeAt(index);
+    }
+    emit(SellingPointProductInitial());
+  }
 
   Future<void> loadPaymentMethods() async {
     emit(SellingPointProductLoading());

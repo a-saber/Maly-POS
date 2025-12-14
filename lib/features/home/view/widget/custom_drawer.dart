@@ -18,6 +18,9 @@ import 'package:pos_app/features/shifts/view/widget/showdialog_for_end.dart';
 import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift.dart';
 import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift_end.dart';
 import 'package:pos_app/generated/l10n.dart';
+import 'package:toastification/toastification.dart';
+
+import '../../../../core/widget/custom_dialog.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key, required this.scaffoldKey});
@@ -29,14 +32,16 @@ class CustomDrawer extends StatelessWidget {
     return BlocConsumer<ShiftCubit, ShiftState>(
       listener: (context, state) {
         if (state is ShiftSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          scaffoldKey.currentState?.closeDrawer();
+
+          CustomServiceWidget.showCustomToast(context, message: state.message,type: ToastificationType.success,alignment: AlignmentDirectional.topCenter);
         } else if (state is ShiftError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          CustomServiceWidget.showCustomToast(context, message: state.message,type: ToastificationType.error);
+
         }
+
+
+
       },
       builder: (context, state) {
         return Drawer(

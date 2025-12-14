@@ -22,9 +22,9 @@ class PaymentMethodData {
   PaymentMethodData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    isActive = json['is_active'];
-    requiresReference = json['requires_reference'];
-    isNearpay = json['is_nearpay'];
+    isActive = int.tryParse(json['is_active'].toString());
+    requiresReference = int.tryParse(json['requires_reference'].toString());
+    isNearpay = int.tryParse(json['is_nearpay'].toString());
     deletedAt = json['deleted_at'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

@@ -330,4 +330,8 @@
        "discountType":{"ثابت","نسبة مؤية"},
        "nameAlreadyTaken":"اسم مستخدم موجود بالفعل",
        "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً"
+       "discountType":{"ثابت","نسبة مؤية"}
+       "discountType":{"ثابت","نسبة مؤية"},
+       "nameAlreadyTaken":"اسم مستخدم موجود بالفعل",
+       "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً"
 }
