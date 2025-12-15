@@ -1371,11 +1371,11 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                   child: pw.Column(
                       children: [
                     pw.Text(
-                    'invoiceNumber',
+                    'OrderNumber',
                     textAlign: pw.TextAlign.center,
                     style: pw.TextStyle(
                       font: arabicFont,
-                      fontSize: 18,
+                      fontSize: 16,
                     ),
                   ),
                         pw.SizedBox(height: 2),
@@ -1796,7 +1796,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(2),
                       child: pw.Text(
-                        "${(((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100).truncateToDouble() / 100).toStringAsFixed(2)}",
+                        (((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100) / 100).toStringAsFixed(1),
                         style: pw.TextStyle(
                           fontSize: 8,
                           font: arabicFont,

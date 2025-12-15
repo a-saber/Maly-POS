@@ -47,7 +47,6 @@ Future<void> _requestPermissions() async {
 
       final scanStatus = await Permission.bluetoothScan.status;
       final connectStatus = await Permission.bluetoothConnect.status;
-
       if (!scanStatus.isGranted || !connectStatus.isGranted) {
         _showPermissionDialog();
         return;
