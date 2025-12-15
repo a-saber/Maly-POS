@@ -37,6 +37,7 @@ class CustomBranchAndProductFilter extends StatelessWidget {
                   child: CustomDropDownProduct(
                     onChange: StoreQuantityCubit.get(context).changeProduct,
                     value: StoreQuantityCubit.get(context).product,
+                    fromInventory: true,
                   ),
                 ),
                 CustomResetDropDownButton(

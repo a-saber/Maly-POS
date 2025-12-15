@@ -8,13 +8,40 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
+ <!-- added by mahmoud-->
+    <!-- Bluetooth Permissions (Android 12+ / API 31+) -->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"-->
+<!--        android:usesPermissionFlags="neverForLocation"-->
+<!--        tools:targetApi="s" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"-->
+<!--        tools:targetApi="s" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"-->
+<!--        tools:targetApi="s" />-->
+
+<!--    &lt;!&ndash; Bluetooth Permissions (Android 11 and below / API 30-) &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH"-->
+<!--        android:maxSdkVersion="30" />-->
+<!--    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"-->
+<!--        android:maxSdkVersion="30" />-->
+
+<!--    &lt;!&ndash; Location (required for Bluetooth on Android < 12) &ndash;&gt;-->
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"-->
+<!--        android:maxSdkVersion="30" />-->
+<!--    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"-->
+<!--        android:maxSdkVersion="30" />-->
+<!--    &lt;!&ndash; added by mahmoud&ndash;&gt;-->
+
+<!--    &lt;!&ndash; USB Permission &ndash;&gt;-->
+<!--    <uses-feature android:name="android.hardware.usb.host" />-->
 
     <!-- Bluetooth Permissions (Android 12+ / API 31+) -->
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
         android:usesPermissionFlags="neverForLocation"
         tools:targetApi="s" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"
+        tools:targetApi="s" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"
+        tools:targetApi="s" />
 
     <!-- Bluetooth Permissions (older Android) -->
     <uses-permission android:name="android.permission.BLUETOOTH"

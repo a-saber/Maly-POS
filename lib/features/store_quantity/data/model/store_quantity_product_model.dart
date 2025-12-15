@@ -6,7 +6,9 @@ class StoreQuantityProductModel {
   final int? id;
   final int? productId;
   final int? branchId;
-  final int? quantity;
+  final int? quantityInBaseUnit;
+  final String? formattedQuantity;
+  final List<String>? formattedQuantityArray;
   final String? createdAt;
   final String? updatedAt;
   final ProductModel? product;
@@ -16,20 +18,28 @@ class StoreQuantityProductModel {
       {required this.id,
       required this.productId,
       required this.branchId,
-      required this.quantity,
+      required this.quantityInBaseUnit,
       required this.createdAt,
       required this.updatedAt,
       required this.product,
-      required this.branch});
+      required this.branch,
+        this.formattedQuantity,
+      this.formattedQuantityArray,
+      });
 
   factory StoreQuantityProductModel.fromJson(Map<String, dynamic> json) {
     return StoreQuantityProductModel(
       id: json[ApiKeys.id],
       productId: json[ApiKeys.productid],
       branchId: json[ApiKeys.branchid],
-      quantity: json[ApiKeys.quantity],
+      quantityInBaseUnit: json[ApiKeys.quantityInBaseUnit],
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
+      formattedQuantity: json[ApiKeys.formattedQuantity] as String?,
+      formattedQuantityArray:
+      (json[ApiKeys.formattedQuantityArray] as List?)
+          ?.map((e) => e.toString())
+          .toList(),
       product: json[ApiKeys.product] != null
           ? ProductModel.fromJson(json[ApiKeys.product])
           : null,
@@ -44,12 +54,23 @@ class StoreQuantityProductModel {
     data[ApiKeys.id] = id;
     data[ApiKeys.productid] = productId;
     data[ApiKeys.branchid] = branchId;
-    data[ApiKeys.quantity] = quantity;
+    data[ApiKeys.quantity] = quantityInBaseUnit;
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
     data[ApiKeys.product] = product;
     data[ApiKeys.branch] = branch;
+    data[ApiKeys.formattedQuantity] = formattedQuantity;
+    data[ApiKeys.formattedQuantityArray] = formattedQuantityArray;
 
     return data;
+  }
+  List<String>? getUnitNames() {
+    return formattedQuantityArray
+        ?.map((e) => e
+        .replaceAll(RegExp(r'[0-9]+'), '')
+        .trim()
+        .toLowerCase(),
+    )
+        .toList();
   }
 }

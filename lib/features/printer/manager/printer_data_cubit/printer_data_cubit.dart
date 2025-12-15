@@ -18,7 +18,7 @@ class PrinterDataCubit extends Cubit<PrinterDataState> {
   PrinterDataCubit(this._repo, {this.discoveredPrinter, this.printerModel})
       : super(PrinterDataInitialState()) {
     if (printerModel != null) {
-      automatic = printerModel!.automatic ?? false;
+      automatic = printerModel?.automatic ?? false;
       receiptCopies.text = printerModel!.printReceiptCount != null
           ? printerModel!.printReceiptCount.toString()
           : '0';

@@ -18,6 +18,11 @@ class SearchProductCubit extends Cubit<SearchProductState> {
   ScrollController scrollController = ScrollController();
   String query = '';
   List<ProductModel> products = [];
+  List<ProductModel> productInventory(){
+    return products.where((element) => element.type?.toLowerCase()=="inventory").toList();
+
+  }
+
 
   bool canLoading() => repo.searchProductsModel?.data?.nextPageUrl != null;
   bool firstTime() => repo.searchProductsModel == null;

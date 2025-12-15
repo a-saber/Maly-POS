@@ -163,6 +163,14 @@ class AppConstant {
         // canAccess: true,
       ),
       HomeViewItemModel(
+        color: Color(0xffffa700),
+        icon: Icons.description_outlined,
+        pageRoute: AppRoutes.reportScidView,
+        title: S.of(context).reportZakatAndTax,
+        canAccess: true,
+        // canAccess: true,
+      ),
+      HomeViewItemModel(
         color:Color(0xffffa700),
         icon: Icons.payment,
         pageRoute: AppRoutes.paymentMethodsView,

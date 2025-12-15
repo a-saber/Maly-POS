@@ -25,3 +25,4 @@ class UpdatePaymentMethodSuccess extends PaymentMethodsState {}
 
 class DeletePaymentMethodSuccess extends PaymentMethodsState {}
 class PaymentMethodsLoadingMore extends PaymentMethodsState {}
+class PaymentMethodsUpdateLocal extends PaymentMethodsState {}

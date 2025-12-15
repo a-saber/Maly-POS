@@ -66,7 +66,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     emit(SellingPointProductInitial());
   }
   void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
-    if(availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
+     availablePaymentMethods.add(value);
     emit(SellingPointProductInitial());
   }
   void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){

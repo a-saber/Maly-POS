@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
@@ -13,15 +15,22 @@ class CustomDropDownProduct extends StatelessWidget {
   const CustomDropDownProduct({
     super.key,
     this.value,
-    required this.onChange,
+    required this.onChange,  this.fromInventory=false,
   });
   final ProductModel? value;
   final void Function(ProductModel?) onChange;
+  final bool fromInventory ;
+
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider.value(
       value: MyServiceLocator.getSingleton<SearchProductCubit>(),
       child: Builder(builder: (context) {
+        debugPrint('object $fromInventory  ${SearchProductCubit.get(context).productInventory().map((e) =>
+        {e.type: e.name,}).toList().length}');
+        debugPrint('products $fromInventory  ${SearchProductCubit.get(context).products.map((e) =>
+        {e.type: e.name,})}');
         return CustomDropdown<ProductModel>(
           // search: true,
           hint: S.of(context).selectProduct,
@@ -38,7 +47,8 @@ class CustomDropDownProduct extends StatelessWidget {
             }
           },
           value: value,
-          items: SearchProductCubit.get(context).products,
+
+          items: fromInventory?SearchProductCubit.get(context).productInventory():SearchProductCubit.get(context).products,
           filterFn: (item, filter) {
             return item.name?.toLowerCase().contains(filter.toLowerCase()) ??
                 false;
@@ -67,6 +77,7 @@ class CustomDropDownProduct extends StatelessWidget {
                 Expanded(
                   child: SearchProductBuild(
                     name: value?.name ?? '',
+                    fromInventory: fromInventory,
                     child: p1,
                     onTap: (p0) {
                       onChange(p0);

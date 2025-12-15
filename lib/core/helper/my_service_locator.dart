@@ -58,6 +58,8 @@ import 'package:pos_app/features/users/manager/search_user/search_user_cubit.dar
 import '../../features/csid _generation/data/repo/csid_generation_repo.dart';
 import '../../features/csid _generation/manager/cubit/csid_generation_setting_cubit.dart';
 import '../../features/products/manager/search_product_cubit/search_product_cubit.dart';
+import '../../features/report_csid/data/report_scid_repo.dart';
+import '../../features/report_csid/manager/cubit/report_csid_cubit.dart';
 
 class MyServiceLocator {
   static final GetIt getIt = GetIt.instance;
@@ -89,7 +91,8 @@ class MyServiceLocator {
     registerSingleton<ShiftRepo>(ShiftRepo(api: getIt()));
     registerSingleton<ShopSettingRepo>(ShopSettingRepo(getIt()));
     registerSingleton<ScidGenerationRepo>(ScidGenerationRepo(getIt()));
-    
+    registerSingleton<ReportScidRepo>(ReportScidRepo(getIt()));
+
     // IMPORTANT: Register these two repos before SellingPointProductCubit
     registerSingleton<SellingPointRepo>(SellingPointRepo(api: getIt()));
     registerSingleton<PaymentMethodsRepo>(PaymentMethodsRepo(api: getIt()));
@@ -132,6 +135,7 @@ class MyServiceLocator {
     registerSingleton<GetPrintersCubit>(GetPrintersCubit(getIt()));
     registerSingleton<ShiftCubit>(ShiftCubit(getIt()));
     registerSingleton<ScidGenerationCubit>(ScidGenerationCubit(getIt()));
+    registerSingleton<ReportScidCubit>(ReportScidCubit(getIt()));
     registerSingleton<PaymentMethodsCubit>(PaymentMethodsCubit(getIt()));
   }
 

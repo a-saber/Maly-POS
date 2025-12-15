@@ -17,19 +17,26 @@ class SearchProductBuild extends StatelessWidget {
       {super.key,
       required this.onTap,
       required this.child,
-      required this.name});
+      required this.name,
+        this.fromInventory=false,
+      });
 
   final void Function(ProductModel) onTap;
   final Widget child;
   final String name;
+  final bool fromInventory ;
+
 
   @override
   Widget build(BuildContext context) {
+
     return BlocProvider.value(
       value: MyServiceLocator.getIt<SearchProductCubit>()..init(),
       child: Builder(builder: (context) {
         return BlocConsumer<SearchProductCubit, SearchProductState>(
+
           builder: (context, state) {
+            final  products=fromInventory?SearchProductCubit.get(context).productInventory():SearchProductCubit.get(context).products;
             if (state is SearchProductLoading) {
               return const CustomLoading();
             } else if (state is SearchProductFailing) {
@@ -41,7 +48,7 @@ class SearchProductBuild extends StatelessWidget {
                     SearchProductCubit.get(context).getSearchProducts(),
               );
             } else if (state is SearchProductSuccess) {
-              if (SearchProductCubit.get(context).products.isEmpty) {
+              if (products.isEmpty) {
                 return CustomEmptyView(
                   onPressed: () =>
                       SearchProductCubit.get(context).getSearchProducts(),
@@ -50,23 +57,22 @@ class SearchProductBuild extends StatelessWidget {
                 return ListView.builder(
                   controller: SearchProductCubit.get(context).scrollController,
                   itemCount: SearchProductCubit.get(context).canLoading()
-                      ? SearchProductCubit.get(context).products.length + 1
-                      : SearchProductCubit.get(context).products.length,
+                      ? products.length + 1
+                      : products.length,
                   itemBuilder: (context, index) {
                     if (SearchProductCubit.get(context).canLoading() &&
-                        index ==
-                            SearchProductCubit.get(context).products.length) {
+                        index == products.length) {
+
                       return CustomLoading();
                     }
                     return TextButton(
                       onPressed: () {
-                        onTap(SearchProductCubit.get(context).products[index]);
+                        onTap(products[index]);
                       },
                       child: Align(
                         alignment: AlignmentDirectional.centerStart,
                         child: TextHighlight(
-                          text: SearchProductCubit.get(context)
-                                  .products[index]
+                          text: products[index]
                                   .name ??
                               '',
                           words: {
