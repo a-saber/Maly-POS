@@ -32,7 +32,7 @@ class PaymentHelper {
       env: Environments.sandbox, // Change to Environments.production when going live
       locale: Locale.localeDefault,
     );
-
+    
     try {
       var response = await nearpay.initialize();
       await nearpay.setup();

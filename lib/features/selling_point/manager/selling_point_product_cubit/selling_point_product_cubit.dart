@@ -4,6 +4,7 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/helper/payment_helper.dart';
+import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
@@ -452,75 +453,68 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductChangePaidFailing());
     }
   }
-  Future<void> processNearpayPayment({
+Future<void> processNearpayPayment({
   required double amount,
   required int paymentMethodId,
   required BuildContext context,
 }) async {
-  emit(SellingPointProductLoading());
-  
   try {
   
-    debugPrint(' Starting Nearpay payment for amount: $amount SAR');
-    
-    final result = await PaymentHelper.addTransaction(amount: amount);
-    
-    result.fold(
-     
-      (  errorMessage) {
-        debugPrint(' Nearpay payment failed: $errorMessage');
-         final apiError = ApiResponse(
-          status: false,
-          message: errorMessage,
-          data: null,
-          statusCode: ApiStatusCode.badResponse,
-          error: null
-        );
-        emit(SellingPointProductFailing(message: apiError));
-      },
-      
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
 
-      (receipt) {
-        debugPrint(' Nearpay payment successful!');
-        debugPrint('Transaction UUID: ${receipt.transaction_uuid}');
-        
-        debugPrint(' Card Scheme: ${receipt.card_scheme}');
+  
+    var madaResponse = await PaymentHelper.addTransaction(amount: amount);
+
+  
+    // if (Navigator.canPop(context)) {
+    //   Navigator.pop(context);
+    // }
+
+    madaResponse.fold(
+      (error) {
+      
+        debugPrint(' Payment failed: $error');
+        CustomPopUp.callMyToast(
+          context: context,
+          massage: 'فشل الدفع\n$error',
+          state: PopUpState.ERROR,
+        );
+      },
+      (response) {
        
-        
-   
-        selectedPaymentAmounts.clear();
-        paymentReferences.clear();
-        selectedPaymentAmounts[paymentMethodId] = amount;
-        paymentReferences[paymentMethodId] = receipt.transaction_uuid ?? '';
-        
+        debugPrint(' Payment successful');
+        debugPrint(' Transaction UUID: ${response.transaction_uuid}');
+
       
-        paidController.text = amount.toStringAsFixed(2);
-        
-        debugPrint(' Payment data saved successfully');
-        debugPrint(' selectedPaymentAmounts: $selectedPaymentAmounts');
-        debugPrint(' paymentReferences: $paymentReferences');
-        
-      
-        debugPrint(' Confirming payment and completing sale...');
-        confirmPayment();
-        
-        if (context.mounted && Navigator.canPop(context)) {
-          Navigator.of(context).pop();
-        }
+        paymentReferences[paymentMethodId] = response.transaction_uuid ?? '';
+
+        CustomPopUp.callMyToast(
+          context: context,
+          massage: 'تم الدفع بنجاح\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
+          state: PopUpState.SUCCESS,
+        );
       },
     );
-    
   } catch (e) {
-    debugPrint(' Unexpected Nearpay error: $e');
-     final apiError = ApiResponse(
-          status: false,
-          message:e.toString(),
-          data: null,
-          statusCode: ApiStatusCode.badResponse,
-          error: null
-        );
-        emit(SellingPointProductFailing(message: apiError));
-      };
+    debugPrint(' Exception during payment: $e');
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+    CustomPopUp.callMyToast(
+      context: context,
+      massage: 'حدث خطأ أثناء الدفع\n$e',
+      state: PopUpState.ERROR,
+    );
+  }
 }
 
 }

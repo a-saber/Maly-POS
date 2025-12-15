@@ -85,31 +85,33 @@ class CustomPaymentMethodBody extends StatelessWidget {
     return Icons.payment;
   }
 
-  void _handleSinglePayment(
+ void _handleSinglePayment(
   BuildContext context,
   SellingPointProductCubit cubit,
   PaymentMethodSalesModel method,
-) {
+) async {
   double totalPrice = cubit.totalPrice();
   
   cubit.selectedPaymentAmounts.clear();
   cubit.paymentReferences.clear();
   cubit.selectedPaymentAmounts[method.id!] = totalPrice;
-  
+     List<int> nearpayMethods = [];
   if (method.isNearpay == 1) {
     cubit.changePaid(
       totalPrice.toStringAsFixed(2),
       paymentAmounts: cubit.selectedPaymentAmounts,
     );
-    
-    cubit.processNearpayPayment(
+
+    debugPrint(' Starting Nearpay payment for ${method.name}...');
+
+    await cubit.processNearpayPayment(
       amount: totalPrice,
       paymentMethodId: method.id!,
       context: context,
     );
-    return;
   }
-  
+
+
   if (method.requiresReference == 1) {
     showDialog(
       context: context,
@@ -125,6 +127,12 @@ class CustomPaymentMethodBody extends StatelessWidget {
     totalPrice.toStringAsFixed(2),
     paymentAmounts: cubit.selectedPaymentAmounts,
   );
+    // Navigator.pop(context);
+    if (nearpayMethods.isNotEmpty) {
+    debugPrint(' Auto-completing sale after successful Nearpay payment...');
+    await Future.delayed(Duration(milliseconds: 300)); 
+    cubit.confirmPayment();
+  }
 }
 
   void _openMixPaymentDialog(BuildContext context) {
