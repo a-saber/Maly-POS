@@ -244,11 +244,9 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                 //MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
 
 
-              } else if (state is SellingPointProductFailing) {
-
               }
               else if (state is SellingPointProductFailing) {
-                debugPrint(' ==================== ${PrinterHelper.getSavedLocalPrinter().map((toElement)=>toElement.toJson([]))} ====================');
+               // debugPrint(' ==================== ${PrinterHelper.getSavedLocalPrinter().map((toElement)=>toElement.toJson([]))} ====================');
 
                 if (context.mounted) {
                   if (state.message.shiftError != null &&
