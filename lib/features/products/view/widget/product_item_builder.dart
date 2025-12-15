@@ -84,11 +84,17 @@ class ProductItemBuilder extends StatelessWidget {
                     //   maxLines: 1,
                     //   overflow: TextOverflow.ellipsis,
                     // ),
-                    Text(
-                      product.category?.name?? S.of(context).noCategories,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    if (product.category?.name != null &&
+                        product.category!.name!.isNotEmpty)
+                      Text(
+                        product.category!.name!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppFontStyle.formText(
+                          context: context,
+                          color: AppColors.grey,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -105,9 +111,8 @@ class ProductCardLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
-    //  width: double.infinity,
+      //  width: double.infinity,
       padding: const EdgeInsets.all(10),
       margin: const EdgeInsets.all(5),
       decoration: BoxDecoration(
@@ -167,7 +172,6 @@ class ProductCardLoading extends StatelessWidget {
                 ).redacted(
                   context: context,
                   redact: true,
-
                   configuration: RedactedConfiguration(
                     animationDuration:
                         const Duration(milliseconds: 800), //default

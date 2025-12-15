@@ -47,9 +47,10 @@ class EditPermissionView extends StatelessWidget {
               Navigator.pop(context);
             } else if (state is EditPermissionFailing) {
               if (context.mounted) {
+                final String massage = mapStatusCodeToMessage(context, state.errMessage);
                 CustomPopUp.callMyToast(
                     context: context,
-                    massage: mapStatusCodeToMessage(context, state.errMessage),
+                    massage:massage ,
                     state: PopUpState.ERROR);
               }
             }

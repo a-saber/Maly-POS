@@ -127,42 +127,57 @@ class PaymentMethodsRepo {
     return Left(ApiResponse.unKnownError());
   }
 }  Future<Either<ApiResponse, PaymentMethodData>> updatePaymentMethod({
-    required PaymentMethodSalesModel paymentMethod,
-  }) async {
-    try {
-      final String url = await ApiEndPoints.getAllPaymentMethods();
-      final fullUrl = "$url/${paymentMethod.id}";
-      debugPrint(" Updating payment method at: $fullUrl");
+  required PaymentMethodSalesModel paymentMethod,
+}) async {
+  try {
+    final String url = await ApiEndPoints.getAllPaymentMethods();
+    final fullUrl = "$url/${paymentMethod.id}";
+    debugPrint("🔵 Updating payment method at: $fullUrl");
 
-      Map<String, dynamic> data = {
-        'name': paymentMethod.name,
-        'is_active': paymentMethod.isActive,
-        'requires_reference': paymentMethod.requiresReference,
-        'is_nearpay': paymentMethod.isNearpay ?? 0,
-      };
+    Map<String, dynamic> data = {
+      'name': paymentMethod.name,
+      'is_active': paymentMethod.isActive,
+      'requires_reference': paymentMethod.requiresReference,
+      'is_nearpay': paymentMethod.isNearpay ?? 0,
+    };
 
-      debugPrint(" Update data: $data");
+    debugPrint(" Update data: $data");
 
-      final response = await api.post(
-        url: fullUrl,
-        data: data,
-      );
+    final response = await api.patch(
+      url: fullUrl,
+      data: data,
+      isFormData: false, 
+    );
 
-      if (response.status) {
-        debugPrint(" Payment method updated successfully");
-        paymentMethodsModel = null;
-        return Right(PaymentMethodData.fromJson(response.data['paymentMethod']??{}));
+    if (response.status) {
+      debugPrint(" Payment method updated successfully");
+      paymentMethodsModel = null; // Clear cache
+      
+  
+      final paymentMethodJson = response.data['paymentMethod'];
+      if (paymentMethodJson != null) {
+        return Right(PaymentMethodData.fromJson(paymentMethodJson));
       } else {
-        debugPrint(" API Error: ${response.message}");
-        return Left(response);
+        debugPrint(" Warning: paymentMethod key not found in response");
+        return Left(ApiResponse.errorResonse(
+          statusCode: ApiStatusCode.badResponse,
+          "Invalid response structure",
+        ));
       }
-    } catch (e, stackTrace) {
-      debugPrint(" Exception in updatePaymentMethod: $e");
-      debugPrint('Stack trace: $stackTrace');
-      return Left(ApiResponse.unKnownError());
+    } else {
+      debugPrint(" API Error: ${response.message}");
+      return Left(response);
     }
+  } catch (e, stackTrace) {
+    debugPrint(" Exception in updatePaymentMethod: $e");
+    debugPrint("Stack trace: $stackTrace");
+    
+    return Left(ApiResponse.errorResonse(
+      statusCode: ApiStatusCode.unknown,
+      "خطأ غير متوقع: ${e.toString()}",
+    ));
   }
-
+}
   Future<Either<ApiResponse, int>> deletePaymentMethod({
     required int id,
   }) async {

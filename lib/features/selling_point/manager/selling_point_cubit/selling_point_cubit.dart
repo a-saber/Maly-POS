@@ -31,18 +31,19 @@ class SellingPointCubit extends Cubit<SellingPointState> {
   List<CategorySavingDataModel> categorySavingDataModels = [];
 
   List<ProductModel> getProducts() {
-    int index = repo.currentIndex(categoryId: categoryId);
-    if (index == -1) {
-      return [];
+  int index = repo.currentIndex(categoryId: categoryId);
+  if (index == -1) {
+    return [];
+  } else {
+    List<ProductModel> products;
+    if (query.isEmpty) {
+      products = categorySavingDataModels[index].products ?? [];
     } else {
-      if (query.isEmpty) {
-        return categorySavingDataModels[index].products ?? [];
-      } else {
-        return categorySavingDataModels[index].searchProduct ?? [];
-      }
+      products = categorySavingDataModels[index].searchProduct ?? [];
     }
+    return products.where((product) => product.isAvailableBool).toList();
   }
-
+}
   bool canLoading() {
     int index = repo.currentIndex(categoryId: categoryId);
     if (index == -1) {

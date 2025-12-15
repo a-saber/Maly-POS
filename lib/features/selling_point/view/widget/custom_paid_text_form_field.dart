@@ -670,7 +670,7 @@ double getDialogWidth(BuildContext context) {
     Map<int, double> mappedAmounts = {};
     Map<int, String> mappedReferences = {};
 
-    debugPrint('📋 Mapping: $mapping');
+    debugPrint(' Mapping: $mapping');
 
     for (var entry in amounts.entries) {
       int correctId = mapping[entry.key] ?? entry.key;
@@ -695,7 +695,13 @@ double getDialogWidth(BuildContext context) {
       totalPaid.toStringAsFixed(2),
       paymentAmounts: mappedAmounts,
     );
-
+    
     Navigator.pop(context);
+      if (nearpayMethods.isNotEmpty) {
+    debugPrint(' Auto-completing sale after successful Nearpay payment...');
+    await Future.delayed(Duration(milliseconds: 300)); 
+    cubit.confirmPayment();
+  }
+    
   }
 }

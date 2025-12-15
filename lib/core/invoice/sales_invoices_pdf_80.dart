@@ -366,19 +366,19 @@ Future<Uint8List> salesInvoicesPdf80(Map<String, dynamic> response,
                     decoration: pw.BoxDecoration(color: PdfColors.white),
                     children: [
                       pw.Container(
-                        height: 0.5,
+                        height:1,
                         color: PdfColors.black,
                       ),
                       pw.Container(
-                        height: 0.5,
+                        height: 1,
                         color: PdfColors.black,
                       ),
                       pw.Container(
-                        height: 0.5,
+                        height: 1,
                         color: PdfColors.black,
                       ),
                       pw.Container(
-                        height: 0.5,
+                        height:1,
                         color: PdfColors.black,
                       ),
                     ],

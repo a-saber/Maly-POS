@@ -85,21 +85,62 @@ class CustomPaymentMethodBody extends StatelessWidget {
     return Icons.payment;
   }
 
-  void _handleSinglePayment(
-    BuildContext context,
-    SellingPointProductCubit cubit,
-    PaymentMethodSalesModel method,
-  ) {
-    double totalPrice = cubit.totalPrice();
-    
-    cubit.selectedPaymentAmounts.clear();
-    cubit.paymentReferences.clear();
-    cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+ void _handleSinglePayment(
+  BuildContext context,
+  SellingPointProductCubit cubit,
+  PaymentMethodSalesModel method,
+) async {
+  double totalPrice = cubit.totalPrice();
+  
+  cubit.selectedPaymentAmounts.clear();
+  cubit.paymentReferences.clear();
+  cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+  bool continuePayment = true;  
+  if (method.isNearpay == 1) {
     cubit.changePaid(
       totalPrice.toStringAsFixed(2),
       paymentAmounts: cubit.selectedPaymentAmounts,
     );
+
+    debugPrint(' Starting Nearpay payment for ${method.name}...');
+
+    String? erorr= await cubit.processNearpayPayment(
+      amount: totalPrice,
+      paymentMethodId: method.id!,
+      context: context,
+
+    );
+
+    if (erorr != null) {
+      debugPrint(' Payment failed: $erorr');
+      continuePayment = false;
+    }
   }
+
+
+  // if (method.requiresReference == 1) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (dialogContext) => BlocProvider.value(
+  //       value: cubit,
+  //       child: DynamicPaidDialog(),
+  //     ),
+  //   );
+  //   return;
+  // }
+
+  if (continuePayment)
+  {
+    cubit.changePaid(
+    totalPrice.toStringAsFixed(2),
+    paymentAmounts: cubit.selectedPaymentAmounts,
+  );
+    // Navigator.pop(context);
+    cubit.confirmPayment();
+    }
+    
+  }
+}
 
   void _openMixPaymentDialog(BuildContext context) {
     showDialog(
@@ -110,7 +151,7 @@ class CustomPaymentMethodBody extends StatelessWidget {
       ),
     );
   }
-}
+
 
 class CustomCardPaymentMethod extends StatelessWidget {
   const CustomCardPaymentMethod({

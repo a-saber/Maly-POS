@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
+import 'package:pos_app/core/helper/payment_helper.dart';
+import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
@@ -65,20 +67,25 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     paymentMethod = AppConstant.paymentMethods(context).first;
     emit(SellingPointProductInitial());
   }
-  void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
-     availablePaymentMethods.add(value);
+
+  void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
+    if (availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
     emit(SellingPointProductInitial());
   }
-  void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
-    final index = availablePaymentMethods.indexWhere((element) => element.id == value.id);
-    if(index != -1){
+
+  void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
+    final index =
+        availablePaymentMethods.indexWhere((element) => element.id == value.id);
+    if (index != -1) {
       availablePaymentMethods[index] = value;
     }
     emit(SellingPointProductInitial());
   }
-  void deletePaymentMethod(int id){
-    final index = availablePaymentMethods.indexWhere((element) => element.id == id);
-    if(index != -1){
+
+  void deletePaymentMethod(int id) {
+    final index =
+        availablePaymentMethods.indexWhere((element) => element.id == id);
+    if (index != -1) {
       availablePaymentMethods.removeAt(index);
     }
     emit(SellingPointProductInitial());
@@ -239,10 +246,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.add(ProductSellingModel(
             product: product, count: 1, productUnit: productUnit));
         updatePaid();
-        if (availablePaymentMethods.isNotEmpty) {
-          final firstMethod = availablePaymentMethods.first;
-          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
-        }
         emit(SellingPointProductAddingProduct());
       } else if (product.quantity == null || product.quantity == 0) {
         updatePaid();
@@ -252,10 +255,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.add(ProductSellingModel(
             product: product, count: 1, productUnit: productUnit));
         updatePaid();
-        if (products.length == 1 && availablePaymentMethods.isNotEmpty) {
-          final firstMethod = availablePaymentMethods.first;
-          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
-        }
         emit(SellingPointProductAddingProduct());
       }
     }
@@ -395,10 +394,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updatePaid() {
-    if (selectedPaymentAmounts.length == 1 && products.isNotEmpty) {
-      final methodId = selectedPaymentAmounts.keys.first;
-      selectedPaymentAmounts[methodId] = totalPrice();
+    if (selectedPaymentAmounts.isNotEmpty && products.isNotEmpty) {
+      if (selectedPaymentAmounts.length == 1) {
+        final methodId = selectedPaymentAmounts.keys.first;
+        selectedPaymentAmounts[methodId] = totalPrice();
+      }
+    } else if (selectedPaymentAmounts.isEmpty &&
+        availablePaymentMethods.isNotEmpty &&
+        products.isNotEmpty) {
+      final firstMethod = availablePaymentMethods.first;
+      selectedPaymentAmounts[firstMethod.id!] = totalPrice();
     }
+
     paidController.text = roundTotolPrice().toString();
   }
 
@@ -446,4 +453,72 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductChangePaidFailing());
     }
   }
+Future<String?> processNearpayPayment({
+  required double amount,
+  required int paymentMethodId,
+  required BuildContext context,
+}) async {
+  try {
+  
+    // showDialog(
+    //   context: context,
+    //   barrierDismissible: false,
+    //   builder: (_) => WillPopScope(
+    //     onWillPop: () async => false,
+    //     child: Center(
+    //       child: CircularProgressIndicator(),
+    //     ),
+    //   ),
+    // );
+
+  
+    var madaResponse = await PaymentHelper.addTransaction(amount: amount);
+
+  
+    // if (Navigator.canPop(context)) {
+    //   Navigator.pop(context);
+    // }
+
+    madaResponse.fold(
+      (error) {
+      
+        debugPrint(' Payment failed: $error');
+        CustomPopUp.callMyToast(
+          context: context,
+          massage: 'فشل الدفع\n$error',
+          state: PopUpState.ERROR,
+        );
+        return error;
+      },
+      (response) {
+       
+        debugPrint(' Payment successful');
+        debugPrint(' Transaction UUID: ${response.transaction_uuid}');
+
+      
+        paymentReferences[paymentMethodId] = response.transaction_uuid ?? '';
+
+        CustomPopUp.callMyToast(
+          context: context,
+          massage: 'تم الدفع بنجاح\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
+          state: PopUpState.SUCCESS,
+        );
+        return null;
+      },
+    );
+  return null;
+  } catch (e) {
+    debugPrint(' Exception during payment: $e');
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+    CustomPopUp.callMyToast(
+      context: context,
+      massage: 'حدث خطأ أثناء الدفع\n$e',
+      state: PopUpState.ERROR,
+    );
+    return e.toString();
+  }
+}
+
 }

@@ -234,7 +234,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   );
                 }
 
-                MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
+               // MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
 
 
               } 
