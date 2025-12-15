@@ -31,7 +31,6 @@ class ReportScidCubit extends Cubit<ReportScidState> {
 
   }
 
-
   late TextEditingController fromDateController,
       toDateController,
       addressController,
