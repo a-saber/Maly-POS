@@ -95,7 +95,6 @@ class CustomPaymentMethodBody extends StatelessWidget {
   cubit.selectedPaymentAmounts.clear();
   cubit.paymentReferences.clear();
   cubit.selectedPaymentAmounts[method.id!] = totalPrice;
-     List<int> nearpayMethods = [];
   if (method.isNearpay == 1) {
     cubit.changePaid(
       totalPrice.toStringAsFixed(2),
@@ -128,9 +127,6 @@ class CustomPaymentMethodBody extends StatelessWidget {
     paymentAmounts: cubit.selectedPaymentAmounts,
   );
     // Navigator.pop(context);
-    if (nearpayMethods.isNotEmpty) {
-    debugPrint(' Auto-completing sale after successful Nearpay payment...');
-    await Future.delayed(Duration(milliseconds: 300)); 
     cubit.confirmPayment();
   }
 }
@@ -144,7 +140,7 @@ class CustomPaymentMethodBody extends StatelessWidget {
       ),
     );
   }
-}
+
 
 class CustomCardPaymentMethod extends StatelessWidget {
   const CustomCardPaymentMethod({
