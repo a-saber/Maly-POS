@@ -453,23 +453,23 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductChangePaidFailing());
     }
   }
-Future<void> processNearpayPayment({
+Future<String?> processNearpayPayment({
   required double amount,
   required int paymentMethodId,
   required BuildContext context,
 }) async {
   try {
   
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => WillPopScope(
-        onWillPop: () async => false,
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
-      ),
-    );
+    // showDialog(
+    //   context: context,
+    //   barrierDismissible: false,
+    //   builder: (_) => WillPopScope(
+    //     onWillPop: () async => false,
+    //     child: Center(
+    //       child: CircularProgressIndicator(),
+    //     ),
+    //   ),
+    // );
 
   
     var madaResponse = await PaymentHelper.addTransaction(amount: amount);
@@ -488,6 +488,7 @@ Future<void> processNearpayPayment({
           massage: 'فشل الدفع\n$error',
           state: PopUpState.ERROR,
         );
+        return error;
       },
       (response) {
        
@@ -502,8 +503,10 @@ Future<void> processNearpayPayment({
           massage: 'تم الدفع بنجاح\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
           state: PopUpState.SUCCESS,
         );
+        return null;
       },
     );
+  return null;
   } catch (e) {
     debugPrint(' Exception during payment: $e');
     if (Navigator.canPop(context)) {
@@ -514,6 +517,7 @@ Future<void> processNearpayPayment({
       massage: 'حدث خطأ أثناء الدفع\n$e',
       state: PopUpState.ERROR,
     );
+    return e.toString();
   }
 }
 

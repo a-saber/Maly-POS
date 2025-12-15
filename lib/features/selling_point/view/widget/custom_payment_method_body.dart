@@ -95,6 +95,7 @@ class CustomPaymentMethodBody extends StatelessWidget {
   cubit.selectedPaymentAmounts.clear();
   cubit.paymentReferences.clear();
   cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+  bool continuePayment = true;  
   if (method.isNearpay == 1) {
     cubit.changePaid(
       totalPrice.toStringAsFixed(2),
@@ -103,31 +104,41 @@ class CustomPaymentMethodBody extends StatelessWidget {
 
     debugPrint(' Starting Nearpay payment for ${method.name}...');
 
-    await cubit.processNearpayPayment(
+    String? erorr= await cubit.processNearpayPayment(
       amount: totalPrice,
       paymentMethodId: method.id!,
       context: context,
+
     );
+
+    if (erorr != null) {
+      debugPrint(' Payment failed: $erorr');
+      continuePayment = false;
+    }
   }
 
 
-  if (method.requiresReference == 1) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: cubit,
-        child: DynamicPaidDialog(),
-      ),
-    );
-    return;
-  }
+  // if (method.requiresReference == 1) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (dialogContext) => BlocProvider.value(
+  //       value: cubit,
+  //       child: DynamicPaidDialog(),
+  //     ),
+  //   );
+  //   return;
+  // }
 
-  cubit.changePaid(
+  if (continuePayment)
+  {
+    cubit.changePaid(
     totalPrice.toStringAsFixed(2),
     paymentAmounts: cubit.selectedPaymentAmounts,
   );
     // Navigator.pop(context);
     cubit.confirmPayment();
+    }
+    
   }
 }
 
