@@ -27,10 +27,10 @@ class CustomUnitQuantityDialog extends StatelessWidget {
                 BoxContainer(text: S.of(context).quantity,).expand,
               ],
             ),
-            ...model?.formattedQuantityArray?.map((e) =>  Row(
+            ...model?.product?.productUnits?.map((e) =>  Row(
               children: [
-                BoxContainer(text: e.split(" ").lastOrNull??'',).expand,
-                BoxContainer(text: e.split(" ").firstOrNull??'',).expand,
+                BoxContainer(text: e.unit?.name,).expand,
+                BoxContainer(text: "${e.quantity ?? 0}",).expand,
               ],
             )).toList()??[],
             Row(
