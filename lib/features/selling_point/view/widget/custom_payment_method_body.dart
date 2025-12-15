@@ -101,6 +101,7 @@ class CustomPaymentMethodBody extends StatelessWidget {
       totalPrice.toStringAsFixed(2),
       paymentAmounts: cubit.selectedPaymentAmounts,
     );
+    
     cubit.processNearpayPayment(
       amount: totalPrice,
       paymentMethodId: method.id!,
