@@ -73,8 +73,8 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
       (success) {
         emit(AddPaymentMethodSuccess());
 
-
-        getPaymentMethods(isFresh: true);
+        addPaymentMethodLocal(PaymentMethodSalesModel.fromData(success));
+      //  getPaymentMethods(isFresh: true);
         MyServiceLocator.getSingleton<SellingPointProductCubit>().addPaymentMethod(PaymentMethodSalesModel.fromData(success));
 
       },
@@ -95,10 +95,29 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
       (success) {
         emit(UpdatePaymentMethodSuccess());
 
-        getPaymentMethods(isFresh: true);
+        updatePaymentMethodLocal(PaymentMethodSalesModel.fromData(success));
+      //  getPaymentMethods(isFresh: true);
         MyServiceLocator.getSingleton<SellingPointProductCubit>().updatePaymentMethod(PaymentMethodSalesModel.fromData(success));
       },
     );
+  }
+  void addPaymentMethodLocal(PaymentMethodSalesModel value){
+    if(paymentMethods.isNotEmpty) paymentMethods.add(value);
+    emit(PaymentMethodsUpdateLocal());
+  }
+  void updatePaymentMethodLocal(PaymentMethodSalesModel value){
+    final index = paymentMethods.indexWhere((element) => element.id == value.id);
+    if(index != -1){
+      paymentMethods[index] = value;
+    }
+    emit(PaymentMethodsUpdateLocal());
+  }
+  void deletePaymentMethodLocal(int id){
+    final index = paymentMethods.indexWhere((element) => element.id == id);
+    if(index != -1){
+      paymentMethods.removeAt(index);
+    }
+    emit(PaymentMethodsUpdateLocal());
   }
 
   Future<void> deletePaymentMethod(int id) async {
@@ -114,6 +133,7 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
         emit(DeletePaymentMethodSuccess());
         emit(PaymentMethodsSuccess(paymentMethods));
         MyServiceLocator.getSingleton<SellingPointProductCubit>().deletePaymentMethod(id);
+        deletePaymentMethodLocal(id);
       },
     );
   }

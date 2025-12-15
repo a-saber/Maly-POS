@@ -90,6 +90,7 @@ class PrinterRepo {
     try {
       final String url = await ApiEndPoints.getPrinters();
       Map<String, dynamic> data = printer.toJson(categoryRows);
+      final updatePrinter=    await PrinterHelper.updateLocalPrinter(data);
       final response = await api.post(
         url: "$url/${printer.id}",
         data: data,
@@ -113,6 +114,7 @@ class PrinterRepo {
   }) async {
     try {
       String url = await ApiEndPoints.getPrinters();
+     final deletePrinters= await PrinterHelper.deleteLocalPrinter(id);
       var response = await api.delete(
         url: "$url/$id",
       );

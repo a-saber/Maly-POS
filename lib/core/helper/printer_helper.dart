@@ -625,7 +625,7 @@ PaperSize _getPaperSize(String? paperSize) {
   final listJsons=CacheHelper.getData(key: CacheKeys.printers)??'[]';
     prints = (jsonDecode(listJsons) as List<dynamic>).map((item) => Map<String, dynamic>.from(item)).toList();
     prints.add(printerJson);
-
+    debugPrint('SavedLocalPrinter: $printerJson');
    return  await CacheHelper.saveData(key: CacheKeys.printers, value: jsonEncode(prints));
 
 
@@ -638,8 +638,45 @@ PaperSize _getPaperSize(String? paperSize) {
      if(listJsons==null) return [];
     jsonMap = (jsonDecode(listJsons) as List<dynamic>).map((item) => Map<String, dynamic>.from(item)).toList();
     if(jsonMap.isEmpty) return [];
+    debugPrint('getSavedLocalPrinter: $jsonMap');
     prints = jsonMap.map((e) => PrinterModel.fromJson(Map<String, dynamic>.from(e))).toList();
     return prints ;
+  }
+  static Future<bool> deleteLocalPrinter( int index) async {
+
+    List<Map<String, dynamic>> jsonMap = [];
+    final listJsons=CacheHelper.getData(key: CacheKeys.printers);
+     if(listJsons==null) return false;
+    jsonMap = (jsonDecode(listJsons) as List<dynamic>).map((item) => Map<String, dynamic>.from(item)).toList();
+    if(jsonMap.isEmpty) return false  ;
+
+    final indexItem=jsonMap.indexWhere((element) => element['id']==index);
+
+    if(indexItem!=-1) {
+      jsonMap.removeAt(indexItem);
+   return  await CacheHelper.saveData(key: CacheKeys.printers, value: jsonEncode(jsonMap));
+    }else {
+      return false;
+    }
+  }
+  static Future<bool> updateLocalPrinter(Map<String, dynamic> printer) async {
+
+    List<Map<String, dynamic>> jsonMap = [];
+    final listJsons=CacheHelper.getData(key: CacheKeys.printers);
+     if(listJsons==null) return false;
+    jsonMap = (jsonDecode(listJsons) as List<dynamic>).map((item) => Map<String, dynamic>.from(item)).toList();
+    if(jsonMap.isEmpty) return false;
+    debugPrint('jsonMap: $jsonMap');
+    debugPrint('printerID: ${printer['id']}');
+
+    final indexItem=jsonMap.indexWhere((element) => element['id']==printer['id']);
+
+    if(indexItem!=-1) {
+      jsonMap[indexItem]= printer;
+     return await CacheHelper.saveData(key: CacheKeys.printers, value: jsonEncode(jsonMap));
+    }else {
+      return false;
+    }
   }
 
   Future<void> printTestByIp(String ip, {int port = 9100, String? paperSize}) async {

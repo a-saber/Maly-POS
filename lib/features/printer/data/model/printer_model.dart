@@ -140,7 +140,7 @@ class PrinterModel {
 
     final Map<String, dynamic> data = {
       if (address != null) 'address': address,
-      "id":Random().nextInt(100),
+      "id": id ?? Random().nextInt(100),
       "from_scan": (fromscan ?? true) ? 1 : 0,
       'paper_size': paperSize?.replaceAll('mm', ''),
       'printer_name': printerName?.trim(),

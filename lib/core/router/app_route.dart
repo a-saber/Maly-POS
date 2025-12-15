@@ -99,6 +99,8 @@ import 'package:pos_app/features/users/view/user_view.dart';
 
 import '../../features/csid _generation/manager/cubit/csid_generation_setting_cubit.dart';
 import '../../features/csid _generation/view/csid_generation_view.dart';
+import '../../features/report_csid/manager/cubit/report_csid_cubit.dart';
+import '../../features/report_csid/view/report_csid_view.dart';
 import '../../features/units/manager/search_unit_cubit/search_unit_cubit.dart';
 
 class AppRoutes {
@@ -170,6 +172,7 @@ class AppRoutes {
   static const String shiftDetails = '/shiftDetailsView';
   static const String orderDetailsView = '/orderDetailsView';
   static const String scidGenerationView = '/scidGenerationView';
+  static const String reportScidView = '/reportScidView';
   static const String paymentMethodsView = '/paymentMethodsViews';
 
   // Custom route with left-to-right + fade transition
@@ -643,6 +646,12 @@ class AppRoutes {
             page: BlocProvider.value(
                value: MyServiceLocator.getIt<ScidGenerationCubit>()..init(),
                 child: const ScidGenerationView()),
+          );
+          case reportScidView:
+          return customGetPageRouteBuilder(
+            page: BlocProvider.value(
+               value: MyServiceLocator.getIt<ReportScidCubit>()..init(),
+                child: const ReportScidView()),
           );
         case orderDetailsView:
           return customGetPageRouteBuilder(

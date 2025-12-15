@@ -1507,6 +1507,10 @@ class S {
   String get unit {
     return Intl.message('unit', name: 'unit', desc: '', args: []);
   }
+  /// `unit`
+  String get totalQuantityForBaseUnit {
+    return Intl.message('Total Quantity For BaseUnit', name: 'totalQuantityForBaseUnit', desc: '', args: []);
+  }
 
   /// `Search Product`
   String get searchProduct {
@@ -2587,6 +2591,56 @@ class S {
       args: [],
     );
   }
+  /// `from`
+  String get from {
+    return Intl.message(
+      'From',
+      name: 'from',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Returns Total`
+  String get returnsTotal {
+    return Intl.message(
+      'Returns Total',
+      name: 'returnsTotal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Before Tax`
+  String get totalBeforeTax {
+    return Intl.message(
+      'Total Before Tax',
+      name: 'totalBeforeTax',
+      desc: '',
+      args: [],
+    );
+  }
+
+
+
+  /// `Tax Total`
+  String get taxTotal {
+    return Intl.message(
+      'Tax Total',
+      name: 'taxTotal',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `to`
+  String get to {
+    return Intl.message(
+      'To',
+      name: 'to',
+      desc: '',
+      args: [],
+    );
+  }
 
   /// `Production`
   String get production {
@@ -2633,7 +2687,7 @@ class S {
       args: [],
     );
   }
-  /// `Copy`
+  /// `Zakat and Tax Authority`
   String get ZakatAndTaxAuthority {
     return Intl.message(
       'Zakat and Tax Authority',
@@ -2642,7 +2696,16 @@ class S {
       args: [],
     );
   }
-  /// `Copy`
+  /// `Zakat and Tax Authority`
+  String get reportZakatAndTax {
+    return Intl.message(
+      'Report Zakat and Tax',
+      name: 'reportZakatAndTax',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Cannot delete unit because there are products associated with it.`
   String get deleteUnitError {
     return Intl.message(
       "Cannot delete unit because there are products associated with it.",
@@ -2651,7 +2714,7 @@ class S {
       args: [],
     );
   }
-  /// `Copy`
+  /// `Cannot delete tax because there are sales associated with it.`
   String get deleteTaxError {
     return Intl.message(
       "Cannot delete tax because there are sales associated with it.",
@@ -2676,6 +2739,183 @@ String get remainingAmount {
       args: [],
     );
   }
+  /// `Invoice Number`
+  String get invoiceNumber {
+    return Intl.message(
+      'Invoice Number',
+      name: 'invoiceNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+
+  /// `Invoices`
+  String get invoices {
+    return Intl.message(
+      'Invoices',
+      name: 'invoices',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Only Without Invoices`
+  String get onlyWithoutInvoices {
+    return Intl.message(
+      'Only Without Invoices',
+      name: 'onlyWithoutInvoices',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Experimental Message`
+  String get experimentalMessage {
+    return Intl.message(
+      'Experimental Message',
+      name: 'experimentalMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Before Discount and Tax`
+  String get totalBeforeDiscountAndTax {
+    return Intl.message(
+      'Total Before Discount and Tax',
+      name: 'totalBeforeDiscountAndTax',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total of Taxable Items`
+  String get totalOfTaxableItems {
+    return Intl.message(
+      'Total of Taxable Items',
+      name: 'totalOfTaxableItems',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invoice Document Type`
+  String get invoiceDocumentType {
+    return Intl.message(
+      'Invoice Document Type',
+      name: 'invoiceDocumentType',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Simplified - Invoice`
+  String get simplifiedInvoice {
+    return Intl.message(
+      'Simplified - Invoice',
+      name: 'simplifiedInvoice',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invoice Date`
+  String get invoiceDate {
+    return Intl.message(
+      'Invoice Date',
+      name: 'invoiceDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User Used`
+  String get userCode {
+    return Intl.message(
+      'User Code',
+      name: 'userCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invoice XML`
+  String get invoiceXML {
+    return Intl.message(
+      'Invoice XML',
+      name: 'invoiceXML',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Send Code`
+  String get sendCode {
+    return Intl.message(
+      'Send Code',
+      name: 'sendCode',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Send Status`
+  String get sendStatus {
+    return Intl.message(
+      'Send Status',
+      name: 'sendStatus',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `Send Error`
+  String get sendError {
+    return Intl.message(
+      'Send Error',
+      name: 'sendError',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `sent`
+  String get sent{
+    return Intl.message(
+      'sent',
+      name: 'sent',
+      desc: '',
+      args: [],
+    );
+  }
+
+
+  /// `With Invoices`
+  String get withInvoices {
+    return Intl.message(
+      'With Invoices',
+      name: 'withInvoices',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Without Invoices`
+  String get withoutInvoices {
+    return Intl.message(
+      'Without Invoices',
+      name: 'withoutInvoices',
+      desc: '',
+      args: [],
+    );
+  }
+  /// `sendToZakat`
+  String get sendToZakat {
+    return Intl.message(
+      'Send To Zakat',
+      name: 'sendToZakat',
+      desc: '',
+      args: [],
+    );
+  }
+
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

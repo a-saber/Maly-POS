@@ -8,6 +8,9 @@ import 'package:pos_app/features/store_quantity/manager/store_quantity_cubit/sto
 import 'package:pos_app/generated/l10n.dart';
 import 'package:redacted/redacted.dart';
 
+import '../../../../core/widget/custom_dialog.dart';
+import 'custom_unit_quantaty_dialog.dart';
+
 class ProductItemSearchBuild extends StatelessWidget {
   const ProductItemSearchBuild(
       {super.key, required this.storeQuantityProductModel});
@@ -54,8 +57,7 @@ class ProductItemSearchBuild extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextHighlight(
-                      text: storeQuantityProductModel.product?.name ??
-                          S
+                      text: storeQuantityProductModel.product?.name ?? S
                               .of(context)
                               .noName, // You need to pass the string you want the highlights
                       words: {
@@ -80,22 +82,39 @@ class ProductItemSearchBuild extends StatelessWidget {
                     //     color: AppColors.black,
                     //   ),
                     // ),
-                    Text(
-                      "${storeQuantityProductModel.quantity?.toString() ?? '0'} items",
+                 (storeQuantityProductModel?.formattedQuantityArray?.length??0)==1?  Text(
+
+                        storeQuantityProductModel?.formattedQuantityArray?.firstOrNull??'',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppFontStyle.itemssmallTitle(
                         context: context,
                         color: AppColors.black,
                       ),
-                    ),
+                    ):
+          TextButton(onPressed: (){
+            CustomServiceWidget.showDialogHelper(context,contentWidget:  CustomUnitQuantityDialog(model: storeQuantityProductModel,));
+          }, child:  Text(
+
+           S.of(context).details,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppFontStyle.itemsSubTitle(
+              context: context,
+              color: AppColors.darkBlue,
+            ),
+          )),
                   ],
                 ),
+                const SizedBox(
+                  height: 5,
+                ),
                 Text(
-                  "${storeQuantityProductModel.product?.price ?? S.of(context).notdeterminedprice} per ${S.of(context).unit}",
+
+                 List.generate(storeQuantityProductModel.getUnitNames()?.length??0, (index1) => storeQuantityProductModel.getUnitNames()?[index1]??'').join(' - '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppFontStyle.itemsSubTitle(
+                  style: AppFontStyle.itemssmallTitle(
                     context: context,
                     color: AppColors.black,
                   ),
