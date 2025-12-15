@@ -70,6 +70,11 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                 if (isMobile(context: context)) {
                   Navigator.pop(context);
                 }
+                CustomPopUp.callMyToast(
+                  context: context,
+                  massage: S.of(context).confirmPaymentSuccess,
+                  state: PopUpState.SUCCESS,
+                );
 
                final bool isSunmi=await PrinterHelper().isSunmiDevice();
                 try {
@@ -86,7 +91,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   debugPrint(' ==================== SALE SUCCESS ====================');
                   debugPrint(' Total Automatic Printers: ${allAutomaticPrinters.length}');
 
-                  for (int i = 0; i < allAutomaticPrinters.length; i++) {
+                /*  for (int i = 0; i < allAutomaticPrinters.length; i++) {
                     final p = allAutomaticPrinters[i];
                     debugPrint('');
                     debugPrint(' Printer ${i + 1}:');
@@ -96,7 +101,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                     debugPrint('   - Type: ${p.communicationType}');
                   } 
                   debugPrint('========================================================');
-                  debugPrint('');
+                  debugPrint('');*/
                  /* final invoiceData = {
                     'date': DateTime.now().toString(),
                     'id': state.printModel.apiResponse.data['sale']['id']
@@ -124,10 +129,10 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   for (final printer in allAutomaticPrinters) {
                     if (printer.discoveredPrinter != null ) {
                       try {
-                        debugPrint('');
-                        debugPrint(' Printing to: ${printer.printerName}');
-                        debugPrint(' Using paper size: "${printer.paperSize}"');
-                        if(isSunmi & printer.printerType.toString().toLowerCase().contains('sunmi') && (printer?.automatic??false)){
+
+                        if(isSunmi &&  (printer?.automatic??false)){
+                          debugPrint('Date before ${DateTime.now()}');
+
                            for(int i=0;i<(printer.printReceiptCount??1);i++) {
                              await printSunmiPDF(await salesInvoicesPdfSunmi(
                                  state.printModel.apiResponse.data as Map<String, dynamic>,
@@ -137,12 +142,14 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                              await SunmiPrinter.lineWrap(4);
                              await SunmiPrinter.cutPaper();
                              await SunmiDrawer.openDrawer();
+
                              /*   if( state.printModel.apiResponse.data[ApiKeys.sale][ApiKeys.ordertype]==ApiKeys.hall){
                           await SunmiDrawer.openDrawer();
                             }*/
                            }
 
-                           CacheHelper.saveData(key:  CacheKeys.invoiceNumber, value:   ((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1));
+                          debugPrint(' Date after ${DateTime.now()}');
+
                         }
                         else if((printer.automatic??false)){
                           for(int i=0;i<(printer.printReceiptCount??1);i++) {
@@ -234,13 +241,15 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   );
                 }
 
-               // MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
+                //MyServiceLocator.getIt<SellingPointCubit>().getCategoryProduct();
 
 
-              } 
+              } else if (state is SellingPointProductFailing) {
+
+              }
               else if (state is SellingPointProductFailing) {
                 debugPrint(' ==================== ${PrinterHelper.getSavedLocalPrinter().map((toElement)=>toElement.toJson([]))} ====================');
-                
+
                 if (context.mounted) {
                   if (state.message.shiftError != null &&
                       (state.message.shiftError ?? false)) {

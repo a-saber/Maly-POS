@@ -165,4 +165,39 @@ class ApiHelper {
       );
     }
   }
+  Future<ApiResponse> patch({
+  required String url,
+  Map<String, dynamic>? data,
+  bool isFormData = true,
+  Map<String, dynamic>? queryParameters,
+  Options? options,
+}) async {
+  try {
+    _resetCancelToken();
+    
+    dynamic response = await dio.patch(
+      url,
+      data: data == null
+          ? null
+          : isFormData
+              ? FormData.fromMap(data)
+              : data,
+      queryParameters: queryParameters,
+      cancelToken: cancelToken,
+      options: options,
+    );
+    
+    return ApiResponse.successResonse(
+      message: response.data[ApiKeys.message],
+      data: response.data,
+    );
+  } on DioException catch (e) {
+    return handleDioError(e);
+  } catch (e) {
+    return ApiResponse.errorResonse(
+      statusCode: ApiStatusCode.unknown,
+      "Unknown error",
+    );
+  }
+}
 }

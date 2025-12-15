@@ -165,19 +165,40 @@ class _EditProductDataViewState extends State<EditProductDataView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Switch(
-                    value: isSwitchOn,
-                    activeColor: AppColors.primary,
-                    inactiveThumbColor: Colors.grey,
-                    inactiveTrackColor: Colors.grey.shade300,
-                    onChanged: (value) {
-                      setState(() {
-                        isSwitchOn = value;
-                      });
-                    },
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'متاح للبيع',
+                      style: AppFontStyle.formText(context: context).copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          cubit.isavailable == 1 ? 'متاح' : 'غير متاح',
+                          style: TextStyle(
+                            color: cubit.isavailable == 1
+                                ? Colors.green
+                                : Colors.grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Switch(
+                          value: cubit.isavailable == 1,
+                          activeColor: AppColors.primary,
+                          inactiveThumbColor: Colors.grey,
+                          inactiveTrackColor: Colors.grey.shade300,
+                          onChanged: (value) {
+                            cubit.onChangeAvailability(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 SizedBox(height: 10),
                 ImageManagerView(

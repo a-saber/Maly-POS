@@ -33,7 +33,7 @@ class SearchProductBuild extends StatelessWidget {
             if (state is SearchProductLoading) {
               return const CustomLoading();
             } else if (state is SearchProductFailing) {
-              CustomError(
+              return CustomError(
                 error: context.mounted
                     ? mapStatusCodeToMessage(context, state.errMessage)
                     : 'error',
@@ -41,11 +41,16 @@ class SearchProductBuild extends StatelessWidget {
                     SearchProductCubit.get(context).getSearchProducts(),
               );
             } else if (state is SearchProductSuccess) {
-              if (SearchProductCubit.get(context).products.isEmpty) {
+              
+              if (SearchProductCubit.get(context).products.isEmpty && 
+                  SearchProductCubit.get(context).query.isNotEmpty) {
                 return CustomEmptyView(
                   onPressed: () =>
                       SearchProductCubit.get(context).getSearchProducts(),
                 );
+              } else if (SearchProductCubit.get(context).products.isEmpty) {
+             
+                return child;
               } else {
                 return ListView.builder(
                   controller: SearchProductCubit.get(context).scrollController,
@@ -56,7 +61,7 @@ class SearchProductBuild extends StatelessWidget {
                     if (SearchProductCubit.get(context).canLoading() &&
                         index ==
                             SearchProductCubit.get(context).products.length) {
-                      return CustomLoading();
+                      return const CustomLoading();
                     }
                     return TextButton(
                       onPressed: () {
@@ -83,7 +88,7 @@ class SearchProductBuild extends StatelessWidget {
                                 color: AppColors.success,
                               ),
                             ),
-                          }, // Your dictionary words
+                          },
                           textStyle: AppFontStyle.formText(context: context),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

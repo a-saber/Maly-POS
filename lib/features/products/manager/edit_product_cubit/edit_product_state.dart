@@ -16,7 +16,7 @@ class EditProductFailing extends EditProductState {
   final String errMessage;
   EditProductFailing({required this.errMessage});
 }
-
+class AddProductChangeAvailability extends EditProductState {}
 class EditProductUnValid extends EditProductState {}
 
 class GetCategorySuccess extends EditProductState {}

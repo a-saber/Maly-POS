@@ -34,7 +34,7 @@ final class AddProductOnPriceChange extends AddProductState {}
 
 
 
-
+final class AddProductChangeAvailability extends AddProductState {}
 final class UpdateProductUnitsCost extends AddProductState {}
 
 final class UpdateProductUnitsCostWarning extends AddProductState {
