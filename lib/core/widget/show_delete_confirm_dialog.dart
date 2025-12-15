@@ -58,8 +58,14 @@ void deleteConfirmationDialogSuccess(
 }
 
 void deleteConfirmationDialogError(BuildContext ctx, String error) {
-
-  CustomPopUp.callMyToast(context: ctx, massage: error, state: PopUpState.ERROR);
+  String translatedError = error;
+ if (error.toLowerCase().contains('cannot delete role because there are users associated with it.')) {
+    translatedError = 'لا يمكن حذف الصلاحية لان يوجد مستخدمين بها';
+  }
+  CustomPopUp.callMyToast(
+  context: ctx,
+  massage: translatedError,
+  state: PopUpState.ERROR);
 }
 
 Widget deleteConfirmationDialogLoading() => CustomLoading();

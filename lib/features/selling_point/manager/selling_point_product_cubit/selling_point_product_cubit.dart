@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/constant/constant.dart';
+import 'package:pos_app/core/helper/payment_helper.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
@@ -65,20 +66,25 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     paymentMethod = AppConstant.paymentMethods(context).first;
     emit(SellingPointProductInitial());
   }
-  void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
-    if(availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
+
+  void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
+    if (availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
     emit(SellingPointProductInitial());
   }
-  void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value){
-    final index = availablePaymentMethods.indexWhere((element) => element.id == value.id);
-    if(index != -1){
+
+  void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
+    final index =
+        availablePaymentMethods.indexWhere((element) => element.id == value.id);
+    if (index != -1) {
       availablePaymentMethods[index] = value;
     }
     emit(SellingPointProductInitial());
   }
-  void deletePaymentMethod(int id){
-    final index = availablePaymentMethods.indexWhere((element) => element.id == id);
-    if(index != -1){
+
+  void deletePaymentMethod(int id) {
+    final index =
+        availablePaymentMethods.indexWhere((element) => element.id == id);
+    if (index != -1) {
       availablePaymentMethods.removeAt(index);
     }
     emit(SellingPointProductInitial());
@@ -239,10 +245,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.add(ProductSellingModel(
             product: product, count: 1, productUnit: productUnit));
         updatePaid();
-        if (availablePaymentMethods.isNotEmpty) {
-          final firstMethod = availablePaymentMethods.first;
-          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
-        }
         emit(SellingPointProductAddingProduct());
       } else if (product.quantity == null || product.quantity == 0) {
         updatePaid();
@@ -252,10 +254,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.add(ProductSellingModel(
             product: product, count: 1, productUnit: productUnit));
         updatePaid();
-        if (products.length == 1 && availablePaymentMethods.isNotEmpty) {
-          final firstMethod = availablePaymentMethods.first;
-          selectedPaymentAmounts[firstMethod.id!] = totalPrice();
-        }
         emit(SellingPointProductAddingProduct());
       }
     }
@@ -395,10 +393,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updatePaid() {
-    if (selectedPaymentAmounts.length == 1 && products.isNotEmpty) {
-      final methodId = selectedPaymentAmounts.keys.first;
-      selectedPaymentAmounts[methodId] = totalPrice();
+    if (selectedPaymentAmounts.isNotEmpty && products.isNotEmpty) {
+      if (selectedPaymentAmounts.length == 1) {
+        final methodId = selectedPaymentAmounts.keys.first;
+        selectedPaymentAmounts[methodId] = totalPrice();
+      }
+    } else if (selectedPaymentAmounts.isEmpty &&
+        availablePaymentMethods.isNotEmpty &&
+        products.isNotEmpty) {
+      final firstMethod = availablePaymentMethods.first;
+      selectedPaymentAmounts[firstMethod.id!] = totalPrice();
     }
+
     paidController.text = roundTotolPrice().toString();
   }
 
@@ -446,4 +452,75 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductChangePaidFailing());
     }
   }
+  Future<void> processNearpayPayment({
+  required double amount,
+  required int paymentMethodId,
+  required BuildContext context,
+}) async {
+  emit(SellingPointProductLoading());
+  
+  try {
+  
+    debugPrint(' Starting Nearpay payment for amount: $amount SAR');
+    
+    final result = await PaymentHelper.addTransaction(amount: amount);
+    
+    result.fold(
+     
+      (  errorMessage) {
+        debugPrint(' Nearpay payment failed: $errorMessage');
+         final apiError = ApiResponse(
+          status: false,
+          message: errorMessage,
+          data: null,
+          statusCode: ApiStatusCode.badResponse,
+          error: null
+        );
+        emit(SellingPointProductFailing(message: apiError));
+      },
+      
+
+      (receipt) {
+        debugPrint(' Nearpay payment successful!');
+        debugPrint('Transaction UUID: ${receipt.transaction_uuid}');
+        
+        debugPrint(' Card Scheme: ${receipt.card_scheme}');
+       
+        
+   
+        selectedPaymentAmounts.clear();
+        paymentReferences.clear();
+        selectedPaymentAmounts[paymentMethodId] = amount;
+        paymentReferences[paymentMethodId] = receipt.transaction_uuid ?? '';
+        
+      
+        paidController.text = amount.toStringAsFixed(2);
+        
+        debugPrint(' Payment data saved successfully');
+        debugPrint(' selectedPaymentAmounts: $selectedPaymentAmounts');
+        debugPrint(' paymentReferences: $paymentReferences');
+        
+      
+        debugPrint(' Confirming payment and completing sale...');
+        confirmPayment();
+        
+        if (context.mounted && Navigator.canPop(context)) {
+          Navigator.of(context).pop();
+        }
+      },
+    );
+    
+  } catch (e) {
+    debugPrint(' Unexpected Nearpay error: $e');
+     final apiError = ApiResponse(
+          status: false,
+          message:e.toString(),
+          data: null,
+          statusCode: ApiStatusCode.badResponse,
+          error: null
+        );
+        emit(SellingPointProductFailing(message: apiError));
+      };
+}
+
 }

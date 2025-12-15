@@ -19,7 +19,7 @@ final class SellingPointProductSuccess extends SellingPointProductState {
 
 final class SellingPointProductFailing extends SellingPointProductState {
   final ApiResponse message;
-  SellingPointProductFailing({required this.message});
+  SellingPointProductFailing( {required this.message});
 }
 
 final class SellingPointProductAddingProduct extends SellingPointProductState {}

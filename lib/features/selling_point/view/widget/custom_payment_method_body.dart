@@ -86,20 +86,45 @@ class CustomPaymentMethodBody extends StatelessWidget {
   }
 
   void _handleSinglePayment(
-    BuildContext context,
-    SellingPointProductCubit cubit,
-    PaymentMethodSalesModel method,
-  ) {
-    double totalPrice = cubit.totalPrice();
-    
-    cubit.selectedPaymentAmounts.clear();
-    cubit.paymentReferences.clear();
-    cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+  BuildContext context,
+  SellingPointProductCubit cubit,
+  PaymentMethodSalesModel method,
+) {
+  double totalPrice = cubit.totalPrice();
+  
+  cubit.selectedPaymentAmounts.clear();
+  cubit.paymentReferences.clear();
+  cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+  
+  if (method.isNearpay == 1) {
     cubit.changePaid(
       totalPrice.toStringAsFixed(2),
       paymentAmounts: cubit.selectedPaymentAmounts,
     );
+    cubit.processNearpayPayment(
+      amount: totalPrice,
+      paymentMethodId: method.id!,
+      context: context,
+    );
+    return;
   }
+  
+  if (method.requiresReference == 1) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => BlocProvider.value(
+        value: cubit,
+        child: DynamicPaidDialog(),
+      ),
+    );
+    return;
+  }
+
+  cubit.changePaid(
+    totalPrice.toStringAsFixed(2),
+    paymentAmounts: cubit.selectedPaymentAmounts,
+  );
+}
 
   void _openMixPaymentDialog(BuildContext context) {
     showDialog(
