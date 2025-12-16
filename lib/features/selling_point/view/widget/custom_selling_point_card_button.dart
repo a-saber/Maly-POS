@@ -251,20 +251,22 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                 if (context.mounted) {
                   if (state.message.shiftError != null &&
                       (state.message.shiftError ?? false)) {
-                    showStartShiftDialog(
+                    /*showStartShiftDialog(
                       context,
                       branchescubit:
                           MyServiceLocator.getIt<GetAllBranchesCubit>(),
                       shiftcubit: MyServiceLocator.getIt<ShiftCubit>(),
                       currentBranch:
                           SellingPointProductCubit.get(context).repo.branch,
-                    );
+                    );*/
+
+                    SellingPointProductCubit.get(context).startShift();
                   }
-                  CustomPopUp.callMyToast(
+                 /* CustomPopUp.callMyToast(
                     context: context,
                     massage: mapStatusCodeToMessage(context, state.message),
                     state: PopUpState.ERROR,
-                  );
+                  );*/
                 }
               }
             },

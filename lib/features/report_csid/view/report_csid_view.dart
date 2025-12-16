@@ -97,10 +97,6 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
                )
              ],
            ),
-
-
-
-
             Flex(
               direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
               spacing: 20,
@@ -239,9 +235,7 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
 
               ],
             ),
-
-
-            // ✅ FIXED: Remove Flexible wrapper and use LayoutBuilder
+          // ✅ FIXED: Remove Flexible wrapper and use LayoutBuilder
             LayoutBuilder(
               builder: (context, constraints) {
                 return SizedBox(
@@ -425,7 +419,7 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
                 // Remove the empty SizedBox with flex: 3
               ],
             ),
-          Flex(
+            Flex(
             crossAxisAlignment: CrossAxisAlignment.start,
             direction: isMobile(context: context) ? Axis.vertical : Axis.horizontal,
             spacing: 20,

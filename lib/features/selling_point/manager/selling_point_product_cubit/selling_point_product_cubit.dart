@@ -20,7 +20,9 @@ import 'package:pos_app/features/selling_point/data/model/type_of_take_order_mod
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 
+import '../../../../core/helper/my_service_locator.dart';
 import '../../../products/data/model/product_unit_model.dart';
+import '../../../shifts/manager/shift_cubit/shift_cubit.dart';
 
 part 'selling_point_product_state.dart';
 
@@ -160,6 +162,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       init();
       emit(SellingPointProductSuccess(printModel: success));
     });
+  }
+  void startShift(){
+    emit(SellingPointProductLoading());
+    MyServiceLocator.getIt<ShiftCubit>().startShift(
+      branchId:repo?.branch?.id??0,
+      cash:  0.0,
+    ).then((value){
+
+      confirmPayment();
+
+    });
+
   }
 
   bool containProduct() => products.isNotEmpty;
