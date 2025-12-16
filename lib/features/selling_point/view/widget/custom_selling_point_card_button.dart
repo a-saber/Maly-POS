@@ -141,7 +141,6 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                           await SunmiDrawer.openDrawer();
                             }*/
                            }
-
                            CacheHelper.saveData(key:  CacheKeys.invoiceNumber, value:   ((CacheHelper.getData(key: CacheKeys.invoiceNumber)??0)+1));
                         }
                         else if((printer.automatic??false)){

@@ -6,8 +6,15 @@ import 'package:pos_app/features/selling_point/manager/selling_point_product_cub
 import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
 import 'package:pos_app/features/selling_point/view/widget/custom_paid_text_form_field.dart';
 
-class CustomPaymentMethodBody extends StatelessWidget {
+class CustomPaymentMethodBody extends StatefulWidget {
   const CustomPaymentMethodBody({super.key});
+
+  @override
+  State<CustomPaymentMethodBody> createState() => _CustomPaymentMethodBodyState();
+}
+
+class _CustomPaymentMethodBodyState extends State<CustomPaymentMethodBody> {
+  bool _isExpanded = true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,35 +35,75 @@ class CustomPaymentMethodBody extends StatelessWidget {
           );
         }
 
-        return Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          alignment: WrapAlignment.center,
+        return Column(
           children: [
-        
-            ...cubit.availablePaymentMethods.map((method) {
-              bool isSelected = cubit.selectedPaymentAmounts.length == 1 &&
-                  cubit.selectedPaymentAmounts.containsKey(method.id);
-
-              return InkWell(
-                onTap: () => _handleSinglePayment(context, cubit, method),
-                child: CustomCardPaymentMethod(
-                  icon: _getPaymentIcon(method),
-                  title: method.name ?? 'طريقة دفع',
-                  isActive: isSelected,
-                ),
-              );
-            }),
-
+            // Header with toggle button
             InkWell(
-              onTap: () => _openMixPaymentDialog(context),
-              child: CustomCardPaymentMethod(
-                icon: Icons.app_shortcut,
-                title: 'ميكس',
-                isActive: cubit.selectedPaymentAmounts.length > 1,
-                color: Colors.orange,
+              onTap: () {
+                setState(() {
+                  _isExpanded = !_isExpanded;
+                });
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'طرق الدفع',
+                      style: AppFontStyle.itemsSubTitle(
+                        context: context,
+                        color: AppColors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Icon(
+                      _isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                      color: AppColors.black,
+                    ),
+                  ],
+                ),
               ),
             ),
+            
+            SizedBox(height: 10),
+            
+            // Payment methods - shown/hidden based on _isExpanded
+            if (_isExpanded)
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                alignment: WrapAlignment.center,
+                children: [
+                  ...cubit.availablePaymentMethods.map((method) {
+                    bool isSelected = cubit.selectedPaymentAmounts.length == 1 &&
+                        cubit.selectedPaymentAmounts.containsKey(method.id);
+
+                    return InkWell(
+                      onTap: () => _handleSinglePayment(context, cubit, method),
+                      child: CustomCardPaymentMethod(
+                        icon: _getPaymentIcon(method),
+                        title: method.name ?? 'طريقة دفع',
+                        isActive: isSelected,
+                      ),
+                    );
+                  }),
+
+                  InkWell(
+                    onTap: () => _openMixPaymentDialog(context),
+                    child: CustomCardPaymentMethod(
+                      icon: Icons.app_shortcut,
+                      title: 'ميكس',
+                      isActive: cubit.selectedPaymentAmounts.length > 1,
+                      color: Colors.orange,
+                    ),
+                  ),
+                ],
+              ),
           ],
         );
       },
@@ -85,62 +132,46 @@ class CustomPaymentMethodBody extends StatelessWidget {
     return Icons.payment;
   }
 
- void _handleSinglePayment(
-  BuildContext context,
-  SellingPointProductCubit cubit,
-  PaymentMethodSalesModel method,
-) async {
-  double totalPrice = cubit.totalPrice();
-  
-  cubit.selectedPaymentAmounts.clear();
-  cubit.paymentReferences.clear();
-  cubit.selectedPaymentAmounts[method.id!] = totalPrice;
-  bool continuePayment = true;  
-  if (method.isNearpay == 1) {
-    cubit.changePaid(
-      totalPrice.toStringAsFixed(2),
-      paymentAmounts: cubit.selectedPaymentAmounts,
-    );
-
-    debugPrint(' Starting Nearpay payment for ${method.name}...');
-
-    String? erorr= await cubit.processNearpayPayment(
-      amount: totalPrice,
-      paymentMethodId: method.id!,
-      context: context,
-
-    );
-
-    if (erorr != null) {
-      debugPrint(' Payment failed: $erorr');
-      continuePayment = false;
-    }
-  }
-
-
-  // if (method.requiresReference == 1) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (dialogContext) => BlocProvider.value(
-  //       value: cubit,
-  //       child: DynamicPaidDialog(),
-  //     ),
-  //   );
-  //   return;
-  // }
-
-  if (continuePayment)
-  {
-    cubit.changePaid(
-    totalPrice.toStringAsFixed(2),
-    paymentAmounts: cubit.selectedPaymentAmounts,
-  );
-    // Navigator.pop(context);
-    cubit.confirmPayment();
-    }
+  void _handleSinglePayment(
+    BuildContext context,
+    SellingPointProductCubit cubit,
+    PaymentMethodSalesModel method,
+  ) async {
+    double totalPrice = cubit.totalPrice();
     
+    cubit.selectedPaymentAmounts.clear();
+    cubit.paymentReferences.clear();
+    cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+    bool continuePayment = true;  
+    
+    if (method.isNearpay == 1) {
+      cubit.changePaid(
+        totalPrice.toStringAsFixed(2),
+        paymentAmounts: cubit.selectedPaymentAmounts,
+      );
+
+      debugPrint(' Starting Nearpay payment for ${method.name}...');
+
+      String? erorr = await cubit.processNearpayPayment(
+        amount: totalPrice,
+        paymentMethodId: method.id!,
+        context: context,
+      );
+
+      if (erorr != null) {
+        debugPrint(' Payment failed: $erorr');
+        continuePayment = false;
+      }
+    }
+
+    if (continuePayment) {
+      cubit.changePaid(
+        totalPrice.toStringAsFixed(2),
+        paymentAmounts: cubit.selectedPaymentAmounts,
+      );
+      cubit.confirmPayment();
+    }
   }
-}
 
   void _openMixPaymentDialog(BuildContext context) {
     showDialog(
@@ -151,7 +182,7 @@ class CustomPaymentMethodBody extends StatelessWidget {
       ),
     );
   }
-
+}
 
 class CustomCardPaymentMethod extends StatelessWidget {
   const CustomCardPaymentMethod({
