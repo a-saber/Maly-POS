@@ -22,7 +22,6 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
   @override
   void initState() {
     super.initState();
-    // لو في خصم حالي، حمله في الـ dialog
     if (widget.currentDiscount != null && widget.currentDiscount!.id == -1) {
       _discountController.text = widget.currentDiscount!.value ?? '';
       _selectedType = widget.currentDiscount!.type;
