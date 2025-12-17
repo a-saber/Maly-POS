@@ -32,7 +32,7 @@ void main() async {
   await CustomUserHiveBox.init();
   MyServiceLocator.init();
   CustomSecureStorage.init();
-  await PaymentHelper.initialize();
+  // await PaymentHelper.initialize();
   runApp(const MyApp());
 }
 

@@ -8,6 +8,7 @@ import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_b
 import 'package:pos_app/features/branch/view/widget/custom_drop_down_branch.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
+import 'package:pos_app/generated/l10n.dart';
 
 Future<void> showStartShiftDialog(BuildContext context,
     {GetAllBranchesCubit? branchescubit,
@@ -31,7 +32,7 @@ Future<void> showStartShiftDialog(BuildContext context,
         child: StatefulBuilder(
           builder: (ctx, setState) {
             return AlertDialog(
-              title: const Text("Start Shift"),
+              title: Text(S.of(ctx).startShift),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -47,7 +48,7 @@ Future<void> showStartShiftDialog(BuildContext context,
                   CustomFormField(
                     controller: cashController,
                     keyboardType: TextInputType.number,
-                    labelText: "Cash",
+                    labelText: S.of(context).cash,
                     validator: (value) => MyFormValidators.validateDecimalOrInt(
                         value,
                         context: ctx),
@@ -57,7 +58,7 @@ Future<void> showStartShiftDialog(BuildContext context,
               actions: [
                 CustomTextBtn(
                   onPressed: () => Navigator.pop(ctx),
-                  text: "Cancel",
+                  text: S.of(ctx).cancel,
                 ),
                 BlocBuilder<ShiftCubit, ShiftState>(
                   builder: (ctx, state) {
@@ -66,8 +67,7 @@ Future<void> showStartShiftDialog(BuildContext context,
                     }
                     return ElevatedButton(
                       onPressed: () {
-                        if (selectedBranch == null) return;
-
+                        if (selectedBranch == null)  return ;
                         ShiftCubit.get(ctx).startShift(
                           branchId: selectedBranch!.id!,
                           cash: double.tryParse(cashController.text) ?? 0.0,
@@ -75,7 +75,7 @@ Future<void> showStartShiftDialog(BuildContext context,
 
                         Navigator.pop(ctx);
                       },
-                      child: const Text("Start"),
+                      child: Text(S.of(ctx).startShift),
                     );
                   },
                 ),

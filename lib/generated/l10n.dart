@@ -182,7 +182,14 @@ class S {
       args: [],
     );
   }
-
+  String get StartShift {
+    return Intl.message(
+      'Start Shift',
+      name: 'StartShift',
+      desc: '',
+      args: [],
+    );
+  }
   /// `Field`
   String get field {
     return Intl.message('Field', name: 'field', desc: '', args: []);
@@ -515,7 +522,14 @@ class S {
       args: [],
     );
   }
-
+ String get enableNearpay {
+    return Intl.message(
+      'enable Nearpay',
+      name: 'enableNearpay',
+      desc: '',
+      args: [],
+    );
+  }
   /// `Add Client`
   String get addClient {
     return Intl.message('Add Client', name: 'addClient', desc: '', args: []);
@@ -1458,6 +1472,14 @@ class S {
     return Intl.message(
       'Quantity of product is finished',
       name: 'quantityOfProductIsFinished',
+      desc: '',
+      args: [],
+    );
+  }
+  String get startShift {
+    return Intl.message(
+      'Start Shift',
+      name: 'startShift',
       desc: '',
       args: [],
     );
@@ -2839,7 +2861,14 @@ String get remainingAmount {
       args: [],
     );
   }
-
+  String get endShift {
+    return Intl.message(
+      'End Shift',
+      name: 'endShift',
+      desc: '',
+      args: [],
+    );
+  }
   /// `Invoice XML`
   String get invoiceXML {
     return Intl.message(

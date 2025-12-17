@@ -30,6 +30,7 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
   FileImage? image;
   String? imageUrl;
   XFile? newImage;
+  bool enableNearpay = false;
 
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
   late AutovalidateMode autovalidateMode;
@@ -65,6 +66,7 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
         districtController.text = success.district ?? '';
         countryController.text = success.country ?? '';
         imageUrl = success.imageUrl;
+        enableNearpay = success.enableNearpay ?? false;
         emit(ShopSettingGetSuccess());
       },
     );
@@ -87,6 +89,7 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
           city: cityController.text,
           district: districtController.text,
           country: countryController.text,
+          enableNearpay: enableNearpay,
         ),
         image: newImage == null ? null : File(newImage!.path),
       );
@@ -114,7 +117,11 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
   void onChangeImage(XFile image) {
     newImage = image;
   }
-
+ void onChangeEnableNearpay(bool value) {
+    enableNearpay = value;
+    emit(ShopSettingEnableNearpayChanged());
+    
+  }
   @override
   Future<void> close() {
     shopNameController.dispose();
