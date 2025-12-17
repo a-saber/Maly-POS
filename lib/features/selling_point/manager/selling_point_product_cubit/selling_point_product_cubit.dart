@@ -149,6 +149,27 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void confirmPayment() async {
+     bool hasNearpayPayment = false;
+  if (availablePaymentMethods.isNotEmpty && selectedPaymentAmounts.isNotEmpty) {
+    for (var methodId in selectedPaymentAmounts.keys) {
+      final method = availablePaymentMethods.firstWhere(
+        (m) => m.id == methodId,
+        orElse: () => availablePaymentMethods.first,
+      );
+      if (method.isNearpay == 1) {
+        hasNearpayPayment = true;
+        break;
+      }
+    }
+  }
+
+  if (hasNearpayPayment && !enableNearpay) {
+    emit(SellingPointProductFailing(
+      message: ApiResponse.fromErrorMSG('ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر')
+    ));
+    return;
+  }
+
     emit(SellingPointProductLoading());
 
     debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
