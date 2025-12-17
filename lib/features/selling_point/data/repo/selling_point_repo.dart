@@ -9,6 +9,7 @@ import 'package:pos_app/core/helper/payment_helper.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
+import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 import 'package:pos_app/features/products/data/model/get_products_model.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/selling_point/data/model/category_saving_data_model.dart';
@@ -38,7 +39,8 @@ Future<Either<ApiResponse, PrintModel>> newSales({
   required double online,
   required double madaAmount,
   required double onlineAmount,
- 
+  int? manualDiscountType,
+  double? manualDiscountValue,
   Map<int, double>? paymentAmounts,
   Map<int, String>? paymentReferences,
 }) async {
@@ -46,7 +48,13 @@ Future<Either<ApiResponse, PrintModel>> newSales({
   try {
     String url = await ApiEndPoints.getSales();
 
- 
+      int? manualDiscountType;
+    double? manualDiscountValue;
+    
+    if (discount != null && discount.id == -1) {
+      manualDiscountType = discount.type == DiscountType.percentage ? 1 : 0;
+      manualDiscountValue = double.tryParse(discount.value ?? '0') ?? 0;
+    }
     double rest = 0.0;
     if (paymentAmounts != null && paymentAmounts.length == 1) {
 
@@ -74,27 +82,32 @@ Future<Either<ApiResponse, PrintModel>> newSales({
       }
     }
 
-    Map<String, dynamic> data = {
+     Map<String, dynamic> data = {
       ApiKeys.subtotal: subtotal,
       ApiKeys.discounttotal: discounttotal,
       ApiKeys.totalafterdiscount: totalafterdiscount,
       ApiKeys.taxtotal: taxtotal,
       ApiKeys.totalaftertax: totalaftertax,
-      
- 
       'paid': paid,
       'rest': rest,
       'payments': paymentsArray,
-      
-      ApiKeys.paymentmethod: paymentType?.apiKey,
       ApiKeys.branchid: branch?.id,
       ApiKeys.ordertype: typeOfTakeOrder?.apiKey,
       ApiKeys.products: products.map((e) => e.toJson()).toList(),
     };
     
+ 
     if (discount != null) {
-      data[ApiKeys.discountid] = discount.id;
+      if (discount.id == -1) {
+       
+        data['manual_discount_type'] = manualDiscountType;
+        data['manual_discount_value'] = manualDiscountValue;
+      } else {
+      
+        data[ApiKeys.discountid] = discount.id;
+      }
     }
+    
     if (customer != null) {
       data[ApiKeys.customerid] = customer.id;
     }

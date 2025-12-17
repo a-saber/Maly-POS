@@ -19,6 +19,8 @@ import 'package:pos_app/features/selling_point/data/model/product_selling_model.
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
+import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
+
 
 import '../../../../core/helper/my_service_locator.dart';
 import '../../../products/data/model/product_unit_model.dart';
@@ -28,7 +30,9 @@ part 'selling_point_product_state.dart';
 
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   SellingPointProductCubit(this.repo, this.paymentMethodsRepo)
-      : super(SellingPointProductInitial());
+      : super(SellingPointProductInitial()){
+        _loadShopSettings();
+      }
 
   static SellingPointProductCubit get(context) => BlocProvider.of(context);
   final SellingPointRepo repo;
@@ -45,8 +49,8 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   List<PaymentAdmin.PaymentMethodSalesModel> availablePaymentMethods = [];
   Map<int, double> selectedPaymentAmounts = {}; // {paymentMethodId: amount}
   Map<int, String> paymentReferences = {}; // {paymentMethodId: reference}
-
-  init() {
+  bool enableNearpay = false;
+  init()  {
     resetProduct();
     cashAmount = 0.0;
     madaAmount = 0.0;
@@ -55,6 +59,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     discount = null;
     selectedPaymentAmounts = {};
     paymentReferences = {};
+   
     if (availablePaymentMethods.isNotEmpty) {
       final firstMethod = availablePaymentMethods.first;
       selectedPaymentAmounts[firstMethod.id!] = totalPrice();
@@ -93,7 +98,27 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
     emit(SellingPointProductInitial());
   }
-
+    Future<void> _loadShopSettings() async {
+    try {
+     
+      final shopSettingRepo = ShopSettingRepo(repo.api);
+      
+      final result = await shopSettingRepo.getShopSettingData();
+      result.fold(
+        (error) {
+          enableNearpay = false;
+          debugPrint(' Error loading shop settings: $error');
+        },
+        (settings) {
+          enableNearpay = settings.enableNearpay ?? false;
+          debugPrint(' Shop settings loaded: enableNearpay = $enableNearpay');
+        },
+      );
+    } catch (e) {
+      enableNearpay = false;
+      debugPrint(' Exception loading shop settings: $e');
+    }
+  }
   Future<void> loadPaymentMethods() async {
     emit(SellingPointProductLoading());
 
@@ -106,6 +131,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       (methods) {
         availablePaymentMethods =
             methods.where((m) => m.isActive == 1).toList();
+        
         if (availablePaymentMethods.isNotEmpty) {
           final firstMethod = availablePaymentMethods.first;
 
@@ -513,7 +539,14 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       //     ),
       //   ),
       // );
-
+     if (!enableNearpay) {
+      CustomPopUp.callMyToast(
+        context: context,
+        massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
+        state: PopUpState.ERROR,
+      );
+      return 'ميزة Nearpay غير مفعلة';
+    }
       var madaResponse = await PaymentHelper.addTransaction(amount: amount);
 
       // if (Navigator.canPop(context)) {

@@ -523,5 +523,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendError": MessageLookupByLibrary.simpleMessage("Send Error"),
     "sent": MessageLookupByLibrary.simpleMessage("Sent"),
     "to": MessageLookupByLibrary.simpleMessage("To"),
+    "endShift": MessageLookupByLibrary.simpleMessage("End Shift"),
+    "startShift": MessageLookupByLibrary.simpleMessage("Start Shift"),
+    "enableNearpay": MessageLookupByLibrary.simpleMessage("Enable Nearpay"),
   };
 }

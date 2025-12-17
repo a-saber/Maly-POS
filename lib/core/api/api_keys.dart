@@ -165,6 +165,7 @@ abstract class ApiKeys {
   static const String formattedQuantity='formatted_quantity';
   static const String formattedQuantityArray='formatted_quantity_array';
   static const String quantityInBaseUnit='quantity_in_base_unit';
+  static const String enablenearpay='enable_nearpay';
 }
 
 abstract class ApiEndPoints {
