@@ -145,7 +145,7 @@ class CustomDrawer extends StatelessWidget {
                       child: SizedBox(
                         height: 32,
                         child: CustomFilledBtn(
-                          text: 'Start',
+                          text: S.of(context).startShift,
                           backgroundColor: Colors.blueAccent,
                           onPressed: state is ShiftLoading
                               ? () {}
@@ -173,7 +173,7 @@ class CustomDrawer extends StatelessWidget {
                               }
                             },
                             child: CustomFilledBtn(
-                              text: 'End',
+                              text: S.of(context).endShift,
                               backgroundColor: Colors.transparent,
                               onPressed: state is ShiftLoading
                                   ? () {}

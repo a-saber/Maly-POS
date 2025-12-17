@@ -17,3 +17,4 @@ final class ShopSettingUpdateFailing extends ShopSettingState {
   final ApiResponse errMessage;
   ShopSettingUpdateFailing({required this.errMessage});
 }
+final class ShopSettingEnableNearpayChanged extends ShopSettingState {}

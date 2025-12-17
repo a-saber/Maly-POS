@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
+import 'package:pos_app/core/helper/payment_helper.dart';
 import 'package:pos_app/features/shop_setting/data/model/get_shopping_setting_model.dart';
 import 'package:pos_app/features/shop_setting/data/model/shop_setting_model.dart';
 
@@ -22,6 +23,8 @@ class ShopSettingRepo {
       if (respone.status) {
         GetShopSettingModel getShopSettingModel =
             GetShopSettingModel.fromJson(respone.data!);
+        if(getShopSettingModel.data!.enableNearpay==true)
+        {await PaymentHelper.initialize();}
         return Right(getShopSettingModel.data!);
       } else {
         return Left(
@@ -49,7 +52,9 @@ class ShopSettingRepo {
       );
       if (response.status) {
         GetShopSettingModel getShopSettingModel =
-            GetShopSettingModel.fromJson(response.data!);
+        GetShopSettingModel.fromJson(response.data!);
+        if(getShopSettingModel.data!.enableNearpay==true)
+        {await PaymentHelper.initialize();}
         return Right(getShopSettingModel.data!);
       } else {
         return Left(

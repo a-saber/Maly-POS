@@ -21,8 +21,10 @@ class ShopSettingModel {
   final String? createdAt;
   final String? updatedAt;
   final String? imageUrl;
+  final bool? enableNearpay;
 
   const ShopSettingModel(
+     
       {required this.id,
       required this.shopName,
       required this.address,
@@ -39,7 +41,9 @@ class ShopSettingModel {
       required this.logoUrl,
       required this.createdAt,
       required this.updatedAt,
-      required this.imageUrl});
+      required this.imageUrl,
+      required this.enableNearpay,
+      });
 
   factory ShopSettingModel.fromJson(Map<String, dynamic> json) {
     return ShopSettingModel(
@@ -60,6 +64,7 @@ class ShopSettingModel {
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
       imageUrl: json[ApiKeys.imageurl],
+      enableNearpay: json[ApiKeys.enablenearpay],
     );
   }
   factory ShopSettingModel.createModelWithoutId({
@@ -75,6 +80,7 @@ class ShopSettingModel {
     required String? city,
     required String? district,
     required String? country,
+    required bool? enableNearpay,
   }) {
     return ShopSettingModel(
       id: null,
@@ -94,6 +100,7 @@ class ShopSettingModel {
       createdAt: null,
       updatedAt: null,
       imageUrl: null,
+      enableNearpay: enableNearpay,
     );
   }
 
@@ -116,6 +123,7 @@ class ShopSettingModel {
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
     data[ApiKeys.imageurl] = imageUrl;
+    data[ApiKeys.enablenearpay] = enableNearpay;
     return data;
   }
 
@@ -160,6 +168,7 @@ class ShopSettingModel {
       var myImage = await uploadImageToApi(image: image);
       data[ApiKeys.image] = myImage;
     }
+    data[ApiKeys.enablenearpay] = enableNearpay;
 
     return data;
   }

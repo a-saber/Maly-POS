@@ -12,6 +12,7 @@
 
 import 'package:intl/intl.dart';
 import 'package:intl/message_lookup_by_library.dart';
+import 'package:pos_app/core/api/api_response.dart';
 
 final messages = new MessageLookup();
 
@@ -521,5 +522,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "sendError": MessageLookupByLibrary.simpleMessage("خطأ في الإرسال"),
     "sent": MessageLookupByLibrary.simpleMessage("تم الإرسال"),
     "to": MessageLookupByLibrary.simpleMessage("إلى"),
+    "endShift": MessageLookupByLibrary.simpleMessage("انهاء الشفت"),
+    "startShift": MessageLookupByLibrary.simpleMessage("بدء الشفت"),
+    "enableNearpay": MessageLookupByLibrary.simpleMessage("تفعيل نير باي"),
   };
 }

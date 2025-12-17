@@ -6,6 +6,7 @@ import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_b
 import 'package:pos_app/features/branch/view/widget/custom_drop_down_branch.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_state.dart';
+import 'package:pos_app/generated/l10n.dart';
 
 Future<void> showEndShiftDialog(BuildContext context) async {
   final branchesCubit = GetAllBranchesCubit.get(context);
@@ -22,7 +23,7 @@ Future<void> showEndShiftDialog(BuildContext context) async {
         ],
         child: StatefulBuilder(builder: (ctx, setState) {
           return AlertDialog(
-            title: const Text("End Shift"),
+            title:  Text(S.of(ctx).endShift),
             content: CustomDropDownBranch(
               value: selectedBranch,
               onChanged: (v) {
@@ -34,7 +35,7 @@ Future<void> showEndShiftDialog(BuildContext context) async {
             actions: [
               CustomTextBtn(
                 onPressed: () => Navigator.pop(ctx),
-                text: "Cancel",
+                text: S.of( ctx).cancel,
               ),
               BlocBuilder<ShiftCubit, ShiftState>(
                 builder: (ctx, state) {
@@ -51,7 +52,7 @@ Future<void> showEndShiftDialog(BuildContext context) async {
 
                       Navigator.pop(ctx);
                     },
-                    child: const Text("End"),
+                    child: Text(S.of(ctx).endShift),
                   );
                 },
               ),

@@ -333,5 +333,8 @@
        "discountType":{"ثابت","نسبة مؤية"}
        "discountType":{"ثابت","نسبة مؤية"},
        "nameAlreadyTaken":"اسم مستخدم موجود بالفعل",
-       "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً"
+       "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً",
+       "End":"انهاء الشيفت"
+       "startShift":"بدء الشيفت",
+       "enableNearpay":"تفعيل نير باي"
 }
