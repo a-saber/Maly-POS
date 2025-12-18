@@ -342,9 +342,8 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                   onChanged: (value) => cubit.updateUnitPrices(index))),
               DataCell(_customTextFormFieldTable(
                 hintText: "سعر التكلفة",
-                enabled: true,
-                validator: (value) =>
-                    MyFormValidators.validateDouble(value, context: context),
+                enabled: index==0,
+                validator: (value) => MyFormValidators.validateDouble(value, context: context),
                 controller: unit.costPriceController,
                 onChanged: (value) => cubit.onChangeCost(index),
               )),

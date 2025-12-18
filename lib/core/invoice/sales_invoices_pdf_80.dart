@@ -1,4 +1,4 @@
-import 'package:esc_pos_utils_plus/esc_pos_utils_plus.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
@@ -11,11 +11,8 @@ import 'package:pos_app/core/invoice/pdf_font_loader.dart';
 import 'package:pos_app/core/utils/extensions.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
 import 'package:pdfx/pdfx.dart' as pdfx;
-
 import '../../features/shifts/data/model/end_shift_model.dart';
 import '../../generated/l10n.dart';
-import '../cache/cache_helper.dart';
-import '../cache/cache_keys.dart';
 import '../helper/formate_date_time.dart';
 
 Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
@@ -81,14 +78,17 @@ Future<Uint8List> salesInvoicesPdf80(
       String? branchName,
       required double paid,
       required String size,
-    }) async {
+    }) async
+{
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
 
   final pdf = pw.Document(
+
     theme: pw.ThemeData.withFont(
       base: arabicFont,
       bold: arabicFontBold,
+
     ),
   );
 
