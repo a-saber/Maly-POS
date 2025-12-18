@@ -82,9 +82,9 @@ class ProductItemSearchBuild extends StatelessWidget {
                     //     color: AppColors.black,
                     //   ),
                     // ),
-                 (storeQuantityProductModel?.formattedQuantityArray?.length??0)==1?  Text(
+                 (storeQuantityProductModel?.product?.productUnits?.length??0)==1?  Text(
 
-                        storeQuantityProductModel?.formattedQuantityArray?.firstOrNull??'',
+                   "${storeQuantityProductModel?.product?.productUnits?.firstOrNull?.quantity} ${S.of(context).item}",
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppFontStyle.itemssmallTitle(
@@ -111,7 +111,7 @@ class ProductItemSearchBuild extends StatelessWidget {
                 ),
                 Text(
 
-                 List.generate(storeQuantityProductModel.getUnitNames()?.length??0, (index1) => storeQuantityProductModel.getUnitNames()?[index1]??'').join(' - '),
+                 List.generate(storeQuantityProductModel?.product?.productUnits?.length??0, (index1) => storeQuantityProductModel?.product?.productUnits?[index1]?.unit?.name??'').join(' - '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFontStyle.itemssmallTitle(

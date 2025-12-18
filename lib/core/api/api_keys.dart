@@ -161,10 +161,11 @@ abstract class ApiKeys {
   static const String allowLowerPrices = 'allow_lower_prices';
   static const String sellInNegativeQuantity = 'sell_in_negative_quantity';
   static const String paymentmethods='payment-methods';
+  static const String isavailable='switch';
   static const String formattedQuantity='formatted_quantity';
   static const String formattedQuantityArray='formatted_quantity_array';
   static const String quantityInBaseUnit='quantity_in_base_unit';
-  static const String isavailable='switch';
+  static const String enablenearpay='enable_nearpay';
 }
 
 abstract class ApiEndPoints {

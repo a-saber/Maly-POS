@@ -19,14 +19,20 @@ import 'package:pos_app/features/selling_point/data/model/product_selling_model.
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
+import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
 
+
+import '../../../../core/helper/my_service_locator.dart';
 import '../../../products/data/model/product_unit_model.dart';
+import '../../../shifts/manager/shift_cubit/shift_cubit.dart';
 
 part 'selling_point_product_state.dart';
 
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   SellingPointProductCubit(this.repo, this.paymentMethodsRepo)
-      : super(SellingPointProductInitial());
+      : super(SellingPointProductInitial()){
+        _loadShopSettings();
+      }
 
   static SellingPointProductCubit get(context) => BlocProvider.of(context);
   final SellingPointRepo repo;
@@ -43,15 +49,17 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   List<PaymentAdmin.PaymentMethodSalesModel> availablePaymentMethods = [];
   Map<int, double> selectedPaymentAmounts = {}; // {paymentMethodId: amount}
   Map<int, String> paymentReferences = {}; // {paymentMethodId: reference}
-
-  init() {
+  bool enableNearpay = false;
+  init()  {
     resetProduct();
     cashAmount = 0.0;
     madaAmount = 0.0;
     onlineAmount = 0.0;
     user = null;
+    discount = null;
     selectedPaymentAmounts = {};
     paymentReferences = {};
+   
     if (availablePaymentMethods.isNotEmpty) {
       final firstMethod = availablePaymentMethods.first;
       selectedPaymentAmounts[firstMethod.id!] = totalPrice();
@@ -90,7 +98,27 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
     emit(SellingPointProductInitial());
   }
-
+    Future<void> _loadShopSettings() async {
+    try {
+     
+      final shopSettingRepo = ShopSettingRepo(repo.api);
+      
+      final result = await shopSettingRepo.getShopSettingData();
+      result.fold(
+        (error) {
+          enableNearpay = false;
+          debugPrint(' Error loading shop settings: $error');
+        },
+        (settings) {
+          enableNearpay = settings.enableNearpay ?? false;
+          debugPrint(' Shop settings loaded: enableNearpay = $enableNearpay');
+        },
+      );
+    } catch (e) {
+      enableNearpay = false;
+      debugPrint(' Exception loading shop settings: $e');
+    }
+  }
   Future<void> loadPaymentMethods() async {
     emit(SellingPointProductLoading());
 
@@ -103,6 +131,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       (methods) {
         availablePaymentMethods =
             methods.where((m) => m.isActive == 1).toList();
+        
         if (availablePaymentMethods.isNotEmpty) {
           final firstMethod = availablePaymentMethods.first;
 
@@ -120,6 +149,27 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void confirmPayment() async {
+     bool hasNearpayPayment = false;
+  if (availablePaymentMethods.isNotEmpty && selectedPaymentAmounts.isNotEmpty) {
+    for (var methodId in selectedPaymentAmounts.keys) {
+      final method = availablePaymentMethods.firstWhere(
+        (m) => m.id == methodId,
+        orElse: () => availablePaymentMethods.first,
+      );
+      if (method.isNearpay == 1) {
+        hasNearpayPayment = true;
+        break;
+      }
+    }
+  }
+
+  if (hasNearpayPayment && !enableNearpay) {
+    emit(SellingPointProductFailing(
+      message: ApiResponse.fromErrorMSG('ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر')
+    ));
+    return;
+  }
+
     emit(SellingPointProductLoading());
 
     debugPrint(" \n ******* subtotal : ${subTotalPrice()} *************** \n");
@@ -160,6 +210,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       init();
       emit(SellingPointProductSuccess(printModel: success));
     });
+  }
+  void startShift(){
+    emit(SellingPointProductLoading());
+    MyServiceLocator.getIt<ShiftCubit>().startShift(
+      branchId:repo?.branch?.id??0,
+      cash:  0.0,
+    ).then((value){
+
+      confirmPayment();
+
+    });
+
   }
 
   bool containProduct() => products.isNotEmpty;
@@ -296,6 +358,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void removeProduct({required int productId, required int? productUnitId}) {
+    if (products.length == 1 && discount != null && discount!.id == -1) {
+      changeDiscount(null);
+    }
     products.removeWhere((element) =>
         element.product.id == productId &&
         element.productUnit?.unitId == productUnitId);
@@ -342,10 +407,29 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void changeDiscount(DiscountModel? discount) {
-    if (discount?.id != this.discount?.id) {
+    if (discount == null || this.discount == null) {
       this.discount = discount;
       updatePaid();
       emit(SellingPointProductChangeDiscount());
+      return;
+    }
+
+    if (discount.id == -1 || this.discount!.id == -1) {
+      bool hasChanged = discount.id != this.discount!.id ||
+          discount.value != this.discount!.value ||
+          discount.type != this.discount!.type;
+
+      if (hasChanged) {
+        this.discount = discount;
+        updatePaid();
+        emit(SellingPointProductChangeDiscount());
+      }
+    } else {
+      if (discount.id != this.discount!.id) {
+        this.discount = discount;
+        updatePaid();
+        emit(SellingPointProductChangeDiscount());
+      }
     }
   }
 
@@ -394,6 +478,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updatePaid() {
+    if (products.isEmpty) {
+      paidController.text = '0.00';
+      selectedPaymentAmounts = {};
+      return;
+    }
     if (selectedPaymentAmounts.isNotEmpty && products.isNotEmpty) {
       if (selectedPaymentAmounts.length == 1) {
         final methodId = selectedPaymentAmounts.keys.first;
@@ -428,6 +517,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     cashAmount = 0.0;
     madaAmount = 0.0;
     onlineAmount = 0.0;
+    discount = null;
     updatePaid();
     emit(SellingPointProductResetProduct());
   }
@@ -453,72 +543,74 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductChangePaidFailing());
     }
   }
-Future<String?> processNearpayPayment({
-  required double amount,
-  required int paymentMethodId,
-  required BuildContext context,
-}) async {
-  try {
-  
-    // showDialog(
-    //   context: context,
-    //   barrierDismissible: false,
-    //   builder: (_) => WillPopScope(
-    //     onWillPop: () async => false,
-    //     child: Center(
-    //       child: CircularProgressIndicator(),
-    //     ),
-    //   ),
-    // );
 
-  
-    var madaResponse = await PaymentHelper.addTransaction(amount: amount);
-
-  
-    // if (Navigator.canPop(context)) {
-    //   Navigator.pop(context);
-    // }
-
-    madaResponse.fold(
-      (error) {
-      
-        debugPrint(' Payment failed: $error');
-        CustomPopUp.callMyToast(
-          context: context,
-          massage: 'فشل الدفع\n$error',
-          state: PopUpState.ERROR,
-        );
-        return error;
-      },
-      (response) {
-       
-        debugPrint(' Payment successful');
-        debugPrint(' Transaction UUID: ${response.transaction_uuid}');
-
-      
-        paymentReferences[paymentMethodId] = response.transaction_uuid ?? '';
-
-        CustomPopUp.callMyToast(
-          context: context,
-          massage: 'تم الدفع بنجاح\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
-          state: PopUpState.SUCCESS,
-        );
-        return null;
-      },
-    );
-  return null;
-  } catch (e) {
-    debugPrint(' Exception during payment: $e');
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
+  Future<String?> processNearpayPayment({
+    required double amount,
+    required int paymentMethodId,
+    required BuildContext context,
+  }) async {
+    try {
+      // showDialog(
+      //   context: context,
+      //   barrierDismissible: false,
+      //   builder: (_) => WillPopScope(
+      //     onWillPop: () async => false,
+      //     child: Center(
+      //       child: CircularProgressIndicator(),
+      //     ),
+      //   ),
+      // );
+     if (!enableNearpay) {
+      CustomPopUp.callMyToast(
+        context: context,
+        massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
+        state: PopUpState.ERROR,
+      );
+      return 'ميزة Nearpay غير مفعلة';
     }
-    CustomPopUp.callMyToast(
-      context: context,
-      massage: 'حدث خطأ أثناء الدفع\n$e',
-      state: PopUpState.ERROR,
-    );
-    return e.toString();
-  }
-}
+      var madaResponse = await PaymentHelper.addTransaction(amount: amount);
 
+      // if (Navigator.canPop(context)) {
+      //   Navigator.pop(context);
+      // }
+
+      madaResponse.fold(
+        (error) {
+          debugPrint(' Payment failed: $error');
+          CustomPopUp.callMyToast(
+            context: context,
+            massage: 'فشل الدفع\n$error',
+            state: PopUpState.ERROR,
+          );
+          return error;
+        },
+        (response) {
+          debugPrint(' Payment successful');
+          debugPrint(' Transaction UUID: ${response.transaction_uuid}');
+
+          paymentReferences[paymentMethodId] = response.transaction_uuid ?? '';
+
+          CustomPopUp.callMyToast(
+            context: context,
+            massage:
+                'تم الدفع بنجاح\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
+            state: PopUpState.SUCCESS,
+          );
+          return null;
+        },
+      );
+      return null;
+    } catch (e) {
+      debugPrint(' Exception during payment: $e');
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+      CustomPopUp.callMyToast(
+        context: context,
+        massage: 'حدث خطأ أثناء الدفع\n$e',
+        state: PopUpState.ERROR,
+      );
+      return e.toString();
+    }
+  }
 }

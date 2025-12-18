@@ -212,7 +212,7 @@ Future<bool> ensureBluetoothPermissions() async {
 
       return [
         ...pdfBytes,
-        ...generator.feed(2),
+        ...generator.feed(1),
         ...generator.cut(),
         ];
     }

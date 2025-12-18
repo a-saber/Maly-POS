@@ -13,6 +13,7 @@ class ProductUnit {
   final String? scaleBarcode;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final int?  quantity;
   final String? minPriceWithoutTax;
   final String? minPriceWithTax;
   final String? salePriceWithTax;
@@ -35,6 +36,7 @@ class ProductUnit {
     this.salePriceWithTax,
     this.minPriceWithTax,
     this.unit,
+    this.quantity,
     /// this will be add later
     this.branchQty = const [],
   });
@@ -44,6 +46,8 @@ class ProductUnit {
       id: json['id'] as int?,
       productId: json['product_id'] as int?,
       unitId: json['unit_id'] as int?,
+      quantity:int.tryParse(( json['quantity'] ??0).toString()),
+
       conversionFactor: json['conversion_factor'] as String?,
       costPrice: json['cost_price'] as String?,
       salePriceWithoutTax: json['sale_price_without_tax'] as String?,

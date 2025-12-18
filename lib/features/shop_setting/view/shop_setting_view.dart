@@ -156,7 +156,7 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
           CustomFormField(
             controller: ShopSettingCubit.get(context).streetController,
             hintText: S.of(context).street,
-            labelText: S.of(context). street,
+            labelText: S.of(context).street,
             validator: (value) => MyFormValidators.validateRequired(
               value,
               context: context,
@@ -202,6 +202,16 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
               context: context,
             ),
             keyboardType: TextInputType.streetAddress,
+          ),
+          CheckboxListTile(
+            title: Text(S.of(context).enableNearpay),
+            value: ShopSettingCubit.get(context).enableNearpay,
+            onChanged: (value) {
+              if (value != null) {
+                ShopSettingCubit.get(context).onChangeEnableNearpay(value);
+              }
+            },
+            controlAffinity: ListTileControlAffinity.leading,
           ),
           state is ShopSettingUpdateLoading
               ? const CustomLoading()
