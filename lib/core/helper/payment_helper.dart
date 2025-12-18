@@ -24,7 +24,7 @@ class PaymentHelper {
 
   // Initialize NearPay authentication
   static Future<void> initialize() async {
-  
+   try {
     print("^^^^^^^^^^^^ init");
     nearpay = Nearpay(
       authType: AuthenticationType.email,
@@ -33,7 +33,7 @@ class PaymentHelper {
       locale: Locale.localeDefault,
     );
     
-    try {
+   
       var response = await nearpay.initialize();
       await nearpay.setup();
 

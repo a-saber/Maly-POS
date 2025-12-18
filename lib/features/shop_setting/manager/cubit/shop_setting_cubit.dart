@@ -9,7 +9,6 @@ import 'package:pos_app/features/shop_setting/data/model/shop_setting_model.dart
 import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
 
 part 'shop_setting_state.dart';
-
 class ShopSettingCubit extends Cubit<ShopSettingState> {
   ShopSettingCubit(this.repo) : super(ShopSettingInitial());
 
@@ -68,7 +67,7 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
         countryController.text = success.country ?? '';
         imageUrl = success.imageUrl;
         enableNearpay = success.enableNearpay ?? false;
-        emit(ShopSettingGetSuccess());
+        emit(ShopSettingGetSuccess(shopSettingModel: success));
       },
     );
   }
@@ -102,6 +101,7 @@ class ShopSettingCubit extends Cubit<ShopSettingState> {
           emit(ShopSettingUpdateSuccess());
         },
       );
+      
     } else {
       autovalidateMode = AutovalidateMode.always;
       emit(ShopSettingUpdateUnValid());

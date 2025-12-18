@@ -7,7 +7,10 @@ final class ShopSettingInitial extends ShopSettingState {}
 
 final class ShopSettingUpdateUnValid extends ShopSettingState {}
 
-final class ShopSettingGetSuccess extends ShopSettingState {}
+final class ShopSettingGetSuccess extends ShopSettingState {
+  final ShopSettingModel shopSettingModel;
+  ShopSettingGetSuccess({required this.shopSettingModel});
+}
 
 final class ShopSettingUpdateSuccess extends ShopSettingState {}
 

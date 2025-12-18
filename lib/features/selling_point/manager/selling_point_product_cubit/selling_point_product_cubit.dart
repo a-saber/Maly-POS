@@ -30,9 +30,7 @@ part 'selling_point_product_state.dart';
 
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   SellingPointProductCubit(this.repo, this.paymentMethodsRepo)
-      : super(SellingPointProductInitial()){
-        _loadShopSettings();
-      }
+      : super(SellingPointProductInitial());
 
   static SellingPointProductCubit get(context) => BlocProvider.of(context);
   final SellingPointRepo repo;
@@ -98,26 +96,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
     emit(SellingPointProductInitial());
   }
-    Future<void> _loadShopSettings() async {
-    try {
-     
-      final shopSettingRepo = ShopSettingRepo(repo.api);
-      
-      final result = await shopSettingRepo.getShopSettingData();
-      result.fold(
-        (error) {
-          enableNearpay = false;
-          debugPrint(' Error loading shop settings: $error');
-        },
-        (settings) {
-          enableNearpay = settings.enableNearpay ?? false;
-          debugPrint(' Shop settings loaded: enableNearpay = $enableNearpay');
-        },
-      );
-    } catch (e) {
-      enableNearpay = false;
-      debugPrint(' Exception loading shop settings: $e');
-    }
+    Future<void> loadShopSettings(bool enableNearPay) async {
+    
+    this.enableNearpay = enableNearPay;
+    emit(SellingPointProductInitial());
+  
   }
   Future<void> loadPaymentMethods() async {
     emit(SellingPointProductLoading());
@@ -573,8 +556,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       // if (Navigator.canPop(context)) {
       //   Navigator.pop(context);
       // }
+      
 
-      madaResponse.fold(
+      String? result = madaResponse.fold(
         (error) {
           debugPrint(' Payment failed: $error');
           CustomPopUp.callMyToast(
@@ -588,7 +572,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
           debugPrint(' Payment successful');
           debugPrint(' Transaction UUID: ${response.transaction_uuid}');
 
-          paymentReferences[paymentMethodId] = response.transaction_uuid ?? '';
+          paymentReferences[paymentMethodId] = response.transaction_uuid;
 
           CustomPopUp.callMyToast(
             context: context,
@@ -599,7 +583,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
           return null;
         },
       );
-      return null;
+      return result;
     } catch (e) {
       debugPrint(' Exception during payment: $e');
       if (Navigator.canPop(context)) {

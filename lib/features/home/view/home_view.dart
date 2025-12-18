@@ -12,7 +12,6 @@ import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_b
 import 'package:pos_app/features/home/manager/cubit/home_cubit.dart';
 import 'package:pos_app/features/home/view/widget/custom_drawer.dart';
 import 'package:pos_app/features/shifts/data/repo/shift_repo.dart';
-import 'package:pos_app/features/shop_setting/manager/cubit/shop_setting_cubit.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
 
@@ -62,9 +61,6 @@ class _HomeViewState extends State<HomeView> {
             MyServiceLocator.getSingleton<BranchesRepo>(),
           )..getBranches(),
         ),
-         BlocProvider.value(
-              value: MyServiceLocator.getIt<ShopSettingCubit>()..init(),
-            ),
       ],
       child: Builder(builder: (context) {
         return BlocConsumer<HomeCubit, HomeState>(

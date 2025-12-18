@@ -23,7 +23,7 @@ class ShopSettingRepo {
       if (respone.status) {
         GetShopSettingModel getShopSettingModel =
             GetShopSettingModel.fromJson(respone.data!);
-        if(getShopSettingModel.data!.enableNearpay==true)
+        if(getShopSettingModel.data?.enableNearpay==true)
         {await PaymentHelper.initialize();}
         return Right(getShopSettingModel.data!);
       } else {
@@ -46,6 +46,7 @@ class ShopSettingRepo {
       var data = await shopSettingModel.toJsonWithoutId(
         image: image,
       );
+      print('^^^^^^^^^^^^^ Shop Setting Data: ${data.toString()}');
       var response = await api.post(
         url: url,
         data: data,
