@@ -143,7 +143,7 @@ class _CustomPaymentMethodBodyState extends State<CustomPaymentMethodBody> {
     cubit.paymentReferences.clear();
     cubit.selectedPaymentAmounts[method.id!] = totalPrice;
     bool continuePayment = true;  
-    
+    print(' 1. ----- $continuePayment -------');
     if (method.isNearpay == 1) {
       cubit.changePaid(
         totalPrice.toStringAsFixed(2),
@@ -157,18 +157,26 @@ class _CustomPaymentMethodBodyState extends State<CustomPaymentMethodBody> {
         paymentMethodId: method.id!,
         context: context,
       );
+    print(' 5. ${erorr == null} ${erorr.toString()} ----- $continuePayment -------');
 
       if (erorr != null) {
-        debugPrint(' Payment failed: $erorr');
+        // debugPrint(' Payment failed: $erorr');
+    print(' 4. ----- $continuePayment -------');
+
         continuePayment = false;
+    print(' 3. ----- $continuePayment -------');
+
       }
     }
+
+    print(' 2. ----- $continuePayment -------');
 
     if (continuePayment) {
       cubit.changePaid(
         totalPrice.toStringAsFixed(2),
         paymentAmounts: cubit.selectedPaymentAmounts,
       );
+      print(' Starting payment for 123 ${method.name}...');
       cubit.confirmPayment();
     }
   }

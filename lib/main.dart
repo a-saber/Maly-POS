@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:pos_app/core/api/api_helper.dart';
 import 'package:pos_app/core/cache/cache_helper.dart';
 import 'package:pos_app/core/cache/custom_secure_storage.dart';
 import 'package:pos_app/core/cache/custom_user_hive_box.dart';
@@ -15,6 +16,7 @@ import 'package:pos_app/core/router/app_route.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
+import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 void main() async {
@@ -41,6 +43,45 @@ class MyApp extends StatelessWidget {
 
   static final navigatorKey = GlobalKey<NavigatorState>();
   static BuildContext? get context => navigatorKey.currentContext;
+
+//   @override
+//   State<MyApp> createState() => _MyAppState();
+// }
+
+// class _MyAppState extends State<MyApp> {
+//     @override
+//   void initState() {
+//     super.initState();
+//     _initializeNearpay();
+//   }
+  //  Future<void> _initializeNearpay() async {
+  //   try {
+     
+  //     final shopSettingRepo = ShopSettingRepo(MyServiceLocator.getIt<ApiHelper>());
+  //     final result = await shopSettingRepo.getShopSettingData();
+      
+  //     result.fold(
+  //       (error) {
+  //         debugPrint(' Failed to load shop settings: $error');
+  //       },
+  //       (settings) async {
+  //         if (settings.enableNearpay == true) {
+  //           try {
+  //             await PaymentHelper.initialize();
+  //             debugPrint(' Nearpay initialized successfully');
+  //           } catch (e) {
+  //             debugPrint(' Failed to initialize Nearpay: $e');
+  //           }
+  //         } else {
+  //           debugPrint(' Nearpay is disabled');
+  //         }
+  //       },
+  //     );
+  //   } catch (e) {
+  //     debugPrint(' Exception during Nearpay initialization: $e');
+  //   }
+  // }
+  
   @override
   Widget build(BuildContext context) {
 
@@ -56,7 +97,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Maly',
-            navigatorKey: navigatorKey,
+            navigatorKey: MyApp.navigatorKey,
             theme: ThemeData(
                 useMaterial3: true,
                 colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primary),
