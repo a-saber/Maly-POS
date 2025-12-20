@@ -207,9 +207,7 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
             title: Text(S.of(context).enableNearpay),
             value: ShopSettingCubit.get(context).enableNearpay,
             onChanged: (value) {
-              if (value != null) {
-                ShopSettingCubit.get(context).onChangeEnableNearpay(value);
-              }
+              ShopSettingCubit.get(context).onChangeEnableNearpay(value ?? false);
             },
             controlAffinity: ListTileControlAffinity.leading,
           ),

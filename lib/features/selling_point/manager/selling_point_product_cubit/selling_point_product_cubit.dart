@@ -455,7 +455,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductUpdateProduct());
     }
   }
-
+  
   double roundTotolPrice() {
     return round2(totalPrice());
   }
