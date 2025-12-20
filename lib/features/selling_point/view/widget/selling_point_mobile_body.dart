@@ -256,10 +256,18 @@ class _SellingPointMobileBodyState extends State<SellingPointMobileBody> {
                                 getResponsiveSize(context, size: 240),
                           ),
                           delegate: SliverChildBuilderDelegate(
-                            (context, index) => ProductItemSellingPointBuild(
+                            (context, index) { 
+                              print("--------------${SellingPointCubit.get(context)
+                                  .getProducts()
+                                  [index].name}==============${SellingPointCubit.get(context)
+                                  .getProducts()[index].isavailable}");
+                            return ProductItemSellingPointBuild(
                               product: SellingPointCubit.get(context)
                                   .getProducts()[index],
-                            ),
+
+                            );
+                            
+                            },
                             childCount: SellingPointCubit.get(context)
                                 .getProducts()
                                 .length,

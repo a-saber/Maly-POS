@@ -11,6 +11,7 @@ import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/data/model/product_type.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
+import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
@@ -29,7 +30,7 @@ class EditProductCubit extends Cubit<EditProductState> {
     required this.categoryRepo,
   }) : super(EditProductInitial()) {
     baseUnitId = product.baseUnitId ?? product.unit?.id ?? 1;
-    isavailable = product.isavailable ?? 1;
+    isavailable = product.isAvailableBool ? 1 : 0;
     _initControllers();
   }
 
@@ -244,13 +245,27 @@ Future<void> editProduct(BuildContext context) async {
 
         emit(EditProductSuccess(product: updatedProduct));
         
-
+      
         GetAllProductsCubit.get(context).updateProduct(updatedProduct);
       
-        try {
-          MyServiceLocator.getSingleton<SellingPointProductCubit>()
-              .updateProduct(updatedProduct);
-          debugPrint(' Updated product in selling point');
+       
+       try {
+          final sellingPointCubit = MyServiceLocator.getSingleton<SellingPointProductCubit>();
+          final sellingPointCubitproduct = MyServiceLocator.getSingleton<SellingPointCubit>();
+         
+          if (updatedProduct.isavailable == 0) {
+            sellingPointCubit.deleteProduct(updatedProduct);
+        
+            sellingPointCubit.emit(SellingPointProductDeleteProduct());
+            debugPrint(' Removed unavailable product from selling point');
+          } else {
+        
+            sellingPointCubit.updateProduct(updatedProduct);
+            sellingPointCubitproduct.updateProducts( updatedProduct);
+           
+            sellingPointCubit.emit(SellingPointProductUpdateProduct());
+            debugPrint(' Updated available product in selling point');
+          }
         } catch (e) {
           debugPrint(' Selling point not active: $e');
         }
@@ -261,7 +276,6 @@ Future<void> editProduct(BuildContext context) async {
     },
   );
 }
-
   void addProductUnits() {
     final newUnit = ProductUnits.empty();
     newUnit.id = null;

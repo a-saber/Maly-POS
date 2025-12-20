@@ -21,8 +21,13 @@ class ProductItemSellingPointBuild extends StatelessWidget {
   });
 
   final ProductModel product;
+  
   @override
   Widget build(BuildContext context) {
+    if (product.isavailable == 0) {
+      return SizedBox.shrink();
+    }
+    
     return BlocConsumer<SellingPointProductCubit, SellingPointProductState>(
       listener: (context, state) {
         if (state is SellingPointProductAddingFailingProduct) {
@@ -33,17 +38,18 @@ class ProductItemSellingPointBuild extends StatelessWidget {
           );
         }
       },
-
-      builder: (context, state)=>InkWell(
+      builder: (context, state) => InkWell(
         onTap: () {
-          if((product.productUnits?.length??0)>1 ){
-
-            CustomServiceWidget.showDialogHelper(context, contentWidget: CustomProductUnitDialog(product: product));
-          }
-          else{
-
-            SellingPointProductCubit.get(context).addProduct(product: product,productUnit:product.productUnits?.firstOrNull );
-
+          if ((product.productUnits?.length ?? 0) > 1) {
+            CustomServiceWidget.showDialogHelper(
+              context,
+              contentWidget: CustomProductUnitDialog(product: product),
+            );
+          } else {
+            SellingPointProductCubit.get(context).addProduct(
+              product: product,
+              productUnit: product.productUnits?.firstOrNull,
+            );
           }
         },
         child: Container(
@@ -69,20 +75,19 @@ class ProductItemSellingPointBuild extends StatelessWidget {
             children: [
               CustomCachedNetworkImage(
                 imageUrl: product.imageUrl,
-                // borderRadius: BorderRadius.circular(15),
                 imageBuilder: (imageProvider) => Container(
                   decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.cover)),
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 width: getResponsiveSize(context, size: 120),
                 height: getResponsiveSize(context, size: 120),
               ),
               TextHighlight(
-                text: product.name ??
-                    S
-                        .of(context)
-                        .noName, // You need to pass the string you want the highlights
+                text: product.name ?? S.of(context).noName,
                 words: {
                   SellingPointCubit.get(context).query: HighlightedWord(
                     textStyle: AppFontStyle.itemssmallTitle(
@@ -94,7 +99,7 @@ class ProductItemSellingPointBuild extends StatelessWidget {
                       color: Colors.yellow,
                     ),
                   ),
-                }, // Your dictionary words
+                },
                 textStyle: AppFontStyle.itemssmallTitle(
                   fontWeight: FontWeight.w500,
                   color: Colors.black,
@@ -104,19 +109,8 @@ class ProductItemSellingPointBuild extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
               ),
-              // Text(
-              //   name,
-              //   style: AppFontStyle.itemssmallTitle(
-              //     context: context,
-              //     fontWeight: FontWeight.w500,
-              //     color: Colors.black,
-              //   ),
-              //   maxLines: 2,
-              //   overflow: TextOverflow.ellipsis,
-              //   textAlign: TextAlign.center,
-              // ),
-              Text((product.salePriceWithTaxForBaseUnit?? 0.0).toStringAsFixed(2),
-
+              Text(
+                (product.salePriceWithTaxForBaseUnit ?? 0.0).toStringAsFixed(2),
                 style: AppFontStyle.itemssmallTitle(
                   fontWeight: FontWeight.w400,
                   color: Colors.black,

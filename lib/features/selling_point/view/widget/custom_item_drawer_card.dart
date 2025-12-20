@@ -18,8 +18,10 @@ class CustomItemDrawerCard extends StatefulWidget {
     this.onTapAdd,
     this.onTapRemove,
     this.onTapDelete,
-    required this.product, this.onChangePrice,
+    required this.product,
+    this.onChangePrice,
     this.onToggleShowEditPrice,
+    this.onTapQuantity,
   });
   final ProductSellingModel product;
   final void Function()? onTapAdd;
@@ -27,6 +29,7 @@ class CustomItemDrawerCard extends StatefulWidget {
   final void Function()? onTapDelete;
   final VoidCallback? onChangePrice;
   final VoidCallback? onToggleShowEditPrice;
+  final VoidCallback? onTapQuantity;
 
   @override
   State<CustomItemDrawerCard> createState() => _CustomItemDrawerCardState();
@@ -34,12 +37,12 @@ class CustomItemDrawerCard extends StatefulWidget {
 
 class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   Timer? _debounce;
-   @override
+  @override
   void dispose() {
-
-     _debounce?.cancel();
+    _debounce?.cancel();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -82,24 +85,25 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                           height: 8,
                         ),
                         SizedBox(
-
                           width: 150,
                           child: Form(
                             key: widget.product.formKey,
                             child: CustomFormField(
                                 controller: widget.product.priceController,
                                 keyboardType: TextInputType.number,
+                                validator: (value) =>
+                                    MyFormValidators.validateDoublePrice(
+                                      value,
+                                      context: context,
+                                      haveMin: true,
+                                      min: widget.product.minPrice,
+                                    ),
+                                onChanged: (value) {
+                                  if (_debounce?.isActive ?? false)
+                                    _debounce!.cancel();
 
-                                validator: (value) => MyFormValidators.validateDoublePrice(
-                                  value,
-                                  context: context,
-                                  haveMin: true,
-                                  min: widget.product.minPrice,
-                                ),
-                                onChanged: (value){
-                                  if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-                                  _debounce = Timer(const Duration(milliseconds: 600), () {
+                                  _debounce = Timer(
+                                      const Duration(milliseconds: 600), () {
                                     widget.onChangePrice?.call();
                                   });
 
@@ -107,12 +111,10 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                                   //
                                   //
                                   // });
-                                }
-
-                            ),
+                                }),
                           ),
                         ),
-                       /* InputQty.int(
+                        /* InputQty.int(
                            initVal: 1,
                             qtyFormProps: QtyFormProps(
                               controller: widget.product.qtyController,),
@@ -160,7 +162,6 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                               isBordered: true
                           ),
                         )*/
-
                       ],
                     ),
                   ),
@@ -184,16 +185,23 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                       ),
                       alignment: Alignment.center,
                       child: Center(
-                        child: Text(
-                          widget.product.count.toString(),
-                          style: AppFontStyle.itemsSubTitle(
-                            context: context,
-                            color: AppColors.white,
-                            fontWeight: FontWeight.w600,
+                        child: InkWell(
+                          onTap: widget.onTapQuantity,
+                          child: Container(
+                            padding: EdgeInsets.all(1),
+                            decoration: BoxDecoration(
+                              color: AppColors.black.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '${widget.product.count}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.normal,
+                                color: AppColors.white,
+                              ),
+                            ),
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ),
@@ -278,7 +286,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
             ))
           ],
         ),
-       /* if(product.showEditPrice)...
+        /* if(product.showEditPrice)...
         [
         const SizedBox(
           height: 10,
@@ -362,8 +370,6 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
           ],
         )
         ],*/
-
-
       ],
     );
   }
