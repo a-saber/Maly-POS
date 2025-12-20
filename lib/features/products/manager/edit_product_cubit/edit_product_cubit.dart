@@ -75,12 +75,10 @@ class EditProductCubit extends Cubit<EditProductState> {
     openingQuantityController = TextEditingController();
     emit(EditProductOnPriceChange());
   }
-
   void onChangeAvailability(bool value) {
     isavailable = value ? 1 : 0;
     emit(AddProductChangeAvailability());
   }
-
   void init({required BuildContext context}) async {
     emit(EditProductInitializing());
 
@@ -124,7 +122,7 @@ class EditProductCubit extends Cubit<EditProductState> {
         }
       }
     }
-
+    
     _initProductUnitsFromProduct();
 
     emit(EditProductInitialized());
@@ -160,8 +158,7 @@ class EditProductCubit extends Cubit<EditProductState> {
       return;
     }
 
-    final result =
-        await categoryRepo.getSpecificCategory(id: product.categoryId!);
+    final result = await categoryRepo.getSpecificCategory(id: product.categoryId!);
 
     result.fold((l) {}, (r) {
       category = r;
@@ -184,6 +181,7 @@ Future<void> editProduct(BuildContext context) async {
     u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
     u.salePriceWithTax = u.salePriceWithTaxController?.text;
     u.barcode = u.barCodeController?.text;
+    isavailable = product.isavailable ?? 1;
     u.scaleBarcode = u.scaleBarcodeController?.text;
     for (var bq in u.branchQty) {
       bq.branchId = bq.branchId ?? bq.branch?.id;
@@ -205,12 +203,12 @@ Future<void> editProduct(BuildContext context) async {
     type: productType?.value ?? product.type ?? 'inventory',
     isavailable: isavailable,
   );
-  
+
   if (productUnits.isNotEmpty) {
     productUnits[0].unitId = unit?.id ?? baseUnitId;
   }
   updateProductModel.baseUnitId = unit?.id ?? baseUnitId;
-  
+
   final response = await repo.addUpdateProduct(
       updateProduct: updateProductModel, isUpdate: true);
 
@@ -243,10 +241,10 @@ Future<void> editProduct(BuildContext context) async {
         );
 
         emit(EditProductSuccess(product: updatedProduct));
-        
+
 
         GetAllProductsCubit.get(context).updateProduct(updatedProduct);
-      
+
         try {
           MyServiceLocator.getSingleton<SellingPointProductCubit>()
               .updateProduct(updatedProduct);
@@ -254,7 +252,7 @@ Future<void> editProduct(BuildContext context) async {
         } catch (e) {
           debugPrint(' Selling point not active: $e');
         }
-        
+
       } else {
         emit(EditProductFailing(errMessage: "فشل تحديث المنتج"));
       }
@@ -307,24 +305,19 @@ Future<void> editProduct(BuildContext context) async {
   void onChangeCost(int index) {
     if (productUnits.isEmpty) return;
 
-    if (index == 0) {
-      baseCost =
-          double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
-              0;
-      baseMinPriceWithoutTax = double.tryParse(
-              productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
-          baseCost;
-      baseMinPriceWithTax = double.tryParse(
-              productUnits[0].minPriceWithTaxController?.text ?? '') ??
-          baseMinPriceWithoutTax;
-      baseSalePriceWithoutTax = double.tryParse(
-              productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
-          0;
-      baseSalePriceWithTax = double.tryParse(
-              productUnits[0].salePriceWithTaxController?.text ?? '0') ??
-          0;
-      // productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
-      // productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
+  if (index == 0) {
+    baseCost =
+        double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
+    baseMinPriceWithoutTax = double.tryParse(
+            productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
+        baseCost;
+    baseMinPriceWithTax = double.tryParse(
+            productUnits[0].minPriceWithTaxController?.text ?? '') ??
+        baseMinPriceWithoutTax;
+    baseSalePriceWithoutTax = double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
+    baseSalePriceWithTax = double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ??0;
+    // productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
+    // productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
 
       for (int i = 1; i < productUnits.length; i++) {
         updateUnitPrices(i);
@@ -406,7 +399,7 @@ Future<void> editProduct(BuildContext context) async {
         productUnit.id = apiUnit.id;
         productUnit.unit = apiUnit.unit;
         productUnit.unitId = apiUnit.unitId;
-
+        
         double factor = double.tryParse(apiUnit.conversionFactor ?? "1") ?? 1;
         productUnit.factoryController?.text =
             factor % 1 == 0 ? factor.toStringAsFixed(0) : factor.toString();
@@ -430,6 +423,12 @@ Future<void> editProduct(BuildContext context) async {
             salePriceWithoutTax.toStringAsFixed(1);
         productUnit.salePriceWithTaxController?.text =
             salePriceWithTax.toStringAsFixed(1);
+        productUnit.minPriceWithoutTax = apiUnit.minPriceWithoutTax;
+        productUnit.minPriceWithTax = apiUnit.minPriceWithTax ?? '0';
+        productUnit.salePriceWithoutTax = apiUnit.salePriceWithoutTax ?? '0';
+        productUnit.salePriceWithTax = apiUnit.salePriceWithTax ?? '0';
+        productUnit.costPrice = apiUnit.costPrice ?? '0';
+        productUnit.conversionFactor = apiUnit.conversionFactor ?? '1';
 
         productUnit.barCodeController?.text = apiUnit.barcode ?? "";
         productUnit.scaleBarcodeController?.text = apiUnit.scaleBarcode ?? "";
@@ -449,7 +448,7 @@ Future<void> editProduct(BuildContext context) async {
 
         productUnits.add(productUnit);
       }
-
+      
       if (productUnits.isNotEmpty) {
         baseCost =
             double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
@@ -506,7 +505,7 @@ Future<void> editProduct(BuildContext context) async {
       baseMinPriceWithTax = priceWithTax;
       baseSalePriceWithTax = priceWithTax;
     }
-
+    
     for (int i = 0; i < productUnits.length; i++) {
       onChangeMinPriceWithoutTax(
         index: i,
