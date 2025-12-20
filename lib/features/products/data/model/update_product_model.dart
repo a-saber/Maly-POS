@@ -190,7 +190,6 @@ class UpdateProductModel {
         data["units[$index][sale_price_with_tax]"] =
             unit.salePriceWithTax ?? unit.salePriceWithTaxController?.text;
         // data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax ?? unit.minPriceWithoutTaxController?.text;
-        print("xxxxxxxxminPriceWithoutTax ${unit.minPriceWithoutTax}");
         data["units[$index][min_price_without_tax]"] = unit.minPriceWithoutTax;
         data["units[$index][min_price_with_tax]"] =
             unit.minPriceWithTax ?? unit.minPriceWithTaxController?.text;
