@@ -366,7 +366,8 @@ Future<Either<ApiResponse, PrintModel>> newSales({
     int index = currentIndex(categoryId: oldCayegoryId);
     if (index != -1 && oldCayegoryId != product.categoryId) {
       categorySavingDataModels[index]
-          .products?.removeWhere((element) => element.id == product.id);
+          .products
+          ?.removeWhere((element) => element.id == product.id);
     }
 
     index = currentIndex(categoryId: product.categoryId);
