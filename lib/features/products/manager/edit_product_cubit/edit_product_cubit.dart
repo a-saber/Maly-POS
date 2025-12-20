@@ -179,10 +179,11 @@ Future<void> editProduct(BuildContext context) async {
 
   for (var u in productUnits) {
     u.costPrice = u.costPriceController?.text;
-    u.minPriceWithoutTax = u.minPriceWithoutTaxController?.text;
-    u.minPriceWithTax = u.minPriceWithTaxController?.text;
-    u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
-    u.salePriceWithTax = u.salePriceWithTaxController?.text;
+//    u.minPriceWithoutTax = u.minPriceWithoutTaxController?.text;
+  //  u.minPriceWithTax = u.minPriceWithTaxController?.text;
+   /* u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
+    u.salePriceWithTax = u.salePriceWithTaxController?.text;*/
+    print("u.minPriceWithoutTax ${u.minPriceWithoutTax.toString()}");
     u.barcode = u.barCodeController?.text;
     isavailable = product.isavailable ?? 1;
     u.scaleBarcode = u.scaleBarcodeController?.text;
@@ -291,17 +292,16 @@ Future<void> editProduct(BuildContext context) async {
         baseCost =
             double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
                 0;
-        baseMinPriceWithoutTax = double.tryParse(
-                productUnits[0].minPriceWithoutTaxController?.text ?? '0') ??
+        baseMinPriceWithoutTax = double.tryParse(productUnits[0].minPriceWithoutTaxController?.text ?? '0') ??
             0;
         baseSalePriceWithoutTax = double.tryParse(
                 productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
             0;
 
         productUnits[0].minPriceWithoutTax =
-            baseMinPriceWithoutTax.toStringAsFixed(10);
+            baseMinPriceWithoutTax.toString();
         productUnits[0].salePriceWithoutTax =
-            baseSalePriceWithoutTax.toStringAsFixed(10);
+            baseSalePriceWithoutTax.toString();
       }
 
       updateUnitPrices(currentIndex);
@@ -322,19 +322,14 @@ Future<void> editProduct(BuildContext context) async {
     if (productUnits.isEmpty) return;
 
   if (index == 0) {
-    baseCost =
-        double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
-    baseMinPriceWithoutTax = double.tryParse(
-            productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
-        baseCost;
-    baseMinPriceWithTax = double.tryParse(
-            productUnits[0].minPriceWithTaxController?.text ?? '') ??
-        baseMinPriceWithoutTax;
+    baseCost = double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
+    baseMinPriceWithoutTax = double.tryParse(productUnits[0].minPriceWithoutTaxController?.text ?? '') ?? baseCost;
+    baseMinPriceWithTax = double.tryParse(productUnits[0].minPriceWithTaxController?.text ?? '') ?? baseMinPriceWithoutTax;
     baseSalePriceWithoutTax = double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
     baseSalePriceWithTax = double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ??0;
-    // productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
-    // productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
-
+    productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toString();
+     productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toString();
+    print("minPriceWithoutTax ${baseMinPriceWithoutTax.toString()}");
       for (int i = 1; i < productUnits.length; i++) {
         updateUnitPrices(i);
       }
@@ -369,12 +364,8 @@ Future<void> editProduct(BuildContext context) async {
         int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
     if (factor == 0) factor = 1;
     double newCost = baseCost * factor;
-    double newMinWithoutTax =
-        (double.tryParse(productUnits.first.minPriceWithoutTax ?? '0') ?? 0) *
-            factor;
-    double newSaleWithoutTax =
-        (double.tryParse(productUnits.first.salePriceWithoutTax ?? '0') ?? 0) *
-            factor;
+    double newMinWithoutTax = (double.tryParse(productUnits.first.minPriceWithoutTax ?? '0') ?? 0) * factor;
+    double newSaleWithoutTax = (double.tryParse(productUnits.first.salePriceWithoutTax ?? '0') ?? 0) * factor;
 
     double newMinWithTax = newMinWithoutTax;
     double newSaleWithTax = newSaleWithoutTax;
@@ -390,19 +381,14 @@ Future<void> editProduct(BuildContext context) async {
       }
     }
     productUnits[index].costPriceController?.text = newCost.toStringAsFixed(2);
-    productUnits[index].minPriceWithoutTaxController?.text =
-        newMinWithoutTax.toStringAsFixed(2);
-    productUnits[index].minPriceWithTaxController?.text =
-        newMinWithTax.toStringAsFixed(2);
-    productUnits[index].salePriceWithoutTaxController?.text =
-        newSaleWithoutTax.toStringAsFixed(2);
-    productUnits[index].salePriceWithTaxController?.text =
-        newSaleWithTax.toStringAsFixed(2);
+    productUnits[index].minPriceWithoutTaxController?.text = newMinWithoutTax.toStringAsFixed(2);
+    productUnits[index].minPriceWithTaxController?.text = newMinWithTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithoutTaxController?.text = newSaleWithoutTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithTaxController?.text = newSaleWithTax.toStringAsFixed(2);
 
-    productUnits[index].minPriceWithoutTax =
-        newMinWithoutTax.toStringAsFixed(10);
-    productUnits[index].salePriceWithoutTax =
-        newSaleWithoutTax.toStringAsFixed(10);
+    productUnits[index].minPriceWithoutTax = newMinWithoutTax.toString();
+    productUnits[index].salePriceWithoutTax = newSaleWithoutTax.toString();
+
 
     emit(EditProductChangeUnit());
   }
@@ -431,8 +417,7 @@ Future<void> editProduct(BuildContext context) async {
             double.tryParse(apiUnit.salePriceWithTax ?? '0') ?? 0;
 
         productUnit.costPriceController?.text = costPrice.toStringAsFixed(1);
-        productUnit.minPriceWithoutTaxController?.text =
-            minPriceWithoutTax.toStringAsFixed(1);
+        productUnit.minPriceWithoutTaxController?.text = minPriceWithoutTax.toStringAsFixed(1);
         productUnit.minPriceWithTaxController?.text =
             minPriceWithTax.toStringAsFixed(1);
         productUnit.salePriceWithoutTaxController?.text =
@@ -493,8 +478,7 @@ Future<void> editProduct(BuildContext context) async {
       double basePrice = double.tryParse(product.price ?? "0") ?? 0;
 
       baseUnit.costPriceController?.text = basePrice.toStringAsFixed(2);
-      baseUnit.minPriceWithoutTaxController?.text =
-          basePrice.toStringAsFixed(2);
+      baseUnit.minPriceWithoutTaxController?.text = basePrice.toStringAsFixed(2);
 
       double priceWithTax = basePrice;
       if (product.tax != null) {
@@ -503,12 +487,9 @@ Future<void> editProduct(BuildContext context) async {
         priceWithTax = basePrice + (basePrice * taxPercent / 100);
       }
 
-      baseUnit.minPriceWithTaxController?.text =
-          priceWithTax.toStringAsFixed(2);
-      baseUnit.salePriceWithoutTaxController?.text =
-          basePrice.toStringAsFixed(2);
-      baseUnit.salePriceWithTaxController?.text =
-          priceWithTax.toStringAsFixed(2);
+      baseUnit.minPriceWithTaxController?.text = priceWithTax.toStringAsFixed(2);
+      baseUnit.salePriceWithoutTaxController?.text = basePrice.toStringAsFixed(2);
+      baseUnit.salePriceWithTaxController?.text = priceWithTax.toStringAsFixed(2);
 
       baseUnit.barCodeController?.text = product.barcode ?? "";
       baseUnit.scaleBarcodeController?.text = "";
@@ -543,19 +524,15 @@ Future<void> editProduct(BuildContext context) async {
     }
 
     try {
+      productUnits[index].minPriceWithoutTax = newValue;
       Decimal newValueDecimal = Decimal.parse(newValue);
       String percentageStr = taxes?.percentage ?? "0";
       Decimal percentageDecimal = Decimal.parse(percentageStr);
-      Decimal percentFraction =
-          DecimalHelper.divide(percentageDecimal.toString(), "100");
-      Decimal onePlusFraction =
-          DecimalHelper.add("1", percentFraction.toString());
-      Decimal afterTax = DecimalHelper.multiply(
-          newValueDecimal.toString(), onePlusFraction.toString());
-      productUnits[index].minPriceWithTaxController?.text =
-          decimalToStringForUI(afterTax);
-      productUnits[index].minPriceWithTax =
-          double.tryParse(afterTax.toString())?.toStringAsFixed(10) ?? "0";
+      Decimal percentFraction = DecimalHelper.divide(percentageDecimal.toString(), "100");
+      Decimal onePlusFraction = DecimalHelper.add("1", percentFraction.toString());
+      Decimal afterTax = DecimalHelper.multiply(newValueDecimal.toString(), onePlusFraction.toString());
+      productUnits[index].minPriceWithTaxController?.text = decimalToStringForUI(afterTax);
+      productUnits[index].minPriceWithTax = double.tryParse(afterTax.toString())?.toString() ?? "0";
     } catch (_) {
       productUnits[index].minPriceWithTaxController?.text = "0";
     }
@@ -571,22 +548,19 @@ Future<void> editProduct(BuildContext context) async {
     }
 
     try {
+      productUnits[index].minPriceWithTax = newValue;
       Decimal valueWithTax = Decimal.parse(newValue);
       String percentageStr = taxes?.percentage ?? "0";
       Decimal percentageDecimal = Decimal.parse(percentageStr);
 
       Decimal percentFraction =
           DecimalHelper.divide(percentageDecimal.toString(), "100");
-      Decimal onePlusFraction =
-          DecimalHelper.add("1", percentFraction.toString());
+      Decimal onePlusFraction = DecimalHelper.add("1", percentFraction.toString());
 
-      Decimal beforeTax = DecimalHelper.divide(
-          valueWithTax.toString(), onePlusFraction.toString());
+      Decimal beforeTax = DecimalHelper.divide(valueWithTax.toString(), onePlusFraction.toString());
 
-      productUnits[index].minPriceWithoutTaxController?.text =
-          decimalToStringForUI(beforeTax);
-      productUnits[index].minPriceWithoutTax =
-          double.tryParse(beforeTax.toString())?.toStringAsFixed(10) ?? "0";
+      productUnits[index].minPriceWithoutTaxController?.text = decimalToStringForUI(beforeTax);
+      productUnits[index].minPriceWithoutTax = double.tryParse(beforeTax.toString())?.toString() ?? "0";
     } catch (_) {
       productUnits[index].minPriceWithoutTaxController?.text = "0";
     }
@@ -650,21 +624,21 @@ Future<void> editProduct(BuildContext context) async {
 
   void onChangeSalePrice(int index) {
     if (taxes != null) {
-      double value = (double.tryParse(
-          productUnits[index].salePriceWithoutTaxController?.text ?? '') ??
-          0);
+      double value = (double.tryParse(productUnits[index].salePriceWithoutTaxController?.text ?? '') ?? 0);
+      productUnits[index].salePriceWithoutTax= productUnits[index].salePriceWithoutTaxController?.text;
+
       if (value != 0) {
         double taxesPercentage =
             (double.tryParse(taxes!.percentage ?? '') ?? 0);
         if (taxesPercentage != 0) {
           double taxesValue = value * (taxesPercentage / 100);
-          productUnits[index].salePriceWithTaxController?.text =
-              (value + taxesValue).toStringAsFixed(2);
+          productUnits[index].salePriceWithTaxController?.text = (value + taxesValue).toStringAsFixed(2);
+          productUnits[index].salePriceWithTax = (value + taxesValue).toString();
         }
       }
     } else {
-      productUnits[index].salePriceWithTaxController?.text =
-          productUnits[index].salePriceWithoutTaxController?.text ?? '';
+      productUnits[index].salePriceWithTaxController?.text = productUnits[index].salePriceWithoutTaxController?.text ?? '';
+      productUnits[index].salePriceWithTax=productUnits[index].salePriceWithoutTaxController?.text ?? '';
     }
     emit(EditProductOnPriceChange());
   }

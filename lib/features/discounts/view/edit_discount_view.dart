@@ -122,6 +122,6 @@ class DiscountHelper {
   static String formatDiscountForBackend(String? value) {
     if (value == null || value.isEmpty) return '0.0000000000';
     final doubleValue = double.tryParse(value) ?? 0.0;
-    return doubleValue.toStringAsFixed(10);
+    return doubleValue.toString();
   }
 }

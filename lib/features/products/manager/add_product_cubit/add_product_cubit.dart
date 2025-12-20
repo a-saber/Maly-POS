@@ -271,8 +271,7 @@ class AddProductCubit extends Cubit<AddProductState> {
           newValueDecimal.toString(), onePlusFraction.toString());
       productUnits[index].minPriceWithTaxController?.text =
           decimalToStringForUI(afterTax);
-      productUnits[index].minPriceWithTax =
-          double.tryParse(afterTax.toString())?.toStringAsFixed(10) ?? "0";
+      productUnits[index].minPriceWithTax = double.tryParse(afterTax.toString())?.toString() ?? "0";
     } catch (_) {
       productUnits[index].minPriceWithTaxController?.text = "0";
     }
@@ -301,7 +300,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     productUnits[index].minPriceWithoutTaxController?.text =
         decimalToStringForUI(beforeTax);
     productUnits[index].minPriceWithoutTax =
-        double.tryParse(beforeTax.toString())?.toStringAsFixed(10) ?? "0";
+        double.tryParse(beforeTax.toString())?.toString() ?? "0";
   } catch (_) {
     productUnits[index].minPriceWithoutTaxController?.text = "0";
   }
@@ -380,17 +379,17 @@ class AddProductCubit extends Cubit<AddProductState> {
     }
 
     productUnits[index].costPriceController?.text = newCost.toStringAsFixed(2);
-    productUnits[index].costPrice = newCost.toStringAsFixed(10);
+    productUnits[index].costPrice = newCost.toString();
     productUnits[index].minPriceWithoutTaxController?.text =
         newMinWithoutTax.toStringAsFixed(2);
     productUnits[index].minPriceWithoutTax =
-        newMinWithoutTax.toStringAsFixed(10);
+        newMinWithoutTax.toString();
     productUnits[index].minPriceWithTaxController?.text =
         newMinWithTax.toStringAsFixed(2);
     productUnits[index].salePriceWithoutTaxController?.text =
         newSaleWithoutTax.toStringAsFixed(2);
     productUnits[index].salePriceWithoutTax =
-        newSaleWithoutTax.toStringAsFixed(10);
+        newSaleWithoutTax.toString();
     productUnits[index].salePriceWithTaxController?.text =
         newSaleWithTax.toStringAsFixed(2);
 
@@ -443,7 +442,7 @@ class AddProductCubit extends Cubit<AddProductState> {
           productUnits.salePriceWithoutTaxController?.text =
               valueWithoutTax.toStringAsFixed(2);
           productUnits.salePriceWithoutTax =
-              valueWithoutTax.toStringAsFixed(10);
+              valueWithoutTax.toString();
 
         }
       }

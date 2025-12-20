@@ -158,17 +158,21 @@ class ProductsRepo {
       debugPrint(
           " \n ******* conversionFactor : ${updateProduct.productUnits![i].conversionFactor} *************** \n");
       debugPrint(
-          " \n ******* minPriceWithoutTax $i : ${updateProduct.productUnits![i].salePriceWithoutTax} *************** \n");
+          " \n ******* salePriceWithoutTax $i : ${updateProduct.productUnits![i].salePriceWithoutTax} *************** \n");
+      debugPrint(
+          " \n ******* salePriceWithTax $i : ${updateProduct.productUnits![i].salePriceWithTax} *************** \n");
+      debugPrint(
+          " \n ******* minPriceWithTax $i : ${updateProduct.productUnits![i].minPriceWithTax} *************** \n");
+      debugPrint(
+          " \n ******* minPriceWithoutTax $i : ${updateProduct.productUnits![i].minPriceWithoutTax} *************** \n");
       updateProduct.productUnits![i].barcode =
           updateProduct.productUnits![i].barCodeController!.text;
       updateProduct.productUnits![i].scaleBarcode =
           updateProduct.productUnits![i].scaleBarcodeController!.text;
       updateProduct.productUnits![i].minPriceWithoutTax =
-          updateProduct.productUnits![i].minPriceWithoutTaxController!.text;
-      updateProduct.productUnits![i].salePriceWithTax =
-          updateProduct.productUnits![i].salePriceWithTaxController!.text;
-      // updateProduct.productUnits![i].salePriceWithoutTax =
-      //     updateProduct.productUnits![i].salePriceWithoutTaxController!.text;
+          updateProduct.productUnits![i].minPriceWithoutTax;
+      updateProduct.productUnits![i].salePriceWithTax = updateProduct.productUnits![i].salePriceWithTax;
+     // updateProduct.productUnits![i].salePriceWithoutTax = updateProduct.productUnits![i].salePriceWithoutTaxController!.text;
     }
     String url = await ApiEndPoints.getProducts();
 
