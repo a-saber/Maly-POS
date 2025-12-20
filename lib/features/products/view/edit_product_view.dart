@@ -379,9 +379,9 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                         cubit.productUnits[index].salePriceWithoutTaxController!
                             .text = value;}
                       cubit.onChangeSalePrice(index);
-                      if (index == 0&&cubit.productUnits.length>1) {
+                    /*  if (index == 0&&cubit.productUnits.length>1) {
                         cubit.onChangeCost(0);
-                      }
+                      }*/
                     }),
               ),
               DataCell(_customTextFormFieldTable(
@@ -395,9 +395,9 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                       cubit.productUnits[index].salePriceWithTaxController!.text = value;
                     }
                     cubit.changeSalePriceWithTax(index);
-                    if (index == 0&&cubit.productUnits.length>1) {
-                      cubit.onChangeCost(0);
-                    }
+                    // if (index == 0&&cubit.productUnits.length>1) {
+                    //   cubit.onChangeCost(0);
+                    // }
                   })),
               DataCell(_customTextFormFieldTable(
                 hintText: "الباركود",

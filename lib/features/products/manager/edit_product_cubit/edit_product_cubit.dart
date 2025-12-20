@@ -645,6 +645,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   void changeSalePriceWithTax(int index) {
     if (taxes != null) {
       double value = (double.tryParse(productUnits[index].salePriceWithTaxController?.text ?? '') ??0);
+      productUnits[index].salePriceWithTax=productUnits[index].salePriceWithTaxController?.text??'0';
       if (value != 0) {
         double taxesPercentage = (double.tryParse(taxes!.percentage ?? '') ?? 0);
         if (taxesPercentage != 0) {
@@ -654,8 +655,8 @@ class EditProductCubit extends Cubit<EditProductState> {
         }
       }
     } else {
-      productUnits[index].salePriceWithoutTaxController?.text =
-          productUnits[index].salePriceWithTaxController?.text ?? '';
+      productUnits[index].salePriceWithoutTaxController?.text = productUnits[index].salePriceWithTaxController?.text ?? '0';
+      productUnits[index].salePriceWithoutTax=productUnits[index].salePriceWithTaxController?.text ?? '0';
     }
     emit(EditProductOnPriceChange());
   }
