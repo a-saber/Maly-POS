@@ -168,81 +168,81 @@ class EditProductCubit extends Cubit<EditProductState> {
     });
   }
 
-Future<void> editProduct(BuildContext context) async {
-  emit(EditProductLoading());
+  Future<void> editProduct(BuildContext context) async {
+    emit(EditProductLoading());
 
-  if (formKey.currentState?.validate() != true) {
-    autovalidateMode = AutovalidateMode.always;
-    emit(EditProductUnValid());
-    return;
-  }
+    if (formKey.currentState?.validate() != true) {
+      autovalidateMode = AutovalidateMode.always;
+      emit(EditProductUnValid());
+      return;
+    }
 
-  for (var u in productUnits) {
-    u.costPrice = u.costPriceController?.text;
-//    u.minPriceWithoutTax = u.minPriceWithoutTaxController?.text;
-  //  u.minPriceWithTax = u.minPriceWithTaxController?.text;
-   /* u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
-    u.salePriceWithTax = u.salePriceWithTaxController?.text;*/
-    print("u.minPriceWithoutTax ${u.minPriceWithoutTax.toString()}");
+    for (var u in productUnits) {
+      u.costPrice = u.costPriceController?.text;
+  //    u.minPriceWithoutTax = u.minPriceWithoutTaxController?.text;
+    //  u.minPriceWithTax = u.minPriceWithTaxController?.text;
+     /* u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
+      u.salePriceWithTax = u.salePriceWithTaxController?.text;*/
+      print("u.minPriceWithoutTax ${u.minPriceWithoutTax.toString()}");
     u.barcode = u.barCodeController?.text;
     isavailable = product.isavailable ?? 1;
-    u.scaleBarcode = u.scaleBarcodeController?.text;
-    for (var bq in u.branchQty) {
-      bq.branchId = bq.branchId ?? bq.branch?.id;
-      bq.qunantity = int.tryParse(bq.quantityController.text) ?? 0;
+      u.scaleBarcode = u.scaleBarcodeController?.text;
+      for (var bq in u.branchQty) {
+        bq.branchId = bq.branchId ?? bq.branch?.id;
+        bq.qunantity = int.tryParse(bq.quantityController.text) ?? 0;
+      }
     }
-  }
 
-  UpdateProductModel updateProductModel = UpdateProductModel.createWithoutId(
-    id: product.id,
-    unit: unit,
-    productUnits: productUnits,
-    name: nameController.text,
-    description: descriptionController.text,
-    category: category,
-    image: image == null ? null : File(image!.path),
-    price: pricePerUnitController.text,
-    brand: brandController.text,
-    tax: taxes,
-    type: productType?.value ?? product.type ?? 'inventory',
-    isavailable: isavailable,
-  );
-  
-  if (productUnits.isNotEmpty) {
-    productUnits[0].unitId = unit?.id ?? baseUnitId;
-  }
-  updateProductModel.baseUnitId = unit?.id ?? baseUnitId;
-  
-  final response = await repo.addUpdateProduct(
-      updateProduct: updateProductModel, isUpdate: true);
+    UpdateProductModel updateProductModel = UpdateProductModel.createWithoutId(
+      id: product.id,
+      unit: unit,
+      productUnits: productUnits,
+      name: nameController.text,
+      description: descriptionController.text,
+      category: category,
+      image: image == null ? null : File(image!.path),
+      price: pricePerUnitController.text,
+      brand: brandController.text,
+      tax: taxes,
+      type: productType?.value ?? product.type ?? 'inventory',
+      isavailable: isavailable,
+    );
 
-  response.fold(
-    (error) => emit(EditProductFailing(errMessage: error.message!)),
-    (productFromApi) {
-      if (productFromApi != null) {
-        final updatedProduct = ProductModel(
-          id: productFromApi.id,
-          name: productFromApi.name,
-          categoryId: productFromApi.categoryId,
-          category: category,
-          baseUnitId: productFromApi.baseUnitId,
-          unit: unit,
-          description: productFromApi.description,
-          imagePath: productFromApi.imagePath,
-          barcode: productFromApi.barcode,
-          brand: productFromApi.brand,
-          price: productFromApi.price,
-          createdAt: productFromApi.createdAt,
-          updatedAt: productFromApi.updatedAt,
-          imageUrl: productFromApi.imageUrl,
-          tax: taxes,
-          isavailable: productFromApi.isavailable,
-          taxId: productFromApi.taxId,
-          priceAfterTax: productFromApi.priceAfterTax,
-          type: productFromApi.type,
-          quantity: productFromApi.quantity,
-          productUnits: productFromApi.productUnits,
-        );
+    if (productUnits.isNotEmpty) {
+      productUnits[0].unitId = unit?.id ?? baseUnitId;
+    }
+    updateProductModel.baseUnitId = unit?.id ?? baseUnitId;
+
+    final response = await repo.addUpdateProduct(
+        updateProduct: updateProductModel, isUpdate: true);
+
+    response.fold(
+      (error) => emit(EditProductFailing(errMessage: error.message!)),
+      (productFromApi) {
+        if (productFromApi != null) {
+          final updatedProduct = ProductModel(
+            id: productFromApi.id,
+            name: productFromApi.name,
+            categoryId: productFromApi.categoryId,
+            category: category,
+            baseUnitId: productFromApi.baseUnitId,
+            unit: unit,
+            description: productFromApi.description,
+            imagePath: productFromApi.imagePath,
+            barcode: productFromApi.barcode,
+            brand: productFromApi.brand,
+            price: productFromApi.price,
+            createdAt: productFromApi.createdAt,
+            updatedAt: productFromApi.updatedAt,
+            imageUrl: productFromApi.imageUrl,
+            tax: taxes,
+            isavailable: productFromApi.isavailable,
+            taxId: productFromApi.taxId,
+            priceAfterTax: productFromApi.priceAfterTax,
+            type: productFromApi.type,
+            quantity: productFromApi.quantity,
+            productUnits: productFromApi.productUnits,
+          );
 
         emit(EditProductSuccess(product: updatedProduct));
 
@@ -251,32 +251,32 @@ Future<void> editProduct(BuildContext context) async {
 
         try {
           final sellingPointCubit = MyServiceLocator.getSingleton<SellingPointProductCubit>();
-          final sellingPointCubitproduct = MyServiceLocator.getSingleton<SellingPointCubit>();
+          final sellingPointCubitProduct = MyServiceLocator.getSingleton<SellingPointCubit>();
 
           if (updatedProduct.isavailable == 0) {
             sellingPointCubit.deleteProduct(updatedProduct);
 
-            sellingPointCubit.emit(SellingPointProductDeleteProduct());
-            debugPrint(' Removed unavailable product from selling point');
+
+              debugPrint(' Removed unavailable product from cart');
           } else {
 
             sellingPointCubit.updateProduct(updatedProduct);
-            sellingPointCubitproduct.updateProducts( updatedProduct);
+            debugPrint(' Updated product in cart');
+            }
 
-            sellingPointCubit.emit(SellingPointProductUpdateProduct());
-            debugPrint(' Updated available product in selling point');
-          }
-        } catch (e) {
-          debugPrint(' Selling point not active: $e');
-        }
 
+            sellingPointCubitProduct.updateProducts( updatedProduct);
+
+                        debugPrint(' Updated product in selling point display');
+          } catch (e) {
+            debugPrint(' Selling point not active: $e');
+}
       } else {
         emit(EditProductFailing(errMessage: "فشل تحديث المنتج"));
       }
     },
   );
 }
-
   void addProductUnits() {
     final newUnit = ProductUnits.empty();
     newUnit.id = null;

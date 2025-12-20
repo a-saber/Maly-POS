@@ -45,23 +45,26 @@ class SellingPointCubit extends Cubit<SellingPointState> {
   }
 }
 void updateProducts(ProductModel product) {
- int index = repo.currentIndex(categoryId: categoryId); 
- 
+  int index = repo.currentIndex(categoryId: categoryId); 
+  
   if (index == -1) {
     return;
-  } else {
-    List<ProductModel> products;
-    if (query.isEmpty) {
-      products = categorySavingDataModels[index].products ?? [];
-    } else {
-      products = categorySavingDataModels[index].searchProduct ?? [];
-    }
-   int indexProduct= products.indexWhere((element) => element.id==product.id);
-   if(indexProduct!=-1){
-     products[indexProduct]=product;
-     emit(SellingPointProductsUpdate());
-   }
   }
+  if (categorySavingDataModels[index].products != null) {
+    int indexProduct = categorySavingDataModels[index].products!
+        .indexWhere((element) => element.id == product.id);
+    if (indexProduct != -1) {
+      categorySavingDataModels[index].products![indexProduct] = product;
+    }
+  }
+  if (categorySavingDataModels[index].searchProduct != null) {
+    int indexSearch = categorySavingDataModels[index].searchProduct!
+        .indexWhere((element) => element.id == product.id);
+    if (indexSearch != -1) {
+      categorySavingDataModels[index].searchProduct![indexSearch] = product;
+    }
+  }
+  emit(SellingPointProductsUpdate());
 }
   bool canLoading() {
     int index = repo.currentIndex(categoryId: categoryId);

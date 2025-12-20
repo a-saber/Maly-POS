@@ -25,12 +25,15 @@ class CustomPaidTextFormField extends StatelessWidget {
           builder: (context, state) {
             return InkWell(
               onTap: () {
+                final sellingCubit = SellingPointProductCubit.get(context);
                 showDialog(
                   context: context,
                   builder: (dialogContext) => BlocProvider.value(
                     value: MyServiceLocator.getSingleton<
                         SellingPointProductCubit>(),
-                    child: DynamicPaidDialog(),
+                    child: DynamicPaidDialog(
+                      enableNearPay: sellingCubit.enableNearpay,
+                    ),
                   ),
                 );
               },
@@ -55,6 +58,8 @@ class CustomPaidTextFormField extends StatelessWidget {
 }
 
 class DynamicPaidDialog extends StatefulWidget {
+  final bool? enableNearPay;
+  const DynamicPaidDialog({super.key, this.enableNearPay});
   @override
   State<DynamicPaidDialog> createState() => DynamicPaidDialogState();
 }
@@ -557,7 +562,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
 
           debugPrint(
               ' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
-          if ( MyServiceLocator.getSingleton<ShopSettingCubit>().enableNearpay != true) {
+          if (!widget.enableNearPay!) {
             CustomPopUp.callMyToast(
               context: context,
               massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
