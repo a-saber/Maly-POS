@@ -65,6 +65,9 @@ class ShopSettingModel {
       updatedAt: json[ApiKeys.updatedat],
       imageUrl: json[ApiKeys.imageurl],
       enableNearpay: json[ApiKeys.enablenearpay],
+
+
+
     );
   }
   factory ShopSettingModel.createModelWithoutId({
@@ -81,6 +84,8 @@ class ShopSettingModel {
     required String? district,
     required String? country,
     required bool? enableNearpay,
+
+
   }) {
     return ShopSettingModel(
       id: null,
@@ -124,6 +129,7 @@ class ShopSettingModel {
     data[ApiKeys.updatedat] = updatedAt;
     data[ApiKeys.imageurl] = imageUrl;
     data[ApiKeys.enablenearpay] = enableNearpay;
+
     return data;
   }
 
