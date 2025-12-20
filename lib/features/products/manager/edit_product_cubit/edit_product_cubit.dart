@@ -275,6 +275,7 @@ class EditProductCubit extends Cubit<EditProductState> {
       },
     );
   }
+  //----------------
   void addProductUnits() {
     final newUnit = ProductUnits.empty();
     newUnit.id = null;
