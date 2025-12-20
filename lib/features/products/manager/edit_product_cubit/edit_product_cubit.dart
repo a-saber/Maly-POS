@@ -328,12 +328,8 @@ class EditProductCubit extends Cubit<EditProductState> {
     baseMinPriceWithTax = double.tryParse(
             productUnits[0].minPriceWithTaxController?.text ?? '') ??
         baseMinPriceWithoutTax;
-    baseSalePriceWithoutTax = double.tryParse(
-            productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
-        0;
-    baseSalePriceWithTax = double.tryParse(
-            productUnits[0].salePriceWithTaxController?.text ?? '0') ??
-        0;
+    baseSalePriceWithoutTax = double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
+    baseSalePriceWithTax = double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ??0;
     // productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
     // productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
 
@@ -426,6 +422,12 @@ class EditProductCubit extends Cubit<EditProductState> {
         productUnit.minPriceWithTaxController?.text = minPriceWithTax.toStringAsFixed(1);
         productUnit.salePriceWithoutTaxController?.text = salePriceWithoutTax.toStringAsFixed(1);
         productUnit.salePriceWithTaxController?.text = salePriceWithTax.toStringAsFixed(1);
+        productUnit.minPriceWithoutTax = apiUnit.minPriceWithoutTax;
+        productUnit.minPriceWithTax = apiUnit.minPriceWithTax ?? '0';
+        productUnit.salePriceWithoutTax = apiUnit.salePriceWithoutTax ?? '0';
+        productUnit.salePriceWithTax = apiUnit.salePriceWithTax ?? '0';
+        productUnit.costPrice = apiUnit.costPrice ?? '0';
+        productUnit.conversionFactor = apiUnit.conversionFactor ?? '1';
 
         productUnit.barCodeController?.text = apiUnit.barcode ?? "";
         productUnit.scaleBarcodeController?.text = apiUnit.scaleBarcode ?? "";
