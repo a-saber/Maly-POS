@@ -639,6 +639,7 @@ class EditProductCubit extends Cubit<EditProductState> {
       productUnits[index].salePriceWithTaxController?.text = productUnits[index].salePriceWithoutTaxController?.text ?? '';
       productUnits[index].salePriceWithTax=productUnits[index].salePriceWithoutTaxController?.text ?? '';
     }
+    //test
     emit(EditProductOnPriceChange());
   }
 
