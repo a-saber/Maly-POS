@@ -172,11 +172,8 @@ class ProductModel {
         ? CategoryModel.fromJson(json[ApiKeys.category])
         : null,
 
-       isavailable: json['switch'] == null
-    ? 1  
-    : json['switch'] is bool
-        ? (json['switch'] ? 1 : 0)
-        : int.tryParse(json['switch'].toString()) ?? 1,
+      isavailable: 
+      int.tryParse((json['switch']??'1').toString())
     );
 
   }

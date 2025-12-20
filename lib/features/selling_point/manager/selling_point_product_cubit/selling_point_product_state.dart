@@ -31,7 +31,7 @@ final class SellingPointProductIncreaseCount extends SellingPointProductState {}
 
 final class SellingPointProductIncreaseCountFailing
     extends SellingPointProductState {}
-
+final class SellingPointProductUpdateQuantity extends SellingPointProductState {}
 final class SellingPointProductDecreaseCount extends SellingPointProductState {}
 
 final class SellingPointProductRemoveProduct extends SellingPointProductState {}

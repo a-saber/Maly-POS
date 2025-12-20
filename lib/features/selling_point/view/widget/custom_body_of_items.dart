@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import 'package:pos_app/features/selling_point/view/widget/custom_item_drawer_card.dart';
+import 'package:pos_app/features/selling_point/view/widget/productquantity.dart';
 import 'package:pos_app/generated/l10n.dart';
 
 class CustomBodyOfItems extends StatelessWidget {
@@ -17,10 +18,11 @@ class CustomBodyOfItems extends StatelessWidget {
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (context, index) {
-        final productId = SellingPointProductCubit.get(context).products[index].product
-            .id!;
-        final productUnitId = SellingPointProductCubit.get(context).products[index].productUnit?.unitId;
-
+        final cubit = SellingPointProductCubit.get(context);
+        final product = cubit.products[index]; 
+        final productId = product.product.id!;
+        final productUnitId = product.productUnit?.unitId;
+        
         return BlocListener<SellingPointProductCubit, SellingPointProductState>(
           listener: (context, state) {
             if (state is SellingPointProductIncreaseCountFailing) {
@@ -32,14 +34,32 @@ class CustomBodyOfItems extends StatelessWidget {
             }
           },
           child: CustomItemDrawerCard(
-            product: SellingPointProductCubit.get(context).products[index],
-            onTapAdd: () => SellingPointProductCubit.get(context).increaseCount(
-                productId: productId,productUnitId:productUnitId ),
-            onTapRemove: () => SellingPointProductCubit.get(context).decreaseCount(productId: productId,productUnitId:productUnitId ),
-            onTapDelete: () => SellingPointProductCubit.get(context)
-                .removeProduct( productId: productId,productUnitId:productUnitId ),
-            onChangePrice:()=> SellingPointProductCubit.get(context).changePrice( productId: productId, productUnitId:productUnitId ),
-            onToggleShowEditPrice: ()=>SellingPointProductCubit.get(context).toggleShowEditPrice( productId: productId, productUnitId:productUnitId ) ,
+            product: product,
+            onTapAdd: () => cubit.increaseCount(
+                productId: productId, productUnitId: productUnitId),
+            onTapRemove: () => cubit.decreaseCount(
+                productId: productId, productUnitId: productUnitId),
+            onTapDelete: () => cubit.removeProduct(
+                productId: productId, productUnitId: productUnitId),
+            onChangePrice: () => cubit.changePrice(
+                productId: productId, productUnitId: productUnitId),
+            onToggleShowEditPrice: () => cubit.toggleShowEditPrice(
+                productId: productId, productUnitId: productUnitId),
+            onTapQuantity: () {
+              showDialog(
+                context: context,
+                builder: (dialogContext) => ProductQuantityDialog(
+                  currentQuantity: product.count, // Use product.count instead of productItem.count
+                  onQuantityChanged: (newQuantity) {
+                    cubit.updateQuantity(
+                      productId: productId,
+                      productUnitId: productUnitId,
+                      newQuantity: newQuantity,
+                    );
+                  },
+                ),
+              );
+            },
           ),
         );
       },

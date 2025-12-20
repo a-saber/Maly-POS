@@ -11,6 +11,7 @@ import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/products/data/model/product_type.dart';
 import 'package:pos_app/features/products/data/model/update_product_model.dart';
 import 'package:pos_app/features/products/data/repo/products_repo.dart';
+import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
@@ -29,7 +30,7 @@ class EditProductCubit extends Cubit<EditProductState> {
     required this.categoryRepo,
   }) : super(EditProductInitial()) {
     baseUnitId = product.baseUnitId ?? product.unit?.id ?? 1;
-    isavailable = product.isavailable ?? 1;
+    isavailable = product.isAvailableBool ? 1 : 0;
     _initControllers();
   }
 
@@ -75,10 +76,12 @@ class EditProductCubit extends Cubit<EditProductState> {
     openingQuantityController = TextEditingController();
     emit(EditProductOnPriceChange());
   }
+
   void onChangeAvailability(bool value) {
     isavailable = value ? 1 : 0;
     emit(AddProductChangeAvailability());
   }
+
   void init({required BuildContext context}) async {
     emit(EditProductInitializing());
 
@@ -122,7 +125,7 @@ class EditProductCubit extends Cubit<EditProductState> {
         }
       }
     }
-    
+
     _initProductUnitsFromProduct();
 
     emit(EditProductInitialized());
@@ -203,12 +206,12 @@ Future<void> editProduct(BuildContext context) async {
     type: productType?.value ?? product.type ?? 'inventory',
     isavailable: isavailable,
   );
-
+  
   if (productUnits.isNotEmpty) {
     productUnits[0].unitId = unit?.id ?? baseUnitId;
   }
   updateProductModel.baseUnitId = unit?.id ?? baseUnitId;
-
+  
   final response = await repo.addUpdateProduct(
       updateProduct: updateProductModel, isUpdate: true);
 
@@ -246,9 +249,22 @@ Future<void> editProduct(BuildContext context) async {
         GetAllProductsCubit.get(context).updateProduct(updatedProduct);
 
         try {
-          MyServiceLocator.getSingleton<SellingPointProductCubit>()
-              .updateProduct(updatedProduct);
-          debugPrint(' Updated product in selling point');
+          final sellingPointCubit = MyServiceLocator.getSingleton<SellingPointProductCubit>();
+          final sellingPointCubitproduct = MyServiceLocator.getSingleton<SellingPointCubit>();
+
+          if (updatedProduct.isavailable == 0) {
+            sellingPointCubit.deleteProduct(updatedProduct);
+
+            sellingPointCubit.emit(SellingPointProductDeleteProduct());
+            debugPrint(' Removed unavailable product from selling point');
+          } else {
+
+            sellingPointCubit.updateProduct(updatedProduct);
+            sellingPointCubitproduct.updateProducts( updatedProduct);
+
+            sellingPointCubit.emit(SellingPointProductUpdateProduct());
+            debugPrint(' Updated available product in selling point');
+          }
         } catch (e) {
           debugPrint(' Selling point not active: $e');
         }
@@ -399,7 +415,7 @@ Future<void> editProduct(BuildContext context) async {
         productUnit.id = apiUnit.id;
         productUnit.unit = apiUnit.unit;
         productUnit.unitId = apiUnit.unitId;
-        
+
         double factor = double.tryParse(apiUnit.conversionFactor ?? "1") ?? 1;
         productUnit.factoryController?.text =
             factor % 1 == 0 ? factor.toStringAsFixed(0) : factor.toString();
@@ -448,7 +464,7 @@ Future<void> editProduct(BuildContext context) async {
 
         productUnits.add(productUnit);
       }
-      
+
       if (productUnits.isNotEmpty) {
         baseCost =
             double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
@@ -505,7 +521,7 @@ Future<void> editProduct(BuildContext context) async {
       baseMinPriceWithTax = priceWithTax;
       baseSalePriceWithTax = priceWithTax;
     }
-    
+
     for (int i = 0; i < productUnits.length; i++) {
       onChangeMinPriceWithoutTax(
         index: i,
