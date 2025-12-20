@@ -79,7 +79,6 @@ class EditProductCubit extends Cubit<EditProductState> {
 
   void onChangeAvailability(bool value) {
     isavailable = value ? 1 : 0;
-    print("isavailable $isavailable");
     emit(AddProductChangeAvailability());
   }
 
@@ -162,7 +161,8 @@ class EditProductCubit extends Cubit<EditProductState> {
       return;
     }
 
-    final result = await categoryRepo.getSpecificCategory(id: product.categoryId!);
+    final result =
+        await categoryRepo.getSpecificCategory(id: product.categoryId!);
 
     result.fold((l) {}, (r) {
       category = r;
@@ -180,12 +180,11 @@ class EditProductCubit extends Cubit<EditProductState> {
 
     for (var u in productUnits) {
       u.costPrice = u.costPriceController?.text;
-  //    u.minPriceWithoutTax = u.minPriceWithoutTaxController?.text;
-    //  u.minPriceWithTax = u.minPriceWithTaxController?.text;
-     /* u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
-      u.salePriceWithTax = u.salePriceWithTaxController?.text;*/
-      print("u.minPriceWithoutTax ${u.minPriceWithoutTax.toString()}");
-    u.barcode = u.barCodeController?.text;
+      u.minPriceWithoutTax = u.minPriceWithoutTaxController?.text;
+      u.minPriceWithTax = u.minPriceWithTaxController?.text;
+      u.salePriceWithoutTax = u.salePriceWithoutTaxController?.text;
+      u.salePriceWithTax = u.salePriceWithTaxController?.text;
+      u.barcode = u.barCodeController?.text;
       u.scaleBarcode = u.scaleBarcodeController?.text;
       for (var bq in u.branchQty) {
         bq.branchId = bq.branchId ?? bq.branch?.id;
@@ -213,7 +212,8 @@ class EditProductCubit extends Cubit<EditProductState> {
     }
     updateProductModel.baseUnitId = unit?.id ?? baseUnitId;
 
-    final response = await repo.addUpdateProduct(updateProduct: updateProductModel, isUpdate: true);
+    final response = await repo.addUpdateProduct(
+        updateProduct: updateProductModel, isUpdate: true);
 
     response.fold(
       (error) => emit(EditProductFailing(errMessage: error.message!)),
@@ -243,39 +243,39 @@ class EditProductCubit extends Cubit<EditProductState> {
             productUnits: productFromApi.productUnits,
           );
 
-        emit(EditProductSuccess(product: updatedProduct));
+          emit(EditProductSuccess(product: updatedProduct));
 
+          GetAllProductsCubit.get(context).updateProduct(updatedProduct);
 
-        GetAllProductsCubit.get(context).updateProduct(updatedProduct);
+          try {
+            final sellingPointCubits =
+                MyServiceLocator.getSingleton<SellingPointProductCubit>();
+            final sellingPointCubitProduct =
+                MyServiceLocator.getSingleton<SellingPointCubit>();
 
-        try {
-          final sellingPointCubit = MyServiceLocator.getSingleton<SellingPointProductCubit>();
-          final sellingPointCubitProduct = MyServiceLocator.getSingleton<SellingPointCubit>();
-
-          if (updatedProduct.isavailable == 0) {
-            sellingPointCubit.deleteProduct(updatedProduct);
-
-
+            if (updatedProduct.isavailable == 0) {
+          
+              sellingPointCubits.deleteProduct(updatedProduct);
               debugPrint(' Removed unavailable product from cart');
-          } else {
-
-            sellingPointCubit.updateProduct(updatedProduct);
-            debugPrint(' Updated product in cart');
+            } else {
+         
+              sellingPointCubits.updateProduct(updatedProduct);
+              debugPrint(' Updated product in cart');
             }
-
-
-            sellingPointCubitProduct.updateProducts( updatedProduct);
-
-                        debugPrint(' Updated product in selling point display');
+          
+        
+            sellingPointCubitProduct.updateProducts(updatedProduct);
+            debugPrint(' Updated product in selling point display');
           } catch (e) {
             debugPrint(' Selling point not active: $e');
-}
-      } else {
-        emit(EditProductFailing(errMessage: "فشل تحديث المنتج"));
-      }
-    },
-  );
-}
+          }
+        } else {
+          emit(EditProductFailing(errMessage: "فشل تحديث المنتج"));
+        }
+      },
+    );
+  }
+  //----------------
   void addProductUnits() {
     final newUnit = ProductUnits.empty();
     newUnit.id = null;
@@ -291,16 +291,17 @@ class EditProductCubit extends Cubit<EditProductState> {
         baseCost =
             double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
                 0;
-        baseMinPriceWithoutTax = double.tryParse(productUnits[0].minPriceWithoutTaxController?.text ?? '0') ??
+        baseMinPriceWithoutTax = double.tryParse(
+                productUnits[0].minPriceWithoutTaxController?.text ?? '0') ??
             0;
         baseSalePriceWithoutTax = double.tryParse(
                 productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
             0;
 
         productUnits[0].minPriceWithoutTax =
-            baseMinPriceWithoutTax.toString();
+            baseMinPriceWithoutTax.toStringAsFixed(10);
         productUnits[0].salePriceWithoutTax =
-            baseSalePriceWithoutTax.toString();
+            baseSalePriceWithoutTax.toStringAsFixed(10);
       }
 
       updateUnitPrices(currentIndex);
@@ -316,19 +317,28 @@ class EditProductCubit extends Cubit<EditProductState> {
       emit(EditProductUnitsUpdated());
     }
   }
-
   void onChangeCost(int index) {
     if (productUnits.isEmpty) return;
 
-  if (index == 0) {
-    baseCost = double.tryParse(productUnits[0].costPriceController?.text ?? '0') ?? 0;
-    baseMinPriceWithoutTax = double.tryParse(productUnits[0].minPriceWithoutTaxController?.text ?? '') ?? baseCost;
-    baseMinPriceWithTax = double.tryParse(productUnits[0].minPriceWithTaxController?.text ?? '') ?? baseMinPriceWithoutTax;
-    baseSalePriceWithoutTax = double.tryParse(productUnits[0].salePriceWithoutTaxController?.text ?? '0') ?? 0;
-    baseSalePriceWithTax = double.tryParse(productUnits[0].salePriceWithTaxController?.text ?? '0') ??0;
-    productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toString();
-     productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toString();
-    print("minPriceWithoutTax ${baseMinPriceWithoutTax.toString()}");
+    if (index == 0) {
+      baseCost =
+          double.tryParse(productUnits[0].costPriceController?.text ?? '0') ??
+              0;
+      baseMinPriceWithoutTax = double.tryParse(
+              productUnits[0].minPriceWithoutTaxController?.text ?? '') ??
+          baseCost;
+      baseMinPriceWithTax = double.tryParse(
+              productUnits[0].minPriceWithTaxController?.text ?? '') ??
+          baseMinPriceWithoutTax;
+      baseSalePriceWithoutTax = double.tryParse(
+              productUnits[0].salePriceWithoutTaxController?.text ?? '0') ??
+          0;
+      baseSalePriceWithTax = double.tryParse(
+              productUnits[0].salePriceWithTaxController?.text ?? '0') ??
+          0;
+      // productUnits[0].salePriceWithoutTax = baseSalePriceWithoutTax.toStringAsFixed(10);
+      // productUnits[0].minPriceWithoutTax = baseMinPriceWithoutTax.toStringAsFixed(10);
+
       for (int i = 1; i < productUnits.length; i++) {
         updateUnitPrices(i);
       }
@@ -363,8 +373,12 @@ class EditProductCubit extends Cubit<EditProductState> {
         int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
     if (factor == 0) factor = 1;
     double newCost = baseCost * factor;
-    double newMinWithoutTax = (double.tryParse(productUnits.first.minPriceWithoutTax ?? '0') ?? 0) * factor;
-    double newSaleWithoutTax = (double.tryParse(productUnits.first.salePriceWithoutTax ?? '0') ?? 0) * factor;
+    double newMinWithoutTax =
+        (double.tryParse(productUnits.first.minPriceWithoutTax ?? '0') ?? 0) *
+            factor;
+    double newSaleWithoutTax =
+        (double.tryParse(productUnits.first.salePriceWithoutTax ?? '0') ?? 0) *
+            factor;
 
     double newMinWithTax = newMinWithoutTax;
     double newSaleWithTax = newSaleWithoutTax;
@@ -380,18 +394,22 @@ class EditProductCubit extends Cubit<EditProductState> {
       }
     }
     productUnits[index].costPriceController?.text = newCost.toStringAsFixed(2);
-    productUnits[index].minPriceWithoutTaxController?.text = newMinWithoutTax.toStringAsFixed(2);
-    productUnits[index].minPriceWithTaxController?.text = newMinWithTax.toStringAsFixed(2);
-    productUnits[index].salePriceWithoutTaxController?.text = newSaleWithoutTax.toStringAsFixed(2);
-    productUnits[index].salePriceWithTaxController?.text = newSaleWithTax.toStringAsFixed(2);
+    productUnits[index].minPriceWithoutTaxController?.text =
+        newMinWithoutTax.toStringAsFixed(2);
+    productUnits[index].minPriceWithTaxController?.text =
+        newMinWithTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithoutTaxController?.text =
+        newSaleWithoutTax.toStringAsFixed(2);
+    productUnits[index].salePriceWithTaxController?.text =
+        newSaleWithTax.toStringAsFixed(2);
 
-    productUnits[index].minPriceWithoutTax = newMinWithoutTax.toString();
-    productUnits[index].salePriceWithoutTax = newSaleWithoutTax.toString();
-
+    productUnits[index].minPriceWithoutTax =
+        newMinWithoutTax.toStringAsFixed(10);
+    productUnits[index].salePriceWithoutTax =
+        newSaleWithoutTax.toStringAsFixed(10);
 
     emit(EditProductChangeUnit());
   }
-
   void _initProductUnitsFromProduct() {
     productUnits.clear();
     if (product.productUnits != null && product.productUnits!.isNotEmpty) {
@@ -416,19 +434,14 @@ class EditProductCubit extends Cubit<EditProductState> {
             double.tryParse(apiUnit.salePriceWithTax ?? '0') ?? 0;
 
         productUnit.costPriceController?.text = costPrice.toStringAsFixed(1);
-        productUnit.minPriceWithoutTaxController?.text = minPriceWithoutTax.toStringAsFixed(1);
+        productUnit.minPriceWithoutTaxController?.text =
+            minPriceWithoutTax.toStringAsFixed(1);
         productUnit.minPriceWithTaxController?.text =
             minPriceWithTax.toStringAsFixed(1);
         productUnit.salePriceWithoutTaxController?.text =
             salePriceWithoutTax.toStringAsFixed(1);
         productUnit.salePriceWithTaxController?.text =
             salePriceWithTax.toStringAsFixed(1);
-        productUnit.minPriceWithoutTax = apiUnit.minPriceWithoutTax;
-        productUnit.minPriceWithTax = apiUnit.minPriceWithTax ?? '0';
-        productUnit.salePriceWithoutTax = apiUnit.salePriceWithoutTax ?? '0';
-        productUnit.salePriceWithTax = apiUnit.salePriceWithTax ?? '0';
-        productUnit.costPrice = apiUnit.costPrice ?? '0';
-        productUnit.conversionFactor = apiUnit.conversionFactor ?? '1';
 
         productUnit.barCodeController?.text = apiUnit.barcode ?? "";
         productUnit.scaleBarcodeController?.text = apiUnit.scaleBarcode ?? "";
@@ -477,7 +490,8 @@ class EditProductCubit extends Cubit<EditProductState> {
       double basePrice = double.tryParse(product.price ?? "0") ?? 0;
 
       baseUnit.costPriceController?.text = basePrice.toStringAsFixed(2);
-      baseUnit.minPriceWithoutTaxController?.text = basePrice.toStringAsFixed(2);
+      baseUnit.minPriceWithoutTaxController?.text =
+          basePrice.toStringAsFixed(2);
 
       double priceWithTax = basePrice;
       if (product.tax != null) {
@@ -486,9 +500,12 @@ class EditProductCubit extends Cubit<EditProductState> {
         priceWithTax = basePrice + (basePrice * taxPercent / 100);
       }
 
-      baseUnit.minPriceWithTaxController?.text = priceWithTax.toStringAsFixed(2);
-      baseUnit.salePriceWithoutTaxController?.text = basePrice.toStringAsFixed(2);
-      baseUnit.salePriceWithTaxController?.text = priceWithTax.toStringAsFixed(2);
+      baseUnit.minPriceWithTaxController?.text =
+          priceWithTax.toStringAsFixed(2);
+      baseUnit.salePriceWithoutTaxController?.text =
+          basePrice.toStringAsFixed(2);
+      baseUnit.salePriceWithTaxController?.text =
+          priceWithTax.toStringAsFixed(2);
 
       baseUnit.barCodeController?.text = product.barcode ?? "";
       baseUnit.scaleBarcodeController?.text = "";
@@ -523,15 +540,19 @@ class EditProductCubit extends Cubit<EditProductState> {
     }
 
     try {
-      productUnits[index].minPriceWithoutTax = newValue;
       Decimal newValueDecimal = Decimal.parse(newValue);
       String percentageStr = taxes?.percentage ?? "0";
       Decimal percentageDecimal = Decimal.parse(percentageStr);
-      Decimal percentFraction = DecimalHelper.divide(percentageDecimal.toString(), "100");
-      Decimal onePlusFraction = DecimalHelper.add("1", percentFraction.toString());
-      Decimal afterTax = DecimalHelper.multiply(newValueDecimal.toString(), onePlusFraction.toString());
-      productUnits[index].minPriceWithTaxController?.text = decimalToStringForUI(afterTax);
-      productUnits[index].minPriceWithTax = double.tryParse(afterTax.toString())?.toString() ?? "0";
+      Decimal percentFraction =
+          DecimalHelper.divide(percentageDecimal.toString(), "100");
+      Decimal onePlusFraction =
+          DecimalHelper.add("1", percentFraction.toString());
+      Decimal afterTax = DecimalHelper.multiply(
+          newValueDecimal.toString(), onePlusFraction.toString());
+      productUnits[index].minPriceWithTaxController?.text =
+          decimalToStringForUI(afterTax);
+      productUnits[index].minPriceWithTax =
+          double.tryParse(afterTax.toString())?.toStringAsFixed(10) ?? "0";
     } catch (_) {
       productUnits[index].minPriceWithTaxController?.text = "0";
     }
@@ -547,19 +568,22 @@ class EditProductCubit extends Cubit<EditProductState> {
     }
 
     try {
-      productUnits[index].minPriceWithTax = newValue;
       Decimal valueWithTax = Decimal.parse(newValue);
       String percentageStr = taxes?.percentage ?? "0";
       Decimal percentageDecimal = Decimal.parse(percentageStr);
 
       Decimal percentFraction =
           DecimalHelper.divide(percentageDecimal.toString(), "100");
-      Decimal onePlusFraction = DecimalHelper.add("1", percentFraction.toString());
+      Decimal onePlusFraction =
+          DecimalHelper.add("1", percentFraction.toString());
 
-      Decimal beforeTax = DecimalHelper.divide(valueWithTax.toString(), onePlusFraction.toString());
+      Decimal beforeTax = DecimalHelper.divide(
+          valueWithTax.toString(), onePlusFraction.toString());
 
-      productUnits[index].minPriceWithoutTaxController?.text = decimalToStringForUI(beforeTax);
-      productUnits[index].minPriceWithoutTax = double.tryParse(beforeTax.toString())?.toString() ?? "0";
+      productUnits[index].minPriceWithoutTaxController?.text =
+          decimalToStringForUI(beforeTax);
+      productUnits[index].minPriceWithoutTax =
+          double.tryParse(beforeTax.toString())?.toStringAsFixed(10) ?? "0";
     } catch (_) {
       productUnits[index].minPriceWithoutTaxController?.text = "0";
     }
@@ -621,42 +645,46 @@ class EditProductCubit extends Cubit<EditProductState> {
     }
   }
 
-  void onChangeSalePrice(int index) {
+  void onChangeSalePrice(ProductUnits productUnits) {
     if (taxes != null) {
-      double value = (double.tryParse(productUnits[index].salePriceWithoutTaxController?.text ?? '') ?? 0);
-      productUnits[index].salePriceWithoutTax= productUnits[index].salePriceWithoutTaxController?.text;
-
+      double value = (double.tryParse(
+              productUnits.salePriceWithoutTaxController?.text ?? '') ??
+          0);
       if (value != 0) {
         double taxesPercentage =
             (double.tryParse(taxes!.percentage ?? '') ?? 0);
         if (taxesPercentage != 0) {
           double taxesValue = value * (taxesPercentage / 100);
-          productUnits[index].salePriceWithTaxController?.text = (value + taxesValue).toStringAsFixed(2);
-          productUnits[index].salePriceWithTax = (value + taxesValue).toString();
+          productUnits.salePriceWithTaxController?.text =
+              (value + taxesValue).toStringAsFixed(2);
         }
       }
     } else {
-      productUnits[index].salePriceWithTaxController?.text = productUnits[index].salePriceWithoutTaxController?.text ?? '';
-      productUnits[index].salePriceWithTax=productUnits[index].salePriceWithoutTaxController?.text ?? '';
+      productUnits.salePriceWithTaxController?.text =
+          productUnits.salePriceWithoutTaxController?.text ?? '';
     }
     emit(EditProductOnPriceChange());
   }
 
-  void changeSalePriceWithTax(int index) {
+  void changeSalePriceWithTax(ProductUnits productUnits) {
     if (taxes != null) {
-      double value = (double.tryParse(productUnits[index].salePriceWithTaxController?.text ?? '') ??0);
-      productUnits[index].salePriceWithTax=productUnits[index].salePriceWithTaxController?.text??'0';
+      double value = (double.tryParse(
+              productUnits.salePriceWithTaxController?.text ?? '') ??
+          0);
       if (value != 0) {
-        double taxesPercentage = (double.tryParse(taxes!.percentage ?? '') ?? 0);
+        double taxesPercentage =
+            (double.tryParse(taxes!.percentage ?? '') ?? 0);
         if (taxesPercentage != 0) {
           double valueWithoutTax = (value / (1 + (taxesPercentage / 100)));
-          productUnits[index].salePriceWithoutTaxController?.text = valueWithoutTax.toStringAsFixed(2);
-          productUnits[index].salePriceWithoutTax = valueWithoutTax.toString();
+          productUnits.salePriceWithoutTaxController?.text =
+              valueWithoutTax.toStringAsFixed(2);
+          productUnits.salePriceWithoutTax =
+              valueWithoutTax.toStringAsFixed(10);
         }
       }
     } else {
-      productUnits[index].salePriceWithoutTaxController?.text = productUnits[index].salePriceWithTaxController?.text ?? '0';
-      productUnits[index].salePriceWithoutTax=productUnits[index].salePriceWithTaxController?.text ?? '0';
+      productUnits.salePriceWithoutTaxController?.text =
+          productUnits.salePriceWithTaxController?.text ?? '';
     }
     emit(EditProductOnPriceChange());
   }
