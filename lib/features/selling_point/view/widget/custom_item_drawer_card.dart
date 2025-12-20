@@ -184,16 +184,21 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                       ),
                       alignment: Alignment.center,
                       child: Center(
-                        child: Text(
-                          widget.product.count.toString(),
-                          style: AppFontStyle.itemsSubTitle(
-                            context: context,
-                            color: AppColors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        child: Builder(
+                          builder: (context) {
+                            print('${ (widget.product.currentPriceWithTax)}');
+                            return Text(
+                              widget.product.count.toString(),
+                              style: AppFontStyle.itemsSubTitle(
+                                context: context,
+                                color: AppColors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            );
+                          }
                         ),
                       ),
                     ),

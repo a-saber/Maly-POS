@@ -312,6 +312,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
     bool canIncrease = product.increaseCount();
 
+
     if (canIncrease) {
       updatePaid();
       emit(SellingPointProductIncreaseCount());
@@ -445,12 +446,13 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updateProduct(ProductModel product) {
-    int index =
-        products.indexWhere((element) => element.product.id == product.id);
+    int index = products.indexWhere((element) => element.product.id == product.id);
+
 
     if (index != -1) {
       int count = products[index].count;
       products[index] = ProductSellingModel(product: product, count: count);
+
       updatePaid();
       emit(SellingPointProductUpdateProduct());
     }

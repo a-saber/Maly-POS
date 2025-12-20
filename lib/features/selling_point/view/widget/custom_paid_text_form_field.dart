@@ -557,7 +557,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
 
           debugPrint(
               ' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
-          if (ShopSettingCubit.get(context).enableNearpay != true) {
+          if ( MyServiceLocator.getSingleton<ShopSettingCubit>().enableNearpay != true) {
             CustomPopUp.callMyToast(
               context: context,
               massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',

@@ -632,46 +632,41 @@ Future<void> editProduct(BuildContext context) async {
     }
   }
 
-  void onChangeSalePrice(ProductUnits productUnits) {
+  void onChangeSalePrice(int index) {
     if (taxes != null) {
       double value = (double.tryParse(
-              productUnits.salePriceWithoutTaxController?.text ?? '') ??
+          productUnits[index].salePriceWithoutTaxController?.text ?? '') ??
           0);
       if (value != 0) {
         double taxesPercentage =
             (double.tryParse(taxes!.percentage ?? '') ?? 0);
         if (taxesPercentage != 0) {
           double taxesValue = value * (taxesPercentage / 100);
-          productUnits.salePriceWithTaxController?.text =
+          productUnits[index].salePriceWithTaxController?.text =
               (value + taxesValue).toStringAsFixed(2);
         }
       }
     } else {
-      productUnits.salePriceWithTaxController?.text =
-          productUnits.salePriceWithoutTaxController?.text ?? '';
+      productUnits[index].salePriceWithTaxController?.text =
+          productUnits[index].salePriceWithoutTaxController?.text ?? '';
     }
     emit(EditProductOnPriceChange());
   }
 
-  void changeSalePriceWithTax(ProductUnits productUnits) {
+  void changeSalePriceWithTax(int index) {
     if (taxes != null) {
-      double value = (double.tryParse(
-              productUnits.salePriceWithTaxController?.text ?? '') ??
-          0);
+      double value = (double.tryParse(productUnits[index].salePriceWithTaxController?.text ?? '') ??0);
       if (value != 0) {
-        double taxesPercentage =
-            (double.tryParse(taxes!.percentage ?? '') ?? 0);
+        double taxesPercentage = (double.tryParse(taxes!.percentage ?? '') ?? 0);
         if (taxesPercentage != 0) {
           double valueWithoutTax = (value / (1 + (taxesPercentage / 100)));
-          productUnits.salePriceWithoutTaxController?.text =
-              valueWithoutTax.toStringAsFixed(2);
-          productUnits.salePriceWithoutTax =
-              valueWithoutTax.toStringAsFixed(10);
+          productUnits[index].salePriceWithoutTaxController?.text = valueWithoutTax.toStringAsFixed(2);
+          productUnits[index].salePriceWithoutTax = valueWithoutTax.toString();
         }
       }
     } else {
-      productUnits.salePriceWithoutTaxController?.text =
-          productUnits.salePriceWithTaxController?.text ?? '';
+      productUnits[index].salePriceWithoutTaxController?.text =
+          productUnits[index].salePriceWithTaxController?.text ?? '';
     }
     emit(EditProductOnPriceChange());
   }

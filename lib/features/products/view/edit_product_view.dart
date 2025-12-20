@@ -377,10 +377,9 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                               .salePriceWithoutTaxController!.text !=
                           value) {
                         cubit.productUnits[index].salePriceWithoutTaxController!
-                            .text = value;
-                      }
-                      cubit.onChangeSalePrice(cubit.productUnits[index]);
-                      if (index == 0) {
+                            .text = value;}
+                      cubit.onChangeSalePrice(index);
+                      if (index == 0&&cubit.productUnits.length>1) {
                         cubit.onChangeCost(0);
                       }
                     }),
@@ -392,14 +391,11 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                       MyFormValidators.validateDouble(value, context: context),
                   controller: unit.salePriceWithTaxController,
                   onChanged: (value) {
-                    if (cubit.productUnits[index].salePriceWithTaxController!
-                            .text !=
-                        value) {
-                      cubit.productUnits[index].salePriceWithTaxController!
-                          .text = value;
+                    if (cubit.productUnits[index].salePriceWithTaxController!.text != value) {
+                      cubit.productUnits[index].salePriceWithTaxController!.text = value;
                     }
-                    cubit.changeSalePriceWithTax(cubit.productUnits[index]);
-                    if (index == 0) {
+                    cubit.changeSalePriceWithTax(index);
+                    if (index == 0&&cubit.productUnits.length>1) {
                       cubit.onChangeCost(0);
                     }
                   })),

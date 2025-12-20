@@ -182,14 +182,11 @@ class SellingPointCubit extends Cubit<SellingPointState> {
     }
   }
 
-  void updateProduct(ProductModel product,
-      {required int? oldCayegoryId, required BuildContext context}) {
-    bool update = repo.updateProductToAllAndSpecificCategory(
-        product: product, oldCayegoryId: oldCayegoryId);
+  void updateProduct(ProductModel product, {required int? oldCayegoryId}) {
+    bool update = repo.updateProductToAllAndSpecificCategory(product: product, oldCayegoryId: oldCayegoryId);
     if (update) {
       categorySavingDataModels = repo.categorySavingDataModels;
-      MyServiceLocator.getSingleton<SellingPointProductCubit>()
-          .updateProduct(product);
+      MyServiceLocator.getSingleton<SellingPointProductCubit>().updateProduct(product);
       emit(SellingPointProductsUpdate());
     }
   }
