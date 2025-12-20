@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/core/helper/is_mobile.dart';
 import 'package:pos_app/core/helper/my_service_locator.dart';
 import 'package:pos_app/core/helper/printer_helper.dart';
@@ -9,10 +9,12 @@ import 'package:pos_app/core/invoice/sales_invoices_pdf_80.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
+import 'package:pos_app/features/branch/manager/get_all_branches_cubit/get_all_branches_cubit.dart';
 import 'package:pos_app/features/printer/manager/scan_printer/scan_printer_cubit.dart';
-
+import 'package:pos_app/features/selling_point/manager/selling_point_cubit/selling_point_cubit.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
-
+import 'package:pos_app/features/shifts/manager/shift_cubit/shift_cubit.dart';
+import 'package:pos_app/features/shifts/view/widget/showdialog_for_shift.dart';
 import 'package:pos_app/generated/l10n.dart';
 import 'package:printing/printing.dart';
 import 'package:sunmi_printer_plus/sunmi_printer_plus.dart';
@@ -74,7 +76,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                   state: PopUpState.SUCCESS,
                 );
 
-             //  final bool isSunmi=await PrinterHelper().isSunmiDevice();
+               final bool isSunmi=await PrinterHelper().isSunmiDevice();
                 try {
                if (state.printModel.madaReceipt != null) {
                     await printSunmiPDF(state.printModel.madaReceipt!,'58');
@@ -128,7 +130,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                     if (printer.discoveredPrinter != null ) {
                       try {
 
-                        if(true &&  (printer?.automatic??false)){
+                        if(isSunmi &&  (printer?.automatic??false)){
                           debugPrint('Date before ${DateTime.now()}');
 
                            for(int i=0;i<(printer.printReceiptCount??1);i++) {
