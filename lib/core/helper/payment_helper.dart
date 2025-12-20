@@ -35,7 +35,7 @@ class PaymentHelper {
     
    
       var response = await nearpay.initialize();
-      await nearpay.setup();
+    await nearpay.setup();
 
       print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^ NearPay Initialized Successfully\n${response.toString()}");
     } catch (e) {
