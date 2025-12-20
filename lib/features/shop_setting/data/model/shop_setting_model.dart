@@ -66,6 +66,7 @@ class ShopSettingModel {
       imageUrl: json[ApiKeys.imageurl],
        enableNearpay: json[ApiKeys.enablenearpay] == 1 || 
                    json[ApiKeys.enablenearpay] == true,
+                   ///------------------------------
     );
   }
   factory ShopSettingModel.createModelWithoutId({

@@ -248,21 +248,21 @@ class EditProductCubit extends Cubit<EditProductState> {
           GetAllProductsCubit.get(context).updateProduct(updatedProduct);
 
           try {
-            final sellingPointCubit =
+            final sellingPointCubits =
                 MyServiceLocator.getSingleton<SellingPointProductCubit>();
             final sellingPointCubitProduct =
                 MyServiceLocator.getSingleton<SellingPointCubit>();
 
             if (updatedProduct.isavailable == 0) {
           
-              sellingPointCubit.deleteProduct(updatedProduct);
+              sellingPointCubits.deleteProduct(updatedProduct);
               debugPrint(' Removed unavailable product from cart');
             } else {
          
-              sellingPointCubit.updateProduct(updatedProduct);
+              sellingPointCubits.updateProduct(updatedProduct);
               debugPrint(' Updated product in cart');
             }
-
+          
         
             sellingPointCubitProduct.updateProducts(updatedProduct);
             debugPrint(' Updated product in selling point display');
