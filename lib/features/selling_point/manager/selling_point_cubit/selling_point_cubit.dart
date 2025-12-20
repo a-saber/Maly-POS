@@ -41,8 +41,30 @@ class SellingPointCubit extends Cubit<SellingPointState> {
     } else {
       products = categorySavingDataModels[index].searchProduct ?? [];
     }
-    return products.where((product) => product.isAvailableBool).toList();
+    return products.where((product) => product.isavailable == 1).toList();
   }
+}
+void updateProducts(ProductModel product) {
+  int index = repo.currentIndex(categoryId: categoryId); 
+  
+  if (index == -1) {
+    return;
+  }
+  if (categorySavingDataModels[index].products != null) {
+    int indexProduct = categorySavingDataModels[index].products!
+        .indexWhere((element) => element.id == product.id);
+    if (indexProduct != -1) {
+      categorySavingDataModels[index].products![indexProduct] = product;
+    }
+  }
+  if (categorySavingDataModels[index].searchProduct != null) {
+    int indexSearch = categorySavingDataModels[index].searchProduct!
+        .indexWhere((element) => element.id == product.id);
+    if (indexSearch != -1) {
+      categorySavingDataModels[index].searchProduct![indexSearch] = product;
+    }
+  }
+  emit(SellingPointProductsUpdate());
 }
   bool canLoading() {
     int index = repo.currentIndex(categoryId: categoryId);
@@ -183,7 +205,7 @@ class SellingPointCubit extends Cubit<SellingPointState> {
   }
 
   void updateProduct(ProductModel product,
-      {required int? oldCayegoryId, required BuildContext context}) {
+      {required int? oldCayegoryId,}) {
     bool update = repo.updateProductToAllAndSpecificCategory(
         product: product, oldCayegoryId: oldCayegoryId);
     if (update) {

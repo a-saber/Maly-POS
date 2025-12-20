@@ -339,7 +339,15 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductDecreaseCount());
     }
   }
+  void deleteProduct(ProductModel product) {
+  int index = products.indexWhere((element) => element.product.id == product.id);
 
+  if (index != -1) {
+    products.removeAt(index);
+    updatePaid(); 
+    emit(SellingPointProductDeleteProduct());
+  }
+}
   void removeProduct({required int productId, required int? productUnitId}) {
     if (products.length == 1 && discount != null && discount!.id == -1) {
       changeDiscount(null);
@@ -455,7 +463,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductUpdateProduct());
     }
   }
-
+  
   double roundTotolPrice() {
     return round2(totalPrice());
   }
@@ -480,16 +488,36 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
     paidController.text = roundTotolPrice().toString();
   }
+  void updateQuantity({
+  required int productId,
+  required int? productUnitId,
+  required int newQuantity,
+}) {
+  var product = products.firstWhere(
+    (element) =>
+        element.product.id == productId &&
+        element.productUnit?.unitId == productUnitId,
+  );
 
-  void deleteProduct(ProductModel product) {
-    int index =
-        products.indexWhere((element) => element.product.id == product.id);
 
-    if (index != -1) {
-      products.removeAt(index);
-      emit(SellingPointProductDeleteProduct());
+  if (product.product.type?.toLowerCase().trim() != ApiKeys.service.toLowerCase().trim()) {
+    if (newQuantity > (product.product.quantity ?? 0)) {
+      emit(SellingPointProductIncreaseCountFailing());
+      return;
     }
   }
+
+ 
+  if (newQuantity <= 0) {
+    removeProduct(productId: productId, productUnitId: productUnitId);
+    return;
+  }
+
+  product.count = newQuantity;
+  updatePaid();
+  emit(SellingPointProductUpdateQuantity());
+}
+
 
   void resetProduct() {
     products = [];

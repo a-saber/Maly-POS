@@ -164,18 +164,18 @@ class GetAllProductsCubit extends Cubit<GetAllProductsState> {
     products.removeWhere((element) => element.id == id);
     emit(GetAllProductsSuccess());
   }
-  void updateProduct(ProductModel product) {
-    final indexProduct=products.indexWhere((element) => element.id == product.id);
-    final indexSearch =searchProducts.indexWhere((element) => element.id == product.id);
-    if(indexProduct!=-1){
+void updateProduct(ProductModel product) {
+  final indexProduct = products.indexWhere((element) => element.id == product.id);
+  final indexSearch = searchProducts.indexWhere((element) => element.id == product.id);
+  
+  if (indexProduct != -1) {
     products[indexProduct] = product;
-    emit(GetAllProductsSuccess());
-    }
-    if(indexSearch!=-1){
-      searchProducts[indexSearch] = product;
-      emit(GetAllProductsSuccess());
-    }
   }
+  if (indexSearch != -1) {
+    searchProducts[indexSearch] = product;
+  }
+  emit(GetAllProductsSuccess());
+}
 
   @override
   void emit(GetAllProductsState state) {

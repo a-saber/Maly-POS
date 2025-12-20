@@ -64,7 +64,9 @@ class ShopSettingModel {
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
       imageUrl: json[ApiKeys.imageurl],
-      enableNearpay: json[ApiKeys.enablenearpay],
+       enableNearpay: json[ApiKeys.enablenearpay] == 1 || 
+                   json[ApiKeys.enablenearpay] == true,
+                   ///------------------------------
     );
   }
   factory ShopSettingModel.createModelWithoutId({
@@ -123,7 +125,7 @@ class ShopSettingModel {
     data[ApiKeys.createdat] = createdAt;
     data[ApiKeys.updatedat] = updatedAt;
     data[ApiKeys.imageurl] = imageUrl;
-    data[ApiKeys.enablenearpay] = enableNearpay;
+    data[ApiKeys.enablenearpay] = (enableNearpay ?? false) ? 1 : 0;
     return data;
   }
 
@@ -168,7 +170,7 @@ class ShopSettingModel {
       var myImage = await uploadImageToApi(image: image);
       data[ApiKeys.image] = myImage;
     }
-    data[ApiKeys.enablenearpay] = enableNearpay;
+    data[ApiKeys.enablenearpay] = (enableNearpay ?? false) ? 1 : 0;
 
     return data;
   }
