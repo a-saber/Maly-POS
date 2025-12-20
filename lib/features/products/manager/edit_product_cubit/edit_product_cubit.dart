@@ -79,6 +79,7 @@ class EditProductCubit extends Cubit<EditProductState> {
 
   void onChangeAvailability(bool value) {
     isavailable = value ? 1 : 0;
+    print("isavailable $isavailable");
     emit(AddProductChangeAvailability());
   }
 
@@ -185,7 +186,6 @@ class EditProductCubit extends Cubit<EditProductState> {
       u.salePriceWithTax = u.salePriceWithTaxController?.text;*/
       print("u.minPriceWithoutTax ${u.minPriceWithoutTax.toString()}");
     u.barcode = u.barCodeController?.text;
-    isavailable = product.isavailable ?? 1;
       u.scaleBarcode = u.scaleBarcodeController?.text;
       for (var bq in u.branchQty) {
         bq.branchId = bq.branchId ?? bq.branch?.id;
@@ -213,8 +213,7 @@ class EditProductCubit extends Cubit<EditProductState> {
     }
     updateProductModel.baseUnitId = unit?.id ?? baseUnitId;
 
-    final response = await repo.addUpdateProduct(
-        updateProduct: updateProductModel, isUpdate: true);
+    final response = await repo.addUpdateProduct(updateProduct: updateProductModel, isUpdate: true);
 
     response.fold(
       (error) => emit(EditProductFailing(errMessage: error.message!)),

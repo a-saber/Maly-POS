@@ -95,6 +95,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       availablePaymentMethods.removeAt(index);
     }
     emit(SellingPointProductInitial());
+
   }
     Future<void> loadShopSettings(bool enableNearPay) async {
     
