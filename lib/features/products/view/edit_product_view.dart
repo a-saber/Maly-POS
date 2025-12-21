@@ -350,8 +350,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
               DataCell(_customTextFormFieldTable(
                 hintText: "اقل سعر بيع",
                 enabled: true,
-                validator: (value) =>
-                    MyFormValidators.validateDouble(value, context: context),
+                validator: (value) => MyFormValidators.validateDouble(value, context: context),
                 controller: unit.minPriceWithoutTaxController,
                 onChanged: (value) => cubit.onChangeMinPriceWithoutTax(
                     index: index, newValue: value),
