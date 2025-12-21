@@ -18,13 +18,12 @@ class ProductQuantityDialog extends StatefulWidget {
 
 class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
   late TextEditingController _controller;
-
+  bool _isFirstInput = true;
+  
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.currentQuantity.toString(),
-    );
+    _controller = TextEditingController(text: '0');
   }
 
   @override
@@ -46,6 +45,32 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
     }
     widget.onQuantityChanged(quantity);
     Navigator.of(context).pop();
+  }
+  
+ 
+  void _handleInput() {
+    setState(() {
+      String text = _controller.text;
+      
+     
+      if (_isFirstInput && text.startsWith('0') && text.length > 1) {
+      
+        _controller.text = text.substring(1);
+        _controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: _controller.text.length),
+        );
+        _isFirstInput = false;
+      }
+     
+      else if (text.isNotEmpty && text != '0') {
+        _isFirstInput = false;
+      }
+      
+      else if (text.isEmpty) {
+        _isFirstInput = true;
+        _controller.text = '0';
+      }
+    });
   }
 
   @override
@@ -103,7 +128,8 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
             CustomPaymentKeyboard(
               controller: _controller,
               allowDecimal: false,
-              onChanged: () => setState(() {}),
+              onChanged: _handleInput, 
+              onEnterPressed: _applyQuantity,
             ),
             SizedBox(height: 20),
 

@@ -133,63 +133,61 @@ class _CustomPaymentMethodBodyState extends State<CustomPaymentMethodBody> {
   }
 
   void _handleSinglePayment(
-    BuildContext context,
-    SellingPointProductCubit cubit,
-    PaymentMethodSalesModel method,
-  ) async {
-    double totalPrice = cubit.totalPrice();
-    
-    cubit.selectedPaymentAmounts.clear();
-    cubit.paymentReferences.clear();
-    cubit.selectedPaymentAmounts[method.id!] = totalPrice;
-    bool continuePayment = true;  
-    print(' 1. ----- $continuePayment -------');
-    if (method.isNearpay == 1) {
-      cubit.changePaid(
-        totalPrice.toStringAsFixed(2),
-        paymentAmounts: cubit.selectedPaymentAmounts,
-      );
+  BuildContext context,
+  SellingPointProductCubit cubit,
+  PaymentMethodSalesModel method,
+) async {
+  double totalPrice = cubit.totalPrice();
+  
+ 
+  cubit.selectedPaymentAmounts.clear();
+  cubit.paymentReferences.clear();
+  cubit.selectedPaymentAmounts[method.id!] = totalPrice;
+  
+  cubit.changePaid(
+    totalPrice.toStringAsFixed(2),
+    paymentAmounts: cubit.selectedPaymentAmounts,
+  );
 
-      debugPrint(' Starting Nearpay payment for ${method.name}...');
+  
+  if (method.isNearpay == 1) {
+    debugPrint(' Starting Nearpay payment for ${method.name}...');
 
-      String? erorr = await cubit.processNearpayPayment(
-        amount: totalPrice,
-        paymentMethodId: method.id!,
-        context: context,
-      );
-    print(' 5. ${erorr == null} ${erorr.toString()} ----- $continuePayment -------');
-
-      if (erorr != null) {
-        // debugPrint(' Payment failed: $erorr');
-    print(' 4. ----- $continuePayment -------');
-
-        continuePayment = false;
-    print(' 3. ----- $continuePayment -------');
-
-      }
-    }
-
-    print(' 2. ----- $continuePayment -------');
-
-    if (continuePayment) {
-      cubit.changePaid(
-        totalPrice.toStringAsFixed(2),
-        paymentAmounts: cubit.selectedPaymentAmounts,
-      );
-      print(' Starting payment for 123 ${method.name}...');
-      cubit.confirmPayment();
-    }
-  }
-
-  void _openMixPaymentDialog(BuildContext context) {
-    showDialog(
+    String? error = await cubit.processNearpayPayment(
+      amount: totalPrice,
+      paymentMethodId: method.id!,
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: SellingPointProductCubit.get(context),
-        child: DynamicPaidDialog(),
-      ),
     );
+
+    if (error != null) {
+      debugPrint(' Nearpay payment failed: $error');
+   
+      return;
+    }
+    
+    debugPrint(' Nearpay payment successful, confirming sale...');
   }
+
+ 
+  debugPrint(' Confirming payment for ${method.name}...');
+  cubit.confirmPayment();
+}
+
+
+
+void _openMixPaymentDialog(BuildContext context) {
+  final cubit = SellingPointProductCubit.get(context);
+  
+  showDialog(
+    context: context,
+    builder: (dialogContext) => BlocProvider.value(
+      value: cubit,
+      child: DynamicPaidDialog(
+        enableNearPay: cubit.enableNearpay,  
+      ),
+    ),
+  );
+}
 }
 
 class CustomCardPaymentMethod extends StatelessWidget {

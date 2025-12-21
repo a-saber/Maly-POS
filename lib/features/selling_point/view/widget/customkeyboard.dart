@@ -7,6 +7,7 @@ class CustomPaymentKeyboard extends StatefulWidget {
   final VoidCallback onChanged;
   final bool allowDecimal;
   final FocusNode? focusNode;
+  final VoidCallback? onEnterPressed;
 
   const CustomPaymentKeyboard({
     super.key,
@@ -14,6 +15,7 @@ class CustomPaymentKeyboard extends StatefulWidget {
     required this.onChanged,
     this.allowDecimal = true,
     this.focusNode,
+    this.onEnterPressed,
   });
 
   @override
@@ -57,6 +59,11 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
       } else if (!currentText.contains('.')) {
         widget.controller.text = currentText + '.';
       }
+    } else if (value == 'ENTER') {
+      if (widget.onEnterPressed != null) {
+        widget.onEnterPressed!();
+      }
+      return; 
     } else {
       if (currentText.isEmpty) {
         widget.controller.text = value;
@@ -114,8 +121,11 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
         if (event is KeyDownEvent) {
           final key = event.logicalKey;
           
-          // أرقام
-          if (key == LogicalKeyboardKey.digit0 || key == LogicalKeyboardKey.numpad0) {
+          if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter) {
+            _onKeyPressed('ENTER');
+            return KeyEventResult.handled;
+          }
+          else if (key == LogicalKeyboardKey.digit0 || key == LogicalKeyboardKey.numpad0) {
             _onKeyPressed('0');
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.digit1 || key == LogicalKeyboardKey.numpad1) {
@@ -146,18 +156,15 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
             _onKeyPressed('9');
             return KeyEventResult.handled;
           }
-          // نقطة
           else if ((key == LogicalKeyboardKey.period || key == LogicalKeyboardKey.numpadDecimal) 
                    && widget.allowDecimal) {
             _onKeyPressed('.');
             return KeyEventResult.handled;
           }
-          // Backspace
           else if (key == LogicalKeyboardKey.backspace) {
             _onKeyPressed('⌫');
             return KeyEventResult.handled;
           }
-          // Delete أو Escape
           else if (key == LogicalKeyboardKey.delete || key == LogicalKeyboardKey.escape) {
             _onKeyPressed('C');
             return KeyEventResult.handled;
@@ -211,9 +218,47 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
                   _buildKey('⌫', isSpecial: true),
                 ],
               ),
+             
               Row(
                 children: [
                   _buildKey('C', isSpecial: true),
+                  if (widget.onEnterPressed != null)
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: ElevatedButton(
+                          onPressed: () => _onKeyPressed('ENTER'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(
+                                color: AppColors.primary,
+                                width: 1,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.check, size: 20),
+                              SizedBox(width: 4),
+                              Text(
+                                'تطبيق',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ],

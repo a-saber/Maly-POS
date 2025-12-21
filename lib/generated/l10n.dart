@@ -2944,6 +2944,14 @@ String get remainingAmount {
       args: [],
     );
   }
+  String get unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize{
+    return Intl.message(
+     " Unexpected Error: you can't call method (purchase) before initialize",
+      name: 'unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize',
+      desc: '',
+      args: [],
+    );
+  }
 
 }
 
