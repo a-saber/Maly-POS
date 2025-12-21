@@ -9,9 +9,16 @@ import 'package:pos_app/core/widget/custom_form_field.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import 'package:pos_app/features/selling_point/view/widget/customkeyboard.dart';
-import 'package:pos_app/features/shop_setting/manager/cubit/shop_setting_cubit.dart';
 import 'package:pos_app/generated/l10n.dart';
-
+String translateNearpayError(BuildContext context, String error) {
+  final cleanError = error.trim().toLowerCase();
+  
+  if (cleanError.contains("you can't call method (purchase) before initialize")) {
+    return "خطأ غير متوقع: لا يمكنك استدعاء طريقة (الشراء) قبل التهيئة";
+  }
+  return S.of(context).unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize;
+}
+ 
 class CustomPaidTextFormField extends StatelessWidget {
   const CustomPaidTextFormField({super.key});
 
@@ -562,7 +569,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
 
           debugPrint(
               ' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
-          if (!widget.enableNearPay!) {
+          if (widget.enableNearPay != true) {
             CustomPopUp.callMyToast(
               context: context,
               massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
@@ -580,9 +587,10 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
           madaResponse.fold(
             (error) {
               debugPrint(' Payment failed: $error');
+              final translatedError = translateNearpayError(context, error); 
               CustomPopUp.callMyToast(
                 context: context,
-                massage: 'فشل الدفع عبر ${method.name}\n$error',
+                massage: 'فشل الدفع عبر ${method.name}\n$translatedError',
                 state: PopUpState.ERROR,
               );
             },

@@ -336,5 +336,6 @@
        "cannot_delete_payment_method_in_use":"لا يمكن حذف طريقة الدفع لأنها مستخدمة حالياً",
        "End":"انهاء الشيفت"
        "startShift":"بدء الشيفت",
-       "enableNearpay":"تفعيل نير باي"
+       "enableNearpay":"تفعيل نير باي",
+       "unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize":"خطأ غير متوقع، لا يمكنك استدعاء طريقة الشراء قبل التهيئة"
 }
