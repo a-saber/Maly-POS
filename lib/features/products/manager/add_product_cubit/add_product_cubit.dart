@@ -129,7 +129,7 @@ class AddProductCubit extends Cubit<AddProductState> {
     if (formKey.currentState?.validate() == true) {
       for (var unit in productUnits) {
         unit.costPrice = unit.costPriceController?.text;
-        unit.minPriceWithoutTax = unit.minPriceWithoutTax;
+     //   unit.minPriceWithoutTax = unit.minPriceWithoutTax;
         print('test 0001 ${unit.salePriceWithoutTax}');
         // unit.salePriceWithoutTax = unit.salePriceWithoutTaxController?.text;
         unit.barcode = unit.barCodeController?.text;
