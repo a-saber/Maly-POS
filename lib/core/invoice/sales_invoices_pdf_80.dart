@@ -704,23 +704,32 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
                     ),
                     _buildTableRow(
                       S.of(contextView).cashTotal,
-                      (shift.shift?.cashTotal ?? '-').toAmount(),
+                      (shift.summary?.paymentMethods?.cash ?? '-').toAmount(),
                       arabicFont,
                       size,
                     ),
                     _buildTableRow(
                       S.of(contextView).onlineTotal,
-                      (shift.shift?.onlineTotal ?? '-').toAmount(),
+                      (shift.summary?.paymentMethods?.malypay ?? '-').toAmount(),
                       arabicFont,
                       size,
                     ),
                     _buildTableRow(
-                      S.of(contextView).total,
+                      S.of(contextView).totalAfterTax,
                       (shift.shift?.totalAfterTax ?? '-').toAmount(),
                       arabicFontBold,
                       size,
                       isBold: true,
                     ),
+
+                    _buildTableRow(
+                      S.of(contextView).total,
+                      (shift.summary?.totalCollected ?? '-').toAmount(),
+                      arabicFontBold,
+                      size,
+                      isBold: true,
+                    ),
+
                   ],
                 ),
               ),

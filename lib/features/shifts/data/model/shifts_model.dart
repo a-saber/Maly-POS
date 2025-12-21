@@ -83,7 +83,7 @@ class ShiftData {
   String? openingQuantity;
   String? closingQuantity;
   String? cashTotal;
-  String? onlineTotal;
+   String? onlineTotal;
   String? discountTotal;
   String? taxTotal;
   String? totalAfterTax;
@@ -110,8 +110,8 @@ class ShiftData {
     this.user,
     this.branch,
     this.closingQuantity,
-    this.cashTotal,
-    this.onlineTotal,
+     this.cashTotal,
+     this.onlineTotal,
     this.discountTotal,
     this.taxTotal,
     this.totalAfterTax,
@@ -123,7 +123,7 @@ class ShiftData {
     openingQuantity = json['opening_quantity'];
     closingQuantity = json['closing_quantity'];
     cashTotal = json['cash_total'];
-    onlineTotal = json['online_total'];
+     onlineTotal = json['online_total'];
     discountTotal = json['discount_total'];
     taxTotal = json['tax_total'];
     totalAfterTax = json['total_after_tax'];

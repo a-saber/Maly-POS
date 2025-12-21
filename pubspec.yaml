@@ -71,7 +71,7 @@ dependencies:
       url: https://github.com/nearpayio/nearpay-flutter-sdk.git
       ref: v1-google
   connectivity_plus: ^4.0.2
-  #device_info_plus: ^10.1.2
+  device_info_plus: ^10.1.2
   toastification: ^3.0.3
 
 
@@ -145,6 +145,12 @@ flutter:
           weight: 800
         - asset: assets/fonts/Cairo/Cairo-Black.ttf
           weight: 900
+    - family: Arial
+      fonts:
+          - asset: assets/fonts/arial/alfont_com_arial-1.ttf
+            weight: 400
+          - asset: assets/fonts/arial/alfont_com_AlFont_com_arialbd.ttf
+            weight: 700
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

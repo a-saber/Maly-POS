@@ -32,6 +32,31 @@ class EndShiftModel {
     return data;
   }
 }
+class PaymentMethodsModel {
+  final String? cash;
+  final String? malypay;
+
+  PaymentMethodsModel({
+    this.cash,
+    this.malypay,
+  });
+
+  factory PaymentMethodsModel.fromJson(Map<String, dynamic> json) {
+    return PaymentMethodsModel(
+      cash: json['cash'] as String?,
+      malypay: json['malypay'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'cash': cash,
+      'malypay': malypay,
+    };
+  }
+}
+
+
 
 class Shift {
   int? id;
@@ -200,8 +225,8 @@ class Summary {
   String? totalAfterDiscount;
   String? taxTotal;
   String? totalAfterTax;
-  String? cashTotal;
-  String? onlineTotal;
+  String? totalCollected;
+   PaymentMethodsModel? paymentMethods;
 
   Summary(
       {count,
@@ -210,8 +235,9 @@ class Summary {
       totalAfterDiscount,
       taxTotal,
       totalAfterTax,
-      cashTotal,
-      onlineTotal});
+        paymentMethods,
+        totalCollected,
+      });
 
   Summary.fromJson(Map<String, dynamic> json) {
     count = json['count'];
@@ -220,8 +246,12 @@ class Summary {
     totalAfterDiscount = json['total_after_discount'];
     taxTotal = json['tax_total'];
     totalAfterTax = json['total_after_tax'];
-    cashTotal = json['cash_total'];
-    onlineTotal = json['online_total'];
+    totalCollected = json['total_collected'];
+    paymentMethods= json['payment_methods'] != null
+        ? PaymentMethodsModel.fromJson(
+      json['payment_methods'] as Map<String, dynamic>,
+    )
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -232,8 +262,10 @@ class Summary {
     data['total_after_discount'] = totalAfterDiscount;
     data['tax_total'] = taxTotal;
     data['total_after_tax'] = totalAfterTax;
-    data['cash_total'] = cashTotal;
-    data['online_total'] = onlineTotal;
+    data['total_collected'] = totalCollected;
+    if (paymentMethods != null) {
+      data['payment_methods'] = paymentMethods?.toJson();
+    }
     return data;
   }
 }

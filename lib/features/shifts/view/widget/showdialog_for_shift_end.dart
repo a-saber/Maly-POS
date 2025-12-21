@@ -88,21 +88,28 @@ Future<void> showDialogForShiftEnd(BuildContext context,
               ),
             ),
             Text(
-              "${S.of(context).cashTotal}: ${(shift.shift?.cashTotal ?? '-').toAmount()}",
+              "${S.of(context).cashTotal}: ${(shift.summary?.paymentMethods?.cash ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
               ),
             ),
             Text(
-              "${S.of(context).onlineTotal}: ${(shift.shift?.onlineTotal ?? '-').toAmount()}",
+              "${S.of(context).onlineTotal}: ${(shift.summary?.paymentMethods?.malypay ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
               ),
             ),
             Text(
-              "${S.of(context).total}: ${(shift.shift?.totalAfterTax ?? '-').toAmount()}",
+              "${S.of(context).totalAfterTax}: ${(shift.shift?.totalAfterTax ?? '-').toAmount()}",
+              style: const TextStyle(
+                color: AppColors.black,
+                fontSize: 13,
+              ),
+            ),
+            Text(
+              "${S.of(context).total}: ${(shift.summary?.totalCollected ?? '-').toAmount()}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
@@ -144,13 +151,13 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
-                        if(isSunmi & printer.printerType.toString().toLowerCase().contains('sunmi') && (printer?.automatic??false)){
+                        if(isSunmi && (printer?.automatic??false)){
 
                           await printSunmiPDF(await endShiftInvoicesPdf(
                               context,
                               shift: shift,
-                              size:'80'
-                          ), '58');
+                              size:printer.paperSize??'80'
+                          ), printer.paperSize??'80');
 
                   await SunmiPrinter.lineWrap(4);
                   await SunmiPrinter.cutPaper();
@@ -164,7 +171,7 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                   var invoiceBytesUint8List = await endShiftInvoicesPdf(
                       context,
                       shift: shift,
-                      size:'80'
+                      size:printer.paperSize??'80'
                   );
 
                   await PrinterHelper().printInvoice(

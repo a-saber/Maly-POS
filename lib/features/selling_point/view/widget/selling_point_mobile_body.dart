@@ -260,7 +260,7 @@ class _SellingPointMobileBodyState extends State<SellingPointMobileBody> {
                               print("--------------${SellingPointCubit.get(context)
                                   .getProducts()
                                   [index].name}==============${SellingPointCubit.get(context)
-                                  .getProducts()[index].isavailable}");
+                                  .getProducts()[index].stockQuantity}");
                             return ProductItemSellingPointBuild(
                               product: SellingPointCubit.get(context)
                                   .getProducts()[index],

@@ -43,13 +43,19 @@ class _SellingPointViewState extends State<SellingPointView> {
     //  = scaffoldKey;
     return   BlocProvider.value(
               value: MyServiceLocator.getIt<ShopSettingCubit>()..init(),
-      child: BlocBuilder<ShopSettingCubit, ShopSettingState>(
-        builder: (context, state) {
+      child: BlocConsumer<ShopSettingCubit, ShopSettingState>(
+        listener: (context, state) {
           if(state is ShopSettingGetSuccess){
-             return BlocProvider.value(
-            value: MyServiceLocator.getSingleton<SellingPointProductCubit>()
+            MyServiceLocator.getSingleton<SellingPointProductCubit>()
               ..initThePaymentOrderAndTypeOfTakeOrder(context: context)
-              ..loadShopSettings(state.shopSettingModel.enableNearpay == true),
+              ..loadShopSettings(state.shopSettingModel.enableNearpay == true);
+          }
+        } ,
+        builder: (context, state) {
+          /// هو ده سبب الشاشه السوده
+         // if(state is ShopSettingGetSuccess){
+             return BlocProvider.value(
+            value: MyServiceLocator.getSingleton<SellingPointProductCubit>(),
             child: Builder(builder: (context) {
               return Scaffold(
                 resizeToAvoidBottomInset: true,
@@ -150,9 +156,10 @@ class _SellingPointViewState extends State<SellingPointView> {
               );
             }),
           );
-          } else {
-            return SizedBox.shrink();
-          }
+         // } else {
+          /// هو ده سبب الشاشه السوده
+           // return SizedBox.shrink();
+         // }
          }
       ),
     );

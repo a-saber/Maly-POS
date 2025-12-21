@@ -325,19 +325,16 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                       controller: cubit.productUnits[index]
                                           .costPriceController,
                                       onChanged: (value) {
-                                        if (index == 0) {
-                                          cubit.onChangeCost(0);
-                                        }
+                                      //  if (index == 0) {
+                                          cubit.onChangeCost(index);
+                                      //  }
                                       })),
 
                                   DataCell(
                                     customTextFormFieldTable(
                                       hintText: "اقل سعر بيع",
-                                      controller: cubit.productUnits[index]
-                                          .minPriceWithoutTaxController,
-                                      validator: (value) =>
-                                          MyFormValidators.validateDoublePrice(
-                                        value,
+                                      controller: cubit.productUnits[index].minPriceWithoutTaxController,
+                                      validator: (value) => MyFormValidators.validateDoublePrice(value,
                                         context: context,
                                         haveMin: true,
                                         min: double.tryParse(cubit
@@ -347,8 +344,10 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                             ''),
                                       ),
                                       onChanged: (newValue) {
-                                        cubit.onChangeMinPriceWithoutTax(
-                                            index: index, newValue: newValue);
+                                        if (cubit.productUnits[index].minPriceWithoutTaxController!.text != newValue) {
+                                          cubit.productUnits[index].minPriceWithoutTaxController!.text = newValue;
+                                        }
+                                        cubit.onChangeMinPriceWithoutTax(index: index, newValue: newValue);
                                         if (index == 0) {
                                           cubit.onChangeCost(0);
                                         }
@@ -373,19 +372,12 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                             ''),
                                       ),
                                       onChanged: (newValue) {
-                                        if (cubit
-                                                .productUnits[index]
-                                                .minPriceWithTaxController!
-                                                .text !=
-                                            newValue) {
-                                          cubit
-                                              .productUnits[index]
-                                              .minPriceWithTaxController!
-                                              .text = newValue;
+                                        if (cubit.productUnits[index].minPriceWithTaxController!.text != newValue) {
+                                          cubit.productUnits[index].minPriceWithTaxController!.text = newValue;
                                         }
-                                        cubit.onChangeMinPriceWithTax(
-                                            index: index, newValue: newValue);
+                                        cubit.onChangeMinPriceWithTax(index: index, newValue: newValue);
                                         if (index == 0) {
+
                                           cubit.onChangeCost(0);
                                         }
                                       },
@@ -412,19 +404,11 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                       onChanged: (newValue) {
                                         if (cubit
                                                 .productUnits[index]
-                                                .salePriceWithoutTaxController!
-                                                .text !=
-                                            newValue) {
-                                          cubit
-                                              .productUnits[index]
-                                              .salePriceWithoutTaxController!
-                                              .text = newValue;
-                                        }
-                                        cubit.changeSalePriceWithoutTax(
-                                            cubit.productUnits[index]);
-                                        if (index == 0) {
+                                                .salePriceWithoutTaxController!.text != newValue) {cubit.productUnits[index].salePriceWithoutTaxController!.text = newValue;}
+                                        cubit.changeSalePriceWithoutTax(index);
+                                        /*if (index == 0) {
                                           cubit.onChangeCost(0);
-                                        }
+                                        }*/
                                       },
                                     ),
                                   ),
@@ -456,11 +440,10 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                               .salePriceWithTaxController!
                                               .text = newValue;
                                         }
-                                        cubit.changeSalePriceWithTax(
-                                            cubit.productUnits[index]);
-                                        if (index == 0) {
+                                        cubit.changeSalePriceWithTax(index);
+                                        /*if (index == 0) {
                                           cubit.onChangeCost(0);
-                                        }
+                                        }*/
                                       },
                                     ),
                                   ),
