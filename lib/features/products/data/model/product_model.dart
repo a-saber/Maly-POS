@@ -13,7 +13,6 @@ import 'package:collection/collection.dart';
 class ProductModel {
   final int? id;
   final String? name;
-
   final int? categoryId;
   final String? type;
   final int? baseUnitId;
@@ -30,6 +29,7 @@ class ProductModel {
   final UnitModel? unit;
   final TaxesModel? tax;
   final int? quantity;
+  final int? stockQuantity;
   final List<ProductUnit>? productUnits;
   final CategoryModel? category;
   final int? isavailable;
@@ -56,6 +56,7 @@ class ProductModel {
     required this.type,
     this.isavailable,
     required this.quantity,
+    required this.stockQuantity,
   });
    bool get isAvailableBool => isavailable == 1;
   double? get salePriceWithTaxForBaseUnit => double.tryParse((productUnits?.firstWhereOrNull((unit)=>unit.unitId==baseUnitId)?.salePriceWithTax?? "").toString());
@@ -83,7 +84,8 @@ class ProductModel {
       quantity: 0,
       productUnits: null,
      category: null,
-      isavailable: 1
+      isavailable: 1,
+      stockQuantity: 0,
 
     );
   }
@@ -109,6 +111,7 @@ class ProductModel {
     List<ProductUnit>? productUnits,
     CategoryModel? category,
     int? isavailable,
+    int? stockQuantity,
 
   }) {
     return ProductModel(
@@ -132,7 +135,8 @@ class ProductModel {
       quantity: quantity ?? this.quantity,
       productUnits: productUnits ?? this.productUnits,
       category: category ?? this.category,
-      isavailable: isavailable ?? this.isavailable
+      isavailable: isavailable ?? this.isavailable,
+        stockQuantity: stockQuantity??this.stockQuantity
     );
   }
 
@@ -150,6 +154,7 @@ class ProductModel {
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
       imageUrl: json[ApiKeys.imageurl],
+      stockQuantity: json[ "stock_quantity"],
       unit: json[ApiKeys.unit] != null
           ? UnitModel.fromJson(json[ApiKeys.unit])
           : null,
@@ -199,7 +204,9 @@ class ProductModel {
       quantity: product.quantity,
        category: product.category,
       productUnits: product.productUnits,
-      isavailable: product.isavailable
+      isavailable: product.isavailable,
+      stockQuantity: product.stockQuantity,
+
     );
   }
 
@@ -216,6 +223,7 @@ class ProductModel {
     required String? type,
     int? id,
      bool isavailable=true,
+
 
   }) {
     return ProductModel(
@@ -239,6 +247,7 @@ class ProductModel {
       quantity: null,
       category: category,
        isavailable: isavailable ? 1 : 0,
+      stockQuantity: 0
     );
   }
 

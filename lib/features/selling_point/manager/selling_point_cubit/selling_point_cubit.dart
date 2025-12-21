@@ -92,7 +92,7 @@ void updateProducts(ProductModel product) {
     query = '';
 
     getCategoryProduct(
-    //  newData: true,
+     newData: true,
     );
     if (isFirstTime) {
       categoryId = -2;

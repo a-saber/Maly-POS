@@ -179,11 +179,11 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                       ),
                                       _row(
                                         S.of(context).cashTotal,
-                                        summary?.cashTotal.toAmount() ?? '-',
+                                        summary?.paymentMethods?.cash.toAmount() ?? '-',
                                       ),
                                       _row(
                                         S.of(context).onlineTotal,
-                                        summary?.onlineTotal.toAmount() ?? '-',
+                                        summary?.paymentMethods?.malypay.toAmount() ?? '-',
                                       ),
                                     ],
                                   ),

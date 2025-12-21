@@ -241,6 +241,8 @@ class EditProductCubit extends Cubit<EditProductState> {
             type: productFromApi.type,
             quantity: productFromApi.quantity,
             productUnits: productFromApi.productUnits,
+           stockQuantity: productFromApi.stockQuantity
+
           );
 
         emit(EditProductSuccess(product: updatedProduct));
@@ -333,15 +335,26 @@ class EditProductCubit extends Cubit<EditProductState> {
         updateUnitPrices(i);
       }
     } else {
-      emit(UpdateProductUnitsCostWarning(
-        index: index,
-        factory:
-            int.tryParse(productUnits[index].factoryController?.text ?? '0') ??
-                0,
-        myCost: double.tryParse(
-                productUnits[index].costPriceController?.text ?? '0') ??
-            0,
-      ));
+
+    baseCost= (double.tryParse(productUnits[index].costPriceController?.text ?? '0') ?? 0)/(int.tryParse(productUnits[index].factoryController?.text ?? '0') ?? 0);
+    // productUnits[0].costPriceController?.text=baseCost.toStringAsFixed(2);
+    // productUnits[0].costPrice=baseCost.toString();
+    for (int i = 0; i < productUnits.length; i++) {
+      if (i != index) {
+        final item = productUnits[i];
+        final factor = int.tryParse(item.factoryController?.text ?? '1') ?? 1;
+        final cost = baseCost * factor;
+
+        item.costPriceController?.text = cost.toStringAsFixed(2);
+        item.costPrice = cost.toString();
+      }
+    }
+
+      // emit(UpdateProductUnitsCostWarning(
+      //   index: index,
+      //   factory: int.tryParse(productUnits[index].factoryController?.text ?? '0') ?? 0,
+      //   myCost: double.tryParse(productUnits[index].costPriceController?.text ?? '0') ?? 0,
+      // ));
     }
 
     emit(UpdateProductUnitsCost());
@@ -359,8 +372,7 @@ class EditProductCubit extends Cubit<EditProductState> {
   }
 
   void updateUnitPrices(int index) {
-    int factor =
-        int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
+    int factor = int.tryParse(productUnits[index].factoryController?.text ?? '1') ?? 1;
     if (factor == 0) factor = 1;
     double newCost = baseCost * factor;
     double newMinWithoutTax = (double.tryParse(productUnits.first.minPriceWithoutTax ?? '0') ?? 0) * factor;
@@ -384,7 +396,6 @@ class EditProductCubit extends Cubit<EditProductState> {
     productUnits[index].minPriceWithTaxController?.text = newMinWithTax.toStringAsFixed(2);
     productUnits[index].salePriceWithoutTaxController?.text = newSaleWithoutTax.toStringAsFixed(2);
     productUnits[index].salePriceWithTaxController?.text = newSaleWithTax.toStringAsFixed(2);
-
     productUnits[index].minPriceWithoutTax = newMinWithoutTax.toString();
     productUnits[index].salePriceWithoutTax = newSaleWithoutTax.toString();
 
@@ -552,12 +563,10 @@ class EditProductCubit extends Cubit<EditProductState> {
       String percentageStr = taxes?.percentage ?? "0";
       Decimal percentageDecimal = Decimal.parse(percentageStr);
 
-      Decimal percentFraction =
-          DecimalHelper.divide(percentageDecimal.toString(), "100");
+      Decimal percentFraction = DecimalHelper.divide(percentageDecimal.toString(), "100");
       Decimal onePlusFraction = DecimalHelper.add("1", percentFraction.toString());
 
       Decimal beforeTax = DecimalHelper.divide(valueWithTax.toString(), onePlusFraction.toString());
-
       productUnits[index].minPriceWithoutTaxController?.text = decimalToStringForUI(beforeTax);
       productUnits[index].minPriceWithoutTax = double.tryParse(beforeTax.toString())?.toString() ?? "0";
     } catch (_) {

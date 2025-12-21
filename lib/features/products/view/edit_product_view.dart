@@ -159,133 +159,136 @@ class _EditProductDataViewState extends State<EditProductDataView> {
         }
         return SingleChildScrollView(
           padding: AppPaddings.defaultView,
-          child: Form(
-            key: cubit.formKey,
-            autovalidateMode: cubit.autovalidateMode,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'متاح للبيع',
-                      style: AppFontStyle.formText(context: context).copyWith(
-                        fontWeight: FontWeight.bold,
+          child: SafeArea(
+
+            child: Form(
+              key: cubit.formKey,
+              autovalidateMode: cubit.autovalidateMode,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'متاح للبيع',
+                        style: AppFontStyle.formText(context: context).copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          cubit.isavailable == 1 ? 'متاح' : 'غير متاح',
-                          style: TextStyle(
-                            color: cubit.isavailable == 1
-                                ? Colors.green
-                                : Colors.grey,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                      Row(
+                        children: [
+                          Text(
+                            cubit.isavailable == 1 ? 'متاح' : 'غير متاح',
+                            style: TextStyle(
+                              color: cubit.isavailable == 1
+                                  ? Colors.green
+                                  : Colors.grey,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 8),
-                        Switch(
-                          value: cubit.isavailable == 1,
-                          activeColor: AppColors.primary,
-                          inactiveThumbColor: Colors.grey,
-                          inactiveTrackColor: Colors.grey.shade300,
-                          onChanged: (value) {
-                            cubit.onChangeAvailability(value);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                ImageManagerView(
-                  onSelected: (image) => cubit.image = image,
-                  imageUrl: cubit.product.imageUrl,
-                ),
-                const SizedBox(height: 10),
-                CustomFormField(
-                  controller: cubit.nameController,
-                  labelText: S.of(context).name,
-                  validator: (value) =>
-                      value == null || value.isEmpty ? "Required" : null,
-                ),
-                const SizedBox(height: 20),
-                CustomFormField(
-                  controller: cubit.descriptionController,
-                  labelText: S.of(context).description,
-                ),
-                const SizedBox(height: 20),
-                CustomDropDownCategory(
-                  value: cubit.category,
-                  onChangedCategory: (category) =>
-                      cubit.onChangeCategory(category),
-                ),
-                const SizedBox(height: 20),
-                CustomDropdown<ProductType>(
-                  search: true,
-                  hint: S.of(context).selectProductType,
-                  value: cubit.productType,
-                  items: AppConstant.producttype(context),
-                  compareFn: (item1, item2) =>
-                      item1.name
-                          .toLowerCase()
-                          .contains(item2.name.toLowerCase()) ||
-                      item2.name
-                          .toLowerCase()
-                          .contains(item1.name.toLowerCase()),
-                  onChanged: (value) => cubit.onChangeProductType(value),
-                  builder: (productType) => productType != null
-                      ? Text(productType.name,
-                          style: AppFontStyle.formText(context: context))
-                      : const SizedBox(),
-                ),
-                const SizedBox(height: 20),
-                CustomFormField(
-                  controller: cubit.brandController,
-                  labelText: S.of(context).brand,
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomDropDownTaxes(
-                        value: cubit.taxes,
-                        onChange: cubit.onChangeTaxes,
+                          SizedBox(width: 8),
+                          Switch(
+                            value: cubit.isavailable == 1,
+                            activeColor: AppColors.primary,
+                            inactiveThumbColor: Colors.grey,
+                            inactiveTrackColor: Colors.grey.shade300,
+                            onChanged: (value) {
+                              cubit.onChangeAvailability(value);
+                            },
+                          ),
+                        ],
                       ),
-                    ),
-                    CustomResetDropDownButton(
-                        onPressed: () => cubit.onChangeTaxes(null)),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('الوحدات',
-                        style: AppFontStyle.formText(context: context)),
-                    CustomTextBtn(
-                      text: "اضافة",
-                      textColor: AppColors.primary,
-                      onPressed: cubit.addProductUnits,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                _buildUnitsTable(cubit),
-                const SizedBox(height: 20),
-                if (cubit.state is EditProductLoading)
-                  const CustomLoading()
-                else
-                  CustomFilledBtn(
-                    text: S.of(context).update,
-                    onPressed: () {
-                      cubit.editProduct(context);
-                    },
+                    ],
                   ),
-              ],
+                  SizedBox(height: 10),
+                  ImageManagerView(
+                    onSelected: (image) => cubit.image = image,
+                    imageUrl: cubit.product.imageUrl,
+                  ),
+                  const SizedBox(height: 10),
+                  CustomFormField(
+                    controller: cubit.nameController,
+                    labelText: S.of(context).name,
+                    validator: (value) =>
+                        value == null || value.isEmpty ? "Required" : null,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomFormField(
+                    controller: cubit.descriptionController,
+                    labelText: S.of(context).description,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomDropDownCategory(
+                    value: cubit.category,
+                    onChangedCategory: (category) =>
+                        cubit.onChangeCategory(category),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomDropdown<ProductType>(
+                    search: true,
+                    hint: S.of(context).selectProductType,
+                    value: cubit.productType,
+                    items: AppConstant.producttype(context),
+                    compareFn: (item1, item2) =>
+                        item1.name
+                            .toLowerCase()
+                            .contains(item2.name.toLowerCase()) ||
+                        item2.name
+                            .toLowerCase()
+                            .contains(item1.name.toLowerCase()),
+                    onChanged: (value) => cubit.onChangeProductType(value),
+                    builder: (productType) => productType != null
+                        ? Text(productType.name,
+                            style: AppFontStyle.formText(context: context))
+                        : const SizedBox(),
+                  ),
+                  const SizedBox(height: 20),
+                  CustomFormField(
+                    controller: cubit.brandController,
+                    labelText: S.of(context).brand,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomDropDownTaxes(
+                          value: cubit.taxes,
+                          onChange: cubit.onChangeTaxes,
+                        ),
+                      ),
+                      CustomResetDropDownButton(
+                          onPressed: () => cubit.onChangeTaxes(null)),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('الوحدات',
+                          style: AppFontStyle.formText(context: context)),
+                      CustomTextBtn(
+                        text: "اضافة",
+                        textColor: AppColors.primary,
+                        onPressed: cubit.addProductUnits,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  _buildUnitsTable(cubit),
+                  const SizedBox(height: 20),
+                  if (cubit.state is EditProductLoading)
+                    const CustomLoading()
+                  else
+                    CustomFilledBtn(
+                      text: S.of(context).update,
+                      onPressed: () {
+                        cubit.editProduct(context);
+                      },
+                    ),
+                ],
+              ),
             ),
           ),
         );
@@ -342,7 +345,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                   onChanged: (value) => cubit.updateUnitPrices(index))),
               DataCell(_customTextFormFieldTable(
                 hintText: "سعر التكلفة",
-                enabled: index==0,
+                enabled: true,
                 validator: (value) => MyFormValidators.validateDouble(value, context: context),
                 controller: unit.costPriceController,
                 onChanged: (value) => cubit.onChangeCost(index),
@@ -353,8 +356,7 @@ class _EditProductDataViewState extends State<EditProductDataView> {
                 validator: (value) =>
                     MyFormValidators.validateDouble(value, context: context),
                 controller: unit.minPriceWithoutTaxController,
-                onChanged: (value) => cubit.onChangeMinPriceWithoutTax(
-                    index: index, newValue: value),
+                onChanged: (value) => cubit.onChangeMinPriceWithoutTax(index: index, newValue: value),
               )),
               DataCell(_customTextFormFieldTable(
                 hintText: "اقل سعر بيع بالضريبة",

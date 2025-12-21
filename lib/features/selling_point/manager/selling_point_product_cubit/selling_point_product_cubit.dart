@@ -287,13 +287,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
           productId: myproduct.product.id ?? -1,
           productUnitId: productUnit?.unitId);
     } else {
-      if (product.type?.toLowerCase().trim() ==
-          ApiKeys.service.toLowerCase().trim()) {
-        products.add(ProductSellingModel(
-            product: product, count: 1, productUnit: productUnit));
+      if (product.type?.toLowerCase().trim() == ApiKeys.service.toLowerCase().trim()&& (product.stockQuantity == null || product.stockQuantity == 0)) {
+        products.add(ProductSellingModel(product: product, count: 1, productUnit: productUnit));
         updatePaid();
         emit(SellingPointProductAddingProduct());
-      } else if (product.quantity == null || product.quantity == 0) {
+      } else if (product.stockQuantity == null || product.stockQuantity == 0) {
         updatePaid();
         emit(SellingPointProductAddingFailingProduct());
         return;
@@ -504,7 +502,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
 
   if (product.product.type?.toLowerCase().trim() != ApiKeys.service.toLowerCase().trim()) {
-    if (newQuantity > (product.product.quantity ?? 0)) {
+    if (newQuantity > (product.product.stockQuantity ?? 0)) {
       emit(SellingPointProductIncreaseCountFailing());
       return;
     }

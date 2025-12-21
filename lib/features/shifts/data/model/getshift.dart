@@ -4,6 +4,8 @@ import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 import 'package:pos_app/features/units/data/model/unit_model.dart';
 
+import 'end_shift_model.dart';
+
 class GetShift {
   bool? status;
   String? message;
@@ -203,50 +205,7 @@ class Branch {
   }
 }
 
-class Summary {
-  int? count;
-  String? subtotal;
-  String? discountTotal;
-  String? totalAfterDiscount;
-  String? taxTotal;
-  String? totalAfterTax;
-  String? cashTotal;
-  String? onlineTotal;
 
-  Summary(
-      {count,
-      subtotal,
-      discountTotal,
-      totalAfterDiscount,
-      taxTotal,
-      totalAfterTax,
-      cashTotal,
-      onlineTotal});
-
-  Summary.fromJson(Map<String, dynamic> json) {
-    count = json['count'];
-    subtotal = json['subtotal'];
-    discountTotal = json['discount_total'];
-    totalAfterDiscount = json['total_after_discount'];
-    taxTotal = json['tax_total'];
-    totalAfterTax = json['total_after_tax'];
-    cashTotal = json['cash_total'];
-    onlineTotal = json['online_total'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['count'] = count;
-    data['subtotal'] = subtotal;
-    data['discount_total'] = discountTotal;
-    data['total_after_discount'] = totalAfterDiscount;
-    data['tax_total'] = taxTotal;
-    data['total_after_tax'] = totalAfterTax;
-    data['cash_total'] = cashTotal;
-    data['online_total'] = onlineTotal;
-    return data;
-  }
-}
 
 class Dataforshift {
   int? currentPage;
