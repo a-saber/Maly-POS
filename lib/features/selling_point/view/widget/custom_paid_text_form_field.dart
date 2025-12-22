@@ -513,237 +513,252 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
     }
   }
 
-  void _handleSave(BuildContext context) async {
-    final cubit = SellingPointProductCubit.get(context);
 
-    Map<int, double> amounts = {};
-    double totalPaid = 0.0;
 
-    for (var entry in paymentControllers.entries) {
-      double amount = double.tryParse(entry.value.text) ?? 0.0;
-      if (amount > 0) {
-        amounts[entry.key] = double.parse(amount.toStringAsFixed(2));
-        totalPaid += amounts[entry.key]!;
-      }
+void _handleSave(BuildContext context) async {
+  final cubit = SellingPointProductCubit.get(context);
+
+  Map<int, double> amounts = {};
+  double totalPaid = 0.0;
+
+  for (var entry in paymentControllers.entries) {
+    double amount = double.tryParse(entry.value.text) ?? 0.0;
+    if (amount > 0) {
+      amounts[entry.key] = double.parse(amount.toStringAsFixed(2));
+      totalPaid += amounts[entry.key]!;
     }
+  }
 
-    debugPrint(' Original IDs from UI: ${amounts.keys.toList()}');
+  totalPaid = double.parse(totalPaid.toStringAsFixed(2));
 
-    if (amounts.isEmpty) {
-      CustomPopUp.callMyToast(
-        context: context,
-        massage: 'يرجى إدخال مبلغ في إحدى طرق الدفع على الأقل',
-        state: PopUpState.ERROR,
-      );
-      return;
+  debugPrint(' Original IDs from UI: ${amounts.keys.toList()}');
+
+  if (amounts.isEmpty) {
+    CustomPopUp.callMyToast(
+      context: context,
+      massage: 'يرجى إدخال مبلغ في إحدى طرق الدفع على الأقل',
+      state: PopUpState.ERROR,
+    );
+    return;
+  }
+
+  List<int> nearpayMethods = [];
+  for (var methodId in amounts.keys) {
+    final method =
+        cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
+    if (method.isNearpay == 1) {
+      nearpayMethods.add(methodId);
     }
+  }
 
-    List<int> nearpayMethods = [];
-    for (var methodId in amounts.keys) {
+  Map<int, String> originalReferences = {};
+  if (nearpayMethods.isNotEmpty) {
+    for (var methodId in nearpayMethods) {
       final method =
           cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
-      if (method.isNearpay == 1) {
-        nearpayMethods.add(methodId);
-      }
-    }
+      double amount = amounts[methodId]!;
 
-    Map<int, String> originalReferences = {};
-    if (nearpayMethods.isNotEmpty) {
-      for (var methodId in nearpayMethods) {
-        final method =
-            cubit.availablePaymentMethods.firstWhere((m) => m.id == methodId);
-        double amount = amounts[methodId]!;
-
-        try {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (_) => WillPopScope(
-              onWillPop: () async => false,
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircularProgressIndicator(color: AppColors.primary),
-                      SizedBox(height: 16),
-                      Text(
-                        'جاري الدفع عبر ${method.name}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+      try {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => WillPopScope(
+            onWillPop: () async => false,
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(color: AppColors.primary),
+                    SizedBox(height: 16),
+                    Text(
+                      'جاري الدفع عبر ${method.name}',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 8),
-                      Text(
-                        'المبلغ: ${amount.toStringAsFixed(2)} ريال',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.primary,
-                        ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'المبلغ: ${amount.toStringAsFixed(2)} ریال',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.primary,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
+          ),
+        );
 
-          debugPrint(
-              ' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
-          if (widget.enableNearPay != true) {
-            CustomPopUp.callMyToast(
-              context: context,
-              massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
-              state: PopUpState.ERROR,
-            );
-            return;
-          }
-          var madaResponse = await PaymentHelper.addTransaction(amount: amount);
-
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-          bool paymentSuccess = false;
-
-          madaResponse.fold(
-            (error) {
-              debugPrint(' Payment failed: $error');
-              final translatedError = translateNearpayError(context, error);
-              CustomPopUp.callMyToast(
-                context: context,
-                massage: 'فشل الدفع عبر ${method.name}\n$translatedError',
-                state: PopUpState.ERROR,
-              );
-            },
-            (response) {
-              debugPrint(' Payment successful via ${method.name}');
-              debugPrint(' Transaction UUID: ${response.transaction_uuid}');
-
-              originalReferences[methodId] = response.transaction_uuid ?? '';
-              paymentSuccess = true;
-              CustomPopUp.callMyToast(
-                context: context,
-                massage:
-                    'تم الدفع بنجاح عبر ${method.name}\nالمبلغ: ${amount.toStringAsFixed(2)} ریال',
-                state: PopUpState.SUCCESS,
-              );
-            },
-          );
-
-          if (!paymentSuccess) {
-            return;
-          }
-        } catch (e) {
-          debugPrint(' Exception during payment: $e');
-          if (Navigator.canPop(context)) {
-            Navigator.pop(context);
-          }
-
+        debugPrint(
+            ' Attempting payment via ${method.name}: ${amount.toStringAsFixed(2)} SAR');
+        if (widget.enableNearPay != true) {
           CustomPopUp.callMyToast(
             context: context,
-            massage: 'حدث خطأ أثناء الدفع\n$e',
+            massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
             state: PopUpState.ERROR,
           );
           return;
         }
-      }
-    }
+        var madaResponse = await PaymentHelper.addTransaction(amount: amount);
 
-    for (var method in cubit.availablePaymentMethods) {
-      if (method.requiresReference == 1 && amounts.containsKey(method.id)) {
-        if (method.isNearpay != 1) {
-          String? reference = referenceControllers[method.id!]?.text;
-          if (reference == null || reference.trim().isEmpty) {
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
+        bool paymentSuccess = false;
+
+        madaResponse.fold(
+          (error) {
+            debugPrint(' Payment failed: $error');
+            final translatedError = translateNearpayError(context, error);
             CustomPopUp.callMyToast(
               context: context,
-              massage: 'يرجى إدخال رقم المرجع لـ ${method.name}',
+              massage: 'فشل الدفع عبر ${method.name}\n$translatedError',
               state: PopUpState.ERROR,
             );
-            return;
-          }
-          originalReferences[method.id!] = reference;
+          },
+          (response) {
+            debugPrint('Payment successful via ${method.name}');
+            debugPrint(' Transaction UUID: ${response.transaction_uuid}');
+
+            originalReferences[methodId] = response.transaction_uuid ?? '';
+            paymentSuccess = true;
+            CustomPopUp.callMyToast(
+              context: context,
+              massage:
+                  'تم الدفع بنجاح عبر ${method.name}\nالمبلغ: ${amount.toStringAsFixed(2)} ریال',
+              state: PopUpState.SUCCESS,
+            );
+          },
+        );
+
+        if (!paymentSuccess) {
+          return;
         }
-      }
-    }
+      } catch (e) {
+        debugPrint(' Exception during payment: $e');
+        if (Navigator.canPop(context)) {
+          Navigator.pop(context);
+        }
 
-    int usedMethods = amounts.length;
-
-    // استخدام totalPrice getter
-    if (usedMethods == 1) {
-      if (double.parse(totalPaid.toStringAsFixed(2)) <
-          double.parse(totalPrice.toStringAsFixed(2))) {
         CustomPopUp.callMyToast(
           context: context,
-          massage:
-              'المبلغ المدفوع (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
+          massage: 'حدث خطأ أثناء الدفع\n$e',
           state: PopUpState.ERROR,
         );
         return;
       }
-    } else if (usedMethods > 1) {
-      if (double.parse(totalPaid.toStringAsFixed(2)) <
-          double.parse(totalPrice.toStringAsFixed(2))) {
-        CustomPopUp.callMyToast(
-          context: context,
-          massage:
-              'إجمالي المدفوعات (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${totalPrice.toStringAsFixed(2)})',
-          state: PopUpState.ERROR,
-        );
-        return;
-      }
-
-      if (totalPaid > totalPrice) {
-        CustomPopUp.callMyToast(
-          context: context,
-          massage:
-              'عند الدفع بأكثر من طريقة، المجموع يجب أن يساوي (${totalPrice.toStringAsFixed(2)}) بالظبط',
-          state: PopUpState.ERROR,
-        );
-        return;
-      }
-    }
-
-    Map<int, int> mapping = _getPaymentMethodMapping();
-    Map<int, double> mappedAmounts = {};
-    Map<int, String> mappedReferences = {};
-
-    debugPrint('🗺️ Mapping: $mapping');
-
-    for (var entry in amounts.entries) {
-      int correctId = mapping[entry.key] ?? entry.key;
-      mappedAmounts[correctId] = entry.value;
-
-      if (originalReferences.containsKey(entry.key)) {
-        mappedReferences[correctId] = originalReferences[entry.key]!;
-      }
-
-      debugPrint(
-          '   Mapping ${entry.key} -> $correctId (amount: ${entry.value})');
-    }
-
-    debugPrint(' Mapped IDs to send to API: ${mappedAmounts.keys.toList()}');
-    debugPrint(' Mapped Amounts: $mappedAmounts');
-    debugPrint(' Mapped References: $mappedReferences');
-
-    cubit.selectedPaymentAmounts = mappedAmounts;
-    cubit.paymentReferences = mappedReferences;
-
-    cubit.changePaid(
-      totalPaid.toStringAsFixed(2),
-      paymentAmounts: mappedAmounts,
-    );
-
-    Navigator.pop(context);
-    if (nearpayMethods.isNotEmpty) {
-      debugPrint(' Auto-completing sale after successful Nearpay payment...');
-      await Future.delayed(Duration(milliseconds: 300));
-      cubit.confirmPayment();
     }
   }
+
+  for (var method in cubit.availablePaymentMethods) {
+    if (method.requiresReference == 1 && amounts.containsKey(method.id)) {
+      if (method.isNearpay != 1) {
+        String? reference = referenceControllers[method.id!]?.text;
+        if (reference == null || reference.trim().isEmpty) {
+          CustomPopUp.callMyToast(
+            context: context,
+            massage: 'يرجى إدخال رقم المرجع لـ ${method.name}',
+            state: PopUpState.ERROR,
+          );
+          return;
+        }
+        originalReferences[method.id!] = reference;
+      }
+    }
+  }
+
+  int usedMethods = amounts.length;
+  
+
+  double roundedTotalPrice = double.parse(totalPrice.toStringAsFixed(2));
+
+  debugPrint('💵 Total Paid: $totalPaid');
+  debugPrint('💵 Total Price: $roundedTotalPrice');
+  debugPrint('💵 Used Methods: $usedMethods');
+
+
+  if (usedMethods == 1) {
+ 
+    if (totalPaid < roundedTotalPrice) {
+      double difference = roundedTotalPrice - totalPaid;
+      CustomPopUp.callMyToast(
+        context: context,
+        massage:
+            'المبلغ المدفوع (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${roundedTotalPrice.toStringAsFixed(2)})\nالنقص: ${difference.toStringAsFixed(2)} ریال',
+        state: PopUpState.ERROR,
+      );
+      return;
+    }
+  } else if (usedMethods > 1) {
+   
+    double difference = (totalPaid - roundedTotalPrice).abs();
+    
+    debugPrint('📊 Difference: $difference');
+    
+    if (difference > 0.01) { 
+      if (totalPaid < roundedTotalPrice) {
+        CustomPopUp.callMyToast(
+          context: context,
+          massage:
+              'إجمالي المدفوعات (${totalPaid.toStringAsFixed(2)}) أقل من المطلوب (${roundedTotalPrice.toStringAsFixed(2)})\nالنقص: ${difference.toStringAsFixed(2)} ریال',
+          state: PopUpState.ERROR,
+        );
+      } else {
+        CustomPopUp.callMyToast(
+          context: context,
+          massage:
+              'إجمالي المدفوعات (${totalPaid.toStringAsFixed(2)}) أكبر من المطلوب (${roundedTotalPrice.toStringAsFixed(2)})\nالزيادة: ${difference.toStringAsFixed(2)} ریال',
+          state: PopUpState.ERROR,
+        );
+      }
+      return;
+    }
+  }
+
+  Map<int, int> mapping = _getPaymentMethodMapping();
+  Map<int, double> mappedAmounts = {};
+  Map<int, String> mappedReferences = {};
+
+  debugPrint(' Mapping: $mapping');
+
+  for (var entry in amounts.entries) {
+    int correctId = mapping[entry.key] ?? entry.key;
+    mappedAmounts[correctId] = entry.value;
+
+    if (originalReferences.containsKey(entry.key)) {
+      mappedReferences[correctId] = originalReferences[entry.key]!;
+    }
+
+    debugPrint(
+        '   Mapping ${entry.key} -> $correctId (amount: ${entry.value})');
+  }
+
+  debugPrint(' Mapped IDs to send to API: ${mappedAmounts.keys.toList()}');
+  debugPrint(' Mapped Amounts: $mappedAmounts');
+  debugPrint(' Mapped References: $mappedReferences');
+
+  cubit.selectedPaymentAmounts = mappedAmounts;
+  cubit.paymentReferences = mappedReferences;
+
+  cubit.changePaid(
+    totalPaid.toStringAsFixed(2),
+    paymentAmounts: mappedAmounts,
+  );
+
+  Navigator.pop(context);
+  if (nearpayMethods.isNotEmpty) {
+    debugPrint(' Auto-completing sale after successful Nearpay payment...');
+    await Future.delayed(Duration(milliseconds: 300));
+    cubit.confirmPayment();
+  }
+}
 }
