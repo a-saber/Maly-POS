@@ -28,6 +28,7 @@ class _CustomDropDownDiscountAndCustomerSellingPointState
     final result = await showDialog(
       context: context,
       builder: (context) => CustomDiscountDialog(
+        totalAmount: cubit.totalPrice(),
         currentDiscount: cubit.discount,
       ),
     );
@@ -52,7 +53,7 @@ class _CustomDropDownDiscountAndCustomerSellingPointState
         return Column(
           children: [
             SizedBox(height: 5),
-            
+
             // Header with toggle button
             InkWell(
               onTap: () {
@@ -93,7 +94,6 @@ class _CustomDropDownDiscountAndCustomerSellingPointState
             // Content - shown/hidden based on _isExpanded
             if (_isExpanded) ...[
               Row(
-                spacing: 5,
                 children: [
                   Expanded(
                     child: CustomDropDownClient(
@@ -106,6 +106,7 @@ class _CustomDropDownDiscountAndCustomerSellingPointState
                       value: cubit.user,
                     ),
                   ),
+                  SizedBox(width: 5), // بدل spacing
                   Expanded(
                     child: CustomDropDownDiscount(
                       onChanged: cubit.changeDiscount,
@@ -115,6 +116,7 @@ class _CustomDropDownDiscountAndCustomerSellingPointState
                       ),
                     ),
                   ),
+                  SizedBox(width: 5),
                   IconButton(
                     onPressed: () =>
                         selectBranch(context: context, selectBranch: true),
@@ -135,7 +137,8 @@ class _CustomDropDownDiscountAndCustomerSellingPointState
                     borderRadius: BorderRadius.circular(8),
                     child: Container(
                       width: 200,
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

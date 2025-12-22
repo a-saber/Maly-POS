@@ -6,10 +6,12 @@ import 'package:pos_app/features/discounts/data/model/discount_type.dart';
 
 class CustomDiscountDialog extends StatefulWidget {
   final DiscountModel? currentDiscount;
+  final double totalAmount; 
   
   const CustomDiscountDialog({
     super.key,
     this.currentDiscount,
+    required this.totalAmount, 
   });
 
   @override
@@ -31,7 +33,6 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
       _selectedType = DiscountType.fixed;
     }
     
-    // ✅ ركز بعد بناء الـ widget
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
@@ -122,6 +123,51 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
       return;
     }
 
+    final discountValue = double.parse(value);
+    
+    // التحقق من المبلغ الإجمالي
+    if (widget.totalAmount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('لا يمكن إضافة خصم بدون منتجات في السلة'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
+    // حساب قيمة الخصم الفعلية
+    double actualDiscountValue;
+    if (_selectedType == DiscountType.percentage) {
+      // تحقق من النسبة المئوية
+      if (discountValue > 100) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('النسبة المئوية يجب أن تكون أقل من أو تساوي 100%'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 2),
+          ),
+        );
+        return;
+      }
+      actualDiscountValue = widget.totalAmount * (discountValue / 100);
+    } else {
+      actualDiscountValue = discountValue;
+    }
+
+    // تحقق إن الخصم ميخليش المبلغ سالب
+    if (actualDiscountValue > widget.totalAmount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('قيمة الخصم أكبر من المبلغ الإجمالي (${widget.totalAmount.toStringAsFixed(2)} ريال)'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     final discount = DiscountModel(
       id: -1,
       title: 'خصم مخصص',
@@ -139,17 +185,13 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
     bool hasCurrentDiscount = widget.currentDiscount != null && 
                               widget.currentDiscount!.id == -1;
 
-   
     return Focus(
       focusNode: _focusNode,
       autofocus: true,
       onKeyEvent: (FocusNode node, KeyEvent event) {
-     
         if (event is KeyDownEvent) {
-          // اسمع للأرقام
           final key = event.logicalKey;
-          
-          // أرقام من 0-9
+
           if (key == LogicalKeyboardKey.digit0 || key == LogicalKeyboardKey.numpad0) {
             _onKeyPressed('0');
             return KeyEventResult.handled;
@@ -166,7 +208,6 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
             _onKeyPressed('4');
             return KeyEventResult.handled;
           } else if (key == LogicalKeyboardKey.digit5 || key == LogicalKeyboardKey.numpad5) {
-            // لو مش Shift مضغوط، اكتب 5
             if (!HardwareKeyboard.instance.isShiftPressed) {
               _onKeyPressed('5');
               return KeyEventResult.handled;
@@ -183,32 +224,19 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
           } else if (key == LogicalKeyboardKey.digit9 || key == LogicalKeyboardKey.numpad9) {
             _onKeyPressed('9');
             return KeyEventResult.handled;
-          }
-          // نقطة عشرية
-          else if (key == LogicalKeyboardKey.period || 
-                   key == LogicalKeyboardKey.numpadDecimal) {
+          } else if (key == LogicalKeyboardKey.period || key == LogicalKeyboardKey.numpadDecimal) {
             _onKeyPressed('.');
             return KeyEventResult.handled;
-          }
-          // Backspace
-          else if (key == LogicalKeyboardKey.backspace) {
+          } else if (key == LogicalKeyboardKey.backspace) {
             _onKeyPressed('⌫');
             return KeyEventResult.handled;
-          }
-          // Delete أو Escape
-          else if (key == LogicalKeyboardKey.delete || 
-                   key == LogicalKeyboardKey.escape) {
+          } else if (key == LogicalKeyboardKey.delete || key == LogicalKeyboardKey.escape) {
             _onKeyPressed('C');
             return KeyEventResult.handled;
-          }
-          // Enter
-          else if (key == LogicalKeyboardKey.enter || 
-                   key == LogicalKeyboardKey.numpadEnter) {
+          } else if (key == LogicalKeyboardKey.enter || key == LogicalKeyboardKey.numpadEnter) {
             _applyDiscount();
             return KeyEventResult.handled;
-          }
-          // Tab أو Shift+5 (%)
-          else if (key == LogicalKeyboardKey.tab ||
+          } else if (key == LogicalKeyboardKey.tab ||
               (key == LogicalKeyboardKey.digit5 &&
                   HardwareKeyboard.instance.isShiftPressed)) {
             setState(() {
@@ -226,7 +254,6 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
           borderRadius: BorderRadius.circular(16),
         ),
         child: GestureDetector(
-         
           onTap: () {
             _focusNode.requestFocus();
           },
@@ -261,6 +288,15 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
                             ),
                           ),
                         SizedBox(height: 4),
+                        Text(
+                          'المبلغ الإجمالي: ${widget.totalAmount.toStringAsFixed(2)} ريال',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 2),
                         Text(
                           'Tab: تبديل النوع | Enter: تطبيق | Esc: مسح',
                           style: TextStyle(
@@ -369,9 +405,9 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
                     children: [
                       Expanded(
                         child: Text(
-                          _discountController.text.isEmpty
-                              ? '0'
-                              : _discountController.text,
+                          _discountController.text.isNotEmpty
+                              ? _discountController.text
+                              : '0',
                           style: TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -391,7 +427,7 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 4),
 
                 // Custom Keyboard
                 Container(
@@ -403,48 +439,17 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          _buildKey('1'),
-                          _buildKey('2'),
-                          _buildKey('3'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          _buildKey('4'),
-                          _buildKey('5'),
-                          _buildKey('6'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          _buildKey('7'),
-                          _buildKey('8'),
-                          _buildKey('9'),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          _buildKey('.', isSpecial: true),
-                          _buildKey('0'),
-                          _buildKey('⌫', isSpecial: true),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          _buildKey('C', isSpecial: true),
-                          _buildKey('%', isSpecial: true),
-                        ],
-                      ),
+                      Row(children: [_buildKey('1'), _buildKey('2'), _buildKey('3')]),
+                      Row(children: [_buildKey('4'), _buildKey('5'), _buildKey('6')]),
+                      Row(children: [_buildKey('7'), _buildKey('8'), _buildKey('9')]),
+                      Row(children: [_buildKey('.', isSpecial: true), _buildKey('0'), _buildKey('⌫', isSpecial: true)]),
+                      Row(children: [_buildKey('C', isSpecial: true), _buildKey('%', isSpecial: true)]),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
-
+                SizedBox(height:4),
                 // Buttons Row
                 Row(
-                  spacing: 10,
                   children: [
                     if (hasCurrentDiscount)
                       Expanded(
@@ -477,6 +482,7 @@ class _CustomDiscountDialogState extends State<CustomDiscountDialog> {
                           ),
                         ),
                       ),
+                    if (hasCurrentDiscount) SizedBox(width: 10),
                     Expanded(
                       flex: hasCurrentDiscount ? 2 : 1,
                       child: ElevatedButton(
