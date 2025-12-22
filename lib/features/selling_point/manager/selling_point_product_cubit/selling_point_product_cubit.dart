@@ -19,7 +19,7 @@ import 'package:pos_app/features/selling_point/data/model/product_selling_model.
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
-import 'package:pos_app/generated/l10n.dart';
+import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
 
 
 import '../../../../core/helper/my_service_locator.dart';
@@ -27,14 +27,7 @@ import '../../../products/data/model/product_unit_model.dart';
 import '../../../shifts/manager/shift_cubit/shift_cubit.dart';
 
 part 'selling_point_product_state.dart';
-String translateNearpayError(BuildContext context, String error) {
-  final cleanError = error.trim().toLowerCase();
-  
-  if (cleanError.contains("you can't call method (purchase) before initialize")) {
-    return "خطأ غير متوقع: لا يمكنك استدعاء طريقة (الشراء) قبل التهيئة";
-  }
-  return S.of(context).unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize;
-}
+
 class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   SellingPointProductCubit(this.repo, this.paymentMethodsRepo)
       : super(SellingPointProductInitial());
@@ -102,6 +95,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       availablePaymentMethods.removeAt(index);
     }
     emit(SellingPointProductInitial());
+
   }
     Future<void> loadShopSettings(bool enableNearPay) async {
     
@@ -319,6 +313,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
     bool canIncrease = product.increaseCount();
 
+
     if (canIncrease) {
       updatePaid();
       emit(SellingPointProductIncreaseCount());
@@ -460,17 +455,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updateProduct(ProductModel product) {
-    int index =
-        products.indexWhere((element) => element.product.id == product.id);
+    int index = products.indexWhere((element) => element.product.id == product.id);
+
 
     if (index != -1) {
       int count = products[index].count;
       products[index] = ProductSellingModel(product: product, count: count);
+
       updatePaid();
       emit(SellingPointProductUpdateProduct());
     }
   }
-  
+
   double roundTotolPrice() {
     return round2(totalPrice());
   }
@@ -596,10 +592,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       String? result = madaResponse.fold(
         (error) {
           debugPrint(' Payment failed: $error');
-          String translatedError = translateNearpayError(context, error);
           CustomPopUp.callMyToast(
             context: context,
-            massage: 'فشل الدفع\n$translatedError',
+            massage: 'فشل الدفع\n$error',
             state: PopUpState.ERROR,
           );
           return error;

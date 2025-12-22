@@ -10,6 +10,7 @@ import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
 import 'package:pos_app/features/selling_point/view/widget/customkeyboard.dart';
 import 'package:pos_app/generated/l10n.dart';
+
 String translateNearpayError(BuildContext context, String error) {
   final cleanError = error.trim().toLowerCase();
   
@@ -19,8 +20,15 @@ String translateNearpayError(BuildContext context, String error) {
   return S.of(context).unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize;
 }
  
-class CustomPaidTextFormField extends StatelessWidget {
+class CustomPaidTextFormField extends StatefulWidget {
   const CustomPaidTextFormField({super.key});
+
+  @override
+  State<CustomPaidTextFormField> createState() => _CustomPaidTextFormFieldState();
+}
+
+class _CustomPaidTextFormFieldState extends State<CustomPaidTextFormField> {
+  double? _lastTotalPrice;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +38,30 @@ class CustomPaidTextFormField extends StatelessWidget {
         SizedBox(height: 10),
         BlocBuilder<SellingPointProductCubit, SellingPointProductState>(
           builder: (context, state) {
+            final sellingCubit = SellingPointProductCubit.get(context);
+            final currentTotalPrice = sellingCubit.totalPrice();
+            
+            
+            if (_lastTotalPrice == null || _lastTotalPrice != currentTotalPrice) {
+              _lastTotalPrice = currentTotalPrice;
+              
+            
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (mounted) {
+                  sellingCubit.paidController.text = currentTotalPrice.toStringAsFixed(2);
+                }
+              });
+            }
+            
             return InkWell(
               onTap: () {
-                final sellingCubit = SellingPointProductCubit.get(context);
+                
+                sellingCubit.paidController.text = currentTotalPrice.toStringAsFixed(2);
+                
                 showDialog(
                   context: context,
                   builder: (dialogContext) => BlocProvider.value(
-                    value: MyServiceLocator.getSingleton<
-                        SellingPointProductCubit>(),
+                    value: MyServiceLocator.getSingleton<SellingPointProductCubit>(),
                     child: DynamicPaidDialog(
                       enableNearPay: sellingCubit.enableNearpay,
                     ),
@@ -46,8 +70,7 @@ class CustomPaidTextFormField extends StatelessWidget {
               },
               child: CustomFormField(
                 enabled: false,
-                controller:
-                    SellingPointProductCubit.get(context).paidController,
+                controller: sellingCubit.paidController,
                 labelText: S.of(context).paid,
                 validator: (value) => MyFormValidators.validateDoublePrice(
                   value,
@@ -72,11 +95,15 @@ class DynamicPaidDialog extends StatefulWidget {
 }
 
 class DynamicPaidDialogState extends State<DynamicPaidDialog> {
-  late double totalPrice;
   Map<int, TextEditingController> paymentControllers = {};
   Map<int, TextEditingController> referenceControllers = {};
   late TextEditingController remainingController;
   TextEditingController? activeController;
+
+  double get totalPrice {
+    final cubit = SellingPointProductCubit.get(context);
+    return cubit.totalPrice();
+  }
 
   Map<int, int> _getPaymentMethodMapping() {
     return {
@@ -110,7 +137,6 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
   void initState() {
     super.initState();
     final cubit = SellingPointProductCubit.get(context);
-    totalPrice = cubit.totalPrice();
     remainingController = TextEditingController(text: '0.00');
 
     if (cubit.availablePaymentMethods.isEmpty) {
@@ -154,7 +180,6 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
     double totalPaid = 0.0;
     for (var controller in paymentControllers.values) {
       double amount = double.tryParse(controller.text) ?? 0.0;
-
       totalPaid += double.parse(amount.toStringAsFixed(2));
     }
 
@@ -190,6 +215,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
       }
     }
 
+    // استخدام totalPrice getter
     double remaining = totalPrice - totalPaid;
     if (remaining > 0) {
       paymentControllers[paymentMethodId]!.text = remaining.toStringAsFixed(2);
@@ -198,6 +224,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
   }
 
   void fillFullAmount(int paymentMethodId) {
+    // استخدام totalPrice getter
     paymentControllers[paymentMethodId]!.text = totalPrice.toStringAsFixed(2);
 
     for (var entry in paymentControllers.entries) {
@@ -358,7 +385,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
         ),
         SizedBox(height: 10),
         Text(
-          "${totalPrice.toStringAsFixed(2)}",
+          "${totalPrice.toStringAsFixed(2)}", // استخدام getter
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -575,7 +602,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
               massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
               state: PopUpState.ERROR,
             );
-            return ;
+            return;
           }
           var madaResponse = await PaymentHelper.addTransaction(amount: amount);
 
@@ -587,7 +614,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
           madaResponse.fold(
             (error) {
               debugPrint(' Payment failed: $error');
-              final translatedError = translateNearpayError(context, error); 
+              final translatedError = translateNearpayError(context, error);
               CustomPopUp.callMyToast(
                 context: context,
                 massage: 'فشل الدفع عبر ${method.name}\n$translatedError',
@@ -603,7 +630,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
               CustomPopUp.callMyToast(
                 context: context,
                 massage:
-                    ' تم الدفع بنجاح عبر ${method.name}\nالمبلغ: ${amount.toStringAsFixed(2)} ريال',
+                    'تم الدفع بنجاح عبر ${method.name}\nالمبلغ: ${amount.toStringAsFixed(2)} ریال',
                 state: PopUpState.SUCCESS,
               );
             },
@@ -647,6 +674,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
 
     int usedMethods = amounts.length;
 
+    // استخدام totalPrice getter
     if (usedMethods == 1) {
       if (double.parse(totalPaid.toStringAsFixed(2)) <
           double.parse(totalPrice.toStringAsFixed(2))) {
@@ -685,7 +713,7 @@ class DynamicPaidDialogState extends State<DynamicPaidDialog> {
     Map<int, double> mappedAmounts = {};
     Map<int, String> mappedReferences = {};
 
-    debugPrint(' Mapping: $mapping');
+    debugPrint('🗺️ Mapping: $mapping');
 
     for (var entry in amounts.entries) {
       int correctId = mapping[entry.key] ?? entry.key;
