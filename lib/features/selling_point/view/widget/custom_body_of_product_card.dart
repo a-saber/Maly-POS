@@ -16,6 +16,7 @@ class CustomBodyOfProductCard extends StatelessWidget {
       children: [
         Row(
           children: [
+          
             Expanded(
               flex: 3,
               child: Align(
@@ -33,35 +34,56 @@ class CustomBodyOfProductCard extends StatelessWidget {
                 ),
               ),
             ),
+          
             Expanded(
-                child: Align(
-              alignment: AlignmentDirectional.center,
-              child: Text(
-                S.of(context).quantity,
-                style: AppFontStyle.itemsSubTitle(
-                  context: context,
-                  color: AppColors.black,
-                  fontWeight: FontWeight.w600,
+              child: Align(
+                alignment: AlignmentDirectional.topStart,
+                child: Text(
+                  'السعر',
+                  style: AppFontStyle.itemsSubTitle(
+                    context: context,
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
               ),
-            )),
+            ),
             Expanded(
-                child: Align(
-              alignment: AlignmentDirectional.center,
-              child: Text(
-                S.of(context).price,
-                style: AppFontStyle.itemsSubTitle(
-                  context: context,
-                  color: AppColors.black,
-                  fontWeight: FontWeight.w600,
+              child: Align(
+                alignment: AlignmentDirectional.topStart,
+                child: Text(
+                  'بالضريبة',
+                  style: AppFontStyle.itemsSubTitle(
+                    context: context,
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-            )),
+            ),
+            // الإجمالي
+            Expanded(
+              child: Align(
+                alignment: AlignmentDirectional.topStart,
+                child: Text(
+                  "الاجمالي",
+                  style: AppFontStyle.itemsSubTitle(
+                    context: context,
+                    color: AppColors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
           ],
         ),
         Divider(

@@ -46,15 +46,16 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
     final currentText = widget.controller.text;
     
     if (value == 'C') {
-      widget.controller.text = '';
+      widget.controller.text = '0';
     } else if (value == '⌫') {
-      if (currentText.isNotEmpty) {
-        widget.controller.text = currentText.substring(0, currentText.length - 1);
+      if (currentText.isNotEmpty && currentText != '0') {
+        final newText = currentText.substring(0, currentText.length - 1);
+        widget.controller.text = newText.isEmpty ? '0' : newText;
       }
     } else if (value == '.') {
       if (!widget.allowDecimal) return;
       
-      if (currentText.isEmpty) {
+      if (currentText == '0' || currentText.isEmpty) {
         widget.controller.text = '0.';
       } else if (!currentText.contains('.')) {
         widget.controller.text = currentText + '.';
@@ -65,7 +66,7 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
       }
       return; 
     } else {
-      if (currentText.isEmpty) {
+      if (currentText == '0') {
         widget.controller.text = value;
       } else {
         widget.controller.text = currentText + value;
@@ -177,7 +178,7 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
         child: Container(
           decoration: BoxDecoration(
             color: Colors.grey.shade100,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),

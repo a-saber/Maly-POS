@@ -1,5 +1,6 @@
 part of 'selling_point_product_cubit.dart';
 
+
 @immutable
 sealed class SellingPointProductState {}
 
