@@ -21,6 +21,13 @@ Future<void> showDialogForShiftEnd(BuildContext context,
     context: context,
     // barrierDismissible: false,
     builder: (ctx) {
+      final paymentMethods = shift.summary?.paymentMethods ?? {};
+
+      final filteredPayments = paymentMethods.entries.where((e) {
+        final value = double.tryParse(e.value) ?? 0;
+        return value > 0;
+      }).toList();
+
       return AlertDialog(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +74,7 @@ Future<void> showDialogForShiftEnd(BuildContext context,
               ),
             ),
             Text(
-              "${S.of(context).openingQuantity}: ${(double.tryParse(shift.shift?.openingQuantity??'0')?.toStringAsFixed(1) ?? '-')}",
+              "${S.of(context).openingQuantity}: ${(double.tryParse(shift.shift?.openingQuantity ?? '0')?.toStringAsFixed(1) ?? '-')}",
               style: const TextStyle(
                 color: AppColors.black,
                 fontSize: 13,
@@ -87,20 +94,18 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                 fontSize: 13,
               ),
             ),
-            Text(
-              "${S.of(context).cashTotal}: ${(shift.shift?.cashTotal ?? '-').toAmount()}",
-              style: const TextStyle(
-                color: AppColors.black,
-                fontSize: 13,
-              ),
-            ),
-            Text(
-              "${S.of(context).onlineTotal}: ${(shift.shift?.onlineTotal ?? '-').toAmount()}",
-              style: const TextStyle(
-                color: AppColors.black,
-                fontSize: 13,
-              ),
-            ),
+            if (filteredPayments.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ...filteredPayments.map((e) {
+                return Text(
+                  "${translatePaymentMethod(context, e.key)}: ${e.value.toAmount()}",
+                  style: const TextStyle(
+                    color: AppColors.black,
+                    fontSize: 13,
+                  ),
+                );
+              }).toList(),
+            ],
             Text(
               "${S.of(context).total}: ${(shift.shift?.totalAfterTax ?? '-').toAmount()}",
               style: const TextStyle(
@@ -117,7 +122,7 @@ Future<void> showDialogForShiftEnd(BuildContext context,
               CustomTextBtn(
                 text: S.of(context).print,
                 onPressed: () async {
-                /*  Navigator.push(
+                  /*  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) {
@@ -134,61 +139,56 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                       },
                     ),
                   );*/
-                  final bool isSunmi=await PrinterHelper().isSunmiDevice();
-                  final allAutomaticPrinters = MyServiceLocator.getSingleton<GetPrintersCubit>().printers;
+                  final bool isSunmi = await PrinterHelper().isSunmiDevice();
+                  final allAutomaticPrinters =
+                      MyServiceLocator.getSingleton<GetPrintersCubit>()
+                          .printers;
                   for (final printer in allAutomaticPrinters) {
-
-                    if (printer.discoveredPrinter != null ) {
-
+                    if (printer.discoveredPrinter != null) {
                       try {
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
-                        if(isSunmi & printer.printerType.toString().toLowerCase().contains('sunmi') && (printer?.automatic??false)){
+                        if (isSunmi &
+                                printer.printerType
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains('sunmi') &&
+                            (printer?.automatic ?? false)) {
+                          await printSunmiPDF(
+                              await endShiftInvoicesPdf(context,
+                                  shift: shift, size: '80'),
+                              '58');
 
-                          await printSunmiPDF(await endShiftInvoicesPdf(
-                              context,
-                              shift: shift,
-                              size:'80'
-                          ), '58');
-
-                  await SunmiPrinter.lineWrap(4);
-                  await SunmiPrinter.cutPaper();
-                  await SunmiDrawer.openDrawer();
-                  /*   if( state.printModel.apiResponse.data[ApiKeys.sale][ApiKeys.ordertype]==ApiKeys.hall){
+                          await SunmiPrinter.lineWrap(4);
+                          await SunmiPrinter.cutPaper();
+                          await SunmiDrawer.openDrawer();
+                          /*   if( state.printModel.apiResponse.data[ApiKeys.sale][ApiKeys.ordertype]==ApiKeys.hall){
                           await SunmiDrawer.openDrawer();
                             }*/
+                        } else if ((printer.automatic ?? false)) {
+                          var invoiceBytesUint8List = await endShiftInvoicesPdf(
+                              context,
+                              shift: shift,
+                              size: '80');
+
+                          await PrinterHelper().printInvoice(
+                            printer.discoveredPrinter!,
+                            invoiceBytesUint8List,
+                            // invoiceData,
+                            paperSize: printer.paperSize,
+                            openCashDrawer: true,
+                          );
+                          // await PrinterHelper().printWidget(context, printer.discoveredPrinter!);
+
+                          debugPrint(' SUCCESS: ${printer.printerName}');
+                        }
+                      } catch (e) {
+                        debugPrint(
+                            ' FAILED: ${printer.printerName} - Error: $e');
+                      }
+                    }
                   }
-                  else if((printer.automatic??false)){
-
-                  var invoiceBytesUint8List = await endShiftInvoicesPdf(
-                      context,
-                      shift: shift,
-                      size:'80'
-                  );
-
-                  await PrinterHelper().printInvoice(
-                  printer.discoveredPrinter!,
-                  invoiceBytesUint8List,
-                  // invoiceData,
-                  paperSize: printer.paperSize,
-                  openCashDrawer: true,
-                  );
-                  // await PrinterHelper().printWidget(context, printer.discoveredPrinter!);
-
-
-                  debugPrint(' SUCCESS: ${printer.printerName}');
-                  }
-                  } catch (e) {
-
-                  debugPrint(
-                  ' FAILED: ${printer.printerName} - Error: $e');
-                  }
-                }
-
-
-
-                }
                 },
               ),
               CustomTextBtn(
@@ -216,4 +216,17 @@ Future<void> showDialogForShiftEnd(BuildContext context,
       );
     },
   );
+}
+
+String translatePaymentMethod(BuildContext context, String key) {
+  final translations = {
+    'cash': S.of(context).cash,
+    'online': S.of(context).online,
+    'الاهلي ': S.of(context).ahley_pay,
+    'mada': S.of(context).mada,
+    'الراجحي': S.of(context).elraghy_pay,
+  };
+
+  return translations[key] ??
+      key.replaceAll('_', ' ').replaceAll('-', ' ').toUpperCase();
 }

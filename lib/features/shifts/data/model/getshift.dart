@@ -210,8 +210,7 @@ class Summary {
   String? totalAfterDiscount;
   String? taxTotal;
   String? totalAfterTax;
-  String? cashTotal;
-  String? onlineTotal;
+Map<String, String>? paymentMethods;
 
   Summary(
       {count,
@@ -221,7 +220,8 @@ class Summary {
       taxTotal,
       totalAfterTax,
       cashTotal,
-      onlineTotal});
+      onlineTotal,
+      paymentMethods});
 
   Summary.fromJson(Map<String, dynamic> json) {
     count = json['count'];
@@ -230,8 +230,11 @@ class Summary {
     totalAfterDiscount = json['total_after_discount'];
     taxTotal = json['tax_total'];
     totalAfterTax = json['total_after_tax'];
-    cashTotal = json['cash_total'];
-    onlineTotal = json['online_total'];
+    if (json['payment_methods'] != null) {
+      paymentMethods = Map<String, String>.from(
+        json['payment_methods'],
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -242,8 +245,9 @@ class Summary {
     data['total_after_discount'] = totalAfterDiscount;
     data['tax_total'] = taxTotal;
     data['total_after_tax'] = totalAfterTax;
-    data['cash_total'] = cashTotal;
-    data['online_total'] = onlineTotal;
+    if (this.paymentMethods != null) {
+      data['payment_methods'] = this.paymentMethods;
+    }
     return data;
   }
 }

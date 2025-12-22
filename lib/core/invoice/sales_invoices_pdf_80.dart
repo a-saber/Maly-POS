@@ -18,7 +18,7 @@ import '../cache/cache_helper.dart';
 import '../cache/cache_keys.dart';
 import '../helper/formate_date_time.dart';
 
-Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
+Future<void> printSunmiPDF(Uint8List pdfData, String paperSize) async {
   try {
     final SunmiPrinterPlus sunmiPrinterPlus = SunmiPrinterPlus();
     // /// new select Size
@@ -42,28 +42,30 @@ Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
     debugPrint("************* _printPDF 01 *********");
     final pdfPage = await pdfDocument.getPage(1); // 0-based index
     debugPrint("************* _printPDF 02 *********");
+
     /// old select Size /////////////////////////////////////////////////
     const double scale = 2.6; // Adjust scaling factor as needed
-     final double renderWidth = (pdfPage.width * scale);
+    final double renderWidth = (pdfPage.width * scale);
     final double renderHeight = (pdfPage.height * scale);
-     ///old select Size
+
+    ///old select Size
     /// ///////////////////////////////////////////////////////////////
     // Calculate render dimensions based on paper size
     // /// new select Size
     // final double renderWidth = config!.width.toDouble();
     // final double renderHeight = (pdfPage.height * config.scale);
     final pdfx.PdfPageImage? pageImage = await pdfPage.render(
-        width: renderWidth,
-       height: renderHeight,
-
-     );
+      width: renderWidth,
+      height: renderHeight,
+    );
     // /// new select Size
     debugPrint("************* _printPDF 03 *********");
 
     if (pageImage != null) {
       // Print the rendered image
 
-      await sunmiPrinterPlus.printImage(pageImage.bytes, align: SunmiPrintAlign.CENTER); // Use 'bytes' property
+      await sunmiPrinterPlus.printImage(pageImage.bytes,
+          align: SunmiPrintAlign.CENTER); // Use 'bytes' property
       await sunmiPrinterPlus.lineWrap(times: 70); // Add spacing after the print
     } else {
       debugPrint("Failed to render PDF page.");
@@ -77,11 +79,11 @@ Future<void> printSunmiPDF(Uint8List pdfData,String paperSize) async {
 }
 
 Future<Uint8List> salesInvoicesPdf80(
-    Map<String, dynamic> response, {
-      String? branchName,
-      required double paid,
-      required String size,
-    }) async {
+  Map<String, dynamic> response, {
+  String? branchName,
+  required double paid,
+  required String size,
+}) async {
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
 
@@ -96,7 +98,8 @@ Future<Uint8List> salesInvoicesPdf80(
     http.Response? imageResponse;
     if (response[ApiKeys.settings][ApiKeys.imageurl] != null) {
       try {
-        final url = response[ApiKeys.settings][ApiKeys.imageurl] as String? ?? "";
+        final url =
+            response[ApiKeys.settings][ApiKeys.imageurl] as String? ?? "";
         if (url.isNotEmpty) {
           imageResponse = await http.get(Uri.parse(url));
           if (imageResponse.statusCode != 200) {
@@ -135,7 +138,6 @@ Future<Uint8List> salesInvoicesPdf80(
     final double fontSize = size == '80' ? 7 : 6;
     final double titleSize = size == '80' ? 10 : 9;
     final double logoSize = size == '80' ? 35 : 25;
-
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
@@ -158,14 +160,16 @@ Future<Uint8List> salesInvoicesPdf80(
                     if (time.isNotEmpty)
                       pw.Text(
                         time,
-                        style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
+                        style:
+                            pw.TextStyle(fontSize: fontSize, font: arabicFont),
                       ),
                     if (time.isNotEmpty && date.isNotEmpty)
                       pw.SizedBox(width: 10),
                     if (date.isNotEmpty)
                       pw.Text(
                         date,
-                        style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
+                        style:
+                            pw.TextStyle(fontSize: fontSize, font: arabicFont),
                       ),
                   ],
                 ),
@@ -185,7 +189,8 @@ Future<Uint8List> salesInvoicesPdf80(
               pw.SizedBox(height: 5),
 
               // Logo
-              if (setting[ApiKeys.imageurl] != null && imageResponse != null) ...[
+              if (setting[ApiKeys.imageurl] != null &&
+                  imageResponse != null) ...[
                 pw.ClipOval(
                   child: pw.Container(
                     width: logoSize,
@@ -203,7 +208,10 @@ Future<Uint8List> salesInvoicesPdf80(
               if (setting[ApiKeys.shopname] != null)
                 pw.Text(
                   setting[ApiKeys.shopname],
-                  style: pw.TextStyle(fontSize: fontSize + 1, font: arabicFontBold, fontWeight: pw.FontWeight.bold),
+                  style: pw.TextStyle(
+                      fontSize: fontSize + 1,
+                      font: arabicFontBold,
+                      fontWeight: pw.FontWeight.bold),
                   textAlign: pw.TextAlign.center,
                 ),
               if (setting[ApiKeys.phone] != null)
@@ -262,13 +270,15 @@ Future<Uint8List> salesInvoicesPdf80(
               pw.SizedBox(height: 5),
 
               // Divider
-              pw.Container(width: double.infinity, height: 0.5, color: PdfColors.black),
+              pw.Container(
+                  width: double.infinity, height: 0.5, color: PdfColors.black),
               pw.SizedBox(height: 3),
 
               // Products Table
               if (products.isNotEmpty)
                 pw.Table(
-                  border: pw.TableBorder.all(color: PdfColors.black, width: 0.3),
+                  border:
+                      pw.TableBorder.all(color: PdfColors.black, width: 0.3),
                   columnWidths: {
                     0: pw.FlexColumnWidth(2), // Product
                     1: pw.FlexColumnWidth(1), // Qty
@@ -280,10 +290,14 @@ Future<Uint8List> salesInvoicesPdf80(
                     pw.TableRow(
                       decoration: pw.BoxDecoration(color: PdfColors.grey200),
                       children: [
-                        _buildTableCell(AppInvoiceString.product, arabicFontBold, fontSize - 1, true),
-                        _buildTableCell(AppInvoiceString.quantity, arabicFontBold, fontSize - 1, true),
-                        _buildTableCell(AppInvoiceString.price, arabicFontBold, fontSize - 1, true),
-                        _buildTableCell(AppInvoiceString.total, arabicFontBold, fontSize - 1, true),
+                        _buildTableCell(AppInvoiceString.product,
+                            arabicFontBold, fontSize - 1, true),
+                        _buildTableCell(AppInvoiceString.quantity,
+                            arabicFontBold, fontSize - 1, true),
+                        _buildTableCell(AppInvoiceString.price, arabicFontBold,
+                            fontSize - 1, true),
+                        _buildTableCell(AppInvoiceString.total, arabicFontBold,
+                            fontSize - 1, true),
                       ].reversed.toList(),
                     ),
                     // Data rows
@@ -304,14 +318,16 @@ Future<Uint8List> salesInvoicesPdf80(
                             false,
                           ),
                           _buildTableCell(
-                            double.tryParse(p[ApiKeys.price] ?? '0')?.toStringAsFixed(2) ?? '0',
+                            double.tryParse(p[ApiKeys.price] ?? '0')
+                                    ?.toStringAsFixed(2) ??
+                                '0',
                             arabicFont,
                             fontSize - 1,
                             false,
                           ),
                           _buildTableCell(
                             double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')
-                                ?.toStringAsFixed(2) ??
+                                    ?.toStringAsFixed(2) ??
                                 '0',
                             arabicFont,
                             fontSize - 1,
@@ -326,7 +342,8 @@ Future<Uint8List> salesInvoicesPdf80(
               if (products.isNotEmpty) pw.SizedBox(height: 5),
 
               // Divider
-              pw.Container(width: double.infinity, height: 0.5, color: PdfColors.black),
+              pw.Container(
+                  width: double.infinity, height: 0.5, color: PdfColors.black),
               pw.SizedBox(height: 3),
 
               // Totals Table
@@ -340,14 +357,18 @@ Future<Uint8List> salesInvoicesPdf80(
                   if (sale[ApiKeys.subtotal] != null)
                     _buildTotalRow(
                       AppInvoiceString.totalBeforeTax,
-                      double.tryParse(sale[ApiKeys.subtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+                      double.tryParse(sale[ApiKeys.subtotal] ?? '0')
+                              ?.toStringAsFixed(2) ??
+                          '0',
                       arabicFont,
                       fontSize - 1,
                     ),
                   if (sale[ApiKeys.discounttotal] != null)
                     _buildTotalRow(
                       AppInvoiceString.discount,
-                      double.tryParse(sale[ApiKeys.discounttotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+                      double.tryParse(sale[ApiKeys.discounttotal] ?? '0')
+                              ?.toStringAsFixed(2) ??
+                          '0',
                       arabicFont,
                       fontSize - 1,
                     ),
@@ -355,7 +376,7 @@ Future<Uint8List> salesInvoicesPdf80(
                     _buildTotalRow(
                       AppInvoiceString.totalAfterDiscount,
                       double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')
-                          ?.toStringAsFixed(2) ??
+                              ?.toStringAsFixed(2) ??
                           '0',
                       arabicFont,
                       fontSize - 1,
@@ -363,14 +384,17 @@ Future<Uint8List> salesInvoicesPdf80(
                   if (sale[ApiKeys.taxtotal] != null)
                     _buildTotalRow(
                       AppInvoiceString.tax,
-                      double.tryParse(sale[ApiKeys.taxtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+                      double.tryParse(sale[ApiKeys.taxtotal] ?? '0')
+                              ?.toStringAsFixed(2) ??
+                          '0',
                       arabicFont,
                       fontSize - 1,
                     ),
                   if (sale[ApiKeys.totalaftertax] != null)
                     _buildTotalRow(
                       AppInvoiceString.totalAfterTax,
-                      double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')?.toStringAsFixed(2) ??
+                      double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')
+                              ?.toStringAsFixed(2) ??
                           '0',
                       arabicFontBold,
                       fontSize - 1,
@@ -414,7 +438,8 @@ Future<Uint8List> salesInvoicesPdf80(
               ],
 
               // Divider
-              pw.Container(width: double.infinity, height: 0.5, color: PdfColors.black),
+              pw.Container(
+                  width: double.infinity, height: 0.5, color: PdfColors.black),
               pw.SizedBox(height: 5),
 
               // Footer
@@ -481,7 +506,8 @@ Future<Uint8List> salesInvoicesPdf80(
 }
 
 // Helper: Build table cell
-pw.Widget _buildTableCell(String text, pw.Font font, double fontSize, bool isBold) {
+pw.Widget _buildTableCell(
+    String text, pw.Font font, double fontSize, bool isBold) {
   return pw.Padding(
     padding: const pw.EdgeInsets.all(2),
     child: pw.Text(
@@ -500,12 +526,12 @@ pw.Widget _buildTableCell(String text, pw.Font font, double fontSize, bool isBol
 
 // Helper: Build total row
 pw.TableRow _buildTotalRow(
-    String label,
-    String value,
-    pw.Font font,
-    double fontSize, {
-      bool isBold = false,
-    }) {
+  String label,
+  String value,
+  pw.Font font,
+  double fontSize, {
+  bool isBold = false,
+}) {
   return pw.TableRow(
     decoration: pw.BoxDecoration(color: PdfColors.grey100),
     children: [
@@ -536,8 +562,9 @@ pw.TableRow _buildTotalRow(
     ].reversed.toList(),
   );
 }
-Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndShiftModel shift, required String size }) async
-{
+
+Future<Uint8List> endShiftInvoicesPdf(BuildContext contextView,
+    {required EndShiftModel shift, required String size}) async {
   http.Response? imageResponse;
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
@@ -565,22 +592,29 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
         imageResponse = null;
       }
     }
+    final Map<String, String> paymentMethodsMap =
+    shift.summary?.paymentMethods ?? {};
 
+
+    final filteredPaymentMethods = paymentMethodsMap.entries.where((e) {
+      final value = double.tryParse(e.value.toString()) ?? 0;
+      return value > 0;
+    }).toList();
 
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
         pageFormat: size == '80'
             ? PdfPageFormat(
-          80 * 2.83465, // 80mm width in points
-          double.infinity,
-          marginAll: 5 * 2.83465, // 5mm margin
-        )
+                80 * 2.83465, // 80mm width in points
+                double.infinity,
+                marginAll: 5 * 2.83465, // 5mm margin
+              )
             : PdfPageFormat(
-          57 * 2.83465, // 57mm width in points
-          double.infinity,
-          marginAll: 3 * 2.83465, // 3mm margin
-        ),
+                57 * 2.83465, // 57mm width in points
+                double.infinity,
+                marginAll: 3 * 2.83465, // 3mm margin
+              ),
         build: (context) => pw.Container(
           decoration: pw.BoxDecoration(color: PdfColors.white),
           width: double.infinity,
@@ -678,7 +712,7 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
                     _buildTableRow(
                       S.of(contextView).openingQuantity,
                       double.tryParse(shift.shift?.openingQuantity ?? '0')
-                          ?.toStringAsFixed(1) ??
+                              ?.toStringAsFixed(1) ??
                           '-',
                       arabicFont,
                       size,
@@ -696,18 +730,15 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
                       size,
                       isBold: true,
                     ),
-                    _buildTableRow(
-                      S.of(contextView).cashTotal,
-                      (shift.shift?.cashTotal ?? '-').toAmount(),
-                      arabicFont,
-                      size,
-                    ),
-                    _buildTableRow(
-                      S.of(contextView).onlineTotal,
-                      (shift.shift?.onlineTotal ?? '-').toAmount(),
-                      arabicFont,
-                      size,
-                    ),
+                    ...filteredPaymentMethods.map((e) {
+                      return _buildTableRow(
+                        "${translatePaymentMethod(contextView, e.key)}: ${e.value.toAmount()}",
+
+                        e.value.toString().toAmount(),
+                        arabicFont,
+                        size,
+                      );
+                    }).toList(),
                     _buildTableRow(
                       S.of(contextView).total,
                       (shift.shift?.totalAfterTax ?? '-').toAmount(),
@@ -749,7 +780,6 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
 
 // Helper function to build table rows
 
-
     return pdf.save();
   } catch (e) {
     debugPrint('⚠️ PDF Generation Error: $e');
@@ -760,13 +790,14 @@ Future<Uint8List> endShiftInvoicesPdf( BuildContext contextView, {required EndSh
     return emptyPdf.save();
   }
 }
+
 pw.TableRow _buildTableRow(
-    String label,
-    String value,
-    pw.Font font,
-    String size, {
-      bool isBold = false,
-    }) {
+  String label,
+  String value,
+  pw.Font font,
+  String size, {
+  bool isBold = false,
+}) {
   return pw.TableRow(
     decoration: pw.BoxDecoration(
       color: PdfColors.grey100,
@@ -800,22 +831,19 @@ pw.TableRow _buildTableRow(
   );
 }
 
-String  orderType(String type ){
-  switch (type){
-    case  ApiKeys.hall:return "${ApiKeys.hall}-${'محلي'}";
-    case  ApiKeys.delivery : return "${ApiKeys.delivery}-${'توصيل'}";
-    default: return "${"takeaway"}-${'سفري'}";
-
-
-
+String orderType(String type) {
+  switch (type) {
+    case ApiKeys.hall:
+      return "${ApiKeys.hall}-${'محلي'}";
+    case ApiKeys.delivery:
+      return "${ApiKeys.delivery}-${'توصيل'}";
+    default:
+      return "${"takeaway"}-${'سفري'}";
   }
-
-
 }
 
 Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
-    {String? branchName, required double paid,required String size}) async
-{
+    {String? branchName, required double paid, required String size}) async {
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
 
@@ -867,7 +895,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
-        pageFormat: size=='80' ? PdfPageFormat.roll80: PdfPageFormat.roll57,
+        pageFormat: size == '80' ? PdfPageFormat.roll80 : PdfPageFormat.roll57,
         build: (context) => pw.Column(
           crossAxisAlignment: pw.CrossAxisAlignment.stretch,
           children: [
@@ -909,18 +937,18 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             // Shop Info
             (setting[ApiKeys.imageurl] != null && imageResponse != null)
                 ? pw.Center(
-              // ✅ keeps it centered without stretching
-              child: pw.ClipOval(
-                child: pw.Container(
-                  width: 50, // fixed size
-                  height: 50, // fixed size
-                  child: pw.Image(
-                    pw.MemoryImage(imageResponse.bodyBytes),
-                    fit: pw.BoxFit.fill,
-                  ),
-                ),
-              ),
-            )
+                    // ✅ keeps it centered without stretching
+                    child: pw.ClipOval(
+                      child: pw.Container(
+                        width: 50, // fixed size
+                        height: 50, // fixed size
+                        child: pw.Image(
+                          pw.MemoryImage(imageResponse.bodyBytes),
+                          fit: pw.BoxFit.fill,
+                        ),
+                      ),
+                    ),
+                  )
                 : pw.SizedBox(),
 
             // Setting Info
@@ -959,7 +987,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
               ),
             if (sale[ApiKeys.ordertype] != null)
               pw.Text(
-                "${AppInvoiceString.orderType}:${ orderType(sale[ApiKeys.ordertype])}",
+                "${AppInvoiceString.orderType}:${orderType(sale[ApiKeys.ordertype])}",
                 textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   font: arabicFont,
@@ -971,24 +999,21 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                 padding: pw.EdgeInsets.all(10),
                 decoration: pw.BoxDecoration(
                     border: pw.Border.all(
-                      color: PdfColors.black,
-                      width: 1,
-                      style: pw.BorderStyle.solid,
-                    )
-                ),
+                  color: PdfColors.black,
+                  width: 1,
+                  style: pw.BorderStyle.solid,
+                )),
                 child: pw.Center(
-                  child: pw.Column(
-                      children: [
+                  child: pw.Column(children: [
                     pw.Text(
-                    'OrderNumber',
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: arabicFont,
-                      fontSize: 16,
+                      'OrderNumber',
+                      textAlign: pw.TextAlign.center,
+                      style: pw.TextStyle(
+                        font: arabicFont,
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                        pw.SizedBox(height: 2),
-
+                    pw.SizedBox(height: 2),
                     pw.Text(
                       "#${sale['order_number']}",
                       textAlign: pw.TextAlign.center,
@@ -997,11 +1022,8 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                         fontSize: 20,
                       ),
                     )
-                  ]
-                  ),
-                )
-
-            ),
+                  ]),
+                )),
 
             // if (sale["branch_id"] != null) pw.Text("الفرع: ${sale["branch_id"]}"),
             // if (sale["customer"]?["name"] != null)
@@ -1030,7 +1052,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                 children: [
                   pw.TableRow(
                     decoration:
-                    pw.BoxDecoration(color: PdfColors.grey300), // gray bg
+                        pw.BoxDecoration(color: PdfColors.grey300), // gray bg
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
@@ -1105,13 +1127,14 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                   ),
                   // ✅ Data rows
                   ...products.map(
-                        (p) {
+                    (p) {
                       return pw.TableRow(
                         children: [
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
-                              p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
+                              p[ApiKeys.product]?[ApiKeys.name]?.toString() ??
+                                  "",
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -1133,7 +1156,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
-                              double.tryParse(p[ApiKeys.price]??'0')?.toStringAsFixed(2)??'0',
+                              double.tryParse(p[ApiKeys.price] ?? '0')
+                                      ?.toStringAsFixed(2) ??
+                                  '0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -1144,7 +1169,10 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
-                              double.tryParse(p[ApiKeys.linetotalaftertax]??'0')?.toStringAsFixed(2)??'0',
+                              double.tryParse(
+                                          p[ApiKeys.linetotalaftertax] ?? '0')
+                                      ?.toStringAsFixed(2) ??
+                                  '0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
@@ -1210,7 +1238,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
-                          double.tryParse(sale[ApiKeys.subtotal]??'0')?.toStringAsFixed(2)??'0',
+                          double.tryParse(sale[ApiKeys.subtotal] ?? '0')
+                                  ?.toStringAsFixed(2) ??
+                              '0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -1238,7 +1268,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
                           //"${sale[ApiKeys.discounttotal]}",
-                          double.tryParse(sale[ApiKeys.discounttotal]??'0')?.toStringAsFixed(2)??'0',
+                          double.tryParse(sale[ApiKeys.discounttotal] ?? '0')
+                                  ?.toStringAsFixed(2) ??
+                              '0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -1266,7 +1298,10 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
                           // "${sale[ApiKeys.totalafterdiscount]}",
-                          double.tryParse(sale[ApiKeys.totalafterdiscount]??'0')?.toStringAsFixed(2)??'0',
+                          double.tryParse(
+                                      sale[ApiKeys.totalafterdiscount] ?? '0')
+                                  ?.toStringAsFixed(2) ??
+                              '0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -1294,7 +1329,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
                           //"${sale[ApiKeys.taxtotal]}",
-                          double.tryParse(sale[ApiKeys.taxtotal]??'0')?.toStringAsFixed(2)??'0',
+                          double.tryParse(sale[ApiKeys.taxtotal] ?? '0')
+                                  ?.toStringAsFixed(2) ??
+                              '0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             font: arabicFont,
@@ -1323,7 +1360,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                         padding: const pw.EdgeInsets.all(2),
                         child: pw.Text(
                           // "${sale[ApiKeys.totalaftertax]}",
-                          double.tryParse(sale[ApiKeys.totalaftertax]??'0')?.toStringAsFixed(2)??'0',
+                          double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')
+                                  ?.toStringAsFixed(2) ??
+                              '0',
                           style: pw.TextStyle(
                             fontSize: 8,
                             fontWeight: pw.FontWeight.bold,
@@ -1405,7 +1444,13 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                     pw.Padding(
                       padding: const pw.EdgeInsets.all(2),
                       child: pw.Text(
-                        (((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)) * 100) / 100).toStringAsFixed(1),
+                        (((paid -
+                                        (double.tryParse(
+                                                sale[ApiKeys.totalaftertax]) ??
+                                            0)) *
+                                    100) /
+                                100)
+                            .toStringAsFixed(1),
                         style: pw.TextStyle(
                           fontSize: 8,
                           font: arabicFont,
@@ -1460,27 +1505,27 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             pw.SizedBox(height: 3),
             CustomUserHiveBox.getUser().name != null
                 ? pw.Center(
-              child: pw.Text(
-                "${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}",
-                style: pw.TextStyle(
-                  fontSize: 7,
-                  font: arabicFont,
-                ),
-                textAlign: pw.TextAlign.center,
-              ),
-            )
+                    child: pw.Text(
+                      "${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}",
+                      style: pw.TextStyle(
+                        fontSize: 7,
+                        font: arabicFont,
+                      ),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  )
                 : pw.SizedBox(),
             branchName != null
                 ? pw.Center(
-              child: pw.Text(
-                "${AppInvoiceString.branchName} $branchName",
-                style: pw.TextStyle(
-                  fontSize: 7,
-                  font: arabicFont,
-                ),
-                textAlign: pw.TextAlign.center,
-              ),
-            )
+                    child: pw.Text(
+                      "${AppInvoiceString.branchName} $branchName",
+                      style: pw.TextStyle(
+                        fontSize: 7,
+                        font: arabicFont,
+                      ),
+                      textAlign: pw.TextAlign.center,
+                    ),
+                  )
                 : pw.SizedBox(),
           ],
         ),
@@ -1498,9 +1543,16 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
   }
 }
 
+String translatePaymentMethod(BuildContext context, String key) {
+  final translations = {
+    'cash': S.of(context).cash,
+    'online': S.of(context).online,
+    'الاهلي': S.of(context).ahley_pay,
+    'mada': S.of(context).mada,
+    'الراجحي': S.of(context).elraghy_pay,
+  };
 
-
-
-
-
+  return translations[key] ??
+      key.replaceAll('_', ' ').replaceAll('-', ' ').toUpperCase();
+}
 

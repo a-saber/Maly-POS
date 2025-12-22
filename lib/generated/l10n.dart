@@ -2914,7 +2914,22 @@ String get remainingAmount {
       args: [],
     );
   }
-
+  String get ahley_pay {
+    return Intl.message(
+      'Ahley Pay',
+      name: 'ahley_pay',
+      desc: '',
+      args: [],
+    );
+  }
+  String get elraghy_pay {
+    return Intl.message(
+      'Elrady Pay',
+      name: 'elraghy_pay',
+      desc: '',
+      args: [],
+    );
+  }
 
   /// `With Invoices`
   String get withInvoices {

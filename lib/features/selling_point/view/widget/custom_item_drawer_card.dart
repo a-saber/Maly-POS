@@ -41,41 +41,42 @@ class CustomItemDrawerCard extends StatefulWidget {
 
 class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   Timer? _debounce;
-  
+
   late TextEditingController quantityController;
   late TextEditingController unitPriceWithTaxController;
   late TextEditingController totalController;
   TextEditingController? displayPriceController;
-  
+
   double actualUnitPriceWithTax = 0.0;
   double actualTotal = 0.0;
 
   @override
   void initState() {
     super.initState();
-    
-    double priceWithoutTax = double.tryParse(widget.product.priceController.text) ?? 0.0;
-    
+
+    double priceWithoutTax =
+        double.tryParse(widget.product.priceController.text) ?? 0.0;
+
     if (_productHasTax()) {
       actualUnitPriceWithTax = priceWithoutTax * 1.15;
     } else {
       actualUnitPriceWithTax = priceWithoutTax;
     }
-    
+
     actualTotal = actualUnitPriceWithTax * widget.product.count;
-    
+
     quantityController = TextEditingController(
       text: widget.product.count.toString(),
     );
-    
+
     unitPriceWithTaxController = TextEditingController(
       text: actualUnitPriceWithTax.toStringAsFixed(2),
     );
-    
+
     totalController = TextEditingController(
       text: actualTotal.toStringAsFixed(2),
     );
-    
+
     displayPriceController = TextEditingController(
       text: priceWithoutTax.toStringAsFixed(2),
     );
@@ -84,36 +85,41 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   @override
   void didUpdateWidget(CustomItemDrawerCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (oldWidget.product.count != widget.product.count) {
       quantityController.text = widget.product.count.toString();
-      
-      double priceWithoutTax = double.tryParse(widget.product.priceController.text) ?? 0.0;
-      
+
+      double priceWithoutTax =
+          double.tryParse(widget.product.priceController.text) ?? 0.0;
+
       if (_productHasTax()) {
         actualUnitPriceWithTax = priceWithoutTax * 1.15;
       } else {
         actualUnitPriceWithTax = priceWithoutTax;
       }
-      
+
       actualTotal = actualUnitPriceWithTax * widget.product.count;
       totalController.text = actualTotal.toStringAsFixed(2);
-      unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
+      unitPriceWithTaxController.text =
+          actualUnitPriceWithTax.toStringAsFixed(2);
     }
-    
-    if (oldWidget.product.priceController.text != widget.product.priceController.text) {
-      double priceWithoutTax = double.tryParse(widget.product.priceController.text) ?? 0.0;
-      
+
+    if (oldWidget.product.priceController.text !=
+        widget.product.priceController.text) {
+      double priceWithoutTax =
+          double.tryParse(widget.product.priceController.text) ?? 0.0;
+
       displayPriceController?.text = priceWithoutTax.toStringAsFixed(2);
-      
+
       if (_productHasTax()) {
         actualUnitPriceWithTax = priceWithoutTax * 1.15;
       } else {
         actualUnitPriceWithTax = priceWithoutTax;
       }
-      
-      unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
-      
+
+      unitPriceWithTaxController.text =
+          actualUnitPriceWithTax.toStringAsFixed(2);
+
       actualTotal = actualUnitPriceWithTax * widget.product.count;
       totalController.text = actualTotal.toStringAsFixed(2);
     }
@@ -142,116 +148,121 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
     // نبدأ بقيمة فاضية عشان المستخدم يكتب من الأول
     final tempController = TextEditingController(text: '');
     bool isFirstInput = true;
-    
+
     showDialog(
       context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) {
-          return Dialog(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 400,
-                minWidth: 280,
-              ),
-              child: IntrinsicWidth(
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+      builder: (context) => StatefulBuilder(builder: (context, setDialogState) {
+        return Dialog(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 400,
+              minWidth: 280,
+            ),
+            child: IntrinsicWidth(
+              child: Container(
+                padding: EdgeInsets.all(16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: 8),
-                      // نعرض القيمة الحالية للمستخدم
-                      Text(
-                        'القيمة الحالية: ${controller.text}',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                    ),
+                    SizedBox(height: 8),
+                    // نعرض القيمة الحالية للمستخدم
+                    Text(
+                      'القيمة الحالية: ${controller.text}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
                       ),
-                      SizedBox(height: 16),
-                      CustomFormField(
-                        controller: tempController,
-                        keyboardType: TextInputType.none,
-                      ),
-                      SizedBox(height: 16),
-                      CustomPaymentKeyboard(
-                        controller: tempController,
-                        onChanged: () {
-                          setDialogState(() {
-                            // نشيل الصفر الأول لما يبدأ الكتابة
-                            if (isFirstInput && tempController.text.startsWith('0') && tempController.text.length > 1) {
-                              tempController.text = tempController.text.substring(1);
-                              tempController.selection = TextSelection.fromPosition(
-                                TextPosition(offset: tempController.text.length),
-                              );
-                            }
-                            if (tempController.text.isNotEmpty && tempController.text != '0') {
-                              isFirstInput = false;
-                            }
-                          });
-                        },
-                        allowDecimal: allowDecimal,
-                        onEnterPressed: () {
-                          // نتأكد إن القيمة مش فاضية وصحيحة
-                          String value = tempController.text.trim();
-                          if (value.isEmpty || value == '0') {
-                            // لو فاضي أو صفر، نقفل من غير تغيير
+                    ),
+                    SizedBox(height: 16),
+                    CustomFormField(
+                      controller: tempController,
+                      keyboardType: TextInputType.none,
+                    ),
+                    SizedBox(height: 16),
+                    CustomPaymentKeyboard(
+                      controller: tempController,
+                      onChanged: () {
+                        setDialogState(() {
+                          // نشيل الصفر الأول لما يبدأ الكتابة
+                          if (isFirstInput &&
+                              tempController.text.startsWith('0') &&
+                              tempController.text.length > 1) {
+                            tempController.text =
+                                tempController.text.substring(1);
+                            tempController.selection =
+                                TextSelection.fromPosition(
+                              TextPosition(offset: tempController.text.length),
+                            );
+                          }
+                          if (tempController.text.isNotEmpty &&
+                              tempController.text != '0') {
+                            isFirstInput = false;
+                          }
+                        });
+                      },
+                      allowDecimal: allowDecimal,
+                      onEnterPressed: () {
+                        // نتأكد إن القيمة مش فاضية وصحيحة
+                        String value = tempController.text.trim();
+                        if (value.isEmpty || value == '0') {
+                          // لو فاضي أو صفر، نقفل من غير تغيير
+                          Navigator.pop(context);
+                          return;
+                        }
+
+                        // للكمية: نتأكد إنها رقم صحيح
+                        if (!allowDecimal) {
+                          int? intValue = int.tryParse(value);
+                          if (intValue != null && intValue > 0) {
+                            controller.text = value;
                             Navigator.pop(context);
-                            return;
-                          }
-                          
-                          // للكمية: نتأكد إنها رقم صحيح
-                          if (!allowDecimal) {
-                            int? intValue = int.tryParse(value);
-                            if (intValue != null && intValue > 0) {
-                              controller.text = value;
-                              Navigator.pop(context);
-                              onUpdate();
-                            } else {
-                              // قيمة غير صحيحة للكمية
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('يجب إدخال كمية صحيحة أكبر من صفر'),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            }
+                            onUpdate();
                           } else {
-                            // للسعر: نتأكد إنه رقم
-                            double? doubleValue = double.tryParse(value);
-                            if (doubleValue != null && doubleValue > 0) {
-                              controller.text = value;
-                              Navigator.pop(context);
-                              onUpdate();
-                            } else {
-                              // قيمة غير صحيحة للسعر
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('يجب إدخال قيمة صحيحة أكبر من صفر'),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 2),
-                                ),
-                              );
-                            }
+                            // قيمة غير صحيحة للكمية
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('يجب إدخال كمية صحيحة أكبر من صفر'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
                           }
-                        },
-                      ),
-                    ],
-                  ),
+                        } else {
+                          // للسعر: نتأكد إنه رقم
+                          double? doubleValue = double.tryParse(value);
+                          if (doubleValue != null && doubleValue > 0) {
+                            controller.text = value;
+                            Navigator.pop(context);
+                            onUpdate();
+                          } else {
+                            // قيمة غير صحيحة للسعر
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content:
+                                    Text('يجب إدخال قيمة صحيحة أكبر من صفر'),
+                                backgroundColor: Colors.red,
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
-          );
-        }
-      ),
+          ),
+        );
+      }),
     ).then((_) {
       // لو قفل الـ dialog من غير ما يدوس Enter
       tempController.dispose();
@@ -259,26 +270,27 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   }
 
   void _updateFromUnitPriceWithTax() {
-    double inputPriceWithTax = double.tryParse(unitPriceWithTaxController.text) ?? 0.0;
+    double inputPriceWithTax =
+        double.tryParse(unitPriceWithTaxController.text) ?? 0.0;
     int quantity = int.tryParse(quantityController.text) ?? 1;
-    
+
     actualUnitPriceWithTax = inputPriceWithTax;
-    
+
     double priceWithoutTax;
     if (_productHasTax()) {
       priceWithoutTax = actualUnitPriceWithTax / 1.15;
     } else {
       priceWithoutTax = actualUnitPriceWithTax;
     }
-    
+
     widget.product.priceController.text = priceWithoutTax.toStringAsFixed(10);
     displayPriceController?.text = priceWithoutTax.toStringAsFixed(2);
-    
+
     actualTotal = actualUnitPriceWithTax * quantity;
     totalController.text = actualTotal.toStringAsFixed(2);
-    
+
     setState(() {});
-    
+
     if (_debounce?.isActive ?? false) {
       _debounce!.cancel();
     }
@@ -291,23 +303,24 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   void _updateFromTotal() {
     double inputTotal = double.tryParse(totalController.text) ?? 0.0;
     int quantity = int.tryParse(quantityController.text) ?? 1;
-    
+
     if (quantity > 0) {
       actualTotal = inputTotal;
-      
+
       actualUnitPriceWithTax = actualTotal / quantity;
-      unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
-      
+      unitPriceWithTaxController.text =
+          actualUnitPriceWithTax.toStringAsFixed(2);
+
       double priceWithoutTax;
       if (_productHasTax()) {
         priceWithoutTax = actualUnitPriceWithTax / 1.15;
       } else {
         priceWithoutTax = actualUnitPriceWithTax;
       }
-      
+
       widget.product.priceController.text = priceWithoutTax.toStringAsFixed(10);
       displayPriceController?.text = priceWithoutTax.toStringAsFixed(2);
-      
+
       if (_debounce?.isActive ?? false) {
         _debounce!.cancel();
       }
@@ -320,35 +333,26 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   }
 
   void _updateFromQuantity() {
-    // نتأكد إن القيمة رقم صحيح وأكبر من صفر
     int? quantity = int.tryParse(quantityController.text);
-    
+
     if (quantity == null || quantity <= 0) {
-      // لو القيمة مش صحيحة، نرجع للقيمة القديمة
-      setState(() {
-        quantityController.text = widget.product.count.toString();
-      });
+      quantityController.text = widget.product.count.toString();
       return;
     }
-    
-    double priceWithoutTax = double.tryParse(widget.product.priceController.text) ?? 0.0;
-    
-    if (_productHasTax()) {
-      actualUnitPriceWithTax = priceWithoutTax * 1.15;
-    } else {
-      actualUnitPriceWithTax = priceWithoutTax;
-    }
-    
+    widget.product.count = quantity;
+
+    double priceWithoutTax =
+        double.tryParse(widget.product.priceController.text) ?? 0.0;
+
+    actualUnitPriceWithTax =
+        _productHasTax() ? priceWithoutTax * 1.15 : priceWithoutTax;
+
     actualTotal = actualUnitPriceWithTax * quantity;
-    
-    setState(() {
-      totalController.text = actualTotal.toStringAsFixed(2);
-      unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
-    });
-    
-    if (_debounce?.isActive ?? false) {
-      _debounce!.cancel();
-    }
+
+    totalController.text = actualTotal.toStringAsFixed(2);
+    unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
+
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 600), () {
       widget.onChangeQuantity?.call();
@@ -359,20 +363,22 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   Widget build(BuildContext context) {
     if (quantityController.text != widget.product.count.toString()) {
       quantityController.text = widget.product.count.toString();
-      
-      double priceWithoutTax = double.tryParse(widget.product.priceController.text) ?? 0.0;
-      
+
+      double priceWithoutTax =
+          double.tryParse(widget.product.priceController.text) ?? 0.0;
+
       if (_productHasTax()) {
         actualUnitPriceWithTax = priceWithoutTax * 1.15;
       } else {
         actualUnitPriceWithTax = priceWithoutTax;
       }
-      
+
       actualTotal = actualUnitPriceWithTax * widget.product.count;
       totalController.text = actualTotal.toStringAsFixed(2);
-      unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
+      unitPriceWithTaxController.text =
+          actualUnitPriceWithTax.toStringAsFixed(2);
     }
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -431,7 +437,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                   ],
                 ),
                 SizedBox(height: 12),
-                
+
                 // كلمة الكمية وخانة الكمية والأزرار في صف واحد
                 Row(
                   children: [
@@ -444,19 +450,14 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                       ),
                     ),
                     SizedBox(
-                      width: 50,
+                      width: 37,
                       child: GestureDetector(
                         onTap: () {
                           _showKeyboardDialog(
                             controller: quantityController,
                             title: 'الكمية',
                             allowDecimal: false,
-                            onUpdate: () {
-                              // نحدث الـ UI بعد التغيير
-                              setState(() {
-                                _updateFromQuantity();
-                              });
-                            },
+                            onUpdate: _updateFromQuantity
                           );
                         },
                         child: AbsorbPointer(
@@ -514,9 +515,9 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
               ],
             ),
           ),
-          
+
           SizedBox(width: 16),
-          
+
           // القسم الأيمن - الأسعار والحذف
           Expanded(
             flex: 3,
@@ -532,32 +533,41 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         child: GestureDetector(
                           onTap: () {
                             _showKeyboardDialog(
-                              controller: displayPriceController ?? widget.product.priceController,
+                              controller: displayPriceController ??
+                                  widget.product.priceController,
                               title: 'السعر',
                               allowDecimal: true,
                               onUpdate: () {
-                                double? newPrice = double.tryParse(displayPriceController?.text ?? widget.product.priceController.text);
+                                double? newPrice = double.tryParse(
+                                    displayPriceController?.text ??
+                                        widget.product.priceController.text);
                                 if (newPrice != null) {
-                                  widget.product.priceController.text = newPrice.toStringAsFixed(10);
-                                  displayPriceController?.text = newPrice.toStringAsFixed(2);
-                                  
+                                  widget.product.priceController.text =
+                                      newPrice.toStringAsFixed(10);
+                                  displayPriceController?.text =
+                                      newPrice.toStringAsFixed(2);
+
                                   if (_productHasTax()) {
                                     actualUnitPriceWithTax = newPrice * 1.15;
                                   } else {
                                     actualUnitPriceWithTax = newPrice;
                                   }
-                                  unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
-                                  
-                                  actualTotal = actualUnitPriceWithTax * widget.product.count;
-                                  totalController.text = actualTotal.toStringAsFixed(2);
-                                  
+                                  unitPriceWithTaxController.text =
+                                      actualUnitPriceWithTax.toStringAsFixed(2);
+
+                                  actualTotal = actualUnitPriceWithTax *
+                                      widget.product.count;
+                                  totalController.text =
+                                      actualTotal.toStringAsFixed(2);
+
                                   setState(() {});
-                                  
+
                                   if (_debounce?.isActive ?? false) {
                                     _debounce!.cancel();
                                   }
-                                  
-                                  _debounce = Timer(const Duration(milliseconds: 600), () {
+
+                                  _debounce = Timer(
+                                      const Duration(milliseconds: 600), () {
                                     widget.onChangePrice?.call();
                                   });
                                 }
@@ -568,7 +578,8 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                             child: Form(
                               key: widget.product.formKey,
                               child: CustomFormField(
-                                controller: displayPriceController ?? widget.product.priceController,
+                                controller: displayPriceController ??
+                                    widget.product.priceController,
                                 keyboardType: TextInputType.none,
                                 validator: (value) =>
                                     MyFormValidators.validateDoublePrice(
@@ -583,8 +594,6 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         ),
                       ),
                     ),
-                    
-                    // السعر بالضريبة
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -611,8 +620,6 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         ),
                       ),
                     ),
-                    
-                    // الإجمالي
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -641,13 +648,12 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                     ),
                   ],
                 ),
-                
+
                 SizedBox(height: 19),
-                
-             
+
                 Row(
                   children: [
-                    Spacer(flex: 2), 
+                    Spacer(flex: 2),
                     Expanded(
                       child: Align(
                         alignment: Alignment.center,
@@ -696,7 +702,7 @@ class _QuantityDialogContent extends StatefulWidget {
 class _QuantityDialogContentState extends State<_QuantityDialogContent> {
   late TextEditingController _controller;
   bool _isFirstInput = true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -715,7 +721,7 @@ class _QuantityDialogContentState extends State<_QuantityDialogContent> {
       Navigator.of(context).pop();
       return;
     }
-    
+
     final quantity = int.tryParse(text);
     if (quantity == null || quantity <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -726,26 +732,24 @@ class _QuantityDialogContentState extends State<_QuantityDialogContent> {
       );
       return;
     }
-    
+
     widget.onQuantityChanged(quantity);
     Navigator.of(context).pop();
   }
-  
+
   void _handleInput() {
     setState(() {
       String text = _controller.text;
-      
+
       if (_isFirstInput && text.startsWith('0') && text.length > 1) {
         _controller.text = text.substring(1);
         _controller.selection = TextSelection.fromPosition(
           TextPosition(offset: _controller.text.length),
         );
         _isFirstInput = false;
-      }
-      else if (text.isNotEmpty && text != '0') {
+      } else if (text.isNotEmpty && text != '0') {
         _isFirstInput = false;
-      }
-      else if (text.isEmpty) {
+      } else if (text.isEmpty) {
         _isFirstInput = true;
         _controller.text = '';
       }
@@ -788,7 +792,6 @@ class _QuantityDialogContentState extends State<_QuantityDialogContent> {
             ),
           ),
           SizedBox(height: 16),
-
           Container(
             padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
@@ -807,11 +810,10 @@ class _QuantityDialogContentState extends State<_QuantityDialogContent> {
             ),
           ),
           SizedBox(height: 16),
-
           CustomPaymentKeyboard(
             controller: _controller,
             allowDecimal: false,
-            onChanged: _handleInput, 
+            onChanged: _handleInput,
             onEnterPressed: _applyQuantity,
           ),
         ],

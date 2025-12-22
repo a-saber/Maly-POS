@@ -54,6 +54,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
               final summary = state.shiftDetails.summary;
               final orders = cubit.shiftOrders;
               // final shop = state.shiftDetails.settings;
+               final paymentMethodsMap = summary?.paymentMethods ?? {};
               debugPrint("ORDERS DATA: $orders");
 
               return BlocProvider(
@@ -63,7 +64,6 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                   orderData: state.shiftDetails.data!.data ?? [],
                 ),
                 child: SafeArea(
-
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: CustomScrollView(
@@ -79,14 +79,29 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                   padding: EdgeInsets.all(paddingCard),
                                   child: Column(
                                     spacing: spacingBetweenRowInCard,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       _row(S.of(context).shiftNumber,
                                           widget.shiftId.toString()),
-                                      _row(S.of(context).openingQuantity, (double.tryParse(shift.openingQuantity??'0')?.toStringAsFixed(1) ?? '0').toString()),
-                                      _row(S.of(context).ordersCount, (shift.ordersCount ?? 0).toString()),
-                                      _row(S.of(context).startAt, getLocalTimeFormate(shift?.startAt ?? '-')),
-                                      _row(S.of(context).endAt, getLocalTimeFormate(shift?.endAt ?? '-'))
+                                      _row(
+                                          S.of(context).openingQuantity,
+                                          (double.tryParse(shift
+                                                              .openingQuantity ??
+                                                          '0')
+                                                      ?.toStringAsFixed(1) ??
+                                                  '0')
+                                              .toString()),
+                                      _row(S.of(context).ordersCount,
+                                          (shift.ordersCount ?? 0).toString()),
+                                      _row(
+                                          S.of(context).startAt,
+                                          getLocalTimeFormate(
+                                              shift?.startAt ?? '-')),
+                                      _row(
+                                          S.of(context).endAt,
+                                          getLocalTimeFormate(
+                                              shift?.endAt ?? '-'))
                                     ],
                                   ),
                                 ),
@@ -110,7 +125,8 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                 child: Padding(
                                   padding: EdgeInsets.all(paddingCard),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       _row(
                                         S.of(context).name,
@@ -155,7 +171,8 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                 child: Padding(
                                   padding: EdgeInsets.all(paddingCard),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       _row(
                                         S.of(context).subTotal,
@@ -163,11 +180,14 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                       ),
                                       _row(
                                         S.of(context).discountTotal,
-                                        summary?.discountTotal.toAmount() ?? '-',
+                                        summary?.discountTotal.toAmount() ??
+                                            '-',
                                       ),
                                       _row(
                                         S.of(context).totalAfterDiscount,
-                                        summary?.totalAfterDiscount.toAmount() ?? '-',
+                                        summary?.totalAfterDiscount
+                                                .toAmount() ??
+                                            '-',
                                       ),
                                       _row(
                                         S.of(context).taxestotal,
@@ -175,16 +195,16 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                       ),
                                       _row(
                                         S.of(context).totalAfterTax,
-                                        summary?.totalAfterTax.toAmount() ?? '-',
+                                        summary?.totalAfterTax.toAmount() ??
+                                            '-',
                                       ),
-                                      _row(
-                                        S.of(context).cashTotal,
-                                        summary?.cashTotal.toAmount() ?? '-',
-                                      ),
-                                      _row(
-                                        S.of(context).onlineTotal,
-                                        summary?.onlineTotal.toAmount() ?? '-',
-                                      ),
+                                      ...paymentMethodsMap.entries.map((e) {
+                                        return _row(
+                                          translatePaymentMethod(
+                                              context, e.key),
+                                          e.value.toAmount(),
+                                        );
+                                      }).toList(),
                                     ],
                                   ),
                                 ),
@@ -242,7 +262,8 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                           builder: (context, state) {
                             return SliverGrid.builder(
                               itemCount: ShiftOrderPaginationCubit.get(context)
-                                  .orderData.length,
+                                  .orderData
+                                  .length,
                               gridDelegate:
                                   SliverGridDelegateWithMaxCrossAxisExtent(
                                       maxCrossAxisExtent: 800,
@@ -251,9 +272,11 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                               itemBuilder: (context, index) {
                                 return Card(
                                   child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: paddingCard),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: paddingCard),
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(
                                           spacing: 50,
@@ -263,7 +286,9 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                                 S.of(context).id,
                                                 ShiftOrderPaginationCubit.get(
                                                             context)
-                                                        .orderData[index].id?.toString() ??
+                                                        .orderData[index]
+                                                        .id
+                                                        ?.toString() ??
                                                     '-',
                                               ),
                                             ),
@@ -312,7 +337,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                           ],
                                         ),
                                         Row(
-                                       //   spacing: 50,
+                                          //   spacing: 50,
                                           children: [
                                             Expanded(
                                               child: _row(
@@ -321,7 +346,8 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                                             context)
                                                         .orderData[index]
                                                         .totalAfterTax
-                                                        ?.toString().toAmount() ??
+                                                        ?.toString()
+                                                        .toAmount() ??
                                                     '-',
                                               ),
                                             ),
@@ -331,13 +357,19 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                                     MainAxisAlignment.end,
                                                 children: [
                                                   CustomTextBtn(
-                                                    textColor: AppColors.primary,
+                                                    textColor:
+                                                        AppColors.primary,
                                                     text: S.of(context).details,
                                                     onPressed: () {
                                                       Navigator.pushNamed(
                                                         context,
-                                                        AppRoutes.orderDetailsView,
-                                                        arguments: ShiftOrderPaginationCubit.get(context).orderData[index],
+                                                        AppRoutes
+                                                            .orderDetailsView,
+                                                        arguments:
+                                                            ShiftOrderPaginationCubit
+                                                                    .get(
+                                                                        context)
+                                                                .orderData[index],
                                                       );
                                                     },
                                                   ),
@@ -419,11 +451,11 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                         //     SizedBox(
                         //       height: spacingBetweenCard,
                         //     ),
-                  
+
                         //     ...state.shiftDetails.data?.data
                         //             ?.map((order) => Column(
                         //                   children: [
-                  
+
                         //                   ],
                         //                 ))
                         //             .toList() ??
@@ -431,7 +463,7 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                         //   ],
                         // ),
                       ],
-                  
+
                       //   } else if (index == 1) {
                       //     return const SizedBox(height: 12);
                       //   } else if (index == 2) {
@@ -594,4 +626,17 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
       ],
     );
   }
+}
+
+String translatePaymentMethod(BuildContext context, String key) {
+  final map = {
+    'cash': S.of(context).cash,
+    'online': S.of(context).online,
+    'الاهلي': S.of(context).ahley_pay,
+    'mada': S.of(context).mada,
+    'الراجحي': S.of(context).elraghy_pay,
+  };
+
+  return map[key] ??
+      key.replaceAll('_', ' ').replaceAll('-', ' ').toUpperCase();
 }
