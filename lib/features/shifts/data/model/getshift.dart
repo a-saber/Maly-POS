@@ -205,7 +205,54 @@ class Branch {
   }
 }
 
+class Summary {
+  int? count;
+  String? subtotal;
+  String? discountTotal;
+  String? totalAfterDiscount;
+  String? taxTotal;
+  String? totalAfterTax;
+Map<String, String>? paymentMethods;
 
+  Summary(
+      {count,
+      subtotal,
+      discountTotal,
+      totalAfterDiscount,
+      taxTotal,
+      totalAfterTax,
+      cashTotal,
+      onlineTotal,
+      paymentMethods});
+
+  Summary.fromJson(Map<String, dynamic> json) {
+    count = json['count'];
+    subtotal = json['subtotal'];
+    discountTotal = json['discount_total'];
+    totalAfterDiscount = json['total_after_discount'];
+    taxTotal = json['tax_total'];
+    totalAfterTax = json['total_after_tax'];
+    if (json['payment_methods'] != null) {
+      paymentMethods = Map<String, String>.from(
+        json['payment_methods'],
+      );
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['count'] = count;
+    data['subtotal'] = subtotal;
+    data['discount_total'] = discountTotal;
+    data['total_after_discount'] = totalAfterDiscount;
+    data['tax_total'] = taxTotal;
+    data['total_after_tax'] = totalAfterTax;
+    if (this.paymentMethods != null) {
+      data['payment_methods'] = this.paymentMethods;
+    }
+    return data;
+  }
+}
 
 class Dataforshift {
   int? currentPage;
