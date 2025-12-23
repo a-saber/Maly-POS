@@ -384,13 +384,11 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // القسم الأيسر - الصورة والاسم والكمية
           Expanded(
             flex: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // الصورة والاسم
                 Row(
                   children: [
                     CustomCachedNetworkImage(
@@ -437,28 +435,30 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                   ],
                 ),
                 SizedBox(height: 12),
+                // استبدل الـ Row الخاص بالكمية بالكود ده:
 
-                // كلمة الكمية وخانة الكمية والأزرار في صف واحد
+                // استبدل الـ Row الخاص بالكمية بالكود ده:
+
                 Row(
                   children: [
                     Text(
-                      'الكمية: ',
+                      'الكمية:',
                       style: AppFontStyle.itemsSubTitle(
                         context: context,
                         color: AppColors.black,
                         fontWeight: FontWeight.w600,
+                      
                       ),
                     ),
                     SizedBox(
-                      width: 37,
+                      width: 43, 
                       child: GestureDetector(
                         onTap: () {
                           _showKeyboardDialog(
-                            controller: quantityController,
-                            title: 'الكمية',
-                            allowDecimal: false,
-                            onUpdate: _updateFromQuantity
-                          );
+                              controller: quantityController,
+                              title: 'الكمية',
+                              allowDecimal: false,
+                              onUpdate: _updateFromQuantity);
                         },
                         child: AbsorbPointer(
                           child: CustomFormField(
@@ -478,11 +478,11 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         ),
                       ),
                     ),
-                    SizedBox(width: 4),
+                    SizedBox(width: 8), // مسافة بين الـ field والأزرار
                     InkWell(
                       onTap: widget.onTapAdd,
                       child: Container(
-                        padding: EdgeInsets.all(6),
+                        padding: EdgeInsets.all(5), // قللنا من 6 لـ 5
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.green,
@@ -490,15 +490,15 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         child: Icon(
                           Icons.add,
                           color: Colors.white,
-                          size: 16,
+                          size: 15, // قللنا من 16 لـ 15
                         ),
                       ),
                     ),
-                    SizedBox(width: 4),
+                    SizedBox(width: 3), // قللنا من 4 لـ 3
                     InkWell(
                       onTap: widget.onTapRemove,
                       child: Container(
-                        padding: EdgeInsets.all(6),
+                        padding: EdgeInsets.all(5), // قللنا من 6 لـ 5
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: Colors.red,
@@ -506,12 +506,12 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                         child: Icon(
                           Icons.remove,
                           color: Colors.white,
-                          size: 16,
+                          size: 15, // قللنا من 16 لـ 15
                         ),
                       ),
                     ),
                   ],
-                ),
+                )
               ],
             ),
           ),

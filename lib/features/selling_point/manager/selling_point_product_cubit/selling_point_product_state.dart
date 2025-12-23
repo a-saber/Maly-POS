@@ -17,7 +17,7 @@ final class SellingPointProductSuccess extends SellingPointProductState {
   final PrintModel printModel;
   SellingPointProductSuccess({required this.printModel});
 }
-
+final class SellingPointProductUpdatePaid extends SellingPointProductState {}
 final class SellingPointProductFailing extends SellingPointProductState {
   final ApiResponse message;
   SellingPointProductFailing( {required this.message});

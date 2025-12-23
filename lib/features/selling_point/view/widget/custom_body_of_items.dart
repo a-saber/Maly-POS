@@ -45,6 +45,8 @@ class CustomBodyOfItems extends StatelessWidget {
                 productId: productId, productUnitId: productUnitId),
             onToggleShowEditPrice: () => cubit.toggleShowEditPrice(
                 productId: productId, productUnitId: productUnitId),
+                onChangeQuantity: () => cubit.updateQuantity(
+                productId: productId, productUnitId: productUnitId, newQuantity: product.count),
             onTapQuantity: () {
               showDialog(
                 context: context,

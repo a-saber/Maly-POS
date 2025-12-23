@@ -75,7 +75,8 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
 
         addPaymentMethodLocal(PaymentMethodSalesModel.fromData(success));
       //  getPaymentMethods(isFresh: true);
-        MyServiceLocator.getSingleton<SellingPointProductCubit>().addPaymentMethod(PaymentMethodSalesModel.fromData(success));
+        // MyServiceLocator.getSingleton<SellingPointProductCubit>().addPaymentMethod(PaymentMethodSalesModel.fromData(success));
+        MyServiceLocator.getSingleton<SellingPointProductCubit>().loadPaymentMethods();
 
       },
     );
@@ -97,7 +98,8 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
 
         updatePaymentMethodLocal(PaymentMethodSalesModel.fromData(success));
       //  getPaymentMethods(isFresh: true);
-        MyServiceLocator.getSingleton<SellingPointProductCubit>().updatePaymentMethod(PaymentMethodSalesModel.fromData(success));
+        // MyServiceLocator.getSingleton<SellingPointProductCubit>().updatePaymentMethod(PaymentMethodSalesModel.fromData(success));
+        MyServiceLocator.getSingleton<SellingPointProductCubit>().loadPaymentMethods();
       },
     );
   }
@@ -132,7 +134,8 @@ class PaymentMethodsCubit extends Cubit<PaymentMethodsState> {
 
         emit(DeletePaymentMethodSuccess());
         emit(PaymentMethodsSuccess(paymentMethods));
-        MyServiceLocator.getSingleton<SellingPointProductCubit>().deletePaymentMethod(id);
+        // MyServiceLocator.getSingleton<SellingPointProductCubit>().deletePaymentMethod(id);
+        MyServiceLocator.getSingleton<SellingPointProductCubit>().loadPaymentMethods();
         deletePaymentMethodLocal(id);
       },
     );
