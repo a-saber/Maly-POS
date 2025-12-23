@@ -27,9 +27,9 @@ class PaymentHelper {
    try {
     print("^^^^^^^^^^^^ init");
     nearpay = Nearpay(
-      authType: AuthenticationType.email,
-      authValue: authEmail,
-      env: Environments.sandbox, // Change to Environments.production when going live
+      authType: AuthenticationType.login,
+      authValue: "",
+      env: Environments.production, // Change to Environments.production when going live
       locale: Locale.localeDefault,
     );
     
