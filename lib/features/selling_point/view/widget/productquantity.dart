@@ -33,6 +33,8 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
   }
 
   void _applyQuantity() {
+      print("-/-/-/-/ newQuantity 04 ${_controller.text}");
+
     final quantity = int.tryParse(_controller.text) ?? widget.currentQuantity;
     if (quantity <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -43,6 +45,8 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
       );
       return;
     }
+          print("-/-/-/-/ newQuantity 05 ${_controller.text}");
+
     widget.onQuantityChanged(quantity);
     Navigator.of(context).pop();
   }
@@ -143,7 +147,7 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
                 ),
               ),
               child: Text(
-                'تطبيق',
+                'kkkتطبيق',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

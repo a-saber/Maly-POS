@@ -76,16 +76,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
     if (availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
-    emit(SellingPointProductInitial());
+     emit(SellingPointProductInitial());
+  emit(SellingPointProductChangePayment());
   }
 
   void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
     final index =
         availablePaymentMethods.indexWhere((element) => element.id == value.id);
+        print('-*-*-*-*-* Updating payment method at index: $index');
     if (index != -1) {
       availablePaymentMethods[index] = value;
     }
-    emit(SellingPointProductInitial());
+     emit(SellingPointProductPaymentMethodsLoaded());
   }
 
   void deletePaymentMethod(int id) {
@@ -94,9 +96,15 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     if (index != -1) {
       availablePaymentMethods.removeAt(index);
     }
-    emit(SellingPointProductInitial());
-
+   selectedPaymentAmounts.remove(id);
+  if (selectedPaymentAmounts.isEmpty && availablePaymentMethods.isNotEmpty) {
+    final firstMethod = availablePaymentMethods.first;
+    selectedPaymentAmounts[firstMethod.id!] = totalPrice();
   }
+  
+  updatePaid();
+   emit(SellingPointProductPaymentMethodsLoaded());
+}
     Future<void> loadShopSettings(bool enableNearPay) async {
     
     this.enableNearpay = enableNearPay;
@@ -488,12 +496,14 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
 
     paidController.text = roundTotolPrice().toString();
+    emit(SellingPointProductUpdatePaid());
   }
   void updateQuantity({
   required int productId,
   required int? productUnitId,
   required int newQuantity,
 }) {
+  print("-/-/-/-/ newQuantity $newQuantity");
   var product = products.firstWhere(
     (element) =>
         element.product.id == productId &&
@@ -515,7 +525,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   product.count = newQuantity;
+    print("-/-/-/-/ 01 newQuantity $newQuantity");
+
   updatePaid();
+    print("-/-/-/-/ 02 newQuantity $newQuantity");
+
   emit(SellingPointProductUpdateQuantity());
 }
 
