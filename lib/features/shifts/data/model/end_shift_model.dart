@@ -150,16 +150,16 @@ class User {
   int? id;
   String? name;
   String? email;
-  Null? emailVerifiedAt;
+  String? emailVerifiedAt;
   String? phone;
-  Null? address;
+  String? address;
   int? status;
-  Null? imagePath;
+  String? imagePath;
   int? roleId;
   int? centralUserId;
   String? createdAt;
   String? updatedAt;
-  Null? imageUrl;
+  String? imageUrl;
 
   User(
       {this.id,
@@ -214,9 +214,9 @@ class User {
 class Branch {
   int? id;
   String? name;
-  Null? address;
-  Null? phone;
-  Null? email;
+  String? address;
+  String? phone;
+  String? email;
   String? createdAt;
   String? updatedAt;
 
