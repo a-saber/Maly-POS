@@ -76,7 +76,7 @@ class PermissionDataBuilder extends StatelessWidget {
                   itemCount: permissionItems.length,
                   itemBuilder: (context, index) {
                     return CustomCheckbox(
-                        title:   Intl.message(
+                        title:Intl.message(
                           permissionItems[index].name ?? '-',
                           name: permissionItems[index].name ?? '-',
                           desc: '',

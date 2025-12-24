@@ -527,5 +527,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "startShift": MessageLookupByLibrary.simpleMessage("Start Shift"),
     "enableNearpay": MessageLookupByLibrary.simpleMessage("Enable Nearpay"),
     "unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize": MessageLookupByLibrary.simpleMessage("Unexpected error, you can't call method purchase before initialize"),
+    "productQuantity": MessageLookupByLibrary.simpleMessage("Product Quantity"),
   };
 }

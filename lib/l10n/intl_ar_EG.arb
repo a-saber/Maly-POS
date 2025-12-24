@@ -337,5 +337,6 @@
        "End":"انهاء الشيفت"
        "startShift":"بدء الشيفت",
        "enableNearpay":"تفعيل نير باي",
-       "unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize":"خطأ غير متوقع، لا يمكنك استدعاء طريقة الشراء قبل التهيئة"
+       "unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize":"خطأ غير متوقع، لا يمكنك استدعاء طريقة الشراء قبل التهيئة",
+       "productQuantity":"كمية المنتح",
 }
