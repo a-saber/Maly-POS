@@ -79,12 +79,15 @@ class ShiftRepo {
       final response = await api.get(url: url);
 
       if (response.status) {
+        print("***-* Shift Response Data: ${response.data}");
         final newModel = ShiftsModel.fromJson(response.data);
 
         if (shiftsModel == null || isFresh) {
+          print("***-* Shift Model Data: ${newModel.data!.data}");
           shiftsModel = newModel;
           return Right(shiftsModel!.data!.data!);
         } else {
+          print("***-* Shift Model Data: ${newModel.data!.data}");
           shiftsModel!.data!.data!.addAll(newModel.data!.data!);
           shiftsModel!.data!.nextPageUrl = newModel.data!.nextPageUrl;
           return Right(shiftsModel!.data!.data!);
@@ -93,6 +96,7 @@ class ShiftRepo {
 
       return Left(response);
     } catch (_) {
+      print("***-*-*- Error Shift Repo: $_");
       return Left(ApiResponse.unKnownError());
     }
   }
