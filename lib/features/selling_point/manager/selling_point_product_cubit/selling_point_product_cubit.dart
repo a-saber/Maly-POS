@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/core/api/api_response.dart';
+import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/helper/payment_helper.dart';
 import 'package:pos_app/core/widget/custom_pop_up.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
+import 'package:pos_app/features/auth/login/data/model/user_model.dart';
 import 'package:pos_app/features/clients/data/model/customer_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_type.dart';
@@ -20,7 +22,6 @@ import 'package:pos_app/features/selling_point/data/model/type_of_take_order_mod
 import 'package:pos_app/features/selling_point/data/repo/selling_point_repo.dart';
 import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/shop_setting/data/repo/shop_setting_repo.dart';
-
 
 import '../../../../core/helper/my_service_locator.dart';
 import '../../../products/data/model/product_unit_model.dart';
@@ -48,7 +49,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   Map<int, double> selectedPaymentAmounts = {}; // {paymentMethodId: amount}
   Map<int, String> paymentReferences = {}; // {paymentMethodId: reference}
   bool enableNearpay = false;
-  init()  {
+  init() {
     resetProduct();
     cashAmount = 0.0;
     madaAmount = 0.0;
@@ -57,7 +58,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     discount = null;
     selectedPaymentAmounts = {};
     paymentReferences = {};
-   
+
     if (availablePaymentMethods.isNotEmpty) {
       final firstMethod = availablePaymentMethods.first;
       selectedPaymentAmounts[firstMethod.id!] = totalPrice();
@@ -76,18 +77,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
 
   void addPaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
     if (availablePaymentMethods.isNotEmpty) availablePaymentMethods.add(value);
-     emit(SellingPointProductInitial());
-  emit(SellingPointProductChangePayment());
+    emit(SellingPointProductInitial());
+    emit(SellingPointProductChangePayment());
   }
 
   void updatePaymentMethod(PaymentAdmin.PaymentMethodSalesModel value) {
     final index =
         availablePaymentMethods.indexWhere((element) => element.id == value.id);
-        print('-*-*-*-*-* Updating payment method at index: $index');
+    print('-*-*-*-*-* Updating payment method at index: $index');
     if (index != -1) {
       availablePaymentMethods[index] = value;
     }
-     emit(SellingPointProductPaymentMethodsLoaded());
+    emit(SellingPointProductPaymentMethodsLoaded());
   }
 
   void deletePaymentMethod(int id) {
@@ -96,21 +97,21 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     if (index != -1) {
       availablePaymentMethods.removeAt(index);
     }
-   selectedPaymentAmounts.remove(id);
-  if (selectedPaymentAmounts.isEmpty && availablePaymentMethods.isNotEmpty) {
-    final firstMethod = availablePaymentMethods.first;
-    selectedPaymentAmounts[firstMethod.id!] = totalPrice();
+    selectedPaymentAmounts.remove(id);
+    if (selectedPaymentAmounts.isEmpty && availablePaymentMethods.isNotEmpty) {
+      final firstMethod = availablePaymentMethods.first;
+      selectedPaymentAmounts[firstMethod.id!] = totalPrice();
+    }
+
+    updatePaid();
+    emit(SellingPointProductPaymentMethodsLoaded());
   }
-  
-  updatePaid();
-   emit(SellingPointProductPaymentMethodsLoaded());
-}
-    Future<void> loadShopSettings(bool enableNearPay) async {
-    
+
+  Future<void> loadShopSettings(bool enableNearPay) async {
     this.enableNearpay = enableNearPay;
     emit(SellingPointProductInitial());
-  
   }
+
   Future<void> loadPaymentMethods() async {
     emit(SellingPointProductLoading());
 
@@ -123,7 +124,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       (methods) {
         availablePaymentMethods =
             methods.where((m) => m.isActive == 1).toList();
-        
+
         if (availablePaymentMethods.isNotEmpty) {
           final firstMethod = availablePaymentMethods.first;
 
@@ -141,26 +142,27 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void confirmPayment() async {
-     bool hasNearpayPayment = false;
-  if (availablePaymentMethods.isNotEmpty && selectedPaymentAmounts.isNotEmpty) {
-    for (var methodId in selectedPaymentAmounts.keys) {
-      final method = availablePaymentMethods.firstWhere(
-        (m) => m.id == methodId,
-        orElse: () => availablePaymentMethods.first,
-      );
-      if (method.isNearpay == 1) {
-        hasNearpayPayment = true;
-        break;
+    bool hasNearpayPayment = false;
+    if (availablePaymentMethods.isNotEmpty &&
+        selectedPaymentAmounts.isNotEmpty) {
+      for (var methodId in selectedPaymentAmounts.keys) {
+        final method = availablePaymentMethods.firstWhere(
+          (m) => m.id == methodId,
+          orElse: () => availablePaymentMethods.first,
+        );
+        if (method.isNearpay == 1) {
+          hasNearpayPayment = true;
+          break;
+        }
       }
     }
-  }
 
-  if (hasNearpayPayment && !enableNearpay) {
-    emit(SellingPointProductFailing(
-      message: ApiResponse.fromErrorMSG('ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر')
-    ));
-    return;
-  }
+    if (hasNearpayPayment && !enableNearpay) {
+      emit(SellingPointProductFailing(
+          message: ApiResponse.fromErrorMSG(
+              'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر')));
+      return;
+    }
 
     emit(SellingPointProductLoading());
 
@@ -203,17 +205,17 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductSuccess(printModel: success));
     });
   }
-  void startShift(){
+
+  void startShift() {
     emit(SellingPointProductLoading());
-    MyServiceLocator.getIt<ShiftCubit>().startShift(
-      branchId:repo?.branch?.id??0,
-      cash:  0.0,
-    ).then((value){
-
+    MyServiceLocator.getIt<ShiftCubit>()
+        .startShift(
+      branchId: repo?.branch?.id ?? 0,
+      cash: 0.0,
+    )
+        .then((value) {
       confirmPayment();
-
     });
-
   }
 
   bool containProduct() => products.isNotEmpty;
@@ -284,9 +286,36 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void addProduct({required ProductModel product, ProductUnit? productUnit}) {
+    UserModel user = CustomUserHiveBox.getUser();
+    bool shouldAddAsNewRow = user.role?.productQuantity ?? false;
+    if (shouldAddAsNewRow) {
+      if (product.type?.toLowerCase().trim() ==
+          ApiKeys.service.toLowerCase().trim()) {
+        products.add(ProductSellingModel(
+            product: product, count: 1, productUnit: productUnit));
+        debugPrint(
+            ' Added service as new row. Total products: ${products.length}');
+        updatePaid();
+        emit(SellingPointProductAddingProduct());
+      } else if (product.quantity == null || product.quantity == 0) {
+        debugPrint(' Product out of stock');
+        updatePaid();
+        emit(SellingPointProductAddingFailingProduct());
+        return;
+      } else {
+        products.add(ProductSellingModel(
+            product: product, count: 1, productUnit: productUnit));
+        debugPrint(
+            ' Added inventory product as new row. Total products: ${products.length}');
+        updatePaid();
+        emit(SellingPointProductAddingProduct());
+      }
+      return;
+    }
     bool isFound = products.any((element) =>
         element.product.id == product.id &&
         element.productUnit?.unitId == productUnit?.unitId);
+
     if (isFound) {
       var myproduct = products.firstWhere((element) =>
           element.product.id == product.id &&
@@ -295,11 +324,13 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
           productId: myproduct.product.id ?? -1,
           productUnitId: productUnit?.unitId);
     } else {
-      if (product.type?.toLowerCase().trim() == ApiKeys.service.toLowerCase().trim()&& (product.stockQuantity == null || product.stockQuantity == 0)) {
-        products.add(ProductSellingModel(product: product, count: 1, productUnit: productUnit));
+      if (product.type?.toLowerCase().trim() ==
+          ApiKeys.service.toLowerCase().trim()) {
+        products.add(ProductSellingModel(
+            product: product, count: 1, productUnit: productUnit));
         updatePaid();
         emit(SellingPointProductAddingProduct());
-      } else if (product.stockQuantity == null || product.stockQuantity == 0) {
+      } else if (product.quantity == null || product.quantity == 0) {
         updatePaid();
         emit(SellingPointProductAddingFailingProduct());
         return;
@@ -318,7 +349,6 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         element.productUnit?.unitId == productUnitId);
 
     bool canIncrease = product.increaseCount();
-
 
     if (canIncrease) {
       updatePaid();
@@ -347,15 +377,18 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       emit(SellingPointProductDecreaseCount());
     }
   }
-  void deleteProduct(ProductModel product) {
-  int index = products.indexWhere((element) => element.product.id == product.id);
 
-  if (index != -1) {
-    products.removeAt(index);
-    updatePaid(); 
-    emit(SellingPointProductDeleteProduct());
+  void deleteProduct(ProductModel product) {
+    int index =
+        products.indexWhere((element) => element.product.id == product.id);
+
+    if (index != -1) {
+      products.removeAt(index);
+      updatePaid();
+      emit(SellingPointProductDeleteProduct());
+    }
   }
-}
+
   void removeProduct({required int productId, required int? productUnitId}) {
     if (products.length == 1 && discount != null && discount!.id == -1) {
       changeDiscount(null);
@@ -461,8 +494,8 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   }
 
   void updateProduct(ProductModel product) {
-    int index = products.indexWhere((element) => element.product.id == product.id);
-
+    int index =
+        products.indexWhere((element) => element.product.id == product.id);
 
     if (index != -1) {
       int count = products[index].count;
@@ -498,41 +531,40 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     paidController.text = roundTotolPrice().toString();
     emit(SellingPointProductUpdatePaid());
   }
+
   void updateQuantity({
-  required int productId,
-  required int? productUnitId,
-  required int newQuantity,
-}) {
-  print("-/-/-/-/ newQuantity $newQuantity");
-  var product = products.firstWhere(
-    (element) =>
-        element.product.id == productId &&
-        element.productUnit?.unitId == productUnitId,
-  );
+    required int productId,
+    required int? productUnitId,
+    required int newQuantity,
+  }) {
+    print("-/-/-/-/ newQuantity $newQuantity");
+    var product = products.firstWhere(
+      (element) =>
+          element.product.id == productId &&
+          element.productUnit?.unitId == productUnitId,
+    );
 
+    if (product.product.type?.toLowerCase().trim() !=
+        ApiKeys.service.toLowerCase().trim()) {
+      if (newQuantity > (product.product.quantity ?? 0)) {
+        emit(SellingPointProductIncreaseCountFailing());
+        return;
+      }
+    }
 
-  if (product.product.type?.toLowerCase().trim() != ApiKeys.service.toLowerCase().trim()) {
-    if (newQuantity > (product.product.stockQuantity ?? 0)) {
-      emit(SellingPointProductIncreaseCountFailing());
+    if (newQuantity <= 0) {
+      removeProduct(productId: productId, productUnitId: productUnitId);
       return;
     }
-  }
 
- 
-  if (newQuantity <= 0) {
-    removeProduct(productId: productId, productUnitId: productUnitId);
-    return;
-  }
-
-  product.count = newQuantity;
+    product.count = newQuantity;
     print("-/-/-/-/ 01 newQuantity $newQuantity");
 
-  updatePaid();
+    updatePaid();
     print("-/-/-/-/ 02 newQuantity $newQuantity");
 
-  emit(SellingPointProductUpdateQuantity());
-}
-
+    emit(SellingPointProductUpdateQuantity());
+  }
 
   void resetProduct() {
     products = [];
@@ -586,20 +618,19 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       //     ),
       //   ),
       // );
-     if (!enableNearpay) {
-      CustomPopUp.callMyToast(
-        context: context,
-        massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
-        state: PopUpState.ERROR,
-      );
-      return 'ميزة Nearpay غير مفعلة';
-    }
+      if (!enableNearpay) {
+        CustomPopUp.callMyToast(
+          context: context,
+          massage: 'ميزة Nearpay غير مفعلة\nيرجى تفعيلها من إعدادات المتجر',
+          state: PopUpState.ERROR,
+        );
+        return 'ميزة Nearpay غير مفعلة';
+      }
       var madaResponse = await PaymentHelper.addTransaction(amount: amount);
 
       // if (Navigator.canPop(context)) {
       //   Navigator.pop(context);
       // }
-      
 
       String? result = madaResponse.fold(
         (error) {

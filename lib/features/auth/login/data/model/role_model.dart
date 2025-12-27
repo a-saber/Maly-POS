@@ -62,6 +62,12 @@ class RoleModel {
   final bool? allowLowerPrices;
   @HiveField(27)
   final bool? sellInNegativeQuantity;
+  @HiveField(28)
+  final bool?  productQuantity;
+  @HiveField(29)
+  final bool? paymentMethods;
+  @HiveField(30)
+  final bool? restaurant;
 
   RoleModel({
     required this.id,
@@ -92,6 +98,9 @@ class RoleModel {
     required this.shifts,
     required this.allowLowerPrices,
     required this.sellInNegativeQuantity,
+    required this.productQuantity,
+    required this.paymentMethods,
+    required this.restaurant,
 
 
   });
@@ -127,6 +136,9 @@ class RoleModel {
       stock: json[ApiKeys.stock] is int ? json[ApiKeys.stock] == 1 : false,
       allowLowerPrices: json[ApiKeys.allowLowerPrices],
       sellInNegativeQuantity: json[ApiKeys.sellInNegativeQuantity],
+      productQuantity: json[ApiKeys.productQuantity],
+      paymentMethods: json[ApiKeys.paymentMethods],
+      restaurant: json[ApiKeys.restaurant],
 
 
     );
@@ -168,6 +180,9 @@ class RoleModel {
       shifts: permMap[ApiKeys.shifts],
       allowLowerPrices: permMap[ApiKeys.allowLowerPrices],
       sellInNegativeQuantity: permMap[ApiKeys.sellInNegativeQuantity],
+      productQuantity: permMap[ApiKeys.productQuantity],
+      paymentMethods: permMap[ApiKeys.paymentMethods],
+      restaurant: permMap[ApiKeys.restaurant],
 
       createdAt: null,
       updatedAt: null,
@@ -206,6 +221,9 @@ class RoleModel {
     data[ApiKeys.shifts] = boolToInt(shifts);
     data[ApiKeys.allowLowerPrices] = boolToInt(allowLowerPrices);
     data[ApiKeys.sellInNegativeQuantity] = boolToInt(sellInNegativeQuantity);
+    data[ApiKeys.productQuantity] = boolToInt(productQuantity);
+    data[ApiKeys.paymentMethods] = boolToInt(paymentMethods);
+    data[ApiKeys.restaurant] = boolToInt(restaurant);
 
 
     return data;
@@ -241,6 +259,9 @@ class RoleModel {
     data[ApiKeys.shifts] = shifts;
     data[ApiKeys.allowLowerPrices] = allowLowerPrices;
     data[ApiKeys.sellInNegativeQuantity] = sellInNegativeQuantity;
+    data[ApiKeys.productQuantity] = productQuantity;
+    data[ApiKeys.paymentMethods] = paymentMethods;
+    data[ApiKeys.restaurant] = restaurant;
 
 
     return data;
@@ -270,5 +291,8 @@ class RoleModel {
         ApiKeys.shifts: shifts,
         ApiKeys.allowLowerPrices: allowLowerPrices,
         ApiKeys.sellInNegativeQuantity: sellInNegativeQuantity,
+        ApiKeys.productQuantity: productQuantity,
+        ApiKeys.paymentMethods: paymentMethods,
+        ApiKeys.restaurant: restaurant,
       };
 }
