@@ -8,7 +8,7 @@ import '../../../products/data/model/product_unit_model.dart';
 class ProductSellingModel {
   final ProductModel product;
   final ProductUnit? productUnit;
-  int count;
+  double count;
   late final TextEditingController priceController;
   late final TextEditingController qtyController;
   late final double minPrice;

@@ -498,7 +498,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
         products.indexWhere((element) => element.product.id == product.id);
 
     if (index != -1) {
-      int count = products[index].count;
+      double count = products[index].count;
       products[index] = ProductSellingModel(product: product, count: count);
 
       updatePaid();
@@ -535,7 +535,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
   void updateQuantity({
     required int productId,
     required int? productUnitId,
-    required int newQuantity,
+    required double newQuantity,
   }) {
     print("-/-/-/-/ newQuantity $newQuantity");
     var product = products.firstWhere(
