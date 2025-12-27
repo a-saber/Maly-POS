@@ -36,17 +36,17 @@ class CustomBodyOfItems extends StatelessWidget {
           child: CustomItemDrawerCard(
             product: product,
             onTapAdd: () => cubit.increaseCount(
-                productId: productId, productUnitId: productUnitId),
+                productId: productId, productUnitId: productUnitId, index: index),
             onTapRemove: () => cubit.decreaseCount(
-                productId: productId, productUnitId: productUnitId),
+                productId: productId, productUnitId: productUnitId, index: index),
             onTapDelete: () => cubit.removeProduct(
-                productId: productId, productUnitId: productUnitId),
+                productId: productId, productUnitId: productUnitId, index: index),
             onChangePrice: () => cubit.changePrice(
                 productId: productId, productUnitId: productUnitId),
             onToggleShowEditPrice: () => cubit.toggleShowEditPrice(
                 productId: productId, productUnitId: productUnitId),
                 onChangeQuantity: () => cubit.updateQuantity(
-                productId: productId, productUnitId: productUnitId, newQuantity: product.count),
+                productId: productId, productUnitId: productUnitId, newQuantity: product.count, index: index),
             onTapQuantity: () {
               showDialog(
                 context: context,
@@ -57,6 +57,7 @@ class CustomBodyOfItems extends StatelessWidget {
                       productId: productId,
                       productUnitId: productUnitId,
                       newQuantity: newQuantity,
+                      index: index
                     );
                   },
                 ),

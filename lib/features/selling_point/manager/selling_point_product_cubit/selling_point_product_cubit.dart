@@ -322,7 +322,9 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
           element.productUnit?.unitId == productUnit?.unitId);
       increaseCount(
           productId: myproduct.product.id ?? -1,
-          productUnitId: productUnit?.unitId);
+          productUnitId: productUnit?.unitId,
+          index: products.indexOf(myproduct)
+          );
     } else {
       if (product.type?.toLowerCase().trim() ==
           ApiKeys.service.toLowerCase().trim()) {
@@ -343,11 +345,11 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void increaseCount({required int productId, required int? productUnitId}) {
-    var product = products.firstWhere((element) =>
-        element.product.id == productId &&
-        element.productUnit?.unitId == productUnitId);
-
+  void increaseCount({required int productId, required int? productUnitId, required int index}) {
+    // var product = products.firstWhere((element) =>
+    //     element.product.id == productId &&
+    //     element.productUnit?.unitId == productUnitId);
+    var product = products[index];
     bool canIncrease = product.increaseCount();
 
     if (canIncrease) {
@@ -359,20 +361,21 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void decreaseCount({required int productId, required int? productUnitId}) {
-    if (products
-            .firstWhere((element) =>
-                element.product.id == productId &&
-                element.productUnit?.unitId == productUnitId)
-            .count ==
-        1) {
-      removeProduct(productId: productId, productUnitId: productUnitId);
+  void decreaseCount({required int productId, required int? productUnitId,required int index}) {
+    // if (products
+    //         .firstWhere((element) =>
+    //             element.product.id == productId &&
+    //             element.productUnit?.unitId == productUnitId)
+    //         .count ==
+    //     1) 
+       if (products[index].count == 1) {
+      removeProduct(productId: productId, productUnitId: productUnitId,index:index );
     } else {
-      products
-          .firstWhere((element) =>
-              element.product.id == productId &&
-              element.productUnit?.unitId == productUnitId)
-          .count--;
+      products[index].count--;
+          // .firstWhere((element) =>
+          //     element.product.id == productId &&
+          //     element.productUnit?.unitId == productUnitId)
+          // .count--;
       updatePaid();
       emit(SellingPointProductDecreaseCount());
     }
@@ -389,13 +392,14 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void removeProduct({required int productId, required int? productUnitId}) {
+  void removeProduct({required int productId, required int? productUnitId,required int index}) {
     if (products.length == 1 && discount != null && discount!.id == -1) {
       changeDiscount(null);
     }
-    products.removeWhere((element) =>
-        element.product.id == productId &&
-        element.productUnit?.unitId == productUnitId);
+    products.removeAt(index);
+    // products.removeWhere((element) =>
+    //     element.product.id == productId &&
+    //     element.productUnit?.unitId == productUnitId);
     updatePaid();
     emit(SellingPointProductRemoveProduct());
   }
@@ -536,6 +540,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     required int productId,
     required int? productUnitId,
     required double newQuantity,
+    required int index,
   }) {
     print("-/-/-/-/ newQuantity $newQuantity");
     var product = products.firstWhere(
@@ -553,7 +558,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
 
     if (newQuantity <= 0) {
-      removeProduct(productId: productId, productUnitId: productUnitId);
+      removeProduct(productId: productId, productUnitId: productUnitId, index: index);
       return;
     }
 

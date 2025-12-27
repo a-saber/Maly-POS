@@ -366,7 +366,7 @@ class AddProductCubit extends Cubit<AddProductState> {
 
     double newCost = baseCost * factor;
     double newMinWithoutTax =
-        (double.tryParse(productUnits.first.minPriceWithoutTax ?? '0') ?? 0) *
+        baseMinPriceWithoutTax *
             factor;
     // double newSaleWithoutTax = baseSalePriceWithoutTax * factor;
    
