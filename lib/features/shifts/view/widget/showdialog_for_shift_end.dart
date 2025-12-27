@@ -149,16 +149,13 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                         debugPrint('');
                         debugPrint(' Printing to: ${printer.printerName}');
                         debugPrint(' Using paper size: "${printer.paperSize}"');
-                        if (isSunmi &
-                                printer.printerType
-                                    .toString()
-                                    .toLowerCase()
-                                    .contains('sunmi') &&
-                            (printer?.automatic ?? false)) {
-                          await printSunmiPDF(
-                              await endShiftInvoicesPdf(context,
-                                  shift: shift, size: '80'),
-                              '58');
+                        if(isSunmi && (printer?.automatic??false)){
+
+                          await printSunmiPDF(await endShiftInvoicesPdf(
+                              context,
+                              shift: shift,
+                              size:printer.paperSize??'80'
+                          ), printer.paperSize??'80');
 
                           await SunmiPrinter.lineWrap(4);
                           await SunmiPrinter.cutPaper();
@@ -166,11 +163,14 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                           /*   if( state.printModel.apiResponse.data[ApiKeys.sale][ApiKeys.ordertype]==ApiKeys.hall){
                           await SunmiDrawer.openDrawer();
                             }*/
-                        } else if ((printer.automatic ?? false)) {
+                        }
+                        else if((printer.automatic??false)){
+
                           var invoiceBytesUint8List = await endShiftInvoicesPdf(
                               context,
                               shift: shift,
-                              size: '80');
+                              size:printer.paperSize??'80'
+                          );
 
                           await PrinterHelper().printInvoice(
                             printer.discoveredPrinter!,
@@ -181,9 +181,10 @@ Future<void> showDialogForShiftEnd(BuildContext context,
                           );
                           // await PrinterHelper().printWidget(context, printer.discoveredPrinter!);
 
+
                           debugPrint(' SUCCESS: ${printer.printerName}');
                         }
-                      } catch (e) {
+                      }catch (e) {
                         debugPrint(
                             ' FAILED: ${printer.printerName} - Error: $e');
                       }

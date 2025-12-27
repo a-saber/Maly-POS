@@ -1,7 +1,9 @@
+import 'package:pos_app/features/shifts/data/model/shifts_model.dart';
+
 class EndShiftModel {
   bool? status;
   String? message;
-  Shift? shift;
+  ShiftData? shift;
   Summary? summary;
   Setting? setting;
 
@@ -11,7 +13,7 @@ class EndShiftModel {
   EndShiftModel.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     message = json['message'];
-    shift = json['shift'] != null ? new Shift.fromJson(json['shift']) : null;
+    shift = json['shift'] != null ? new ShiftData.fromJson(json['shift']) : null;
     summary =
         json['summary'] != null ? new Summary.fromJson(json['summary']) : null;
     setting =
@@ -22,9 +24,9 @@ class EndShiftModel {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['status'] = this.status;
     data['message'] = this.message;
-    if (this.shift != null) {
-      data['shift'] = this.shift!.toJson();
-    }
+    // if (this.shift != null) {
+    //   data['shift'] = this.shift!.toJson();
+    // }
     if (this.summary != null) {
       data['summary'] = this.summary!.toJson();
     }
