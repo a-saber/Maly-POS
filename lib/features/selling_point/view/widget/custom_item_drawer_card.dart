@@ -138,15 +138,16 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   bool _productHasTax() {
     return widget.product.product.tax != null;
   }
-double _getTaxMultiplier() {
-  if (!_productHasTax()) {
-    return 1.0;
+
+  double _getTaxMultiplier() {
+    if (!_productHasTax()) {
+      return 1.0;
+    }
+
+    String? percentageString = widget.product.product.tax?.percentage;
+    double taxPercentage = double.tryParse(percentageString ?? "0") ?? 0.0;
+    return 1.0 + (taxPercentage / 100.0);
   }
-  
-  String? percentageString = widget.product.product.tax?.percentage;
-  double taxPercentage = double.tryParse(percentageString ?? "0") ?? 0.0;
-  return 1.0 + (taxPercentage / 100.0);
-}
 
   void _showKeyboardDialog({
     required TextEditingController controller,
@@ -300,7 +301,7 @@ double _getTaxMultiplier() {
 
   void _updateFromTotal() {
     double inputTotal = double.tryParse(totalController.text) ?? 0.0;
-    int quantity = int.tryParse(quantityController.text) ?? 1;
+    double quantity = double.tryParse(quantityController.text) ?? 1;
 
     if (quantity > 0) {
       actualTotal = inputTotal;
@@ -331,13 +332,13 @@ double _getTaxMultiplier() {
   }
 
   void _updateFromQuantity() {
-    int? quantity = int.tryParse(quantityController.text);
+    double? quantity = double.tryParse(quantityController.text);
 
     if (quantity == null || quantity <= 0) {
       quantityController.text = widget.product.count.toString();
       return;
     }
-    widget.product.count = quantity;
+      widget.product.count = quantity;
 
     double priceWithoutTax =
         double.tryParse(widget.product.priceController.text) ?? 0.0;
@@ -451,7 +452,7 @@ double _getTaxMultiplier() {
                           _showKeyboardDialog(
                               controller: quantityController,
                               title: 'الكمية',
-                              allowDecimal: false,
+                              allowDecimal: true,
                               onUpdate: _updateFromQuantity);
                         },
                         child: AbsorbPointer(
@@ -462,7 +463,8 @@ double _getTaxMultiplier() {
                               if (value == null || value.isEmpty) {
                                 return 'مطلوب';
                               }
-                              final qty = int.tryParse(value);
+                              final qty = double.tryParse(
+                                  value); 
                               if (qty == null || qty <= 0) {
                                 return 'رقم غير صحيح';
                               }
@@ -799,7 +801,7 @@ class _QuantityDialogContentState extends State<_QuantityDialogContent> {
           SizedBox(height: 16),
           CustomPaymentKeyboard(
             controller: _controller,
-            allowDecimal: false,
+            allowDecimal: true,
             onChanged: _handleInput,
             onEnterPressed: _applyQuantity,
           ),

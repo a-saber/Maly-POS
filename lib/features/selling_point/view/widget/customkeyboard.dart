@@ -45,6 +45,8 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
   void _onKeyPressed(String value) {
     final currentText = widget.controller.text;
     
+    debugPrint('🔑 Key pressed: $value, allowDecimal: ${widget.allowDecimal}');
+    
     if (value == 'C') {
       widget.controller.text = '0';
     } else if (value == '⌫') {
@@ -53,12 +55,23 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
         widget.controller.text = newText.isEmpty ? '0' : newText;
       }
     } else if (value == '.') {
-      if (!widget.allowDecimal) return;
+      // ✅ لو مش مسموح بالأرقام العشرية، ارجع
+      if (!widget.allowDecimal) {
+        debugPrint('❌ Decimal not allowed');
+        return;
+      }
       
+      // ✅ لو النص فاضي أو صفر، حط "0."
       if (currentText == '0' || currentText.isEmpty) {
         widget.controller.text = '0.';
-      } else if (!currentText.contains('.')) {
+        debugPrint('✅ Added: 0.');
+      } 
+      // ✅ لو مفيش نقطة قبل كده، ضيف النقطة
+      else if (!currentText.contains('.')) {
         widget.controller.text = currentText + '.';
+        debugPrint('✅ Added decimal point');
+      } else {
+        debugPrint('⚠️ Already has decimal point');
       }
     } else if (value == 'ENTER') {
       if (widget.onEnterPressed != null) {
@@ -66,6 +79,7 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
       }
       return; 
     } else {
+      // ✅ إضافة رقم عادي
       if (currentText == '0') {
         widget.controller.text = value;
       } else {
@@ -115,6 +129,8 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('🎨 Building keyboard with allowDecimal: ${widget.allowDecimal}');
+    
     return Focus(
       focusNode: _internalFocusNode,
       autofocus: true,
@@ -157,10 +173,12 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
             _onKeyPressed('9');
             return KeyEventResult.handled;
           }
-          else if ((key == LogicalKeyboardKey.period || key == LogicalKeyboardKey.numpadDecimal) 
-                   && widget.allowDecimal) {
-            _onKeyPressed('.');
-            return KeyEventResult.handled;
+          // ✅ لو مسموح بالأرقام العشرية، اسمح بالنقطة
+          else if (key == LogicalKeyboardKey.period || key == LogicalKeyboardKey.numpadDecimal) {
+            if (widget.allowDecimal) {
+              _onKeyPressed('.');
+              return KeyEventResult.handled;
+            }
           }
           else if (key == LogicalKeyboardKey.backspace) {
             _onKeyPressed('⌫');
@@ -214,12 +232,14 @@ class _CustomPaymentKeyboardState extends State<CustomPaymentKeyboard> {
               ),
               Row(
                 children: [
-                  if (widget.allowDecimal) _buildKey('.', isSpecial: true),
+                  // ✅ هنا النقطة - تظهر فقط لو allowDecimal = true
+                  widget.allowDecimal
+                      ? _buildKey('.', isSpecial: true)
+                      : _buildKey('00'), // ✅ أو حط زرار تاني بدلها
                   _buildKey('0'),
                   _buildKey('⌫', isSpecial: true),
                 ],
               ),
-             
               Row(
                 children: [
                   _buildKey('C', isSpecial: true),

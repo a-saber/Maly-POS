@@ -3,8 +3,8 @@ import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/features/selling_point/view/widget/customkeyboard.dart';
 
 class ProductQuantityDialog extends StatefulWidget {
-  final int currentQuantity;
-  final Function(int) onQuantityChanged;
+  final double currentQuantity;
+  final Function(double) onQuantityChanged;
 
   const ProductQuantityDialog({
     super.key,
@@ -35,7 +35,7 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
   void _applyQuantity() {
       print("-/-/-/-/ newQuantity 04 ${_controller.text}");
 
-    final quantity = int.tryParse(_controller.text) ?? widget.currentQuantity;
+    final double quantity = double.tryParse(_controller.text) ?? widget.currentQuantity;
     if (quantity <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -84,7 +84,7 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.4,
+        width: MediaQuery.of(context).size.width * 0.6,
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -131,7 +131,7 @@ class _ProductQuantityDialogState extends State<ProductQuantityDialog> {
 
             CustomPaymentKeyboard(
               controller: _controller,
-              allowDecimal: false,
+              allowDecimal: true,
               onChanged: _handleInput, 
               onEnterPressed: _applyQuantity,
             ),
