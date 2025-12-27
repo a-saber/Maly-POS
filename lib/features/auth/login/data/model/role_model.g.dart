@@ -45,6 +45,9 @@ class RoleModelAdapter extends TypeAdapter<RoleModel> {
       shifts: fields[25] as bool?,
       allowLowerPrices: fields[26] as bool?,
       sellInNegativeQuantity: fields[27] as bool?,
+      productQuantity: fields[28] as bool?,
+      paymentMethods: fields[29] as bool?,
+      restaurant: fields[30] as bool?,
 
     );
   }
@@ -104,7 +107,17 @@ class RoleModelAdapter extends TypeAdapter<RoleModel> {
       ..writeByte(24)
       ..write(obj.printers)
       ..writeByte(25)
-      ..write(obj.shifts);
+      ..write(obj.shifts)
+      ..writeByte(26)
+      ..write(obj.allowLowerPrices)
+      ..writeByte(27)
+      ..write(obj.sellInNegativeQuantity)
+      ..writeByte(28)
+      ..write(obj.productQuantity)
+      ..writeByte(29)
+      ..write(obj.paymentMethods)
+      ..writeByte(30)
+      ..write(obj.restaurant);
   }
 
   @override

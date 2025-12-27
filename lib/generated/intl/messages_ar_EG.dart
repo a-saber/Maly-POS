@@ -527,5 +527,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "enableNearpay": MessageLookupByLibrary.simpleMessage("تفعيل نير باي"),
     "unexpectedErrorYouCantCallMethodPurchaseBeforeInitialize": MessageLookupByLibrary.simpleMessage("خطأ غير متوقع، لا يمكنك استدعاء طريقة الشراء قبل التهيئة"),
     "productQuantity": MessageLookupByLibrary.simpleMessage("كمية المنتج"),
+    "checkbox": MessageLookupByLibrary.simpleMessage("تعدد المنتج"),
     
   };}
