@@ -230,7 +230,8 @@ Future<Uint8List> salesInvoicesPdf80(
 
               // ✅ Order Number & Order Type (بدون إطار)
               // ✅ Order Number & Order Type (بس لو صلاحية المطعم مفعّلة)
-              if (!(CustomUserHiveBox.getUser().role?.restaurant ?? false))
+              // if (!(CustomUserHiveBox.getUser().role?.restaurant ?? false))
+              if (CustomUserHiveBox.getUser().role?.restaurant == true)
                 pw.Container(
                   width: double.infinity,
                   padding: pw.EdgeInsets.symmetric(vertical: 4, horizontal: 3),
@@ -348,7 +349,7 @@ Future<Uint8List> salesInvoicesPdf80(
                           ),
                           // ✅ الكمية بـ Bold
                           _buildTableCellNew(
-                            p[ApiKeys.quantity]?.toString() ?? "",
+                            double.tryParse(p[ApiKeys.quantity]??'0')?.toStringAsFixed(2) ?? '0',
                             arabicFontBold, // ✅ Bold
                             fontSize,
                             true, // ✅ Bold

@@ -83,6 +83,7 @@ class CustomSellingPointCardButtons extends StatelessWidget {
                     await SunmiPrinter.lineWrap(4);
                     await SunmiPrinter.cutPaper();
                   }
+               // throw Exception();
                   final allAutomaticPrinters = MyServiceLocator.getSingleton<GetPrintersCubit>().printers;
                           // .where((p) => p.automatic == true)
 
