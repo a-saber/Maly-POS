@@ -271,7 +271,8 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
   void _updateFromUnitPriceWithTax() {
     double inputPriceWithTax =
         double.tryParse(unitPriceWithTaxController.text) ?? 0.0;
-    int quantity = int.tryParse(quantityController.text) ?? 1;
+    // int quantity = int.tryParse(quantityController.text) ?? 1;
+    double quantity =  widget.product.count;
 
     actualUnitPriceWithTax = inputPriceWithTax;
 

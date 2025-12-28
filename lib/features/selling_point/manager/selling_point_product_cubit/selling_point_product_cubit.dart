@@ -543,11 +543,13 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     required int index,
   }) {
     print("-/-/-/-/ newQuantity $newQuantity");
-    var product = products.firstWhere(
-      (element) =>
-          element.product.id == productId &&
-          element.productUnit?.unitId == productUnitId,
-    );
+    // var product = products.firstWhere(
+    //   (element) =>
+    //       element.product.id == productId &&
+    //       element.productUnit?.unitId == productUnitId,
+    // );
+
+    var product = products[index];
 
     if (product.product.type?.toLowerCase().trim() !=
         ApiKeys.service.toLowerCase().trim()) {
