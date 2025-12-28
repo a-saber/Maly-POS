@@ -75,6 +75,8 @@ Future<void> printSunmiPDF(Uint8List pdfData, String paperSize) async {
   }
 }
 
+// استبدل دالة salesInvoicesPdf80 بهذه النسخة المعدلة
+
 Future<Uint8List> salesInvoicesPdf80(
   Map<String, dynamic> response, {
   String? branchName,
@@ -85,11 +87,9 @@ Future<Uint8List> salesInvoicesPdf80(
   var arabicFontBold = PdfFontLoader.arabicFontBold;
 
   final pdf = pw.Document(
-
     theme: pw.ThemeData.withFont(
       base: arabicFont,
       bold: arabicFontBold,
-
     ),
   );
 
@@ -97,8 +97,7 @@ Future<Uint8List> salesInvoicesPdf80(
     http.Response? imageResponse;
     if (response[ApiKeys.settings][ApiKeys.imageurl] != null) {
       try {
-        final url =
-            response[ApiKeys.settings][ApiKeys.imageurl] as String? ?? "";
+        final url = response[ApiKeys.settings][ApiKeys.imageurl] as String? ?? "";
         if (url.isNotEmpty) {
           imageResponse = await http.get(Uri.parse(url));
           if (imageResponse.statusCode != 200) {
@@ -136,7 +135,8 @@ Future<Uint8List> salesInvoicesPdf80(
     final double margin = size == '80' ? 3 : 2;
     final double fontSize = size == '80' ? 7 : 6;
     final double titleSize = size == '80' ? 10 : 9;
-    final double logoSize = size == '80' ? 35 : 25;
+    final double logoSize = size == '80' ? 30 : 25; // صغّرنا اللوجو شوية
+    
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
@@ -144,349 +144,331 @@ Future<Uint8List> salesInvoicesPdf80(
           paperWidth * mmToPoint,
           double.infinity,
           marginAll: margin * mmToPoint,
-
         ),
-        build: (context) => pw.Container(
-          decoration: pw.BoxDecoration(color: PdfColors.white),
-          width: double.infinity,
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.center,
-            mainAxisSize: pw.MainAxisSize.min,
-            children: [
-              // Time & Date
-              if (time.isNotEmpty || date.isNotEmpty) ...[
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.center,
-                  children: [
-                    if (time.isNotEmpty)
-                      pw.Text(
-                        time,
-                        style:
-                            pw.TextStyle(fontSize: fontSize, font: arabicFont),
-                      ),
-                    if (time.isNotEmpty && date.isNotEmpty)
-                      pw.SizedBox(width: 10),
-                    if (date.isNotEmpty)
-                      pw.Text(
-                        date,
-                        style:
-                            pw.TextStyle(fontSize: fontSize, font: arabicFont),
-                      ),
-                  ],
-                ),
-                pw.SizedBox(height: 5),
-              ],
+        build: (context) => pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.center,
+          mainAxisSize: pw.MainAxisSize.min,
+          children: [
+            // Time & Date - مسافة أقل
+            if (time.isNotEmpty || date.isNotEmpty) ...[
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.center,
+                children: [
+                  if (time.isNotEmpty)
+                    pw.Text(
+                      time,
+                      style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
+                    ),
+                  if (time.isNotEmpty && date.isNotEmpty)
+                    pw.SizedBox(width: 10),
+                  if (date.isNotEmpty)
+                    pw.Text(
+                      date,
+                      style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
+                    ),
+                ],
+              ),
+              pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+            ],
 
-                // Title
-                pw.Text(
-                  AppInvoiceString.invoiceTitle,
-                  style: pw.TextStyle(
-                    fontSize: titleSize,
+            // Title
+            pw.Text(
+              AppInvoiceString.invoiceTitle,
+              style: pw.TextStyle(
+                fontSize: titleSize,
+                font: arabicFontBold,
+                fontWeight: pw.FontWeight.bold,
+              ),
+              textAlign: pw.TextAlign.center,
+            ),
+            pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+
+            // Logo - حجم أصغر
+            if (setting[ApiKeys.imageurl] != null && imageResponse != null) ...[
+              pw.ClipOval(
+                child: pw.Container(
+                  width: logoSize,
+                  height: logoSize,
+                  child: pw.Image(
+                    pw.MemoryImage(imageResponse.bodyBytes),
+                    fit: pw.BoxFit.cover,
+                  ),
+                ),
+              ),
+              pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+            ],
+
+            // Shop Info - مسافات أقل
+            if (setting[ApiKeys.shopname] != null)
+              pw.Text(
+                setting[ApiKeys.shopname],
+                style: pw.TextStyle(
+                    fontSize: fontSize + 1,
                     font: arabicFontBold,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  textAlign: pw.TextAlign.center,
-                ),
-                pw.SizedBox(height: 5),
+                    fontWeight: pw.FontWeight.bold),
+                textAlign: pw.TextAlign.center,
+              ),
+            if (setting[ApiKeys.phone] != null)
+              pw.Text(
+                setting[ApiKeys.phone],
+                style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            if (setting[ApiKeys.commercialno] != null)
+              pw.Text(
+                "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}",
+                style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            if (sale[ApiKeys.id] != null)
+              pw.Text(
+                "${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}",
+                style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            if (sale[ApiKeys.ordertype] != null)
+              pw.Text(
+                "${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}",
+                style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            pw.SizedBox(height: 3), // قللنا من 5 لـ 3
 
-              // Logo
-              if (setting[ApiKeys.imageurl] != null &&
-                  imageResponse != null) ...[
-                pw.ClipOval(
-                  child: pw.Container(
-                    width: logoSize,
-                    height: logoSize,
-                    child: pw.Image(
-                      pw.MemoryImage(imageResponse.bodyBytes),
-                      fit: pw.BoxFit.cover,
-                    ),
+            // Order Number Box - بدون خلفية سودا!
+            pw.Container(
+              width: double.infinity,
+              padding: pw.EdgeInsets.symmetric(vertical: 3, horizontal: 5), // قللنا الـ padding
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.black, width: 0.5),
+                color: PdfColors.white, // ❌ شيلنا الخلفية السودا!
+              ),
+              child: pw.Column(
+                children: [
+                  pw.Text(
+                    'رقم الطلب',
+                    style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
+                    textAlign: pw.TextAlign.center,
                   ),
-                ),
-                pw.SizedBox(height: 5),
-              ],
-
-              // Shop Info
-              if (setting[ApiKeys.shopname] != null)
-                pw.Text(
-                  setting[ApiKeys.shopname],
-                  style: pw.TextStyle(
-                      fontSize: fontSize + 1,
+                  pw.SizedBox(height: 1),
+                  pw.Text(
+                    "#${sale['order_number']}",
+                    style: pw.TextStyle(
+                      fontSize: fontSize + 3,
                       font: arabicFontBold,
-                      fontWeight: pw.FontWeight.bold),
-                  textAlign: pw.TextAlign.center,
-                ),
-              if (setting[ApiKeys.phone] != null)
-                pw.Text(
-                  setting[ApiKeys.phone],
-                  style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
-                  textAlign: pw.TextAlign.center,
-                ),
-              if (setting[ApiKeys.commercialno] != null)
-                pw.Text(
-                  "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}",
-                  style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
-                  textAlign: pw.TextAlign.center,
-                ),
-              if (sale[ApiKeys.id] != null)
-                pw.Text(
-                  "${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}",
-                  style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
-                  textAlign: pw.TextAlign.center,
-                ),
-              if (sale[ApiKeys.ordertype] != null)
-                pw.Text(
-                  "${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}",
-                  style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
-                  textAlign: pw.TextAlign.center,
-                ),
-              pw.SizedBox(height: 5),
-
-                // Order Number Box
-                pw.Container(
-                  width: double.infinity,
-                  padding: pw.EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-                  decoration: pw.BoxDecoration(
-                    border: pw.Border.all(color: PdfColors.black, width: 0.5),
-                  ),
-                  child: pw.Column(
-                    children: [
-                      pw.Text(
-                        'OrderNumber',
-                        style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
-                        textAlign: pw.TextAlign.center,
-                      ),
-                      pw.SizedBox(height: 2),
-                      pw.Text(
-                        "#${sale['order_number']}",
-                        style: pw.TextStyle(
-                          fontSize: fontSize + 3,
-                          font: arabicFontBold,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                        textAlign: pw.TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-                pw.SizedBox(height: 5),
-
-              // Divider
-              pw.Container(
-                  width: double.infinity, height: 0.5, color: PdfColors.black),
-              pw.SizedBox(height: 3),
-
-              // Products Table
-              if (products.isNotEmpty)
-                pw.Table(
-                  border:
-                      pw.TableBorder.all(color: PdfColors.black, width: 0.3),
-                  columnWidths: {
-                    0: pw.FlexColumnWidth(2), // Product
-                    1: pw.FlexColumnWidth(1), // Qty
-                    2: pw.FlexColumnWidth(1), // Price
-                    3: pw.FlexColumnWidth(1), // Total
-                  },
-                  children: [
-                    // Header
-                    pw.TableRow(
-                      decoration: pw.BoxDecoration(color: PdfColors.grey200),
-                      children: [
-                        _buildTableCell(AppInvoiceString.product,
-                            arabicFontBold, fontSize - 1, true),
-                        _buildTableCell(AppInvoiceString.quantity,
-                            arabicFontBold, fontSize - 1, true),
-                        _buildTableCell(AppInvoiceString.price, arabicFontBold,
-                            fontSize - 1, true),
-                        _buildTableCell(AppInvoiceString.total, arabicFontBold,
-                            fontSize - 1, true),
-                      ].reversed.toList(),
+                      fontWeight: pw.FontWeight.bold,
                     ),
-                    // Data rows
-                    ...products.map((p) {
-                      return pw.TableRow(
-                        decoration: pw.BoxDecoration(color: PdfColors.white),
-                        children: [
-                          _buildTableCell(
-                            p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
-                            arabicFont,
-                            fontSize - 1,
-                            false,
-                          ),
-                          _buildTableCell(
-                            p[ApiKeys.quantity]?.toString() ?? "",
-                            arabicFont,
-                            fontSize - 1,
-                            false,
-                          ),
-                          _buildTableCell(
-                            double.tryParse(p[ApiKeys.price] ?? '0')
-                                    ?.toStringAsFixed(2) ??
-                                '0',
-                            arabicFont,
-                            fontSize - 1,
-                            false,
-                          ),
-                          _buildTableCell(
-                            double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')
-                                    ?.toStringAsFixed(2) ??
-                                '0',
-                            arabicFont,
-                            fontSize - 1,
-                            false,
-                          ),
-                        ].reversed.toList(),
-                      );
-                    }),
-                  ],
-                ),
+                    textAlign: pw.TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            pw.SizedBox(height: 3), // قللنا من 5 لـ 3
 
-                if (products.isNotEmpty) pw.SizedBox(height: 5),
+            // Divider - خط رفيع
+            pw.Container(
+              width: double.infinity,
+              height: 0.5,
+              color: PdfColors.black,
+            ),
+            pw.SizedBox(height: 2), // قللنا من 3 لـ 2
 
-              // Divider
-              pw.Container(
-                  width: double.infinity, height: 0.5, color: PdfColors.black),
-              pw.SizedBox(height: 3),
-
-              // Totals Table
+            // Products Table
+            if (products.isNotEmpty)
               pw.Table(
                 border: pw.TableBorder.all(color: PdfColors.black, width: 0.3),
                 columnWidths: {
                   0: pw.FlexColumnWidth(2),
                   1: pw.FlexColumnWidth(1),
+                  2: pw.FlexColumnWidth(1),
+                  3: pw.FlexColumnWidth(1),
                 },
                 children: [
-                  if (sale[ApiKeys.subtotal] != null)
-                    _buildTotalRow(
-                      AppInvoiceString.totalBeforeTax,
-                      double.tryParse(sale[ApiKeys.subtotal] ?? '0')
-                              ?.toStringAsFixed(2) ??
-                          '0',
-                      arabicFont,
-                      fontSize - 1,
-                    ),
-                  if (sale[ApiKeys.discounttotal] != null)
-                    _buildTotalRow(
-                      AppInvoiceString.discount,
-                      double.tryParse(sale[ApiKeys.discounttotal] ?? '0')
-                              ?.toStringAsFixed(2) ??
-                          '0',
-                      arabicFont,
-                      fontSize - 1,
-                    ),
-                  if (sale[ApiKeys.totalafterdiscount] != null)
-                    _buildTotalRow(
-                      AppInvoiceString.totalAfterDiscount,
-                      double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')
-                              ?.toStringAsFixed(2) ??
-                          '0',
-                      arabicFont,
-                      fontSize - 1,
-                    ),
-                  if (sale[ApiKeys.taxtotal] != null)
-                    _buildTotalRow(
-                      AppInvoiceString.tax,
-                      double.tryParse(sale[ApiKeys.taxtotal] ?? '0')
-                              ?.toStringAsFixed(2) ??
-                          '0',
-                      arabicFont,
-                      fontSize - 1,
-                    ),
-                  if (sale[ApiKeys.totalaftertax] != null)
-                    _buildTotalRow(
-                      AppInvoiceString.totalAfterTax,
-                      double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')
-                              ?.toStringAsFixed(2) ??
-                          '0',
-                      arabicFontBold,
-                      fontSize - 1,
-                      isBold: true,
-                    ),
-                  if (sale[ApiKeys.paymentmethod] != null)
-                    _buildTotalRow(
-                      AppInvoiceString.paymentMethod,
-                      "${sale[ApiKeys.paymentmethod]}",
-                      arabicFont,
-                      fontSize - 1,
-                    ),
+                  // Header
+                  pw.TableRow(
+                    decoration: pw.BoxDecoration(color: PdfColors.grey200),
+                    children: [
+                      _buildTableCell(AppInvoiceString.product, arabicFontBold, fontSize - 1, true),
+                      _buildTableCell(AppInvoiceString.quantity, arabicFontBold, fontSize - 1, true),
+                      _buildTableCell(AppInvoiceString.price, arabicFontBold, fontSize - 1, true),
+                      _buildTableCell(AppInvoiceString.total, arabicFontBold, fontSize - 1, true),
+                    ].reversed.toList(),
+                  ),
+                  // Data rows
+                  ...products.map((p) {
+                    return pw.TableRow(
+                      decoration: pw.BoxDecoration(color: PdfColors.white),
+                      children: [
+                        _buildTableCell(
+                          p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
+                          arabicFont,
+                          fontSize - 1,
+                          false,
+                        ),
+                        _buildTableCell(
+                          p[ApiKeys.quantity]?.toString() ?? "",
+                          arabicFont,
+                          fontSize - 1,
+                          false,
+                        ),
+                        _buildTableCell(
+                          double.tryParse(p[ApiKeys.price] ?? '0')?.toStringAsFixed(2) ?? '0',
+                          arabicFont,
+                          fontSize - 1,
+                          false,
+                        ),
+                        _buildTableCell(
+                          double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')?.toStringAsFixed(2) ?? '0',
+                          arabicFont,
+                          fontSize - 1,
+                          false,
+                        ),
+                      ].reversed.toList(),
+                    );
+                  }),
+                ],
+              ),
+
+            if (products.isNotEmpty) pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+
+            // Divider
+            pw.Container(
+              width: double.infinity,
+              height: 0.5,
+              color: PdfColors.black,
+            ),
+            pw.SizedBox(height: 2), // قللنا من 3 لـ 2
+
+            // Totals Table
+            pw.Table(
+              border: pw.TableBorder.all(color: PdfColors.black, width: 0.3),
+              columnWidths: {
+                0: pw.FlexColumnWidth(2),
+                1: pw.FlexColumnWidth(1),
+              },
+              children: [
+                if (sale[ApiKeys.subtotal] != null)
                   _buildTotalRow(
-                    AppInvoiceString.paid,
-                    paid.toStringAsFixed(2),
+                    AppInvoiceString.totalBeforeTax,
+                    double.tryParse(sale[ApiKeys.subtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+                    arabicFont,
+                    fontSize - 1,
+                  ),
+                if (sale[ApiKeys.discounttotal] != null)
+                  _buildTotalRow(
+                    AppInvoiceString.discount,
+                    double.tryParse(sale[ApiKeys.discounttotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+                    arabicFont,
+                    fontSize - 1,
+                  ),
+                if (sale[ApiKeys.totalafterdiscount] != null)
+                  _buildTotalRow(
+                    AppInvoiceString.totalAfterDiscount,
+                    double.tryParse(sale[ApiKeys.totalafterdiscount] ?? '0')?.toStringAsFixed(2) ?? '0',
+                    arabicFont,
+                    fontSize - 1,
+                  ),
+                if (sale[ApiKeys.taxtotal] != null)
+                  _buildTotalRow(
+                    AppInvoiceString.tax,
+                    double.tryParse(sale[ApiKeys.taxtotal] ?? '0')?.toStringAsFixed(2) ?? '0',
+                    arabicFont,
+                    fontSize - 1,
+                  ),
+                if (sale[ApiKeys.totalaftertax] != null)
+                  _buildTotalRow(
+                    AppInvoiceString.totalAfterTax,
+                    double.tryParse(sale[ApiKeys.totalaftertax] ?? '0')?.toStringAsFixed(2) ?? '0',
                     arabicFontBold,
                     fontSize - 1,
                     isBold: true,
                   ),
+                if (sale[ApiKeys.paymentmethod] != null)
                   _buildTotalRow(
-                    AppInvoiceString.remain,
-                    (paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0))
-                        .toStringAsFixed(2),
+                    AppInvoiceString.paymentMethod,
+                    "${sale[ApiKeys.paymentmethod]}",
                     arabicFont,
                     fontSize - 1,
                   ),
-                ],
-              ),
-
-                pw.SizedBox(height: 8),
-
-                // QR Code
-                if (sale[ApiKeys.zatcaQrcode] != null) ...[
-                  pw.BarcodeWidget(
-                    barcode: pw.Barcode.qrCode(),
-                    data: sale[ApiKeys.zatcaQrcode],
-                    width: size == '80' ? 80 : 60,
-                    height: size == '80' ? 80 : 60,
-                  ),
-                  pw.SizedBox(height: 5),
-                ],
-
-              // Divider
-              pw.Container(
-                  width: double.infinity, height: 0.5, color: PdfColors.black),
-              pw.SizedBox(height: 5),
-
-                // Footer
-                pw.Text(
-                  AppInvoiceString.thanks,
-                  style: pw.TextStyle(
-                    fontSize: fontSize,
-                    font: arabicFontBold,
-                    fontWeight: pw.FontWeight.bold,
-                  ),
-                  textAlign: pw.TextAlign.center,
+                _buildTotalRow(
+                  AppInvoiceString.paid,
+                  paid.toStringAsFixed(2),
+                  arabicFontBold,
+                  fontSize - 1,
+                  isBold: true,
                 ),
-
-                if (setting[ApiKeys.address] != null) ...[
-                  pw.SizedBox(height: 3),
-                  pw.Text(
-                    setting[ApiKeys.address],
-                    style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
-                    textAlign: pw.TextAlign.center,
-                  ),
-                ],
-
-                if (CustomUserHiveBox.getUser().name != null) ...[
-                  pw.SizedBox(height: 3),
-                  pw.Text(
-                    "${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}",
-                    style: pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
-                    textAlign: pw.TextAlign.center,
-                  ),
-                ],
-
-                if (branchName != null) ...[
-                  pw.SizedBox(height: 3),
-                  pw.Text(
-                    "${AppInvoiceString.branchName} $branchName",
-                    style: pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
-                    textAlign: pw.TextAlign.center,
-                  ),
-                ],
-
-                pw.SizedBox(height: 5),
+                _buildTotalRow(
+                  AppInvoiceString.remain,
+                  (paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)).toStringAsFixed(2),
+                  arabicFont,
+                  fontSize - 1,
+                ),
               ],
-            )
-          ),
+            ),
+
+            pw.SizedBox(height: 5), // قللنا من 8 لـ 5
+
+            // QR Code - حجم أصغر
+            if (sale[ApiKeys.zatcaQrcode] != null) ...[
+              pw.BarcodeWidget(
+                barcode: pw.Barcode.qrCode(),
+                data: sale[ApiKeys.zatcaQrcode],
+                width: size == '80' ? 60 : 50, // صغّرنا الحجم من 80 لـ 60
+                height: size == '80' ? 60 : 50,
+              ),
+              pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+            ],
+
+            // Divider
+            pw.Container(
+              width: double.infinity,
+              height: 0.5,
+              color: PdfColors.black,
+            ),
+            pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+
+            // Footer
+            pw.Text(
+              AppInvoiceString.thanks,
+              style: pw.TextStyle(
+                fontSize: fontSize,
+                font: arabicFontBold,
+                fontWeight: pw.FontWeight.bold,
+              ),
+              textAlign: pw.TextAlign.center,
+            ),
+
+            if (setting[ApiKeys.address] != null) ...[
+              pw.SizedBox(height: 2), // قللنا من 3 لـ 2
+              pw.Text(
+                setting[ApiKeys.address],
+                style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            ],
+
+            if (CustomUserHiveBox.getUser().name != null) ...[
+              pw.SizedBox(height: 2), // قللنا من 3 لـ 2
+              pw.Text(
+                "${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}",
+                style: pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            ],
+
+            if (branchName != null) ...[
+              pw.SizedBox(height: 2), // قللنا من 3 لـ 2
+              pw.Text(
+                "${AppInvoiceString.branchName} $branchName",
+                style: pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
+                textAlign: pw.TextAlign.center,
+              ),
+            ],
+
+            pw.SizedBox(height: 3), // قللنا من 5 لـ 3
+          ],
         ),
-      );
+      ),
+    );
 
     return pdf.save();
   } catch (e) {
