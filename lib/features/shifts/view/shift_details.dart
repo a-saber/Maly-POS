@@ -54,7 +54,9 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
               final summary = state.shiftDetails.summary;
               final orders = cubit.shiftOrders;
               // final shop = state.shiftDetails.settings;
-               final paymentMethodsMap = summary?.paymentMethods ?? {};
+               final paymentMethodsMap = shift.paymentMethods ?? 
+                          summary?.paymentMethods ?? 
+                          {};
               debugPrint("ORDERS DATA: $orders");
 
               return BlocProvider(
@@ -199,10 +201,11 @@ class _ShiftDetailsViewState extends State<ShiftDetailsView> {
                                             '-',
                                       ),
                                       ...paymentMethodsMap.entries.map((e) {
+                                         final double? amount = double.tryParse(e.value);
                                         return _row(
                                           translatePaymentMethod(
                                               context, e.key),
-                                          e.value.toAmount(),
+                                          amount?.toStringAsFixed(2) ?? e.value,
                                         );
                                       }).toList(),
                                     ],

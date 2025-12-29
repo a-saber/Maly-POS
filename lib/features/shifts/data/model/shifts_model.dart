@@ -86,7 +86,7 @@ class ShiftData {
   String? discountTotal;
   String? taxTotal;
   String? totalAfterTax;
-  Map<String, String>? paymentMethods; // ✅ ده المفروض يجي من الـ shift
+  Map<String, String>? paymentMethods;
   String? createdAt;
   String? updatedAt;
   int? userId;
@@ -96,6 +96,7 @@ class ShiftData {
   int? ordersCount;
   User? user;
   Branch? branch;
+  ShiftSummary? summary; // ✅ أضف الـ summary
 
   ShiftData({
     this.id,
@@ -114,87 +115,82 @@ class ShiftData {
     this.discountTotal,
     this.taxTotal,
     this.totalAfterTax,
+    this.summary,
   });
 
- // ✅ تأكد من الـ JSON اللي جاي من الـ API
-ShiftData.fromJson(Map<String, dynamic> json) {
-  // طباعة الـ raw JSON عشان نشوف إيه اللي جاي
-  debugPrint('🔍 Raw JSON for shift:');
-  debugPrint(json.toString());
-  
-  if (json['id'] != null) {
-    if (json['id'] is int) {
-      id = json['id'];
-    } else if (json['id'] is String) {
-      id = int.tryParse(json['id']);
+  ShiftData.fromJson(Map<String, dynamic> json) {
+    // ✅ Safe parsing للـ id
+    if (json['id'] != null) {
+      id = json['id'] is int ? json['id'] : int.tryParse(json['id'].toString());
     }
-  }
-  
-  openingQuantity = json['opening_quantity']?.toString();
-  closingQuantity = json['closing_quantity']?.toString();
-  discountTotal = json['discount_total']?.toString();
-  taxTotal = json['tax_total']?.toString();
-  totalAfterTax = json['total_after_tax']?.toString();
-  
-  // ✅ طباعة نوع الـ payment_methods قبل ما نحاول نعالجها
-  debugPrint('🔍 payment_methods type: ${json['payment_methods']?.runtimeType}');
-  debugPrint('🔍 payment_methods value: ${json['payment_methods']}');
-  
-  if (json['payment_methods'] != null) {
-    try {
-      // تأكد إن الحاجة دي Map فعلاً
-      if (json['payment_methods'] is Map) {
+    
+    openingQuantity = json['opening_quantity']?.toString();
+    closingQuantity = json['closing_quantity']?.toString();
+    discountTotal = json['discount_total']?.toString();
+    taxTotal = json['tax_total']?.toString();
+    totalAfterTax = json['total_after_tax']?.toString();
+    
+    // ✅ محاولة جلب payment_methods من المكانين
+    Map<String, String>? tempPaymentMethods;
+    
+    // 1️⃣ محاولة من الـ shift نفسه (Shift Details API)
+    if (json['payment_methods'] != null && json['payment_methods'] is Map) {
+      try {
         final rawPaymentMethods = json['payment_methods'] as Map<String, dynamic>;
-        paymentMethods = rawPaymentMethods.map(
+        tempPaymentMethods = rawPaymentMethods.map(
           (key, value) => MapEntry(key, value.toString()),
         );
-        debugPrint('✅ Payment methods parsed successfully: $paymentMethods');
-      } else {
-        debugPrint('⚠️ payment_methods is not a Map! It is: ${json['payment_methods'].runtimeType}');
+        debugPrint('✅ Found payment_methods in shift: $tempPaymentMethods');
+      } catch (e) {
+        debugPrint('❌ Error parsing payment_methods from shift: $e');
       }
-    } catch (e, stackTrace) {
-      debugPrint('❌ Error parsing payment_methods: $e');
-      debugPrint('Stack trace: $stackTrace');
-      paymentMethods = null;
     }
-  } else {
-    debugPrint('⚠️ payment_methods is NULL in JSON');
-  }
-  
-  createdAt = json['created_at']?.toString();
-  updatedAt = json['updated_at']?.toString();
-  
-  if (json['user_id'] != null) {
-    if (json['user_id'] is int) {
-      userId = json['user_id'];
-    } else if (json['user_id'] is String) {
-      userId = int.tryParse(json['user_id']);
+    
+    // 2️⃣ محاولة من الـ summary (Shifts List API)
+    if (tempPaymentMethods == null && json['summary'] != null) {
+      try {
+        summary = ShiftSummary.fromJson(json['summary']);
+        tempPaymentMethods = summary?.paymentMethods;
+        debugPrint('✅ Found payment_methods in summary: $tempPaymentMethods');
+      } catch (e) {
+        debugPrint('❌ Error parsing summary: $e');
+      }
     }
-  }
-  
-  if (json['branch_id'] != null) {
-    if (json['branch_id'] is int) {
-      branchId = json['branch_id'];
-    } else if (json['branch_id'] is String) {
-      branchId = int.tryParse(json['branch_id']);
+    
+    paymentMethods = tempPaymentMethods;
+    
+    if (paymentMethods == null || paymentMethods!.isEmpty) {
+      debugPrint('⚠️ No payment_methods found in JSON');
     }
-  }
-  
-  if (json['orders_count'] != null) {
-    if (json['orders_count'] is int) {
-      ordersCount = json['orders_count'];
-    } else if (json['orders_count'] is String) {
-      ordersCount = int.tryParse(json['orders_count']);
+    
+    createdAt = json['created_at']?.toString();
+    updatedAt = json['updated_at']?.toString();
+    
+    if (json['user_id'] != null) {
+      userId = json['user_id'] is int 
+        ? json['user_id'] 
+        : int.tryParse(json['user_id'].toString());
     }
+    
+    if (json['branch_id'] != null) {
+      branchId = json['branch_id'] is int 
+        ? json['branch_id'] 
+        : int.tryParse(json['branch_id'].toString());
+    }
+    
+    if (json['orders_count'] != null) {
+      ordersCount = json['orders_count'] is int 
+        ? json['orders_count'] 
+        : int.tryParse(json['orders_count'].toString());
+    }
+    
+    startAt = json['start_at']?.toString();
+    endAt = json['end_at']?.toString();
+    
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
   }
-  
-  startAt = json['start_at']?.toString();
-  endAt = json['end_at']?.toString();
-  
-  user = json['user'] != null ? User.fromJson(json['user']) : null;
-  branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
-}
-  // ✅ دالة مساعدة عشان تطبع البيانات للتجربة
+
   void printShiftData() {
     debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     debugPrint('📊 Shift Data #$id');
@@ -219,5 +215,49 @@ ShiftData.fromJson(Map<String, dynamic> json) {
       debugPrint('   ⚠️ No payment methods found!');
     }
     debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+  }
+}
+
+class ShiftSummary {
+  int? count;
+  String? totalAfterTax;
+  String? totalCollected;
+  Map<String, String>? paymentMethods;
+
+  ShiftSummary({
+    this.count,
+    this.totalAfterTax,
+    this.totalCollected,
+    this.paymentMethods,
+  });
+
+  ShiftSummary.fromJson(Map<String, dynamic> json) {
+    count = json['count'] is int 
+      ? json['count'] 
+      : int.tryParse(json['count']?.toString() ?? '0');
+    
+    totalAfterTax = json['total_after_tax']?.toString();
+    totalCollected = json['total_collected']?.toString();
+    
+    if (json['payment_methods'] != null && json['payment_methods'] is Map) {
+      try {
+        final rawPaymentMethods = json['payment_methods'] as Map<String, dynamic>;
+        paymentMethods = rawPaymentMethods.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
+      } catch (e) {
+        debugPrint('❌ Error parsing payment_methods in summary: $e');
+        paymentMethods = null;
+      }
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'count': count,
+      'total_after_tax': totalAfterTax,
+      'total_collected': totalCollected,
+      'payment_methods': paymentMethods,
+    };
   }
 }
