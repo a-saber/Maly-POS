@@ -607,9 +607,21 @@ Future<Uint8List> endShiftInvoicesPdf(BuildContext contextView,
         imageResponse = null;
       }
     }
-    final Map<String, String> paymentMethodsMap =
-        shift.shift?.paymentMethods ?? {};
-
+    Map<String, String> paymentMethodsMap = {};
+    
+    if (shift.shift?.paymentMethods != null && 
+        shift.shift!.paymentMethods!.isNotEmpty) {
+      paymentMethodsMap = shift.shift!.paymentMethods!;
+      debugPrint('✅ Got payment methods from shift: $paymentMethodsMap');
+    }
+    else if (shift.summary?.paymentMethods != null && 
+             shift.summary!.paymentMethods!.isNotEmpty) {
+      paymentMethodsMap = shift.summary!.paymentMethods!;
+      debugPrint('✅ Got payment methods from summary: $paymentMethodsMap');
+    }
+    else {
+      debugPrint('⚠️ No payment methods found, will use totals only');
+    }
     final filteredPaymentMethods = paymentMethodsMap.entries.where((e) {
       final value = double.tryParse(e.value.toString()) ?? 0;
       return value > 0;
@@ -760,9 +772,12 @@ Future<Uint8List> endShiftInvoicesPdf(BuildContext contextView,
                       size,
                       isBold: true,
                     ),
-                    _buildTableRow(
-                      S.of(contextView).total,
-                      (shift.summary?.totalCollected ?? '-').toAmount(),
+                      _buildTableRow(
+                      '${S.of(contextView).total} / ${S.of(contextView).total}',
+                      (shift.shift?.closingQuantity ?? 
+                       shift.summary?.totalCollected ?? 
+                       shift.summary?.totalAfterTax ?? 
+                       '0').toString().toAmount(),
                       arabicFontBold,
                       size,
                       isBold: true,
