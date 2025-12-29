@@ -101,8 +101,30 @@ class ShiftRepo {
     }
   }
 
-  GetShift? getShift;
+GetShift? getShift;
 
+  
+  Future<Either<ApiResponse, EndShiftModel>> getShiftDetailsForPrint(int shiftId) async {
+    try {
+      String urlGetShift = await ApiEndPoints.getShifts();
+      String url = "$urlGetShift/$shiftId";
+
+      debugPrint('🔄 Fetching shift details from: $url');
+      
+      var response = await api.get(url: url);
+      
+      if (response.status) {
+        debugPrint(' Shift details loaded successfully');
+        return Right(EndShiftModel.fromJson(response.data));
+      } else {
+        debugPrint(' Failed to load shift details: ${response.message}');
+        return Left(response);
+      }
+    } catch (e) {
+      debugPrint(' Error fetching shift details: $e');
+      return Left(ApiResponse.unKnownError());
+    }
+  }
   Future<Either<ApiResponse, GetShift>> getShiftDetails(int shiftId,
       {bool isFresh = false}) async {
     try {
@@ -116,35 +138,6 @@ class ShiftRepo {
       } else {
         return Left(response);
       }
-
-      // if (getShift == null || isFresh) {
-      //   url = await ApiEndPoints.getShiftDetails(shiftId: shiftId);
-      //   getShift = null;
-      // } else {
-      //   if (getShift?.data?.nextPageUrl == null) {
-      //     return Right(getShift!);
-      //   }
-      //   url = getShift!.data!.nextPageUrl!.toString();
-      // }
-
-      // final response = await api.get(url: url);
-
-      // if (response.status) {
-      //   final model = GetShift.fromJson(response.data);
-
-      //   if (isFresh || getShift == null) {
-      //     getShift = model;
-      //   } else {
-      //     final existingOrders = getShift!.data?.data ?? [];
-      //     final newOrders = model.data?.data ?? [];
-      //     getShift!.data?.data = [...existingOrders, ...newOrders];
-      //     getShift!.data?.nextPageUrl = model.data?.nextPageUrl;
-      //   }
-
-      //   return Right(getShift!);
-      // } else {
-      //   return Left(response);
-      // }
     } catch (e) {
       debugPrint(e.toString());
       return Left(ApiResponse.unKnownError());

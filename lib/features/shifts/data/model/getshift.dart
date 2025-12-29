@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:pos_app/features/clients/data/model/client_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
@@ -55,32 +56,73 @@ class Shift {
   String? endAt;
   int? branchId;
   int? ordersCount;
+  Map<String, String>? paymentMethods; // ✅ أضف ده
   User? user;
   Branch? branch;
 
-  Shift(
-      {id,
-      openingQuantity,
-      createdAt,
-      updatedAt,
-      userId,
-      startAt,
-      endAt,
-      branchId,
-      ordersCount,
-      user,
-      branch});
+  Shift({
+    this.id,
+    this.openingQuantity,
+    this.createdAt,
+    this.updatedAt,
+    this.userId,
+    this.startAt,
+    this.endAt,
+    this.branchId,
+    this.ordersCount,
+    this.paymentMethods, // ✅ أضف ده
+    this.user,
+    this.branch,
+  });
 
   Shift.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    // ✅ Safe parsing for id
+    if (json['id'] != null) {
+      id = json['id'] is int ? json['id'] : int.tryParse(json['id'].toString());
+    }
+    
     openingQuantity = json['opening_quantity'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    userId = json['user_id'];
+    
+    // ✅ Safe parsing for userId
+    if (json['user_id'] != null) {
+      userId = json['user_id'] is int 
+        ? json['user_id'] 
+        : int.tryParse(json['user_id'].toString());
+    }
+    
     startAt = json['start_at'];
     endAt = json['end_at'];
-    branchId = json['branch_id'];
-    ordersCount = json['orders_count'];
+    
+    // ✅ Safe parsing for branchId
+    if (json['branch_id'] != null) {
+      branchId = json['branch_id'] is int 
+        ? json['branch_id'] 
+        : int.tryParse(json['branch_id'].toString());
+    }
+    
+    // ✅ Safe parsing for ordersCount
+    if (json['orders_count'] != null) {
+      ordersCount = json['orders_count'] is int 
+        ? json['orders_count'] 
+        : int.tryParse(json['orders_count'].toString());
+    }
+    
+    // ✅ Parse payment_methods
+    if (json['payment_methods'] != null && json['payment_methods'] is Map) {
+      try {
+        final rawPaymentMethods = json['payment_methods'] as Map<String, dynamic>;
+        paymentMethods = rawPaymentMethods.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
+        debugPrint('✅ Payment methods parsed in Shift: $paymentMethods');
+      } catch (e) {
+        debugPrint('❌ Error parsing payment_methods in Shift: $e');
+        paymentMethods = null;
+      }
+    }
+    
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
   }
@@ -96,6 +138,11 @@ class Shift {
     data['end_at'] = endAt;
     data['branch_id'] = branchId;
     data['orders_count'] = ordersCount;
+    
+    if (paymentMethods != null) {
+      data['payment_methods'] = paymentMethods;
+    }
+    
     if (user != null) {
       data['user'] = user!.toJson();
     }
@@ -121,34 +168,36 @@ class User {
   int? roleId;
   String? imageUrl;
 
-  User(
-      {id,
-      name,
-      email,
-      phone,
-      address,
-      status,
-      imagePath,
-      emailVerifiedAt,
-      createdAt,
-      updatedAt,
-      centralUserId,
-      roleId,
-      imageUrl});
+  User({
+    this.id,
+    this.name,
+    this.email,
+    this.phone,
+    this.address,
+    this.status,
+    this.imagePath,
+    this.emailVerifiedAt,
+    this.createdAt,
+    this.updatedAt,
+    this.centralUserId,
+    this.roleId,
+    this.imageUrl,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    // ✅ Safe parsing for all int fields
+    id = _parseInt(json['id']);
     name = json['name'];
     email = json['email'];
     phone = json['phone'];
     address = json['address'];
-    status = json['status'];
+    status = _parseInt(json['status']);
     imagePath = json['image_path'];
     emailVerifiedAt = json['email_verified_at'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    centralUserId = json['central_user_id'];
-    roleId = json['role_id'];
+    centralUserId = _parseInt(json['central_user_id']);
+    roleId = _parseInt(json['role_id']);
     imageUrl = json['image_url'];
   }
 
@@ -169,6 +218,14 @@ class User {
     data['image_url'] = imageUrl;
     return data;
   }
+
+  // ✅ Helper function for safe int parsing
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
 }
 
 class Branch {
@@ -180,10 +237,18 @@ class Branch {
   String? createdAt;
   String? updatedAt;
 
-  Branch({id, name, address, phone, email, createdAt, updatedAt});
+  Branch({
+    this.id,
+    this.name,
+    this.address,
+    this.phone,
+    this.email,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Branch.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = _parseInt(json['id']);
     name = json['name'];
     address = json['address'];
     phone = json['phone'];
@@ -203,7 +268,15 @@ class Branch {
     data['updated_at'] = updatedAt;
     return data;
   }
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
 }
+
 
 class Summary {
   int? count;
@@ -212,30 +285,36 @@ class Summary {
   String? totalAfterDiscount;
   String? taxTotal;
   String? totalAfterTax;
-Map<String, String>? paymentMethods;
+  Map<String, String>? paymentMethods;
 
-  Summary(
-      {count,
-      subtotal,
-      discountTotal,
-      totalAfterDiscount,
-      taxTotal,
-      totalAfterTax,
-      cashTotal,
-      onlineTotal,
-      paymentMethods});
+  Summary({
+    this.count,
+    this.subtotal,
+    this.discountTotal,
+    this.totalAfterDiscount,
+    this.taxTotal,
+    this.totalAfterTax,
+    this.paymentMethods,
+  });
 
   Summary.fromJson(Map<String, dynamic> json) {
-    count = json['count'];
+    count = _parseInt(json['count']);
     subtotal = json['subtotal'];
     discountTotal = json['discount_total'];
     totalAfterDiscount = json['total_after_discount'];
     taxTotal = json['tax_total'];
     totalAfterTax = json['total_after_tax'];
-    if (json['payment_methods'] != null) {
-      paymentMethods = Map<String, String>.from(
-        json['payment_methods'],
-      );
+    
+    if (json['payment_methods'] != null && json['payment_methods'] is Map) {
+      try {
+        final rawPaymentMethods = json['payment_methods'] as Map<String, dynamic>;
+        paymentMethods = rawPaymentMethods.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
+      } catch (e) {
+        debugPrint('❌ Error parsing payment_methods: $e');
+        paymentMethods = null;
+      }
     }
   }
 
@@ -247,13 +326,19 @@ Map<String, String>? paymentMethods;
     data['total_after_discount'] = totalAfterDiscount;
     data['tax_total'] = taxTotal;
     data['total_after_tax'] = totalAfterTax;
-    if (this.paymentMethods != null) {
-      data['payment_methods'] = this.paymentMethods;
+    if (paymentMethods != null) {
+      data['payment_methods'] = paymentMethods;
     }
     return data;
   }
-}
 
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+}
 class Dataforshift {
   int? currentPage;
   List<OrderData>? data;
@@ -372,27 +457,28 @@ class Settings {
   String? country;
   String? imageUrl;
 
-  Settings(
-      {id,
-      shopName,
-      address,
-      postalCode,
-      taxNo,
-      commercialNo,
-      phone,
-      email,
-      logoUrl,
-      createdAt,
-      updatedAt,
-      street,
-      building,
-      city,
-      district,
-      country,
-      imageUrl});
+  Settings({
+    this.id,
+    this.shopName,
+    this.address,
+    this.postalCode,
+    this.taxNo,
+    this.commercialNo,
+    this.phone,
+    this.email,
+    this.logoUrl,
+    this.createdAt,
+    this.updatedAt,
+    this.street,
+    this.building,
+    this.city,
+    this.district,
+    this.country,
+    this.imageUrl,
+  });
 
   Settings.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = _parseInt(json['id']);
     shopName = json['shop_name'];
     address = json['address'];
     postalCode = json['postal_code'];
@@ -432,6 +518,13 @@ class Settings {
     data['image_url'] = imageUrl;
     return data;
   }
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
 }
 
 class OrderData {
@@ -457,31 +550,32 @@ class OrderData {
   User? user;
   Branch? branch;
 
-  OrderData(
-      {this.id,
-      this.subtotal,
-      this.discountTotal,
-      this.totalAfterDiscount,
-      this.taxTotal,
-      this.totalAfterTax,
-      this.paymentMethod,
-      this.orderType,
-      this.discountId,
-      this.userId,
-      this.branchId,
-      this.customerId,
-      this.createdAt,
-      this.updatedAt,
-      this.salesReturnId,
-      this.shiftId,
-      this.saleProducts,
-      this.customer,
-      this.discount,
-      this.user,
-      this.branch});
+  OrderData({
+    this.id,
+    this.subtotal,
+    this.discountTotal,
+    this.totalAfterDiscount,
+    this.taxTotal,
+    this.totalAfterTax,
+    this.paymentMethod,
+    this.orderType,
+    this.discountId,
+    this.userId,
+    this.branchId,
+    this.customerId,
+    this.createdAt,
+    this.updatedAt,
+    this.salesReturnId,
+    this.shiftId,
+    this.saleProducts,
+    this.customer,
+    this.discount,
+    this.user,
+    this.branch,
+  });
 
   OrderData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = _parseInt(json['id']);
     subtotal = json['subtotal'];
     discountTotal = json['discount_total'];
     totalAfterDiscount = json['total_after_discount'];
@@ -489,20 +583,22 @@ class OrderData {
     totalAfterTax = json['total_after_tax'];
     paymentMethod = json['payment_method'];
     orderType = json['order_type'];
-    discountId = json['discount_id'];
-    userId = json['user_id'];
-    branchId = json['branch_id'];
-    customerId = json['customer_id'];
+    discountId = _parseInt(json['discount_id']);
+    userId = _parseInt(json['user_id']);
+    branchId = _parseInt(json['branch_id']);
+    customerId = _parseInt(json['customer_id']);
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    salesReturnId = json['sales_return_id'];
-    shiftId = json['shift_id'];
+    salesReturnId = _parseInt(json['sales_return_id']);
+    shiftId = _parseInt(json['shift_id']);
+    
     if (json['sale_products'] != null) {
       saleProducts = <SaleProducts>[];
       json['sale_products'].forEach((v) {
         saleProducts!.add(SaleProducts.fromJson(v));
       });
     }
+    
     customer = json['customer'] != null
         ? ClientModel.fromJson(json['customer'])
         : null;
@@ -544,8 +640,14 @@ class OrderData {
     }
     return data;
   }
-}
 
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+}
 class SaleProducts {
   int? id;
   int? saleId;
@@ -565,44 +667,50 @@ class SaleProducts {
   UnitModel? unit;
   TaxesModel? tax;
 
-  SaleProducts(
-      {this.id,
-      this.saleId,
-      this.productId,
-      this.unitId,
-      this.price,
-      this.unitPriceAfterDiscount,
-      this.lineTotalBeforeDiscount,
-      this.lineTotalAfterDiscount,
-      this.taxAmount,
-      this.lineTotalAfterTax,
-      this.quantity,
-      this.createdAt,
-      this.updatedAt,
-      this.taxId,
-      this.product,
-      this.unit,
-      this.tax});
+  SaleProducts({
+    this.id,
+    this.saleId,
+    this.productId,
+    this.unitId,
+    this.price,
+    this.unitPriceAfterDiscount,
+    this.lineTotalBeforeDiscount,
+    this.lineTotalAfterDiscount,
+    this.taxAmount,
+    this.lineTotalAfterTax,
+    this.quantity,
+    this.createdAt,
+    this.updatedAt,
+    this.taxId,
+    this.product,
+    this.unit,
+    this.tax,
+  });
 
   SaleProducts.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    saleId = json['sale_id'];
-    productId = json['product_id'];
-    unitId = json['unit_id'];
+    id = _parseInt(json['id']);
+    saleId = _parseInt(json['sale_id']);
+    productId = _parseInt(json['product_id']);
+    unitId = _parseInt(json['unit_id']);
     price = json['price'];
     unitPriceAfterDiscount = json['unit_price_after_discount'];
     lineTotalBeforeDiscount = json['line_total_before_discount'];
     lineTotalAfterDiscount = json['line_total_after_discount'];
     taxAmount = json['tax_amount'];
     lineTotalAfterTax = json['line_total_after_tax'];
-    quantity = json['quantity'];
+    quantity = _parseInt(json['quantity']);
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    taxId = json['tax_id'];
-    product =
-        json['product'] != null ? ProductModel.fromJson(json['product']) : null;
-    unit = json['unit'] != null ? UnitModel.fromJson(json['unit']) : null;
-    tax = json['tax'] != null ? TaxesModel.fromJson(json['tax']) : null;
+    taxId = _parseInt(json['tax_id']);
+    product = json['product'] != null 
+        ? ProductModel.fromJson(json['product']) 
+        : null;
+    unit = json['unit'] != null 
+        ? UnitModel.fromJson(json['unit']) 
+        : null;
+    tax = json['tax'] != null 
+        ? TaxesModel.fromJson(json['tax']) 
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -629,5 +737,12 @@ class SaleProducts {
     }
     data['tax'] = tax;
     return data;
+  }
+
+  static int? _parseInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 }
