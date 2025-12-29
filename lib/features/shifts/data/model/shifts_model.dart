@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:pos_app/features/shifts/data/model/end_shift_model.dart';
 import 'package:pos_app/features/shifts/data/model/getshift.dart'
     hide User, Branch;
@@ -82,11 +83,10 @@ class ShiftData {
   int? id;
   String? openingQuantity;
   String? closingQuantity;
-  String? cashTotal;
-   String? onlineTotal;
   String? discountTotal;
   String? taxTotal;
   String? totalAfterTax;
+  Map<String, String>? paymentMethods; // ✅ ده المفروض يجي من الـ shift
   String? createdAt;
   String? updatedAt;
   int? userId;
@@ -110,33 +110,114 @@ class ShiftData {
     this.user,
     this.branch,
     this.closingQuantity,
-     this.cashTotal,
-     this.onlineTotal,
+    this.paymentMethods,
     this.discountTotal,
     this.taxTotal,
     this.totalAfterTax,
-
   });
 
-  ShiftData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    openingQuantity = json['opening_quantity'];
-    closingQuantity = json['closing_quantity'];
-    cashTotal = json['cash_total'];
-     onlineTotal = json['online_total'];
-    discountTotal = json['discount_total'];
-    taxTotal = json['tax_total'];
-    totalAfterTax = json['total_after_tax'];
-
-
-    createdAt = json['created_at'];
-    updatedAt = json['updated_at'];
-    userId = json['user_id'];
-    startAt = json['start_at'];
-    endAt = json['end_at'];
-    branchId = json['branch_id'];
-    ordersCount = json['orders_count'];
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
-    branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
+ // ✅ تأكد من الـ JSON اللي جاي من الـ API
+ShiftData.fromJson(Map<String, dynamic> json) {
+  // طباعة الـ raw JSON عشان نشوف إيه اللي جاي
+  debugPrint('🔍 Raw JSON for shift:');
+  debugPrint(json.toString());
+  
+  if (json['id'] != null) {
+    if (json['id'] is int) {
+      id = json['id'];
+    } else if (json['id'] is String) {
+      id = int.tryParse(json['id']);
+    }
+  }
+  
+  openingQuantity = json['opening_quantity']?.toString();
+  closingQuantity = json['closing_quantity']?.toString();
+  discountTotal = json['discount_total']?.toString();
+  taxTotal = json['tax_total']?.toString();
+  totalAfterTax = json['total_after_tax']?.toString();
+  
+  // ✅ طباعة نوع الـ payment_methods قبل ما نحاول نعالجها
+  debugPrint('🔍 payment_methods type: ${json['payment_methods']?.runtimeType}');
+  debugPrint('🔍 payment_methods value: ${json['payment_methods']}');
+  
+  if (json['payment_methods'] != null) {
+    try {
+      // تأكد إن الحاجة دي Map فعلاً
+      if (json['payment_methods'] is Map) {
+        final rawPaymentMethods = json['payment_methods'] as Map<String, dynamic>;
+        paymentMethods = rawPaymentMethods.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
+        debugPrint('✅ Payment methods parsed successfully: $paymentMethods');
+      } else {
+        debugPrint('⚠️ payment_methods is not a Map! It is: ${json['payment_methods'].runtimeType}');
+      }
+    } catch (e, stackTrace) {
+      debugPrint('❌ Error parsing payment_methods: $e');
+      debugPrint('Stack trace: $stackTrace');
+      paymentMethods = null;
+    }
+  } else {
+    debugPrint('⚠️ payment_methods is NULL in JSON');
+  }
+  
+  createdAt = json['created_at']?.toString();
+  updatedAt = json['updated_at']?.toString();
+  
+  if (json['user_id'] != null) {
+    if (json['user_id'] is int) {
+      userId = json['user_id'];
+    } else if (json['user_id'] is String) {
+      userId = int.tryParse(json['user_id']);
+    }
+  }
+  
+  if (json['branch_id'] != null) {
+    if (json['branch_id'] is int) {
+      branchId = json['branch_id'];
+    } else if (json['branch_id'] is String) {
+      branchId = int.tryParse(json['branch_id']);
+    }
+  }
+  
+  if (json['orders_count'] != null) {
+    if (json['orders_count'] is int) {
+      ordersCount = json['orders_count'];
+    } else if (json['orders_count'] is String) {
+      ordersCount = int.tryParse(json['orders_count']);
+    }
+  }
+  
+  startAt = json['start_at']?.toString();
+  endAt = json['end_at']?.toString();
+  
+  user = json['user'] != null ? User.fromJson(json['user']) : null;
+  branch = json['branch'] != null ? Branch.fromJson(json['branch']) : null;
+}
+  // ✅ دالة مساعدة عشان تطبع البيانات للتجربة
+  void printShiftData() {
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    debugPrint('📊 Shift Data #$id');
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    debugPrint('👤 User: ${user?.name ?? "N/A"}');
+    debugPrint('🏢 Branch: ${branch?.name ?? "N/A"}');
+    debugPrint('📅 Start: $startAt');
+    debugPrint('📅 End: $endAt');
+    debugPrint('💰 Opening: $openingQuantity');
+    debugPrint('💰 Closing: $closingQuantity');
+    debugPrint('🎫 Discount: $discountTotal');
+    debugPrint('💵 Tax: $taxTotal');
+    debugPrint('💳 Total After Tax: $totalAfterTax');
+    debugPrint('📦 Orders Count: $ordersCount');
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    debugPrint('💳 Payment Methods:');
+    if (paymentMethods != null && paymentMethods!.isNotEmpty) {
+      paymentMethods!.forEach((key, value) {
+        debugPrint('   • $key: $value');
+      });
+    } else {
+      debugPrint('   ⚠️ No payment methods found!');
+    }
+    debugPrint('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
   }
 }
