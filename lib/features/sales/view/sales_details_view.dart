@@ -106,7 +106,13 @@ class SalesDetailsView extends StatelessWidget {
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).paymentmethod,
-                    value: salesModel.paymentMethod ?? S.of(context).unknown,
+                    value: salesModel.payments != null &&
+                            salesModel.payments!.isNotEmpty
+                        ? salesModel.payments!
+                            .map((payment) =>
+                                "Payment Method ID: ${payment.paymentMethodId ?? S.of(context).unknown} - ${payment.amount?.toAmount() ?? S.of(context).unKnownPrice}")
+                            .join("\n")
+                        : S.of(context).unknown,
                   ),
                   CustomInfoRowDetailsView(
                     label: S.of(context).orderType,

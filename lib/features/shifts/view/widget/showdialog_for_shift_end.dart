@@ -21,7 +21,7 @@ Future<void> showDialogForShiftEnd(BuildContext context,
     context: context,
     // barrierDismissible: false,
     builder: (ctx) {
-      final paymentMethods = shift.summary?.paymentMethods ?? {};
+      final paymentMethods = shift.summary?.paymentMethods ?? {}; 
 
       final filteredPayments = paymentMethods.entries.where((e) {
         final value = double.tryParse(e.value) ?? 0;
