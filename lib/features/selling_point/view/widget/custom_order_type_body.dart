@@ -26,7 +26,7 @@ class _CustomOrderTypeBodyState extends State<CustomOrderTypeBody> {
     final user = CustomUserHiveBox.getUser();
   print('🔍 Restaurant permission: ${user.role?.restaurant}');
   
-  if (user.role?.restaurant?? true ) {
+  if (!(user.role?.restaurant?? false )) {
     return SizedBox.shrink(); 
   }
     return BlocBuilder<SellingPointProductCubit, SellingPointProductState>(

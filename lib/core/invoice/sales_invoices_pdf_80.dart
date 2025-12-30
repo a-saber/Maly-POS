@@ -145,7 +145,6 @@ Future<Uint8List> salesInvoicesPdf80(
           marginAll: margin * mmToPoint,
         ),
         build: (context) => pw.Container(
-          // ❌ شيلنا الـ color والـ decoration
           width: double.infinity,
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -174,8 +173,6 @@ Future<Uint8List> salesInvoicesPdf80(
                 ),
                 pw.SizedBox(height: 5),
               ],
-
-              // Title
               pw.Text(
                 AppInvoiceString.invoiceTitle,
                 style: pw.TextStyle(
@@ -186,8 +183,6 @@ Future<Uint8List> salesInvoicesPdf80(
                 textAlign: pw.TextAlign.center,
               ),
               pw.SizedBox(height: 5),
-
-              // Logo
               if (setting[ApiKeys.imageurl] != null &&
                   imageResponse != null) ...[
                 pw.ClipOval(
@@ -235,7 +230,7 @@ Future<Uint8List> salesInvoicesPdf80(
 
               // ✅ Order Number & Order Type (بدون إطار)
               // ✅ Order Number & Order Type (بس لو صلاحية المطعم مفعّلة)
-              if (CustomUserHiveBox.getUser().role?.restaurant ?? false)
+              if (!(CustomUserHiveBox.getUser().role?.restaurant ?? false))
                 pw.Container(
                   width: double.infinity,
                   padding: pw.EdgeInsets.symmetric(vertical: 4, horizontal: 3),
@@ -305,7 +300,7 @@ Future<Uint8List> salesInvoicesPdf80(
                   ),
                 ),
 
-              if (!(CustomUserHiveBox.getUser().role?.restaurant ?? false))
+              if ((CustomUserHiveBox.getUser().role?.restaurant ?? false))
                 pw.SizedBox(height: 5),
               pw.Container(
                   width: double.infinity, height: 0.5, color: PdfColors.black),

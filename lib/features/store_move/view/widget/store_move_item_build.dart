@@ -93,7 +93,7 @@ class StoreMoveItemBuild extends StatelessWidget {
                       //   ),
                       // ),
                       Text(
-                        "${storeMove.quantity} items",
+                        "${(double.tryParse(storeMove.quantity ?? "0"))?.toStringAsFixed(2)} items",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: AppFontStyle.itemssmallTitle(
