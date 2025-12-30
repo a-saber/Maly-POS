@@ -9,8 +9,10 @@ class StoreMovementData {
   final int? branchId;
   final int? productId;
   final int? userId;
+  final int? unitId;
+  final String? quantityInBaseUnit;
+  final String? quantity;
   final String? movementType;
-  final int? quantity;
   final String? referenceType;
   final int? referenceId;
   final String? createdAt;
@@ -20,66 +22,64 @@ class StoreMovementData {
   final UserModel? user;
   final ReferenceModel? reference;
 
-  StoreMovementData(
-      {required this.id,
-      required this.branchId,
-      required this.productId,
-      required this.userId,
-      required this.movementType,
-      required this.quantity,
-      required this.referenceType,
-      required this.referenceId,
-      required this.createdAt,
-      required this.updatedAt,
-      required this.product,
-      required this.branch,
-      required this.user,
-      required this.reference});
+  StoreMovementData({
+    this.id,
+    this.branchId,
+    this.productId,
+    this.userId,
+    this.unitId,
+    this.quantityInBaseUnit,
+    this.quantity,
+    this.movementType,
+    this.referenceType,
+    this.referenceId,
+    this.createdAt,
+    this.updatedAt,
+    this.product,
+    this.branch,
+    this.user,
+    this.reference,
+  });
 
   factory StoreMovementData.fromJson(Map<String, dynamic> json) {
-  return StoreMovementData(
-    id: int.tryParse(json[ApiKeys.id]?.toString() ?? ''),
-    branchId: int.tryParse(json[ApiKeys.branchid]?.toString() ?? ''),
-    productId: int.tryParse(json[ApiKeys.productid]?.toString() ?? ''),
-    userId: int.tryParse(json[ApiKeys.userid]?.toString() ?? ''),
-    movementType: json[ApiKeys.movementtype],
-    quantity: int.tryParse(json[ApiKeys.quantity]?.toString() ?? ''),
-    referenceType: json[ApiKeys.referencetype],
-    referenceId: int.tryParse(json[ApiKeys.referenceid]?.toString() ?? ''),
-    createdAt: json[ApiKeys.createdat],
-    updatedAt: json[ApiKeys.updatedat],
-    product: json[ApiKeys.product] == null
-        ? null
-        : ProductModel.fromJson(json[ApiKeys.product]),
-    branch: json[ApiKeys.branch] == null
-        ? null
-        : BrancheModel.fromJson(json[ApiKeys.branch]),
-    user: json[ApiKeys.user] == null
-        ? null
-        : UserModel.fromJson(json[ApiKeys.user]),
-    reference: json[ApiKeys.reference] == null
-        ? null
-        : ReferenceModel.fromJson(json[ApiKeys.reference]),
-  );
-}
-
+    return StoreMovementData(
+      id: json[ApiKeys.id] is int ? json[ApiKeys.id] : int.tryParse(json[ApiKeys.id]?.toString() ?? '0'),
+      branchId: json[ApiKeys.branchid] is int ? json[ApiKeys.branchid] : int.tryParse(json[ApiKeys.branchid]?.toString() ?? '0'),
+      productId: json[ApiKeys.productid] is int ? json[ApiKeys.productid] : int.tryParse(json[ApiKeys.productid]?.toString() ?? '0'),
+      userId: json[ApiKeys.userid] is int ? json[ApiKeys.userid] : int.tryParse(json[ApiKeys.userid]?.toString() ?? '0'),
+      unitId: json[ApiKeys.unitId] is int ? json[ApiKeys.unitId] : int.tryParse(json[ApiKeys.unitId]?.toString() ?? '0'),
+      quantityInBaseUnit: json['quantity_in_base_unit']?.toString(),
+      quantity: json[ApiKeys.quantity]?.toString(),
+      movementType: json[ApiKeys.movementtype]?.toString(),
+      referenceType: json[ApiKeys.referencetype]?.toString(),
+      referenceId: json[ApiKeys.referenceid] is int ? json[ApiKeys.referenceid] : int.tryParse(json[ApiKeys.referenceid]?.toString() ?? '0'),
+      createdAt: json[ApiKeys.createdat]?.toString(),
+      updatedAt: json[ApiKeys.updatedat]?.toString(),
+      product: json[ApiKeys.product] == null ? null : ProductModel.fromJson(json[ApiKeys.product]),
+      branch: json[ApiKeys.branch] == null ? null : BrancheModel.fromJson(json[ApiKeys.branch]),
+      user: json[ApiKeys.user] == null ? null : UserModel.fromJson(json[ApiKeys.user]),
+      reference: json[ApiKeys.reference] == null ? null : ReferenceModel.fromJson(json[ApiKeys.reference]),
+    );
+  }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data[ApiKeys.id] = id;
-    data[ApiKeys.branchid] = branchId;
-    data[ApiKeys.productid] = productId;
-    data[ApiKeys.userid] = userId;
-    data[ApiKeys.movementtype] = movementType;
-    data[ApiKeys.quantity] = quantity;
-    data[ApiKeys.referencetype] = referenceType;
-    data[ApiKeys.referenceid] = referenceId;
-    data[ApiKeys.createdat] = createdAt;
-    data[ApiKeys.updatedat] = updatedAt;
-    data[ApiKeys.product] = product;
-    data[ApiKeys.branch] = branch;
-    data[ApiKeys.user] = user;
-    data[ApiKeys.reference] = reference;
-    return data;
+    return {
+      ApiKeys.id: id,
+      ApiKeys.branchid: branchId,
+      ApiKeys.productid: productId,
+      ApiKeys.userid: userId,
+      ApiKeys.unitId: unitId,
+      'quantity_in_base_unit': quantityInBaseUnit,
+      ApiKeys.quantity: quantity,
+      ApiKeys.movementtype: movementType,
+      ApiKeys.referencetype: referenceType,
+      ApiKeys.referenceid: referenceId,
+      ApiKeys.createdat: createdAt,
+      ApiKeys.updatedat: updatedAt,
+      ApiKeys.product: product?.toJson(),
+      ApiKeys.branch: branch?.toJson(),
+      ApiKeys.user: user?.toJson(),
+      ApiKeys.reference: reference?.toJson(),
+    };
   }
 }
