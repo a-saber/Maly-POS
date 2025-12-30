@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pos_app/core/cache/custom_user_hive_box.dart';
 import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/core/utils/app_colors.dart';
 import 'package:pos_app/core/utils/app_font_style.dart';
 import 'package:pos_app/features/selling_point/manager/selling_point_product_cubit/selling_point_product_cubit.dart';
-
+class PermissionHelper {
+  static bool get isRestaurantEnabled {
+    final user = CustomUserHiveBox.getUser();
+    return user.role?.restaurant ?? false;
+  }
+}
 class CustomOrderTypeBody extends StatefulWidget {
   const CustomOrderTypeBody({super.key});
 
@@ -17,6 +23,12 @@ class _CustomOrderTypeBodyState extends State<CustomOrderTypeBody> {
 
   @override
   Widget build(BuildContext context) {
+    final user = CustomUserHiveBox.getUser();
+  print('🔍 Restaurant permission: ${user.role?.restaurant}');
+  
+  if (user.role?.restaurant?? true ) {
+    return SizedBox.shrink(); 
+  }
     return BlocBuilder<SellingPointProductCubit, SellingPointProductState>(
       builder: (context, state) {
         return Column(
