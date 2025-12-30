@@ -135,7 +135,7 @@ Future<Uint8List> salesInvoicesPdf80(
     final double fontSize = size == '80' ? 7 : 6;
     final double titleSize = size == '80' ? 10 : 9;
     final double logoSize = size == '80' ? 35 : 25;
-    
+
     pdf.addPage(
       pw.Page(
         textDirection: pw.TextDirection.rtl,
@@ -145,7 +145,7 @@ Future<Uint8List> salesInvoicesPdf80(
           marginAll: margin * mmToPoint,
         ),
         build: (context) => pw.Container(
-          color: PdfColors.white,
+          // ❌ شيلنا الـ color والـ decoration
           width: double.infinity,
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -159,16 +159,16 @@ Future<Uint8List> salesInvoicesPdf80(
                     if (time.isNotEmpty)
                       pw.Text(
                         time,
-                        style: pw.TextStyle(
-                            fontSize: fontSize, font: arabicFont),
+                        style:
+                            pw.TextStyle(fontSize: fontSize, font: arabicFont),
                       ),
                     if (time.isNotEmpty && date.isNotEmpty)
                       pw.SizedBox(width: 10),
                     if (date.isNotEmpty)
                       pw.Text(
                         date,
-                        style: pw.TextStyle(
-                            fontSize: fontSize, font: arabicFont),
+                        style:
+                            pw.TextStyle(fontSize: fontSize, font: arabicFont),
                       ),
                   ],
                 ),
@@ -222,76 +222,32 @@ Future<Uint8List> salesInvoicesPdf80(
               if (setting[ApiKeys.commercialno] != null)
                 pw.Text(
                   "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}",
-                  style:
-                      pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                  style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
               if (sale[ApiKeys.id] != null)
                 pw.Text(
                   "${AppInvoiceString.sellingId}: ${sale[ApiKeys.id]}",
-                  style:
-                      pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
-                  textAlign: pw.TextAlign.center,
-                ),
-              if (sale[ApiKeys.ordertype] != null)
-                pw.Text(
-                  "${AppInvoiceString.orderType}: ${orderType(sale[ApiKeys.ordertype])}",
-                  style:
-                      pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                  style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
               pw.SizedBox(height: 5),
 
-              // ✅ Order Number & Order Type في صف واحد
-              pw.Container(
-                width: double.infinity,
-                padding: pw.EdgeInsets.symmetric(vertical: 4, horizontal: 3),
-                decoration: pw.BoxDecoration(
-                  border: pw.Border.all(color: PdfColors.grey400, width: 0.3), // ✅ بورد أخف
-                ),
-                child: pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // ✅ رقم الطلب
-                    pw.Expanded(
-                      child: pw.Column(
-                        children: [
-                          pw.Text(
-                            'OrderNumber',
-                            style: pw.TextStyle(
-                              fontSize: fontSize - 0.5,
-                              font: arabicFont,
-                            ),
-                            textAlign: pw.TextAlign.center,
-                          ),
-                          pw.SizedBox(height: 2),
-                          pw.Text(
-                            "#${sale['order_number']}",
-                            style: pw.TextStyle(
-                              fontSize: fontSize + 3,
-                              font: arabicFontBold,
-                              fontWeight: pw.FontWeight.bold,
-                            ),
-                            textAlign: pw.TextAlign.center,
-                          ),
-                        ],
-                      ),
-                    ),
-                    
-                    // ✅ الخط الفاصل
-                    pw.Container(
-                      width: 0.5,
-                      height: 30,
-                      color: PdfColors.black,
-                    ),
-                    
-                    // ✅ نوع الطلب
-                    if (sale[ApiKeys.ordertype] != null)
+              // ✅ Order Number & Order Type (بدون إطار)
+              // ✅ Order Number & Order Type (بس لو صلاحية المطعم مفعّلة)
+              if (CustomUserHiveBox.getUser().role?.restaurant ?? false)
+                pw.Container(
+                  width: double.infinity,
+                  padding: pw.EdgeInsets.symmetric(vertical: 4, horizontal: 3),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // ✅ رقم الطلب
                       pw.Expanded(
                         child: pw.Column(
                           children: [
                             pw.Text(
-                              AppInvoiceString.orderType,
+                              'رقم الطلب',
                               style: pw.TextStyle(
                                 fontSize: fontSize - 0.5,
                                 font: arabicFont,
@@ -300,9 +256,9 @@ Future<Uint8List> salesInvoicesPdf80(
                             ),
                             pw.SizedBox(height: 2),
                             pw.Text(
-                              orderType(sale[ApiKeys.ordertype]),
+                              "#${sale['order_number'] ?? '-'}",
                               style: pw.TextStyle(
-                                fontSize: fontSize + 1,
+                                fontSize: fontSize + 3,
                                 font: arabicFontBold,
                                 fontWeight: pw.FontWeight.bold,
                               ),
@@ -311,26 +267,56 @@ Future<Uint8List> salesInvoicesPdf80(
                           ],
                         ),
                       ),
-                  ],
+
+                      // ✅ الخط الفاصل
+                      pw.Container(
+                        width: 0.3,
+                        height: 30,
+                        color: PdfColors.grey400,
+                      ),
+
+                      // ✅ نوع الطلب
+                      if (sale[ApiKeys.ordertype] != null)
+                        pw.Expanded(
+                          child: pw.Column(
+                            children: [
+                              pw.Text(
+                                AppInvoiceString.orderType,
+                                style: pw.TextStyle(
+                                  fontSize: fontSize - 0.5,
+                                  font: arabicFont,
+                                ),
+                                textAlign: pw.TextAlign.center,
+                              ),
+                              pw.SizedBox(height: 2),
+                              pw.Text(
+                                orderType(sale[ApiKeys.ordertype]),
+                                style: pw.TextStyle(
+                                  fontSize: fontSize + 1,
+                                  font: arabicFontBold,
+                                  fontWeight: pw.FontWeight.bold,
+                                ),
+                                textAlign: pw.TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              pw.SizedBox(height: 5),
 
-              // Divider
+              if (!(CustomUserHiveBox.getUser().role?.restaurant ?? false))
+                pw.SizedBox(height: 5),
               pw.Container(
-                  width: double.infinity,
-                  height: 0.5,
-                  color: PdfColors.black),
+                  width: double.infinity, height: 0.5, color: PdfColors.black),
               pw.SizedBox(height: 3),
-
-              // ✅ Products Table (بدون borders جوانية)
               if (products.isNotEmpty)
-              
                 pw.Table(
                   border: pw.TableBorder(
                     top: pw.BorderSide(color: PdfColors.black, width: 0.5),
                     bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    horizontalInside: pw.BorderSide(color: PdfColors.grey300, width: 0.3),
+                    horizontalInside:
+                        pw.BorderSide(color: PdfColors.grey300, width: 0.3),
                     // ❌ شيلنا الـ vertical borders
                   ),
                   columnWidths: {
@@ -340,7 +326,6 @@ Future<Uint8List> salesInvoicesPdf80(
                     3: pw.FlexColumnWidth(1.2), // Total
                   },
                   children: [
-                    
                     // Header
                     pw.TableRow(
                       decoration: pw.BoxDecoration(color: PdfColors.grey200),
@@ -368,9 +353,7 @@ Future<Uint8List> salesInvoicesPdf80(
                           ),
                           // ✅ الكمية بـ Bold
                           _buildTableCellNew(
-                            double.tryParse(p[ApiKeys.quantity] ?? '0')
-                                    ?.toStringAsFixed(2) ??
-                                '0',
+                            p[ApiKeys.quantity]?.toString() ?? "",
                             arabicFontBold, // ✅ Bold
                             fontSize,
                             true, // ✅ Bold
@@ -384,8 +367,7 @@ Future<Uint8List> salesInvoicesPdf80(
                             false,
                           ),
                           _buildTableCellNew(
-                            double.tryParse(
-                                        p[ApiKeys.linetotalaftertax] ?? '0')
+                            double.tryParse(p[ApiKeys.linetotalaftertax] ?? '0')
                                     ?.toStringAsFixed(2) ??
                                 '0',
                             arabicFont,
@@ -402,9 +384,7 @@ Future<Uint8List> salesInvoicesPdf80(
 
               // Divider
               pw.Container(
-                  width: double.infinity,
-                  height: 0.5,
-                  color: PdfColors.black),
+                  width: double.infinity, height: 0.5, color: PdfColors.black),
               pw.SizedBox(height: 3),
 
               // ✅ Totals Table (بدون borders كتير)
@@ -412,11 +392,12 @@ Future<Uint8List> salesInvoicesPdf80(
                 border: pw.TableBorder(
                   top: pw.BorderSide(color: PdfColors.black, width: 0.5),
                   bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                  horizontalInside: pw.BorderSide(color: PdfColors.grey300, width: 0.2),
+                  horizontalInside:
+                      pw.BorderSide(color: PdfColors.grey300, width: 0.2),
                 ),
                 columnWidths: {
-                  0: pw.FlexColumnWidth(2.5),
-                  1: pw.FlexColumnWidth(1.5),
+                  0: pw.FlexColumnWidth(2),
+                  1: pw.FlexColumnWidth(1),
                 },
                 children: [
                   if (sale[ApiKeys.subtotal] != null)
@@ -465,8 +446,36 @@ Future<Uint8List> salesInvoicesPdf80(
                       fontSize,
                       isBold: true,
                     ),
-                  // ✅ طريقة الدفع
-                  if (sale[ApiKeys.paymentmethod] != null)
+                  // ✅ طرق الدفع (من الـ payments array)
+                  if (sale['payments'] != null && sale['payments'] is List)
+                    ...(sale['payments'] as List).map((payment) {
+                      final methodId = payment['payment_method_id'];
+                      final amount = payment['amount'];
+
+                      // تحويل الـ ID لاسم الطريقة
+                      String methodName = 'طريقة دفع #$methodId';
+                      if (methodId == 1)
+                        methodName = 'نقدي';
+                      else if (methodId == 2)
+                        methodName = 'الأهلي';
+                      else if (methodId == 3)
+                        methodName = 'الراجحي';
+                      else if (methodId == 4) methodName = 'mada';
+
+                      return _buildTotalRowNew(
+                        methodName,
+                        double.tryParse(amount.toString())
+                                ?.toStringAsFixed(2) ??
+                            amount.toString(),
+                        arabicFont,
+                        fontSize,
+                      );
+                    }).toList(),
+
+                  // ✅ Fallback: لو مافيش payments array، استخدم القديم
+                  if ((sale['payments'] == null ||
+                          (sale['payments'] as List).isEmpty) &&
+                      sale[ApiKeys.paymentmethod] != null)
                     _buildTotalRowNew(
                       AppInvoiceString.paymentMethod,
                       "${sale[ApiKeys.paymentmethod]}",
@@ -482,7 +491,11 @@ Future<Uint8List> salesInvoicesPdf80(
                     isBold: true,
                   ),
                   // ✅ الباقي (بس لو أكبر من 0)
-                  if ((paid - (double.tryParse(sale[ApiKeys.totalaftertax]) ?? 0)).abs() > 0.01)
+                  if ((paid -
+                              (double.tryParse(sale[ApiKeys.totalaftertax]) ??
+                                  0))
+                          .abs() >
+                      0.01)
                     _buildTotalRowNew(
                       AppInvoiceString.remain,
                       (paid -
@@ -510,9 +523,7 @@ Future<Uint8List> salesInvoicesPdf80(
 
               // Divider
               pw.Container(
-                  width: double.infinity,
-                  height: 0.5,
-                  color: PdfColors.black),
+                  width: double.infinity, height: 0.5, color: PdfColors.black),
               pw.SizedBox(height: 5),
 
               // Footer
@@ -530,8 +541,7 @@ Future<Uint8List> salesInvoicesPdf80(
                 pw.SizedBox(height: 3),
                 pw.Text(
                   setting[ApiKeys.address],
-                  style:
-                      pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
+                  style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
               ],
@@ -540,8 +550,7 @@ Future<Uint8List> salesInvoicesPdf80(
                 pw.SizedBox(height: 3),
                 pw.Text(
                   "${AppInvoiceString.employeeName} ${CustomUserHiveBox.getUser().name}",
-                  style:
-                      pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
+                  style: pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
               ],
@@ -550,8 +559,7 @@ Future<Uint8List> salesInvoicesPdf80(
                 pw.SizedBox(height: 3),
                 pw.Text(
                   "${AppInvoiceString.branchName} $branchName",
-                  style:
-                      pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
+                  style: pw.TextStyle(fontSize: fontSize - 2, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
               ],
@@ -638,6 +646,7 @@ pw.TableRow _buildTotalRowNew(
     ].reversed.toList(),
   );
 }
+
 Future<Uint8List> endShiftInvoicesPdf(BuildContext contextView,
     {required EndShiftModel shift, required String size}) async {
   http.Response? imageResponse;
@@ -668,18 +677,16 @@ Future<Uint8List> endShiftInvoicesPdf(BuildContext contextView,
       }
     }
     Map<String, String> paymentMethodsMap = {};
-    
-    if (shift.shift?.paymentMethods != null && 
+
+    if (shift.shift?.paymentMethods != null &&
         shift.shift!.paymentMethods!.isNotEmpty) {
       paymentMethodsMap = shift.shift!.paymentMethods!;
       debugPrint('✅ Got payment methods from shift: $paymentMethodsMap');
-    }
-    else if (shift.summary?.paymentMethods != null && 
-             shift.summary!.paymentMethods!.isNotEmpty) {
+    } else if (shift.summary?.paymentMethods != null &&
+        shift.summary!.paymentMethods!.isNotEmpty) {
       paymentMethodsMap = shift.summary!.paymentMethods!;
       debugPrint('✅ Got payment methods from summary: $paymentMethodsMap');
-    }
-    else {
+    } else {
       debugPrint('⚠️ No payment methods found, will use totals only');
     }
     final filteredPaymentMethods = paymentMethodsMap.entries.where((e) {
@@ -832,12 +839,14 @@ Future<Uint8List> endShiftInvoicesPdf(BuildContext contextView,
                       size,
                       isBold: true,
                     ),
-                      _buildTableRow(
+                    _buildTableRow(
                       '${S.of(contextView).total} / ${S.of(contextView).total}',
-                      (shift.shift?.closingQuantity ?? 
-                       shift.summary?.totalCollected ?? 
-                       shift.summary?.totalAfterTax ?? 
-                       '0').toString().toAmount(),
+                      (shift.shift?.closingQuantity ??
+                              shift.summary?.totalCollected ??
+                              shift.summary?.totalAfterTax ??
+                              '0')
+                          .toString()
+                          .toAmount(),
                       arabicFontBold,
                       size,
                       isBold: true,
@@ -1652,4 +1661,11 @@ String translatePaymentMethod(BuildContext context, String key) {
 
   return translations[key] ??
       key.replaceAll('_', ' ').replaceAll('-', ' ').toUpperCase();
+}
+
+class PermissionHelper {
+  static bool get isRestaurantEnabled {
+    final user = CustomUserHiveBox.getUser();
+    return user.role?.restaurant ?? false;
+  }
 }

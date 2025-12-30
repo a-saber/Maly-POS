@@ -45,7 +45,7 @@ class CustomSellingPointCardBody extends StatelessWidget {
                           child: Column(
                             children: [
                               BlocBuilder<SellingPointProductCubit,
-                               SellingPointProductState>(
+                                  SellingPointProductState>(
                                 builder: (context, state) {
                                   return CustomDropDownDiscountAndCustomerSellingPoint();
                                 },
@@ -57,7 +57,9 @@ class CustomSellingPointCardBody extends StatelessWidget {
                               SizedBox(
                                 height: 5,
                               ),
-                              CustomOrderTypeBody(),
+                             
+                                const CustomOrderTypeBody(),
+                               
                               SizedBox(
                                 height: 5,
                               ),

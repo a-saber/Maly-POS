@@ -37,31 +37,32 @@ class StoreMovementData {
       required this.reference});
 
   factory StoreMovementData.fromJson(Map<String, dynamic> json) {
-    return StoreMovementData(
-      id: json[ApiKeys.id],
-      branchId: json[ApiKeys.branchid],
-      productId: json[ApiKeys.productid],
-      userId: json[ApiKeys.userid],
-      movementType: json[ApiKeys.movementtype],
-      quantity: json[ApiKeys.quantity],
-      referenceType: json[ApiKeys.referencetype],
-      referenceId: json[ApiKeys.referenceid],
-      createdAt: json[ApiKeys.createdat],
-      updatedAt: json[ApiKeys.updatedat],
-      product: json[ApiKeys.product] == null
-          ? null
-          : ProductModel.fromJson(json[ApiKeys.product]),
-      branch: json[ApiKeys.branch] == null
-          ? null
-          : BrancheModel.fromJson(json[ApiKeys.branch]),
-      user: json[ApiKeys.user] == null
-          ? null
-          : UserModel.fromJson(json[ApiKeys.user]),
-      reference: json[ApiKeys.reference] == null
-          ? null
-          : ReferenceModel.fromJson(json[ApiKeys.reference]),
-    );
-  }
+  return StoreMovementData(
+    id: int.tryParse(json[ApiKeys.id]?.toString() ?? ''),
+    branchId: int.tryParse(json[ApiKeys.branchid]?.toString() ?? ''),
+    productId: int.tryParse(json[ApiKeys.productid]?.toString() ?? ''),
+    userId: int.tryParse(json[ApiKeys.userid]?.toString() ?? ''),
+    movementType: json[ApiKeys.movementtype],
+    quantity: int.tryParse(json[ApiKeys.quantity]?.toString() ?? ''),
+    referenceType: json[ApiKeys.referencetype],
+    referenceId: int.tryParse(json[ApiKeys.referenceid]?.toString() ?? ''),
+    createdAt: json[ApiKeys.createdat],
+    updatedAt: json[ApiKeys.updatedat],
+    product: json[ApiKeys.product] == null
+        ? null
+        : ProductModel.fromJson(json[ApiKeys.product]),
+    branch: json[ApiKeys.branch] == null
+        ? null
+        : BrancheModel.fromJson(json[ApiKeys.branch]),
+    user: json[ApiKeys.user] == null
+        ? null
+        : UserModel.fromJson(json[ApiKeys.user]),
+    reference: json[ApiKeys.reference] == null
+        ? null
+        : ReferenceModel.fromJson(json[ApiKeys.reference]),
+  );
+}
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

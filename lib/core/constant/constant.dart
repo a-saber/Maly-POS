@@ -224,7 +224,6 @@ class AppConstant {
         PermissionItemModel(name: ApiKeys.sellInNegativeQuantity, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.productQuantity, isSelected: asAdmin),
         PermissionItemModel(name: ApiKeys.paymentMethods, isSelected: asAdmin),
-        PermissionItemModel(name: ApiKeys.restaurant, isSelected: asAdmin),
       ];
   static List<PermissionItemModel> getUserPermissions(RoleModel role) {
     return role.permissions.entries

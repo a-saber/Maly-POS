@@ -264,47 +264,56 @@ class Summary {
   String? totalCollected;
   Map<String, String>? paymentMethods;
 
-  Summary(
-      {this.count,
-      this.subtotal,
-      this.discountTotal,
-      this.totalAfterDiscount,
-      this.taxTotal,
-      this.totalAfterTax,
-      this.totalCollected,
-      this.paymentMethods});
+  Summary({
+    this.count,
+    this.subtotal,
+    this.discountTotal,
+    this.totalAfterDiscount,
+    this.taxTotal,
+    this.totalAfterTax,
+    this.totalCollected,
+    this.paymentMethods,
+  });
 
-  Summary.fromJson(Map<String, dynamic> json) {
-    count = json['count'];
-    subtotal = json['subtotal'];
-    discountTotal = json['discount_total'];
-    totalAfterDiscount = json['total_after_discount'];
-    taxTotal = json['tax_total'];
-    totalAfterTax = json['total_after_tax'];
-    totalCollected = json['total_collected'];
-    if (json['payment_methods'] != null) {
-      paymentMethods = Map<String, String>.from(
-        json['payment_methods'],
-      );
+  factory Summary.fromJson(Map<String, dynamic> json) {
+    // Handle payment_methods safely
+    Map<String, String> methods = {};
+    
+    final pmData = json['payment_methods'];
+    if (pmData != null && pmData is Map) {
+      pmData.forEach((key, value) {
+        methods[key.toString()] = value?.toString() ?? '0.00';
+      });
+    } else if (pmData != null && pmData is List) {
+      // If it's an empty array [], just keep empty map
+      print('! payment_methods is an array, converting to empty map');
     }
+
+    return Summary(
+      count: json['count'] as int?,
+      subtotal: json['subtotal']?.toString(),
+      discountTotal: json['discount_total']?.toString(),
+      totalAfterDiscount: json['total_after_discount']?.toString(),
+      taxTotal: json['tax_total']?.toString(),
+      totalAfterTax: json['total_after_tax']?.toString(),
+      totalCollected: json['total_collected']?.toString(),
+      paymentMethods: methods,
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['count'] = this.count;
-    data['subtotal'] = this.subtotal;
-    data['discount_total'] = this.discountTotal;
-    data['total_after_discount'] = this.totalAfterDiscount;
-    data['tax_total'] = this.taxTotal;
-    data['total_after_tax'] = this.totalAfterTax;
-    data['total_collected'] = this.totalCollected;
-    if (this.paymentMethods != null) {
-      data['payment_methods'] = this.paymentMethods;
-    }
-    return data;
+    return {
+      'count': count,
+      'subtotal': subtotal,
+      'discount_total': discountTotal,
+      'total_after_discount': totalAfterDiscount,
+      'tax_total': taxTotal,
+      'total_after_tax': totalAfterTax,
+      'total_collected': totalCollected,
+      'payment_methods': paymentMethods,
+    };
   }
 }
-
 
 class Setting {
   int? id;
@@ -312,9 +321,9 @@ class Setting {
   String? address;
   String? postalCode;
   String? taxNo;
-  Null? commercialNo;
+  String? commercialNo;
   String? phone;
-  Null? email;
+  String? email;
   String? logoUrl;
   String? street;
   String? building;

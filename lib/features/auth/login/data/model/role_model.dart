@@ -3,7 +3,16 @@ import 'package:pos_app/core/api/api_keys.dart';
 import 'package:pos_app/features/permissions/data/model/permission_model.dart';
 
 part 'role_model.g.dart';
-
+bool? _parseToBool(dynamic value) {
+  if (value == null) return null;
+  if (value is bool) return value;
+  if (value is int) return value == 1;
+  if (value is String) {
+    if (value == '1' || value.toLowerCase() == 'true') return true;
+    if (value == '0' || value.toLowerCase() == 'false') return false;
+  }
+  return null;
+}
 @HiveType(typeId: 1)
 class RoleModel {
   @HiveField(0)
@@ -131,9 +140,8 @@ class RoleModel {
       shifts: json[ApiKeys.shifts],
       createdAt: json[ApiKeys.createdat],
       updatedAt: json[ApiKeys.updatedat],
-      inventory:
-          json[ApiKeys.inventory] is int ? json[ApiKeys.inventory] == 1 : false,
-      stock: json[ApiKeys.stock] is int ? json[ApiKeys.stock] == 1 : false,
+      inventory: _parseToBool(json[ApiKeys.inventory]),
+      stock: _parseToBool(json[ApiKeys.stock]),
       allowLowerPrices: json[ApiKeys.allowLowerPrices],
       sellInNegativeQuantity: json[ApiKeys.sellInNegativeQuantity],
       productQuantity: json[ApiKeys.productQuantity],
