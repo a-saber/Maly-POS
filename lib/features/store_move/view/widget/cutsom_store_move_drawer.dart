@@ -23,6 +23,17 @@ import 'package:pos_app/features/units/view/widget/custom_drop_down_unit.dart';
 import 'package:pos_app/features/users/view/widget/custom_drop_down_user.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+DateTime endOfDay(DateTime date) {
+  return DateTime(
+    date.year,
+    date.month,
+    date.day,
+    23,
+    59,
+    59,
+  );
+}
+
 class CutsomStoreMoveDrawer extends StatelessWidget {
   const CutsomStoreMoveDrawer({super.key});
 
@@ -453,7 +464,9 @@ class CutsomStoreMoveDrawer extends StatelessWidget {
                       endDate: FilterStoreMoveCubit.get(context).endDate == null
                           ? null
                           : formatDateyyyymmddHHMMSS(
-                              FilterStoreMoveCubit.get(context).endDate!),
+                              endOfDay(
+                                  FilterStoreMoveCubit.get(context).endDate!),
+                            ),
                       sortBy: FilterStoreMoveCubit.get(context).sortBy?.apiKey,
                       sortOrder: FilterStoreMoveCubit.get(context).sort?.apiKey,
                       quantityMin: FilterStoreMoveCubit.get(context)
