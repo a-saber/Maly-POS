@@ -297,7 +297,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
             ' Added service as new row. Total products: ${products.length}');
         updatePaid();
         emit(SellingPointProductAddingProduct());
-      } else if (product.quantity == null || product.quantity == 0) {
+      } else if ((product.stockQuantity ?? 0) <= 0) {
         debugPrint(' Product out of stock');
         updatePaid();
         emit(SellingPointProductAddingFailingProduct());
@@ -323,8 +323,7 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
       increaseCount(
           productId: myproduct.product.id ?? -1,
           productUnitId: productUnit?.unitId,
-          index: products.indexOf(myproduct)
-          );
+          index: products.indexOf(myproduct));
     } else {
       if (product.type?.toLowerCase().trim() ==
           ApiKeys.service.toLowerCase().trim()) {
@@ -345,7 +344,10 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void increaseCount({required int productId, required int? productUnitId, required int index}) {
+  void increaseCount(
+      {required int productId,
+      required int? productUnitId,
+      required int index}) {
     // var product = products.firstWhere((element) =>
     //     element.product.id == productId &&
     //     element.productUnit?.unitId == productUnitId);
@@ -361,21 +363,25 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void decreaseCount({required int productId, required int? productUnitId,required int index}) {
+  void decreaseCount(
+      {required int productId,
+      required int? productUnitId,
+      required int index}) {
     // if (products
     //         .firstWhere((element) =>
     //             element.product.id == productId &&
     //             element.productUnit?.unitId == productUnitId)
     //         .count ==
-    //     1) 
-       if (products[index].count == 1) {
-      removeProduct(productId: productId, productUnitId: productUnitId,index:index );
+    //     1)
+    if (products[index].count == 1) {
+      removeProduct(
+          productId: productId, productUnitId: productUnitId, index: index);
     } else {
       products[index].count--;
-          // .firstWhere((element) =>
-          //     element.product.id == productId &&
-          //     element.productUnit?.unitId == productUnitId)
-          // .count--;
+      // .firstWhere((element) =>
+      //     element.product.id == productId &&
+      //     element.productUnit?.unitId == productUnitId)
+      // .count--;
       updatePaid();
       emit(SellingPointProductDecreaseCount());
     }
@@ -392,7 +398,10 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
   }
 
-  void removeProduct({required int productId, required int? productUnitId,required int index}) {
+  void removeProduct(
+      {required int productId,
+      required int? productUnitId,
+      required int index}) {
     if (products.length == 1 && discount != null && discount!.id == -1) {
       changeDiscount(null);
     }
@@ -560,7 +569,8 @@ class SellingPointProductCubit extends Cubit<SellingPointProductState> {
     }
 
     if (newQuantity <= 0) {
-      removeProduct(productId: productId, productUnitId: productUnitId, index: index);
+      removeProduct(
+          productId: productId, productUnitId: productUnitId, index: index);
       return;
     }
 
