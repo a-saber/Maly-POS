@@ -478,7 +478,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "publicKey": MessageLookupByLibrary.simpleMessage("المفتاح العام"),
     "secretKey": MessageLookupByLibrary.simpleMessage("المفتاح السري"),
     "printers": MessageLookupByLibrary.simpleMessage("الطابعات"),
-    "stock": MessageLookupByLibrary.simpleMessage("المخزون"),
+    "stock": MessageLookupByLibrary.simpleMessage("حركة المخزن"),
     "roles": MessageLookupByLibrary.simpleMessage("الأدوار"),
     "customers": MessageLookupByLibrary.simpleMessage("العملاء"),
     "expenses": MessageLookupByLibrary.simpleMessage("المصروفات"),
