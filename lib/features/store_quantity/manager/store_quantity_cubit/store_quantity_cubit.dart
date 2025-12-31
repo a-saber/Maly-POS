@@ -193,7 +193,7 @@ class StoreQuantityCubit extends Cubit<StoreQuantityState> {
       super.emit(state);
     }
   }
-
+  
   @override
   Future<void> close() {
     scrollController.dispose();

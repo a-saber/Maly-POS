@@ -56,24 +56,27 @@ class ProductItemSearchBuild extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextHighlight(
-                      text: storeQuantityProductModel.product?.name ?? S
-                              .of(context)
-                              .noName, // You need to pass the string you want the highlights
-                      words: {
-                        StoreQuantityCubit.get(context).query: HighlightedWord(
-                          decoration: BoxDecoration(
-                            color: Colors.yellow,
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextHighlight(
+                        text: storeQuantityProductModel.product?.name ??
+                            S.of(context).noName,
+                        words: {
+                          StoreQuantityCubit.get(context).query:
+                              HighlightedWord(
+                            decoration: BoxDecoration(
+                              color: Colors.yellow,
+                            ),
                           ),
+                        },
+                        textStyle: AppFontStyle.itemsTitle(
+                          context: context,
+                          color: AppColors.black,
                         ),
-                      }, // Your dictionary words
-                      textStyle: AppFontStyle.itemsTitle(
-                        context: context,
-                        color: AppColors.black,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.start,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
                     ),
                     // Text(
                     //   filterDataModel.product?.name ?? S.of(context).noName,
@@ -82,36 +85,48 @@ class ProductItemSearchBuild extends StatelessWidget {
                     //     color: AppColors.black,
                     //   ),
                     // ),
-                 (storeQuantityProductModel?.product?.productUnits?.length??0)==1?  Text(
-
-                   "${storeQuantityProductModel?.product?.productUnits?.firstOrNull?.quantity} ${S.of(context).item}",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppFontStyle.itemssmallTitle(
-                        context: context,
-                        color: AppColors.black,
-                      ),
-                    ):
-          TextButton(onPressed: (){
-            CustomServiceWidget.showDialogHelper(context,contentWidget:  CustomUnitQuantityDialog(model: storeQuantityProductModel,));
-          }, child:  Text(
-
-           S.of(context).details,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppFontStyle.itemsSubTitle(
-              context: context,
-              color: AppColors.darkBlue,
-            ),
-          )),
+                    (storeQuantityProductModel?.product?.productUnits?.length ??
+                                0) ==
+                            1
+                        ? Text(
+                            "${storeQuantityProductModel?.product?.productUnits?.firstOrNull?.quantity} ${S.of(context).item}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppFontStyle.itemssmallTitle(
+                              context: context,
+                              color: AppColors.black,
+                            ),
+                          )
+                        : TextButton(
+                            onPressed: () {
+                              CustomServiceWidget.showDialogHelper(context,
+                                  contentWidget: CustomUnitQuantityDialog(
+                                    model: storeQuantityProductModel,
+                                  ));
+                            },
+                            child: Text(
+                              S.of(context).details,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppFontStyle.itemsSubTitle(
+                                context: context,
+                                color: AppColors.darkBlue,
+                              ),
+                            )),
                   ],
                 ),
                 const SizedBox(
                   height: 5,
                 ),
                 Text(
-
-                 List.generate(storeQuantityProductModel?.product?.productUnits?.length??0, (index1) => storeQuantityProductModel?.product?.productUnits?[index1]?.unit?.name??'').join(' - '),
+                  List.generate(
+                      storeQuantityProductModel
+                              ?.product?.productUnits?.length ??
+                          0,
+                      (index1) =>
+                          storeQuantityProductModel
+                              ?.product?.productUnits?[index1]?.unit?.name ??
+                          '').join(' - '),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppFontStyle.itemssmallTitle(
