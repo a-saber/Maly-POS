@@ -496,34 +496,56 @@ class BranchQuantity {
   BrancheModel? branch;
   int? branchId;
   int? qunantity;
-  TextEditingController quantityController;
+  late TextEditingController quantityController;
 
   BranchQuantity({
     required this.branch,
     required this.branchId,
     required this.qunantity,
-    required this.quantityController,
-  });
+    TextEditingController? quantityController,
+  }) {
+    this.quantityController = quantityController ?? 
+        TextEditingController(
+          text: (qunantity != null && qunantity! > 0) 
+              ? qunantity.toString() 
+              : '', 
+        );
+  }
 
-  static BranchQuantity from(BranchQuantity branchQuantity) {
+  factory BranchQuantity.empty() {
     return BranchQuantity(
-      branch: branchQuantity.branch,
-      branchId: branchQuantity.branchId,
-      qunantity: branchQuantity.qunantity,
-      quantityController: TextEditingController.fromValue(
-          branchQuantity.quantityController.value),
+      branch: null,
+      branchId: null,
+      qunantity: 0,
+      quantityController: TextEditingController(text: ''), 
     );
   }
 
-  factory BranchQuantity.copyWith(
-    BranchQuantity branchQuantity,
-  ) {
+  static BranchQuantity from(BranchQuantity branchQuantity) {
     return BranchQuantity(
-      branch: branchQuantity.branch,
+      branch: branchQuantity.branch != null 
+          ? BrancheModel.from(branchQuantity.branch!) 
+          : null,
       branchId: branchQuantity.branchId,
       qunantity: branchQuantity.qunantity,
       quantityController: TextEditingController(
-        text: branchQuantity.quantityController.text.toString(),
+        text: (branchQuantity.qunantity != null && branchQuantity.qunantity! > 0)
+            ? branchQuantity.qunantity.toString()
+            : '',
+      ),
+    );
+  }
+
+  factory BranchQuantity.fromJson(Map<String, dynamic> json) {
+    final quantity = json['quantity'] as int? ?? 0;
+    return BranchQuantity(
+      branch: json['branch'] != null 
+          ? BrancheModel.fromJson(json['branch']) 
+          : null,
+      branchId: json['branch_id'],
+      qunantity: quantity,
+      quantityController: TextEditingController(
+        text: quantity > 0 ? quantity.toString() : '', 
       ),
     );
   }
@@ -534,7 +556,7 @@ class BranchQuantity {
   }) {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['units[$indexOfUnit][opening_stocks][$index][branch_id]'] = branchId;
-    data['units[$indexOfUnit][opening_stocks][$index][quantity]'] = qunantity;
+    data['units[$indexOfUnit][opening_stocks][$index][quantity]'] = qunantity ?? 0;
     return data;
   }
 }

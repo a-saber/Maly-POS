@@ -460,6 +460,11 @@ class _EditProductDataViewState extends State<EditProductDataView> {
 
   void _showAddQuantityDialog(
       BuildContext context, EditProductCubit cubit, int index) {
+          print("=== Opening dialog for unit index $index ===");
+  print("Unit has ${cubit.productUnits[index].branchQty.length} branch quantities");
+  for (var bq in cubit.productUnits[index].branchQty) {
+    print("  - Branch: ${bq.branch?.name}, ID: ${bq.branchId}, Qty: ${bq.qunantity}");
+  }
     showDialog(
       context: context,
       builder: (ctx) {
