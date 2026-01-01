@@ -488,24 +488,46 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                           builder: (ctx) {
                                             List<BranchQuantity>
                                                 tempBranchQuantities = [];
-                                            for (int i = 0;
-                                                i <
-                                                    cubit.productUnits[index]
-                                                        .branchQty.length;
-                                                i++) {
+                                            for (var bq in cubit
+                                                .productUnits[index]
+                                                .branchQty) {
                                               tempBranchQuantities.add(
-                                                  BranchQuantity.from(cubit
-                                                      .productUnits[index]
-                                                      .branchQty[i]));
+                                                BranchQuantity(
+                                                  branch: bq.branch != null
+                                                      ? BrancheModel.from(
+                                                          bq.branch!)
+                                                      : null,
+                                                  branchId: bq.branchId ??
+                                                      bq.branch?.id,
+                                                  qunantity: bq.qunantity ?? 0,
+                                                 
+                                                ),
+                                              );
                                             }
+
+                                            print(
+                                                "Initialized dialog with ${tempBranchQuantities.length} quantities");
 
                                             return StatefulBuilder(
                                               builder: (ctx, setState) =>
                                                   AlertDialog(
                                                 title: Column(
                                                   spacing: 10,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
                                                   children: [
-                                                    Text("اضافة كمية افتتاحية"),
+                                                    Text(
+                                                      "اضافة كمية افتتاحية",
+                                                      style:
+                                                          AppFontStyle.formText(
+                                                                  context:
+                                                                      context)
+                                                              .copyWith(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
                                                     Row(
                                                       mainAxisAlignment:
                                                           MainAxisAlignment.end,
@@ -523,74 +545,131 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                                       null,
                                                                   branch: null,
                                                                   qunantity: 0,
-                                                                  quantityController:
-                                                                      TextEditingController(),
+                                                                  
                                                                 ),
                                                               );
                                                             });
+                                                            print(
+                                                                "Added new branch quantity. Total: ${tempBranchQuantities.length}");
                                                           },
                                                         ),
                                                       ],
                                                     ),
-                                                    ...List.generate(
-                                                      tempBranchQuantities
-                                                          .length,
-                                                      (index) {
-                                                        return Row(
-                                                          spacing: 5,
-                                                          children: [
-                                                            Expanded(
-                                                              flex: 2,
-                                                              child:
-                                                                  CustomDropDownBranch(
-                                                                      value: tempBranchQuantities[
-                                                                              index]
-                                                                          .branch,
-                                                                      onChanged:
-                                                                          (value) {
-                                                                        setState(
-                                                                            () {
-                                                                          if (value !=
-                                                                              null) {
-                                                                            tempBranchQuantities[index].branch =
-                                                                                BrancheModel.from(value);
-                                                                          }
-                                                                        });
-                                                                      }),
-                                                            ),
-                                                            Expanded(
-                                                              child:
-                                                                  CustomFormField(
-                                                                hintText:
-                                                                    "الكمية",
-                                                                controller:
-                                                                    tempBranchQuantities[
-                                                                            index]
-                                                                        .quantityController,
-                                                                validator: (value) =>
-                                                                    MyFormValidators.validateInteger(
-                                                                        value,
-                                                                        context:
-                                                                            context),
-                                                                onChanged:
-                                                                    (p0) {},
-                                                              ),
-                                                            ),
-                                                            IconButton(
-                                                                onPressed: () {
-                                                                  setState(() {
-                                                                    tempBranchQuantities
-                                                                        .removeAt(
-                                                                            index);
-                                                                  });
-                                                                },
-                                                                icon: Icon(Icons
-                                                                    .cancel_outlined))
-                                                          ],
-                                                        );
-                                                      },
-                                                    ),
                                                   ],
+                                                ),
+                                                content: SizedBox(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.8,
+                                                  child: SingleChildScrollView(
+                                                    child: Column(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        if (tempBranchQuantities
+                                                            .isEmpty)
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(20),
+                                                            child: Text(
+                                                              'لا توجد كميات. اضغط على "اضافة" لإضافة كمية جديدة',
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .grey
+                                                                    .shade600,
+                                                                fontSize: 14,
+                                                              ),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          )
+                                                        else
+                                                          ...List.generate(
+                                                            tempBranchQuantities
+                                                                .length,
+                                                            (branchIndex) {
+                                                              return Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        bottom:
+                                                                            10),
+                                                                child: Card(
+                                                                  elevation: 2,
+                                                                  child:
+                                                                      Padding(
+                                                                    padding:
+                                                                        const EdgeInsets
+                                                                            .all(
+                                                                            8.0),
+                                                                    child: Row(
+                                                                      spacing:
+                                                                          5,
+                                                                      children: [
+                                                                        Expanded(
+                                                                          flex:
+                                                                              2,
+                                                                          child:
+                                                                              CustomDropDownBranch(
+                                                                            value:
+                                                                                tempBranchQuantities[branchIndex].branch,
+                                                                            onChanged:
+                                                                                (value) {
+                                                                              setState(() {
+                                                                                if (value != null) {
+                                                                                  tempBranchQuantities[branchIndex].branch = BrancheModel.from(value);
+                                                                                  tempBranchQuantities[branchIndex].branchId = value.id;
+                                                                                  print("Selected branch: ${value.name} (ID: ${value.id})");
+                                                                                }
+                                                                              });
+                                                                            },
+                                                                          ),
+                                                                        ),
+                                                                        Expanded(
+                                                                          child:
+                                                                              CustomFormField(
+                                                                            hintText:
+                                                                                "الكمية",
+                                                                            controller:
+                                                                                tempBranchQuantities[branchIndex].quantityController,
+                                                                            validator: (value) =>
+                                                                                MyFormValidators.validateInteger(value, context: context),
+                                                                            onChanged:
+                                                                                (value) {
+                                                                              final qty = int.tryParse(value) ?? 0;
+                                                                              tempBranchQuantities[branchIndex].qunantity = qty;
+                                                                              print("Updated quantity for branch $branchIndex: $qty");
+                                                                            },
+                                                                          ),
+                                                                        ),
+                                                                        IconButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            setState(() {
+                                                                              print("Removing branch quantity at index $branchIndex");
+                                                                              tempBranchQuantities.removeAt(branchIndex);
+                                                                            });
+                                                                          },
+                                                                          icon:
+                                                                              Icon(
+                                                                            Icons.cancel_outlined,
+                                                                            color:
+                                                                                Colors.red,
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ),
                                                 actions: [
                                                   Row(
@@ -599,21 +678,107 @@ class _AddProductDataView2State extends State<AddProductDataView2> {
                                                     children: [
                                                       CustomTextBtn(
                                                         text: "اغلاق",
-                                                        textColor:
-                                                            AppColors.primary,
-                                                        onPressed: () =>
-                                                            Navigator.pop(ctx),
+                                                        textColor: Colors
+                                                            .grey.shade700,
+                                                        onPressed: () {
+                                                          print(
+                                                              "Dialog closed without saving");
+                                                          Navigator.pop(ctx);
+                                                        },
                                                       ),
+                                                      const SizedBox(width: 10),
                                                       CustomTextBtn(
                                                         text: "حفظ",
                                                         textColor:
                                                             AppColors.primary,
                                                         onPressed: () {
-                                                          cubit.assignBranchQty(
+                                                          print(
+                                                              "=== Attempting to save branch quantities ===");
+                                                          bool isValid = true;
+                                                          Set<int?> branchIds =
+                                                              {};
+
+                                                          for (var bq
+                                                              in tempBranchQuantities) {
+                                                            if (bq.branch ==
+                                                                    null ||
+                                                                bq
+                                                                    .quantityController
+                                                                    .text
+                                                                    .isEmpty) {
+                                                              isValid = false;
+                                                              CustomPopUp
+                                                                  .callMyToast(
+                                                                context:
+                                                                    context,
+                                                                massage:
+                                                                    'الرجاء اختيار الفرع وإدخال الكمية لجميع الصفوف',
+                                                                state:
+                                                                    PopUpState
+                                                                        .ERROR,
+                                                              );
+                                                              break;
+                                                            }
+
+                                                            if (branchIds
+                                                                .contains(bq
+                                                                    .branch
+                                                                    ?.id)) {
+                                                              isValid = false;
+                                                              CustomPopUp
+                                                                  .callMyToast(
+                                                                context:
+                                                                    context,
+                                                                massage:
+                                                                    'لا يمكن تكرار نفس الفرع',
+                                                                state:
+                                                                    PopUpState
+                                                                        .ERROR,
+                                                              );
+                                                              break;
+                                                            }
+                                                            branchIds.add(
+                                                                bq.branch?.id);
+                                                          }
+
+                                                          if (isValid) {
+                                                            // Update quantities from text controllers
+                                                            for (var bq
+                                                                in tempBranchQuantities) {
+                                                              bq.qunantity =
+                                                                  int.tryParse(bq
+                                                                          .quantityController
+                                                                          .text) ??
+                                                                      0;
+                                                              bq.branchId =
+                                                                  bq.branchId ??
+                                                                      bq.branch
+                                                                          ?.id;
+                                                              print(
+                                                                  "  - Saving: Branch ${bq.branch?.name}, ID: ${bq.branchId}, Qty: ${bq.qunantity}");
+                                                            }
+
+                                                            cubit
+                                                                .assignBranchQty(
                                                               index: index,
                                                               branchQuantities:
-                                                                  tempBranchQuantities);
-                                                          Navigator.pop(ctx);
+                                                                  tempBranchQuantities,
+                                                            );
+
+                                                            Navigator.pop(ctx);
+
+                                                            CustomPopUp
+                                                                .callMyToast(
+                                                              context: context,
+                                                              massage:
+                                                                  'تم حفظ الكميات بنجاح',
+                                                              state: PopUpState
+                                                                  .SUCCESS,
+                                                            );
+
+                                                            print(
+                                                                "=== Branch quantities saved successfully ===");
+                                                          }
                                                         },
                                                       ),
                                                     ],
