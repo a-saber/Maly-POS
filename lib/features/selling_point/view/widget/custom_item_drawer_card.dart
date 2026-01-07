@@ -56,14 +56,9 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
 
     double priceWithoutTax =
         double.tryParse(widget.product.priceController.text) ?? 0.0;
-
-    if (_productHasTax()) {
-      actualUnitPriceWithTax = priceWithoutTax * _getTaxMultiplier(); // هنا
-    } else {
-      actualUnitPriceWithTax = priceWithoutTax;
-    }
-
-    actualTotal = actualUnitPriceWithTax * widget.product.count;
+    actualUnitPriceWithTax = _calculatePriceWithTax(priceWithoutTax);
+    actualTotal = double.parse(
+        (actualUnitPriceWithTax * widget.product.count).toStringAsFixed(2));
 
     quantityController = TextEditingController(
       text: widget.product.count.toString(),
@@ -92,13 +87,10 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
       double priceWithoutTax =
           double.tryParse(widget.product.priceController.text) ?? 0.0;
 
-      if (_productHasTax()) {
-        actualUnitPriceWithTax = priceWithoutTax * _getTaxMultiplier();
-      } else {
-        actualUnitPriceWithTax = priceWithoutTax;
-      }
+      actualUnitPriceWithTax = _calculatePriceWithTax(priceWithoutTax);
 
-      actualTotal = actualUnitPriceWithTax * widget.product.count;
+      actualTotal = double.parse(
+          (actualUnitPriceWithTax * widget.product.count).toStringAsFixed(2));
       totalController.text = actualTotal.toStringAsFixed(2);
       unitPriceWithTaxController.text =
           actualUnitPriceWithTax.toStringAsFixed(2);
@@ -111,16 +103,13 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
 
       displayPriceController?.text = priceWithoutTax.toStringAsFixed(2);
 
-      if (_productHasTax()) {
-        actualUnitPriceWithTax = priceWithoutTax * _getTaxMultiplier();
-      } else {
-        actualUnitPriceWithTax = priceWithoutTax;
-      }
+      actualUnitPriceWithTax = _calculatePriceWithTax(priceWithoutTax);
 
       unitPriceWithTaxController.text =
           actualUnitPriceWithTax.toStringAsFixed(2);
 
-      actualTotal = actualUnitPriceWithTax * widget.product.count;
+      actualTotal = double.parse(
+          (actualUnitPriceWithTax * widget.product.count).toStringAsFixed(2));
       totalController.text = actualTotal.toStringAsFixed(2);
     }
   }
@@ -268,25 +257,37 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
     });
   }
 
+  double _calculatePriceWithTax(double priceWithoutTax) {
+    if (_productHasTax()) {
+      double result = priceWithoutTax * _getTaxMultiplier();
+      return double.parse(result.toStringAsFixed(1));
+    }
+    return double.parse(priceWithoutTax.toStringAsFixed(1));
+  }
+
+  double _calculatePriceWithoutTax(double priceWithTax) {
+    if (_productHasTax()) {
+      double result = priceWithTax / _getTaxMultiplier();
+      return double.parse(result.toStringAsFixed(2));
+    }
+    return double.parse(priceWithTax.toStringAsFixed(2));
+  }
+
   void _updateFromUnitPriceWithTax() {
     double inputPriceWithTax =
         double.tryParse(unitPriceWithTaxController.text) ?? 0.0;
-    // int quantity = int.tryParse(quantityController.text) ?? 1;
-    double quantity =  widget.product.count;
+    double quantity = widget.product.count;
 
-    actualUnitPriceWithTax = inputPriceWithTax;
+    actualUnitPriceWithTax = double.parse(inputPriceWithTax.toStringAsFixed(2));
 
-    double priceWithoutTax;
-    if (_productHasTax()) {
-      priceWithoutTax = actualUnitPriceWithTax / _getTaxMultiplier(); // هنا
-    } else {
-      priceWithoutTax = actualUnitPriceWithTax;
-    }
+   
+    double priceWithoutTax = _calculatePriceWithoutTax(actualUnitPriceWithTax);
 
     widget.product.priceController.text = priceWithoutTax.toStringAsFixed(10);
     displayPriceController?.text = priceWithoutTax.toStringAsFixed(2);
 
-    actualTotal = actualUnitPriceWithTax * quantity;
+    actualTotal =
+        double.parse((actualUnitPriceWithTax * quantity).toStringAsFixed(2));
     totalController.text = actualTotal.toStringAsFixed(2);
 
     setState(() {});
@@ -305,18 +306,16 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
     double quantity = double.tryParse(quantityController.text) ?? 1;
 
     if (quantity > 0) {
-      actualTotal = inputTotal;
+      actualTotal = double.parse(inputTotal.toStringAsFixed(2));
 
-      actualUnitPriceWithTax = actualTotal / quantity;
+      actualUnitPriceWithTax =
+          double.parse((actualTotal / quantity).toStringAsFixed(2));
       unitPriceWithTaxController.text =
           actualUnitPriceWithTax.toStringAsFixed(2);
 
-      double priceWithoutTax;
-      if (_productHasTax()) {
-        priceWithoutTax = actualUnitPriceWithTax / _getTaxMultiplier(); // هنا
-      } else {
-        priceWithoutTax = actualUnitPriceWithTax;
-      }
+    
+      double priceWithoutTax =
+          _calculatePriceWithoutTax(actualUnitPriceWithTax);
 
       widget.product.priceController.text = priceWithoutTax.toStringAsFixed(10);
       displayPriceController?.text = priceWithoutTax.toStringAsFixed(2);
@@ -339,16 +338,16 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
       quantityController.text = widget.product.count.toString();
       return;
     }
-      widget.product.count = quantity;
+
+    widget.product.count = quantity;
 
     double priceWithoutTax =
         double.tryParse(widget.product.priceController.text) ?? 0.0;
 
-    actualUnitPriceWithTax = _productHasTax()
-        ? priceWithoutTax * _getTaxMultiplier()
-        : priceWithoutTax; // هنا
 
-    actualTotal = actualUnitPriceWithTax * quantity;
+    actualUnitPriceWithTax = _calculatePriceWithTax(priceWithoutTax);
+    actualTotal =
+        double.parse((actualUnitPriceWithTax * quantity).toStringAsFixed(2));
 
     totalController.text = actualTotal.toStringAsFixed(2);
     unitPriceWithTaxController.text = actualUnitPriceWithTax.toStringAsFixed(2);
@@ -368,13 +367,10 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
       double priceWithoutTax =
           double.tryParse(widget.product.priceController.text) ?? 0.0;
 
-      if (_productHasTax()) {
-        actualUnitPriceWithTax = priceWithoutTax * _getTaxMultiplier();
-      } else {
-        actualUnitPriceWithTax = priceWithoutTax;
-      }
+      actualUnitPriceWithTax = _calculatePriceWithTax(priceWithoutTax);
 
-      actualTotal = actualUnitPriceWithTax * widget.product.count;
+      actualTotal = double.parse(
+          (actualUnitPriceWithTax * widget.product.count).toStringAsFixed(2));
       totalController.text = actualTotal.toStringAsFixed(2);
       unitPriceWithTaxController.text =
           actualUnitPriceWithTax.toStringAsFixed(2);
@@ -464,8 +460,7 @@ class _CustomItemDrawerCardState extends State<CustomItemDrawerCard> {
                               if (value == null || value.isEmpty) {
                                 return 'مطلوب';
                               }
-                              final qty = double.tryParse(
-                                  value); 
+                              final qty = double.tryParse(value);
                               if (qty == null || qty <= 0) {
                                 return 'رقم غير صحيح';
                               }

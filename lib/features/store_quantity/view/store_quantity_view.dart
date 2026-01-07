@@ -73,9 +73,11 @@ class _StoreQuantityViewState extends State<StoreQuantityView> {
             child: Column(
               children: [
                 CustomFormField(
+                  
                   controller: TextEditingController(
                     text: StoreQuantityCubit.get(context).query,
                   ),
+                  
                   onChanged: (value) =>
                       StoreQuantityCubit.get(context).onSearchChanged(
                     value,
