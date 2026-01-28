@@ -24,7 +24,9 @@ class ShopSettingRepo {
         GetShopSettingModel getShopSettingModel =
             GetShopSettingModel.fromJson(respone.data!);
         if(getShopSettingModel.data?.enableNearpay==true)
-        {await PaymentHelper.initialize();}
+        {
+          // await PaymentHelper.initialize();
+        }
         return Right(getShopSettingModel.data!);
       } else {
         return Left(
@@ -55,7 +57,9 @@ class ShopSettingRepo {
         GetShopSettingModel getShopSettingModel =
         GetShopSettingModel.fromJson(response.data!);
         if(getShopSettingModel.data!.enableNearpay==true)
-        {await PaymentHelper.initialize();}
+        {
+          // await PaymentHelper.initialize();
+        }
         return Right(getShopSettingModel.data!);
       } else {
         return Left(
