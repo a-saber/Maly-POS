@@ -146,6 +146,7 @@ Future<Uint8List> salesInvoicesPdf80(
           marginAll: margin * mmToPoint,
         ),
         build: (context) => pw.Container(
+          color: PdfColors.white,
           width: double.infinity,
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -175,7 +176,7 @@ Future<Uint8List> salesInvoicesPdf80(
                 pw.SizedBox(height: 5),
               ],
               pw.Text(
-                AppInvoiceString.invoiceTitle,
+              setting[ApiKeys.taxno]== null ?AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
                 style: pw.TextStyle(
                   fontSize: titleSize,
                   font: arabicFontBold,
@@ -215,9 +216,9 @@ Future<Uint8List> salesInvoicesPdf80(
                   style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
-              if (setting[ApiKeys.commercialno] != null)
+              if (setting[ApiKeys.taxno] != null)
                 pw.Text(
-                  "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}",
+                  "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.taxno]}",
                   style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
@@ -424,6 +425,7 @@ Future<Uint8List> salesInvoicesPdf80(
                       arabicFont,
                       fontSize,
                     ),
+                  if(setting[ApiKeys.taxno]!= null)
                   if (sale[ApiKeys.taxtotal] != null)
                     _buildTotalRowNew(
                       AppInvoiceString.tax,
@@ -433,6 +435,7 @@ Future<Uint8List> salesInvoicesPdf80(
                       arabicFont,
                       fontSize,
                     ),
+                  if(setting[ApiKeys.taxno]!= null)
                   if (sale[ApiKeys.totalaftertax] != null)
                     _buildTotalRowNew(
                       AppInvoiceString.totalAfterTax,
@@ -1027,7 +1030,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             // Title
             pw.Center(
               child: pw.Text(
-                setting[ApiKeys.commercialno] == null ? AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
+                setting[ApiKeys.taxno] == null ? AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
                 style: pw.TextStyle(
                   fontSize: 14,
                   font: arabicFontBold,
