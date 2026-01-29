@@ -119,7 +119,17 @@ class MyFormValidators {
   static String? validateInteger(String? value,
       {bool validate = true,
       required BuildContext context,
-      String? fieldName}) {
+      String? fieldName,
+      bool required = true
+      }) {
+    if(!required){
+      if(value==null){
+        return null;
+      }
+      if(value.trim().isEmpty){
+        return null;
+      }
+    }
     if (validate) {
       if (value == null || value.trim().isEmpty) {
         return fieldName ?? S.of(context).fieldisrequired;

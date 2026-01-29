@@ -116,7 +116,7 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
             keyboardType: TextInputType.number,
           ),
           CustomFormField(
-            controller: ShopSettingCubit.get(context).taxNoController,
+            controller: ShopSettingCubit.get(context).commercialNoController,
             hintText: S.of(context).commercialRegister,
             labelText: S.of(context).commercialRegister,
             validator: (value) => MyFormValidators.validateInteger(value,
@@ -124,11 +124,11 @@ class CustomShopSettingBodyMobile extends StatelessWidget {
             keyboardType: TextInputType.number,
           ),
           CustomFormField(
-            controller: ShopSettingCubit.get(context).commercialNoController,
+            controller: ShopSettingCubit.get(context).taxNoController,
             hintText: S.of(context).taxNo,
             labelText: S.of(context).taxNo,
             validator: (value) => MyFormValidators.validateInteger(value,
-                context: context, validate: false),
+                context: context, validate: false,required: false),
             keyboardType: TextInputType.number,
           ),
           CustomFormField(
