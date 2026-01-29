@@ -1088,6 +1088,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                   font: arabicFont,
                 ),
               ),
+            if(CustomUserHiveBox.getUser().role?.restaurant == true)
             if (sale[ApiKeys.ordertype] != null)
               pw.Text(
                 "${AppInvoiceString.orderType}:${orderType(sale[ApiKeys.ordertype])}",
@@ -1096,7 +1097,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                   font: arabicFont,
                 ),
               ),
+            if(CustomUserHiveBox.getUser().role?.restaurant == true)
             pw.SizedBox(height: 10),
+            if(CustomUserHiveBox.getUser().role?.restaurant == true)
             pw.Container(
                 width: double.infinity,
                 padding: pw.EdgeInsets.all(10),
@@ -1248,7 +1251,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                           pw.Padding(
                             padding: const pw.EdgeInsets.all(1),
                             child: pw.Text(
-                              p[ApiKeys.quantity]?.toString() ?? "",
+                            double.tryParse(p[ApiKeys.quantity]??"0")?.toStringAsFixed(2) ?? '0',
                               textAlign: pw.TextAlign.center,
                               style: pw.TextStyle(
                                 fontSize: 8,
