@@ -146,6 +146,7 @@ Future<Uint8List> salesInvoicesPdf80(
           marginAll: margin * mmToPoint,
         ),
         build: (context) => pw.Container(
+          color: PdfColors.white,
           width: double.infinity,
           child: pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.center,
@@ -175,7 +176,7 @@ Future<Uint8List> salesInvoicesPdf80(
                 pw.SizedBox(height: 5),
               ],
               pw.Text(
-                AppInvoiceString.invoiceTitle,
+              setting[ApiKeys.taxno]== null ?AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
                 style: pw.TextStyle(
                   fontSize: titleSize,
                   font: arabicFontBold,
@@ -215,9 +216,9 @@ Future<Uint8List> salesInvoicesPdf80(
                   style: pw.TextStyle(fontSize: fontSize, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
-              if (setting[ApiKeys.commercialno] != null)
+              if (setting[ApiKeys.taxno] != null)
                 pw.Text(
-                  "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.commercialno]}",
+                  "${AppInvoiceString.numberOfDariba}: ${setting[ApiKeys.taxno]}",
                   style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
@@ -325,7 +326,7 @@ Future<Uint8List> salesInvoicesPdf80(
                   children: [
                     // Header
                     pw.TableRow(
-                      decoration: pw.BoxDecoration(color: PdfColors.grey200),
+                      // decoration: pw.BoxDecoration(color: PdfColors.grey200),
                       children: [
                         _buildTableCellNew(AppInvoiceString.product,
                             arabicFontBold, fontSize, true),
@@ -340,7 +341,7 @@ Future<Uint8List> salesInvoicesPdf80(
                     // Data rows
                     ...products.map((p) {
                       return pw.TableRow(
-                        decoration: pw.BoxDecoration(color: PdfColors.white),
+                        // decoration: pw.BoxDecoration(color: PdfColors.white),
                         children: [
                           _buildTableCellNew(
                             p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
@@ -424,6 +425,7 @@ Future<Uint8List> salesInvoicesPdf80(
                       arabicFont,
                       fontSize,
                     ),
+                  if(setting[ApiKeys.taxno]!= null)
                   if (sale[ApiKeys.taxtotal] != null)
                     _buildTotalRowNew(
                       AppInvoiceString.tax,
@@ -433,6 +435,7 @@ Future<Uint8List> salesInvoicesPdf80(
                       arabicFont,
                       fontSize,
                     ),
+                  if(setting[ApiKeys.taxno]!= null)
                   if (sale[ApiKeys.totalaftertax] != null)
                     _buildTotalRowNew(
                       AppInvoiceString.totalAfterTax,
@@ -614,7 +617,7 @@ pw.TableRow _buildTotalRowNew(
   bool isBold = false,
 }) {
   return pw.TableRow(
-    decoration: pw.BoxDecoration(color: PdfColors.grey50),
+    // decoration: pw.BoxDecoration(color: PdfColors.grey50),
     children: [
       pw.Padding(
         padding: const pw.EdgeInsets.symmetric(vertical: 3, horizontal: 4),
@@ -901,9 +904,9 @@ pw.TableRow _buildTableRow(
   bool isBold = false,
 }) {
   return pw.TableRow(
-    decoration: pw.BoxDecoration(
-      color: PdfColors.grey100,
-    ),
+    // decoration: pw.BoxDecoration(
+    //   color: PdfColors.grey100,
+    // ),
     children: [
       pw.Padding(
         padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 3),
@@ -1027,7 +1030,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             // Title
             pw.Center(
               child: pw.Text(
-                setting[ApiKeys.commercialno] == null ? AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
+                setting[ApiKeys.taxno] == null ? AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
                 style: pw.TextStyle(
                   fontSize: 14,
                   font: arabicFontBold,
@@ -1104,12 +1107,12 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             pw.Container(
                 width: double.infinity,
                 padding: pw.EdgeInsets.all(10),
-                decoration: pw.BoxDecoration(
-                    border: pw.Border.all(
-                  color: PdfColors.black,
-                  width: 1,
-                  style: pw.BorderStyle.solid,
-                )),
+                // decoration: pw.BoxDecoration(
+                //     border: pw.Border.all(
+                //   color: PdfColors.black,
+                //   width: 1,
+                //   style: pw.BorderStyle.solid,
+                // )),
                 child: pw.Center(
                   child: pw.Column(children: [
                     pw.Text(
@@ -1158,8 +1161,8 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                 },
                 children: [
                   pw.TableRow(
-                    decoration:
-                        pw.BoxDecoration(color: PdfColors.grey300), // gray bg
+                    // decoration:
+                    //     pw.BoxDecoration(color: PdfColors.grey300), // gray bg
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
