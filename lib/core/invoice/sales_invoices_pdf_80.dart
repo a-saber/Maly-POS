@@ -326,7 +326,7 @@ Future<Uint8List> salesInvoicesPdf80(
                   children: [
                     // Header
                     pw.TableRow(
-                      decoration: pw.BoxDecoration(color: PdfColors.grey200),
+                      // decoration: pw.BoxDecoration(color: PdfColors.grey200),
                       children: [
                         _buildTableCellNew(AppInvoiceString.product,
                             arabicFontBold, fontSize, true),
@@ -341,7 +341,7 @@ Future<Uint8List> salesInvoicesPdf80(
                     // Data rows
                     ...products.map((p) {
                       return pw.TableRow(
-                        decoration: pw.BoxDecoration(color: PdfColors.white),
+                        // decoration: pw.BoxDecoration(color: PdfColors.white),
                         children: [
                           _buildTableCellNew(
                             p[ApiKeys.product]?[ApiKeys.name]?.toString() ?? "",
@@ -617,7 +617,7 @@ pw.TableRow _buildTotalRowNew(
   bool isBold = false,
 }) {
   return pw.TableRow(
-    decoration: pw.BoxDecoration(color: PdfColors.grey50),
+    // decoration: pw.BoxDecoration(color: PdfColors.grey50),
     children: [
       pw.Padding(
         padding: const pw.EdgeInsets.symmetric(vertical: 3, horizontal: 4),
@@ -904,9 +904,9 @@ pw.TableRow _buildTableRow(
   bool isBold = false,
 }) {
   return pw.TableRow(
-    decoration: pw.BoxDecoration(
-      color: PdfColors.grey100,
-    ),
+    // decoration: pw.BoxDecoration(
+    //   color: PdfColors.grey100,
+    // ),
     children: [
       pw.Padding(
         padding: const pw.EdgeInsets.symmetric(horizontal: 4, vertical: 3),
@@ -1107,12 +1107,12 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             pw.Container(
                 width: double.infinity,
                 padding: pw.EdgeInsets.all(10),
-                decoration: pw.BoxDecoration(
-                    border: pw.Border.all(
-                  color: PdfColors.black,
-                  width: 1,
-                  style: pw.BorderStyle.solid,
-                )),
+                // decoration: pw.BoxDecoration(
+                //     border: pw.Border.all(
+                //   color: PdfColors.black,
+                //   width: 1,
+                //   style: pw.BorderStyle.solid,
+                // )),
                 child: pw.Center(
                   child: pw.Column(children: [
                     pw.Text(
@@ -1161,8 +1161,8 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                 },
                 children: [
                   pw.TableRow(
-                    decoration:
-                        pw.BoxDecoration(color: PdfColors.grey300), // gray bg
+                    // decoration:
+                    //     pw.BoxDecoration(color: PdfColors.grey300), // gray bg
                     children: [
                       pw.Padding(
                         padding: const pw.EdgeInsets.all(2),
