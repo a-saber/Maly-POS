@@ -80,7 +80,8 @@ Future<Uint8List> salesInvoicesPdf80(
   String? branchName,
   required double paid,
   required String size,
-}) async {
+}) async
+{
   var arabicFont = PdfFontLoader.arabicFont;
   var arabicFontBold = PdfFontLoader.arabicFontBold;
 
@@ -1026,7 +1027,7 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
             // Title
             pw.Center(
               child: pw.Text(
-                AppInvoiceString.invoiceTitle,
+                setting[ApiKeys.commercialno] == null ? AppInvoiceString.sellingId: AppInvoiceString.invoiceTitle,
                 style: pw.TextStyle(
                   fontSize: 14,
                   font: arabicFontBold,
@@ -1071,9 +1072,9 @@ Future<Uint8List> salesInvoicesPdfSunmi(Map<String, dynamic> response,
                   font: arabicFont,
                 ),
               ),
-            if (setting[ApiKeys.commercialno] != null)
+            if (setting[ApiKeys.taxno] != null)
               pw.Text(
-                "${AppInvoiceString.numberOfDariba} : ${setting[ApiKeys.commercialno]}",
+                "${AppInvoiceString.numberOfDariba} : ${setting[ApiKeys.taxno]}",
                 textAlign: pw.TextAlign.center,
                 style: pw.TextStyle(
                   font: arabicFont,
