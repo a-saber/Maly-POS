@@ -17,6 +17,8 @@ import 'package:pos_app/features/sales_returns/view/widget/custom_filter_sales_r
 import 'package:pos_app/features/sales_returns/view/widget/sales_return_item_build.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../../paymentmethods/data/repo/repo.dart';
+
 class SalesReturnView extends StatefulWidget {
   const SalesReturnView({super.key});
 
@@ -46,7 +48,7 @@ class _SalesReturnViewState extends State<SalesReturnView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SalesReturnFilterCubit(),
+      create: (context) => SalesReturnFilterCubit(MyServiceLocator.getSingleton<PaymentMethodsRepo>()),
       child: Scaffold(
         key: isMobile(context: context) ? scaffoldKey : null,
         appBar: CustomAppBar(

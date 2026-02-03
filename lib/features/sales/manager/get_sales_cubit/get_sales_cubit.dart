@@ -5,6 +5,8 @@ import 'package:pos_app/core/constant/constant.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart';
+import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/sales/data/model/sales_model.dart';
 import 'package:pos_app/features/sales/data/repo/sales_repo.dart';
@@ -15,7 +17,6 @@ part 'get_sales_state.dart';
 
 class GetSalesCubit extends Cubit<GetSalesState> {
   GetSalesCubit(this.repo) : super(GetSalesInitial());
-
   static GetSalesCubit get(context) => BlocProvider.of(context);
 
   final SalesRepo repo;
@@ -33,7 +34,7 @@ class GetSalesCubit extends Cubit<GetSalesState> {
   DiscountModel? discount;
   TaxesModel? taxes;
   ProductModel? product;
-  String? paymentMethod;
+  PaymentMethodSalesModel? paymentMethod;
   String? sort;
   String? sortBy;
   String? from;
@@ -122,7 +123,7 @@ class GetSalesCubit extends Cubit<GetSalesState> {
     DiscountModel? discount,
     TaxesModel? taxes,
     ProductModel? product,
-    String? paymentMethod,
+    PaymentMethodSalesModel? paymentMethod,
     String? sort,
     String? sortBy,
     String? from,

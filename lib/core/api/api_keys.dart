@@ -93,6 +93,7 @@ abstract class ApiKeys {
   static const String online = 'online';
   static const String cash = 'cash';
   static const String paymentmethod = 'payment_method';
+  static const String paymentMethodID = 'payment_method_id';
   static const String productid = 'product_id';
   static const String quantity = 'quantity';
   static const String taxid = 'tax_id';

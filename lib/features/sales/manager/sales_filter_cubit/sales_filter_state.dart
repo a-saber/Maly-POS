@@ -28,3 +28,11 @@ final class SalesFilterChangeTo extends SalesFilterState {}
 final class SalesFilterChangeSortBy extends SalesFilterState {}
 
 final class SalesFilterChangeSort extends SalesFilterState {}
+
+
+final class SalesFilterGetPaymentMethodsLoading extends SalesFilterState {}
+final class SalesFilterGetPaymentMethodsSuccess extends SalesFilterState {}
+final class SalesFilterGetPaymentMethodsFail extends SalesFilterState {
+  final ApiResponse message;
+  SalesFilterGetPaymentMethodsFail( {required this.message});
+}

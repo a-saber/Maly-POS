@@ -27,3 +27,12 @@ final class SalesReturnFilterChangeSortBy extends SalesReturnFilterState {}
 final class SalesReturnFilterChangeSort extends SalesReturnFilterState {}
 
 final class SalesReturnFilterChangeOrderType extends SalesReturnFilterState {}
+
+
+
+final class SalesReturnFilterGetPaymentMethodsLoading extends SalesReturnFilterState {}
+final class SalesReturnFilterGetPaymentMethodsSuccess extends SalesReturnFilterState {}
+final class SalesReturnFilterGetPaymentMethodsFail extends SalesReturnFilterState {
+  final ApiResponse message;
+  SalesReturnFilterGetPaymentMethodsFail( {required this.message});
+}

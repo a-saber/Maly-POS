@@ -12,6 +12,8 @@ import 'package:pos_app/features/sales/data/model/sales_model.dart';
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 
+import '../../../paymentmethods/data/models/paymentmodel.dart';
+
 class SalesRepo {
   GetSalesModel? getSalesModel;
 
@@ -26,7 +28,7 @@ class SalesRepo {
     TaxesModel? taxes,
     ProductModel? product,
     TypeOfTakeOrderModel? typeOfTakeOrder,
-    String? paymentMethod,
+    PaymentMethodSalesModel? paymentMethod,
     String? sort,
     String? sortBy,
     String? from,
@@ -90,7 +92,7 @@ class SalesRepo {
     required TaxesModel? taxes,
     required ProductModel? product,
     required TypeOfTakeOrderModel? typeOfTakeOrder,
-    required String? paymentMethod,
+    required PaymentMethodSalesModel? paymentMethod,
     required String? sort,
     required String? sortBy,
     required String? from,
@@ -119,8 +121,8 @@ class SalesRepo {
     if (product != null) {
       map[ApiKeys.productid] = product.id;
     }
-    if (paymentMethod != null && paymentMethod.isNotEmpty) {
-      map[ApiKeys.paymentmethod] = paymentMethod;
+    if (paymentMethod != null) {
+      map[ApiKeys.paymentMethodID] = paymentMethod.id;
     }
     if (sort != null &&
         sort.isNotEmpty &&

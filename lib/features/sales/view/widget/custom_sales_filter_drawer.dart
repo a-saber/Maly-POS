@@ -24,6 +24,8 @@ import 'package:pos_app/features/taxes/view/widget/custom_drop_down_taxes.dart';
 import 'package:pos_app/features/users/view/widget/custom_drop_down_user.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../../../paymentmethods/data/models/paymentmodel.dart';
+
 class CustomSalesFilterDrawer extends StatelessWidget {
   const CustomSalesFilterDrawer({super.key});
 
@@ -182,34 +184,31 @@ class CustomSalesFilterDrawer extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: CustomDropdown<PaymentMethodModel>(
+                        child: CustomDropdown<PaymentMethodSalesModel>(
                           search: true,
                           hint: S.of(context).selectPaymentMethod,
                           compareFn: (item1, item2) {
-                            return (item1.name
-                                    .toLowerCase()
-                                    .contains(item2.name.toLowerCase()) ||
-                                item2.name
-                                    .toLowerCase()
-                                    .contains(item1.name.toLowerCase()));
+                            return (
+                                item1.name?.toLowerCase().contains(item2.name?.toLowerCase()??'') == true ||
+                                item2.name?.toLowerCase().contains(item1.name?.toLowerCase()??'') == true
+                            );
                           },
                           value: SalesFilterCubit.get(context).paymentMethod,
-                          items: AppConstant.paymentMethods(context),
+                          items: SalesFilterCubit.get(context).availablePaymentMethods,
                           filterFn: (item, filter) {
-                            return item.name
-                                .toLowerCase()
-                                .contains(filter.toLowerCase());
+                            return item.name?.toLowerCase()
+                                .contains(filter.toLowerCase()) == true;
                           },
-                          onChanged: (PaymentMethodModel? paymentMethod) {
+                          onChanged: (PaymentMethodSalesModel? paymentMethod) {
                             if (paymentMethod != null) {
                               SalesFilterCubit.get(context)
                                   .changePaymentMethod(paymentMethod);
                             }
                           },
-                          builder: (PaymentMethodModel? paymentMethod) {
+                          builder: (PaymentMethodSalesModel? paymentMethod) {
                             if (paymentMethod != null) {
                               return Text(
-                                paymentMethod.name,
+                                paymentMethod.name?? '',
                                 style: AppFontStyle.formText(
                                   context: context,
                                 ),
@@ -455,9 +454,7 @@ class CustomSalesFilterDrawer extends StatelessWidget {
                           product: SalesFilterCubit.get(context).product,
                           typeOfTakeOrder:
                               SalesFilterCubit.get(context).takeOrderModel,
-                          paymentMethod: SalesFilterCubit.get(context)
-                              .paymentMethod
-                              ?.apiKey,
+                          paymentMethod: SalesFilterCubit.get(context).paymentMethod,
                           sort: SalesFilterCubit.get(context).sort?.apiKey,
                           sortBy: SalesFilterCubit.get(context).sortBy?.apiKey,
                           from: SalesFilterCubit.get(context).from == null

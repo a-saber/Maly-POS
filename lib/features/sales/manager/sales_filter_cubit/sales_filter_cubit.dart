@@ -1,21 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pos_app/core/api/api_response.dart';
 import 'package:pos_app/features/auth/login/data/model/branche_model.dart';
 import 'package:pos_app/features/auth/login/data/model/user_model.dart';
 import 'package:pos_app/features/discounts/data/model/discount_model.dart';
+import 'package:pos_app/features/paymentmethods/data/repo/repo.dart';
 import 'package:pos_app/features/products/data/model/product_model.dart';
 import 'package:pos_app/features/sales/data/model/sort_model.dart';
 import 'package:pos_app/features/selling_point/data/model/payment_method_model.dart';
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 
+import '../../../paymentmethods/data/models/paymentmodel.dart';
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart'
+as PaymentAdmin;
 part 'sales_filter_state.dart';
 
+
 class SalesFilterCubit extends Cubit<SalesFilterState> {
-  SalesFilterCubit() : super(SalesFilterInitial());
+  SalesFilterCubit( this.paymentMethodsRepo) : super(SalesFilterInitial()){
+    loadPaymentMethods();
+  }
+  final PaymentMethodsRepo paymentMethodsRepo;
 
   static SalesFilterCubit get(context) => BlocProvider.of(context);
+  List<PaymentAdmin.PaymentMethodSalesModel> availablePaymentMethods = [];
+  Future<void> loadPaymentMethods() async {
+    emit(SalesFilterGetPaymentMethodsLoading());
 
+    final result = await paymentMethodsRepo.getPaymentMethods(isFresh: true);
+    result.fold(
+          (apiError) {
+        emit(SalesFilterGetPaymentMethodsFail(message: apiError));
+      },
+          (methods) {
+        availablePaymentMethods = methods;
+        emit(SalesFilterGetPaymentMethodsSuccess());
+      },
+    );
+  }
   // GlobalKey<FormState> formKey = GlobalKey<FormState>();
   // AutovalidateMode autovalidateMode = AutovalidateMode.disabled;
 
@@ -24,7 +47,7 @@ class SalesFilterCubit extends Cubit<SalesFilterState> {
   DiscountModel? discount;
   TaxesModel? taxes;
   ProductModel? product;
-  PaymentMethodModel? paymentMethod;
+  PaymentMethodSalesModel? paymentMethod;
   // Sort
   SortModel? sort;
   SortByModel? sortBy;
@@ -97,7 +120,7 @@ class SalesFilterCubit extends Cubit<SalesFilterState> {
     emit(SalesFilterChangeProduct());
   }
 
-  void changePaymentMethod(PaymentMethodModel? paymentMethod) {
+  void changePaymentMethod(PaymentMethodSalesModel? paymentMethod) {
     if (paymentMethod?.id != this.paymentMethod?.id) {
       this.paymentMethod = paymentMethod;
       emit(SalesFilterChangePaymentMethod());

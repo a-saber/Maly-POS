@@ -11,6 +11,8 @@ import 'package:pos_app/features/sales_returns/data/repo/sales_return_repo.dart'
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 
+import '../../../paymentmethods/data/models/paymentmodel.dart';
+
 part 'get_sales_return_state.dart';
 
 class GetSalesReturnCubit extends Cubit<GetSalesReturnState> {
@@ -25,7 +27,7 @@ class GetSalesReturnCubit extends Cubit<GetSalesReturnState> {
   DiscountModel? discount;
   TaxesModel? taxes;
   ProductModel? product;
-  String? paymentMethod;
+  PaymentMethodSalesModel? paymentMethod;
   String? sort;
   String? sortBy;
   String? from;
@@ -121,7 +123,7 @@ class GetSalesReturnCubit extends Cubit<GetSalesReturnState> {
     DiscountModel? discount,
     TaxesModel? taxes,
     ProductModel? product,
-    String? paymentMethod,
+    PaymentMethodSalesModel? paymentMethod,
     String? sort,
     String? sortBy,
     String? from,

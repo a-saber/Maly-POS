@@ -18,6 +18,8 @@ import 'package:pos_app/features/sales/view/widget/custom_sales_filter_drawer.da
 import 'package:pos_app/features/sales/view/widget/sales_item_build.dart';
 import 'package:pos_app/generated/l10n.dart';
 
+import '../../paymentmethods/data/repo/repo.dart';
+
 class SalesView extends StatefulWidget {
   const SalesView({super.key});
 
@@ -47,7 +49,7 @@ class _SalesViewState extends State<SalesView> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => SalesFilterCubit(),
+      create: (context) => SalesFilterCubit(MyServiceLocator.getSingleton<PaymentMethodsRepo>()),
       child: Scaffold(
         key: isMobile(context: context) ? scaffoldKey : null,
         appBar: CustomAppBar(

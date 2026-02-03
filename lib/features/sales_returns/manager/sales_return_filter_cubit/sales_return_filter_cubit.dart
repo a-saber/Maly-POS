@@ -9,19 +9,42 @@ import 'package:pos_app/features/selling_point/data/model/payment_method_model.d
 import 'package:pos_app/features/selling_point/data/model/type_of_take_order_model.dart';
 import 'package:pos_app/features/taxes/data/model/taxes_model.dart';
 
+import '../../../../core/api/api_response.dart';
+import '../../../paymentmethods/data/models/paymentmodel.dart';
+import '../../../paymentmethods/data/repo/repo.dart';
+import 'package:pos_app/features/paymentmethods/data/models/paymentmodel.dart'
+as PaymentAdmin;
 part 'sales_return_filter_state.dart';
 
 class SalesReturnFilterCubit extends Cubit<SalesReturnFilterState> {
-  SalesReturnFilterCubit() : super(SalesReturnFilterInitial());
+  SalesReturnFilterCubit(this.paymentMethodsRepo) : super(SalesReturnFilterInitial()){
+    loadPaymentMethods();
+
+  }
+  final PaymentMethodsRepo paymentMethodsRepo;
 
   static SalesReturnFilterCubit get(context) => BlocProvider.of(context);
+  List<PaymentAdmin.PaymentMethodSalesModel> availablePaymentMethods = [];
+  Future<void> loadPaymentMethods() async {
+    emit(SalesReturnFilterGetPaymentMethodsLoading());
 
+    final result = await paymentMethodsRepo.getPaymentMethods(isFresh: true);
+    result.fold(
+          (apiError) {
+        emit(SalesReturnFilterGetPaymentMethodsFail(message: apiError));
+      },
+          (methods) {
+        availablePaymentMethods = methods;
+        emit(SalesReturnFilterGetPaymentMethodsSuccess());
+      },
+    );
+  }
   BrancheModel? branch;
   UserModel? user;
   DiscountModel? discount;
   TaxesModel? taxes;
   ProductModel? product;
-  PaymentMethodModel? paymentMethod;
+  PaymentMethodSalesModel? paymentMethod;
   // Sort
   SortModel? sort;
   SortByModel? sortBy;
@@ -93,7 +116,7 @@ class SalesReturnFilterCubit extends Cubit<SalesReturnFilterState> {
     emit(SalesReturnFilterChangeProduct());
   }
 
-  void changePaymentMethod(PaymentMethodModel? paymentMethod) {
+  void changePaymentMethod(PaymentMethodSalesModel? paymentMethod) {
     if (paymentMethod?.id != this.paymentMethod?.id) {
       this.paymentMethod = paymentMethod;
       emit(SalesReturnFilterChangePaymentMethod());
