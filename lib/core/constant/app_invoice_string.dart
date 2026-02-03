@@ -2,7 +2,7 @@ abstract class AppInvoiceString {
   static const String invoiceTitle = "فاتورة ضريبية مبسطة";
   static const String sellingId = "فاتورة بيع";
   static const String numberOfDariba = "الرقم الضريبي";
-  static const String product = "المنتج";
+  static const String product = "الأصنـــاف";
   static const String quantity = "الكمية";
   static const String price = "السعر";
   static const String total = "الإجمالي";

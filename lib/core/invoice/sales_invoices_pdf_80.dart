@@ -131,11 +131,11 @@ Future<Uint8List> salesInvoicesPdf80(
 
     // Paper size settings
     const double mmToPoint = 2.83465;
-    final double paperWidth = size == '80' ? 80 : 57;
-    final double margin = size == '80' ? 3 : 2;
-    final double fontSize = size == '80' ? 7 : 6;
+    final double paperWidth = size == '80' ? 70 : 57;
+    final double margin = size == '80' ? 0 :3;
+    final double fontSize = size == '80' ? 10 : 6;
     final double titleSize = size == '80' ? 10 : 9;
-    final double logoSize = size == '80' ? 35 : 25;
+    final double logoSize = size == '80' ? 50 : 30;
 
     pdf.addPage(
       pw.Page(
@@ -164,7 +164,7 @@ Future<Uint8List> salesInvoicesPdf80(
                             pw.TextStyle(fontSize: fontSize, font: arabicFont),
                       ),
                     if (time.isNotEmpty && date.isNotEmpty)
-                      pw.SizedBox(width: 10),
+                      pw.SizedBox(width: 15),
                     if (date.isNotEmpty)
                       pw.Text(
                         date,
@@ -228,7 +228,7 @@ Future<Uint8List> salesInvoicesPdf80(
                   style: pw.TextStyle(fontSize: fontSize - 1, font: arabicFont),
                   textAlign: pw.TextAlign.center,
                 ),
-              pw.SizedBox(height: 5),
+              // pw.SizedBox(height: 5),
 
               // ✅ Order Number & Order Type (بدون إطار)
               // ✅ Order Number & Order Type (بس لو صلاحية المطعم مفعّلة)
@@ -270,7 +270,7 @@ Future<Uint8List> salesInvoicesPdf80(
                       pw.Container(
                         width: 0.3,
                         height: 30,
-                        color: PdfColors.grey400,
+                        color: PdfColors.black,
                       ),
 
                       // ✅ نوع الطلب
@@ -313,15 +313,15 @@ Future<Uint8List> salesInvoicesPdf80(
                   border: pw.TableBorder(
                     top: pw.BorderSide(color: PdfColors.black, width: 0.5),
                     bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
-                    horizontalInside:
-                        pw.BorderSide(color: PdfColors.grey300, width: 0.3),
-                    // ❌ شيلنا الـ vertical borders
+                   horizontalInside:
+                        pw.BorderSide(color: PdfColors.black, width: 0.7),
+                   verticalInside: pw.BorderSide(color: PdfColors.black,width: 0.7)
                   ),
                   columnWidths: {
-                    0: pw.FlexColumnWidth(2.5), // Product - أوسع
-                    1: pw.FlexColumnWidth(1), // Qty
-                    2: pw.FlexColumnWidth(1.2), // Price
-                    3: pw.FlexColumnWidth(1.2), // Total
+                    0: pw.FlexColumnWidth(1.2), //  tota- أوسع
+                    1: pw.FlexColumnWidth(1.2), // price
+                    2: pw.FlexColumnWidth(1), // Qty
+                    3: pw.FlexColumnWidth(2.1), // Product
                   },
                   children: [
                     // Header
@@ -391,16 +391,28 @@ Future<Uint8List> salesInvoicesPdf80(
                   top: pw.BorderSide(color: PdfColors.black, width: 0.5),
                   bottom: pw.BorderSide(color: PdfColors.black, width: 0.5),
                   horizontalInside:
-                      pw.BorderSide(color: PdfColors.grey300, width: 0.2),
+                      pw.BorderSide(color: PdfColors.black, width: 0.7),
+                  verticalInside: pw.BorderSide(color:PdfColors.black,width: 0.7)
                 ),
                 columnWidths: {
-                  0: pw.FlexColumnWidth(2),
-                  1: pw.FlexColumnWidth(1),
+                  0: pw.FlexColumnWidth(1.55),
+                  1: pw.FlexColumnWidth(2),
                 },
                 children: [
+                  if(setting[ApiKeys.taxno]!=null)
+                    if (sale[ApiKeys.subtotal] != null)
+                      _buildTotalRowNew(
+                        AppInvoiceString.totalBeforeTax,
+                        double.tryParse(sale[ApiKeys.subtotal] ?? '0')
+                            ?.toStringAsFixed(2) ??
+                            '0',
+                        arabicFont,
+                        fontSize,
+                      ),
+
                   if (sale[ApiKeys.subtotal] != null)
                     _buildTotalRowNew(
-                      AppInvoiceString.totalBeforeTax,
+                      AppInvoiceString.total,
                       double.tryParse(sale[ApiKeys.subtotal] ?? '0')
                               ?.toStringAsFixed(2) ??
                           '0',
